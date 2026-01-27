@@ -1,0 +1,26 @@
+
+CodeIgniter v4.6.4 Command Line Tool - Server Time: 2026-01-26 13:56:06 UTC+00:00
+
+[TypeError]
+CodeIgniter\Router\RouteCollection::add(): Argument #3 ($options) must be of type ?array, string given, called in D:\laragon\www\inventaris-toko\app\Config\Routes.php on line 14
+at SYSTEMPATH\Router\RouteCollection.php:672
+
+Backtrace:
+  1    APPPATH\Config\Routes.php:14
+       CodeIgniter\Router\RouteCollection()->add()
+
+  2    SYSTEMPATH\Router\RouteCollection.php:339
+       require('D:\\laragon\\www\\inventaris-toko\\app\\Config\\Routes.php')
+
+  3    SYSTEMPATH\CLI\Console.php:41
+       CodeIgniter\Router\RouteCollection()->loadRoutes()
+
+  4    SYSTEMPATH\Boot.php:388
+       CodeIgniter\CLI\Console()->run()
+
+  5    SYSTEMPATH\Boot.php:133
+       CodeIgniter\Boot::runCommand()
+
+  6    ROOTPATH\spark:87
+       CodeIgniter\Boot::bootSpark()
+
