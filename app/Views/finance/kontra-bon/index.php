@@ -1,0 +1,315 @@
+<!-- Kontra Bon Table -->
+<div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+    <div class="p-6">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-xl font-semibold">Kontra Bon</h3>
+                <p class="text-sm text-muted-foreground">Konsolidasi invoice B2B</p>
+            </div>
+            <button 
+                class="btn btn-primary"
+                onclick="document.getElementById('kontraBonModal').classList.remove('hidden')"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"/></svg>
+                Buat Kontra Bon
+            </button>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>No. Dokumen</th>
+                    <th>Customer</th>
+                    <th>Tanggal</th>
+                    <th>Jatuh Tempo</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($kontraBons as $kb): ?>
+                <tr>
+                    <td class="font-medium text-primary"><?= $kb['document_number'] ?></td>
+                    <td><?= $kb['customer_name'] ?></td>
+                    <td><?= format_date($kb['created_at']) ?></td>
+                    <td><?= format_date($kb['due_date']) ?></td>
+                    <td class="text-right font-medium"><?= format_currency($kb['total_amount']) ?></td>
+                    <td>
+                        <?= badge_status($kb['status']) ?>
+                    </td>
+                    <td>
+                        <div class="flex gap-1">
+                            <button class="btn btn-ghost" style="height: 32px; width: 32px; padding: 0;" onclick="viewDetails(<?= $kb['id'] ?>)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 01-6 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 7 12 7c-2.568 0-4.786-.586-6.352-1.464"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l9 9m0 0L9 9m0 0V3m0 9H9m12 0a9 9 0 01-18 0 9 9 0 0118 0z"/></svg>
+                            </button>
+                            <?php if ($kb['status'] !== 'PAID'): ?>
+                            <button class="btn btn-ghost" style="height: 32px; width: 32px; padding: 0;" onclick="makePayment(<?= $kb['id'] ?>)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2" stroke-width="2"/><line x1="8" y1="6" x2="16" y2="6" stroke-width="2"/><line x1="16" y1="14" x2="8" y2="14" stroke-width="2"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="2"/></svg>
+                            </button>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Create Kontra Bon Modal -->
+<div id="kontraBonModal" class="modal hidden">
+    <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-2xl">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-xl font-semibold">Buat Kontra Bon Baru</h3>
+        </div>
+        <div class="p-6 pt-0 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label for="kb_customer_id">Customer</label>
+                    <select id="kb_customer_id" class="form-input" onchange="loadInvoices()">
+                        <option value="">Pilih customer</option>
+                        <?php foreach ($customers ?? [] as $customer): ?>
+                        <option value="<?= $customer['id'] ?>"><?= $customer['name'] ?> (Piutang: <?= format_currency($customer['receivable_balance']) ?>)</option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label for="kb_due_date">Jatuh Tempo</label>
+                    <input type="date" id="kb_due_date" class="form-input">
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label>Pilih Invoice Belum Lunas</label>
+                <div id="invoicesList" class="border rounded p-4 h-40 overflow-y-auto space-y-2">
+                    <p class="text-muted-foreground text-center">Pilih customer terlebih dahulu</p>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <label for="kb_notes">Catatan</label>
+                <textarea id="kb_notes" class="form-input" placeholder="Catatan (opsional)" rows="3"></textarea>
+            </div>
+            <div class="flex justify-between">
+                <div class="text-sm">
+                    <span class="text-muted-foreground">Total Tagihan: </span>
+                    <span id="totalTagihan" class="font-bold text-primary">Rp 0</span>
+                </div>
+                <div class="flex gap-2">
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('kontraBonModal').classList.add('hidden')">
+                        Batal
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="createKontraBon()">
+                        Buat Kontra Bon
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="paymentModal" class="modal hidden">
+    <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-md">
+        <div class="flex flex-col space-y-1.5 p-6">
+            <h3 class="text-xl font-semibold">Pembayaran Kontra Bon</h3>
+        </div>
+        <div class="p-6 pt-0 space-y-4">
+            <input type="hidden" id="payment_kontra_bon_id">
+            <div class="space-y-2">
+                <label for="payment_amount">Jumlah Pembayaran</label>
+                <input type="number" id="payment_amount" class="form-input" placeholder="0" step="0.01">
+            </div>
+            <div class="space-y-2">
+                <label for="payment_method">Metode Pembayaran</label>
+                <select id="payment_method" class="form-input">
+                    <option value="CASH">Tunai</option>
+                    <option value="TRANSFER">Transfer Bank</option>
+                    <option value="CHECK">Cek/Giro</option>
+                </select>
+            </div>
+            <div class="space-y-2">
+                <label for="payment_notes">Catatan</label>
+                <textarea id="payment_notes" class="form-input" placeholder="Catatan (opsional)" rows="3"></textarea>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('paymentModal').classList.add('hidden')">
+                    Batal
+                </button>
+                <button type="button" class="btn btn-primary" onclick="processPayment()">
+                    Bayar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedInvoices = [];
+    let invoiceData = {};
+
+    function loadInvoices() {
+        const customerId = document.getElementById('kb_customer_id').value;
+        
+        if (!customerId) {
+            document.getElementById('invoicesList').innerHTML = '<p class="text-muted-foreground text-center">Pilih customer terlebih dahulu</p>';
+            return;
+        }
+        
+        fetch(`/finance/kontra-bon/getUnpaidInvoices?customer_id=${customerId}`)
+            .then(response => response.json())
+            .then(data => {
+                renderInvoices(data);
+                updateTotal();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal memuat data invoice');
+            });
+    }
+    
+    function renderInvoices(invoices) {
+        const container = document.getElementById('invoicesList');
+        
+        if (invoices.length === 0) {
+            container.innerHTML = '<p class="text-muted-foreground text-center">Tidak ada invoice unpaid untuk customer ini</p>';
+            return;
+        }
+        
+        container.innerHTML = invoices.map(invoice => {
+            const isChecked = selectedInvoices.includes(invoice.id.toString());
+            
+            return `
+                <label class="flex items-center space-x-2 cursor-pointer hover:bg-muted p-2 rounded">
+                    <input type="checkbox" value="${invoice.id}" ${isChecked ? 'checked' : ''} onchange="toggleInvoice('${invoice.id}', ${JSON.stringify(invoice).replace(/"/g, '&quot;')})" onclick="event.stopPropagation()">
+                    <div class="flex-1">
+                        <div class="font-medium">${invoice.invoice_number}</div>
+                        <div class="text-sm text-muted-foreground">
+                            ${formatDate(invoice.created_at)} - Total: ${formatCurrency(invoice.total_amount)} - Belum: ${formatCurrency(invoice.total_amount - invoice.paid_amount)}
+                        </div>
+                    </div>
+                </label>
+            `;
+        }).join('');
+    }
+    
+    function toggleInvoice(id, data) {
+        const index = selectedInvoices.indexOf(id);
+        if (index > -1) {
+            selectedInvoices.splice(index, 1);
+            delete invoiceData[id];
+        } else {
+            selectedInvoices.push(id);
+            invoiceData[id] = JSON.parse(data);
+        }
+        updateTotal();
+    }
+    
+    function updateTotal() {
+        let total = 0;
+        selectedInvoices.forEach(id => {
+            if (invoiceData[id]) {
+                total += (invoiceData[id].total_amount - invoiceData[id].paid_amount);
+            }
+        });
+        document.getElementById('totalTagihan').textContent = formatCurrency(total);
+    }
+    
+    function createKontraBon() {
+        const customerId = document.getElementById('kb_customer_id').value;
+        const dueDate = document.getElementById('kb_due_date').value;
+        const notes = document.getElementById('kb_notes').value;
+        
+        if (!customerId) {
+            alert('Pilih customer terlebih dahulu');
+            return;
+        }
+        
+        if (selectedInvoices.length === 0) {
+            alert('Pilih minimal satu invoice');
+            return;
+        }
+        
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '/finance/kontra-bon/create';
+        
+        // Add hidden fields
+        const fields = {
+            customer_id: customerId,
+            sale_ids: selectedInvoices,
+            due_date: dueDate,
+            notes: notes
+        };
+        
+        for (const [key, value] of Object.entries(fields)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = typeof value === 'object' ? JSON.stringify(value) : value;
+            form.appendChild(input);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    function makePayment(kontraBonId) {
+        document.getElementById('payment_kontra_bon_id').value = kontraBonId;
+        document.getElementById('paymentModal').classList.remove('hidden');
+    }
+    
+    function processPayment() {
+        const kontraBonId = document.getElementById('payment_kontra_bon_id').value;
+        const amount = document.getElementById('payment_amount').value;
+        const paymentMethod = document.getElementById('payment_method').value;
+        const notes = document.getElementById('payment_notes').value;
+        
+        if (!amount || amount <= 0) {
+            alert('Masukkan jumlah pembayaran');
+            return;
+        }
+        
+        // Create form and submit
+        const form = document.createElement('form');
+        form.method = 'post';
+        form.action = '/finance/kontra-bon/makePayment';
+        
+        // Add hidden fields
+        const fields = {
+            kontra_bon_id: kontraBonId,
+            amount: amount,
+            payment_method: paymentMethod,
+            notes: notes
+        };
+        
+        for (const [key, value] of Object.entries(fields)) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = value;
+            form.appendChild(input);
+        }
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+    
+    function formatCurrency(amount) {
+        return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
+    }
+    
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+    }
+    
+    function viewDetails(id) {
+        // Placeholder for view details functionality
+        alert('Detail untuk Kontra Bon #' + id);
+    }
+</script>
