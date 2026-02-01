@@ -1,24 +1,41 @@
-# 📋 Toko Distributor Mini ERP - Panduan Menjalankan
+# 🏪 TokoManager POS - Inventory Management System
+
+[![CodeIgniter](https://img.shields.io/badge/CodeIgniter-4.6.4-orange.svg)](https://codeigniter.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3+-38B2AC.svg)](https://tailwindcss.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+**Status:** ✅ **Phase 4 Complete - Production Ready**
 
 ## 🎯 Tentang Aplikasi
 
-Aplikasi Mini ERP khusus untuk distributor B2B dengan fitur:
-- Multi-warehouse stock management
-- Kontra Bon (penggabungan invoice)
-- Credit limit untuk customer
-- Hidden sales mode
-- Role-based access control
+TokoManager adalah sistem POS dan manajemen inventori yang komprehensif, dirancang khusus untuk toko distributor B2B dengan fitur:
+
+### ✨ Fitur Utama
+- 📊 **Advanced Analytics Dashboard** dengan Chart.js visualizations
+- 📦 **Inventory Management** dengan monitoring stok real-time
+- 💰 **Multi-warehouse Stock Management**
+- 💳 **Credit Limit Tracking** untuk pelanggan
+- 📈 **Sales Analytics** dengan trend analysis
+- 📑 **CSV Export** untuk inventory dan analytics
+- 🔐 **Role-based Access Control** (Owner/Admin)
+- 🎨 **Modern UI/UX** dengan Tailwind CSS
+- 📱 **Responsive Design** (Mobile/Tablet/Desktop)
 
 ## 🚀 Prasyarat Sistem
 
 ### Web Server
-- **XAMPP** atau **Laragon** dengan Apache/Nginx
-- **PHP** 8.1+ 
+- **PHP** 8.1+ (8.2 recommended)
 - **MySQL** 5.7+ atau MariaDB 10.2+
+- **Composer** 2.0+
+- **Apache/Nginx** web server
+- **Laragon** atau **XAMPP** (recommended untuk Windows)
 
-### Browser
-- Google Chrome, Firefox, Edge, atau Safari (versi terbaru)
-- **Developer Tools** aktif
+### Browser Support
+- ✅ Chrome 120+ (Recommended)
+- ✅ Firefox 120+
+- ✅ Edge 120+
+- ✅ Safari 17+ (Mac)
 
 ## 📋 Menu Navigasi
 
