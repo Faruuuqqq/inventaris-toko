@@ -78,6 +78,51 @@ class Stock extends BaseController
         return view('info/stock/balance', $data);
     }
 
+    /**
+     * Inventory Management - Advanced stock monitoring and reorder management
+     */
+    public function management()
+    {
+        $db = \Config\Database::connect();
+        
+        // Get all products with current stock levels
+        $products = $db->table('products')
+            ->select('products.id, products.name, products.sku, products.price, products.category_id, categories.name as category_name')
+            ->join('categories', 'categories.id = products.category_id', 'LEFT')
+            ->where('products.deleted_at', null)
+            ->orderBy('products.name', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        // Add current stock for each product
+        foreach ($products as &$product) {
+            $stock = $db->table('product_stocks')
+                ->selectSum('quantity', 'current_stock')
+                ->where('product_id', $product['id'])
+                ->get()
+                ->getRow();
+            
+            $product['current_stock'] = (int)($stock->current_stock ?? 0);
+            $product['min_stock'] = $product['min_stock'] ?? 10; // Default min stock
+            $product['max_stock'] = $product['max_stock'] ?? 100; // Default max stock
+        }
+
+        // Get categories
+        $categories = $db->table('categories')
+            ->where('deleted_at', null)
+            ->get()
+            ->getResultArray();
+
+        $data = [
+            'title' => 'Manajemen Inventaris',
+            'subtitle' => 'Pantau stok, atur reorder, dan kelola tingkat stok produk',
+            'products' => $products,
+            'categories' => $categories,
+        ];
+
+        return view('info/inventory/management', $data);
+    }
+
     public function getMutations()
     {
         // For AJAX calls

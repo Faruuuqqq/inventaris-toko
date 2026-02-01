@@ -184,6 +184,12 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
     $routes->group('stock', function($routes) {
         $routes->get('card', 'Stock::card');
         $routes->get('balance', 'Stock::balance');
+        $routes->get('management', 'Stock::management');
+    });
+
+    // Inventory Management
+    $routes->group('inventory', function($routes) {
+        $routes->get('management', 'Stock::management');
     });
 
     // Reports
@@ -198,6 +204,11 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
         $routes->get('stock-card', 'Reports::stockCard');
         $routes->get('aging-analysis', 'Reports::agingAnalysis');
         $routes->get('stock-card-data', 'Reports::getStockCardData'); // AJAX endpoint
+    });
+
+    // Analytics
+    $routes->group('analytics', function($routes) {
+        $routes->get('dashboard', 'Analytics::dashboard');
     });
 });
 
