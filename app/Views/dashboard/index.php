@@ -177,14 +177,30 @@
                         <?php else: ?>
                             <?php foreach ($recentTransactions as $tx): ?>
                                 <tr class="border-b border-border/30 hover:bg-primary/5 transition-colors duration-200">
-                                    <td class="px-6 py-4 font-semibold text-primary"><?= $tx['transaction_number'] ?? $tx['id'] ?></td>
-                                    <td class="px-6 py-4 text-foreground font-medium"><?= $tx['customer_name'] ?></td>
-                                    <td class="px-6 py-4 font-bold text-foreground"><?= format_currency($tx['total_amount']) ?></td>
+                                    <td class="px-6 py-4 font-semibold text-primary"><?= $tx->invoice_number ?? $tx->id ?></td>
                                     <td class="px-6 py-4">
-                                        <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold
-                                            <?= $tx['payment_status'] === 'PAID' ? 'bg-success/15 text-success border border-success/30' : 'bg-warning/15 text-warning border border-warning/30' ?>">
-                                            <span class="inline-block h-2 w-2 rounded-full <?= $tx['payment_status'] === 'PAID' ? 'bg-success' : 'bg-warning' ?>"></span>
-                                            <?= ucfirst(strtolower($tx['payment_status'] ?? 'PENDING')) ?>
+                                        <span class="text-sm text-foreground/80">
+                                            <?= date('d M Y', strtotime($tx->created_at)) ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <span class="font-medium text-foreground"><?= $tx->customer_name ?? 'N/A' ?></span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="font-bold text-lg text-foreground">
+                                            <?= format_currency($tx->total_amount) ?>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <?php
+                                        $statusClass = match($tx->payment_status ?? 'UNPAID') {
+                                            'PAID' => 'bg-success/10 text-success border-success/30',
+                                            'PARTIAL' => 'bg-warning/10 text-warning border-warning/30',
+                                            default => 'bg-danger/10 text-danger border-danger/30'
+                                        };
+                                        ?>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border <?= $statusClass ?>">
+                                            <?= $tx->payment_status ?? 'UNPAID' ?>
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 text-right">
