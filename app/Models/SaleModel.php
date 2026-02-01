@@ -33,9 +33,11 @@ class SaleModel extends Model
     }
 
     // Include soft deleted records if explicitly requested
-    public function withDeleted()
+    public function withDeleted(bool $val = true)
     {
-        $this->builder()->where('deleted_at !=', null);
+        if ($val) {
+            $this->builder()->where('deleted_at !=', null);
+        }
         return $this;
     }
 
