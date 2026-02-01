@@ -171,33 +171,36 @@
         </div>
     </div>
 
-    <!-- Charts Row -->
+    <!-- Charts Section -->
     <div class="mb-8 grid gap-6 grid-cols-1 lg:grid-cols-2">
-        <!-- Sales Trend Chart -->
+        <!-- Revenue Trend Chart -->
         <div class="rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
             <div class="p-6 border-b border-border/50 bg-muted/30">
                 <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('TrendingUp', 'h-5 w-5 text-primary') ?>
-                    Tren Penjualan
+                    Tren Pendapatan & Profit
                 </h3>
             </div>
             <div class="p-6">
-                <div class="h-64 flex items-center justify-center bg-muted/20 rounded-lg">
-                    <p class="text-muted-foreground">Chart akan diimplementasikan dengan Chart.js atau ApexCharts</p>
-                </div>
+                <canvas id="revenueTrendChart" style="height: 250px;"></canvas>
             </div>
         </div>
 
-        <!-- Revenue by Category -->
+        <!-- Category Revenue Chart -->
         <div class="rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
             <div class="p-6 border-b border-border/50 bg-muted/30">
                 <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('PieChart', 'h-5 w-5 text-primary') ?>
-                    Pendapatan per Kategori
+                    Distribusi Pendapatan per Kategori
                 </h3>
             </div>
             <div class="p-6">
-                <div class="space-y-3">
+                <canvas id="categoryRevenueChart" style="height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue by Category Breakdown -->
                     <template x-for="category in revenueByCategory" :key="category.name">
                         <div>
                             <div class="flex justify-between items-center mb-2">
@@ -305,11 +308,14 @@
     </div>
 </div>
 
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+
 <script>
 function analyticsManager() {
     return {
-        dateFrom: '<?= date('Y-m-01') ?>',
-        dateTo: '<?= date('Y-m-d') ?>',
+        dateFrom: '<?= $dateFrom ?? date('Y-m-01') ?>',
+        dateTo: '<?= $dateTo ?? date('Y-m-d') ?>',
         stats: <?= json_encode($stats ?? [
             'totalRevenue' => 0,
             'totalProfit' => 0,
@@ -323,6 +329,244 @@ function analyticsManager() {
         revenueByCategory: <?= json_encode($revenueByCategory ?? []) ?>,
         paymentMethods: <?= json_encode($paymentMethods ?? []) ?>,
         topProducts: <?= json_encode($topProducts ?? []) ?>,
+        dateRange: {
+            from: '<?= $dateFrom ?? date('Y-m-01') ?>',
+            to: '<?= $dateTo ?? date('Y-m-d') ?>'
+        },
+        revenueTrendChart: null,
+        categoryRevenueChart: null,
+
+        init() {
+            this.initCharts();
+        },
+
+        initCharts() {
+            const revenueTrendData = <?= json_encode($revenueTrend ?? []) ?>;
+            
+            // Revenue Trend Chart (Line Chart)
+            const ctx1 = document.getElementById('revenueTrendChart');
+            if (ctx1 && revenueTrendData.length > 0) {
+                this.revenueTrendChart = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels: revenueTrendData.map(d => this.formatPeriodLabel(d.period_label)),
+                        datasets: [
+                            {
+                                label: 'Pendapatan',
+                                data: revenueTrendData.map(d => parseFloat(d.revenue)),
+                                borderColor: '#0F7B4D',
+                                backgroundColor: 'rgba(15, 123, 77, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                borderWidth: 3,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                pointBackgroundColor: '#0F7B4D',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2
+                            },
+                            {
+                                label: 'Profit',
+                                data: revenueTrendData.map(d => parseFloat(d.profit)),
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                borderWidth: 3,
+                                pointRadius: 5,
+                                pointHoverRadius: 7,
+                                pointBackgroundColor: '#10B981',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20,
+                                    font: {
+                                        size: 13,
+                                        weight: '600',
+                                        family: 'Inter, sans-serif'
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                                padding: 15,
+                                titleFont: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                bodyFont: {
+                                    size: 13
+                                },
+                                borderColor: '#0F7B4D',
+                                borderWidth: 1,
+                                callbacks: {
+                                    label: (context) => {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += 'Rp ' + this.formatNumber(context.parsed.y);
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: {
+                                    display: false,
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11
+                                    },
+                                    maxRotation: 45,
+                                    minRotation: 0
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.06)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 11
+                                    },
+                                    callback: (value) => {
+                                        if (value >= 1000000) {
+                                            return 'Rp ' + (value / 1000000).toFixed(1) + 'jt';
+                                        } else if (value >= 1000) {
+                                            return 'Rp ' + (value / 1000).toFixed(0) + 'rb';
+                                        }
+                                        return 'Rp ' + value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Category Revenue Doughnut Chart
+            const ctx2 = document.getElementById('categoryRevenueChart');
+            if (ctx2 && this.revenueByCategory.length > 0) {
+                this.categoryRevenueChart = new Chart(ctx2, {
+                    type: 'doughnut',
+                    data: {
+                        labels: this.revenueByCategory.map(c => c.name),
+                        datasets: [{
+                            data: this.revenueByCategory.map(c => parseFloat(c.revenue)),
+                            backgroundColor: [
+                                '#0F7B4D',
+                                '#10B981',
+                                '#34D399',
+                                '#6EE7B7',
+                                '#A7F3D0',
+                                '#F59E0B',
+                                '#F97316',
+                                '#EF4444'
+                            ],
+                            borderWidth: 3,
+                            borderColor: '#fff',
+                            hoverOffset: 15,
+                            hoverBorderWidth: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'right',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15,
+                                    font: {
+                                        size: 12,
+                                        family: 'Inter, sans-serif'
+                                    },
+                                    generateLabels: (chart) => {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            return data.labels.map((label, i) => {
+                                                const value = data.datasets[0].data[i];
+                                                const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                                const percentage = ((value / total) * 100).toFixed(1);
+                                                return {
+                                                    text: `${label} (${percentage}%)`,
+                                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                                    hidden: false,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                                padding: 15,
+                                borderColor: '#0F7B4D',
+                                borderWidth: 1,
+                                callbacks: {
+                                    label: (context) => {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((value / total) * 100).toFixed(1);
+                                        return `${label}: Rp ${this.formatNumber(value)} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        },
+
+        formatPeriodLabel(label) {
+            // Format date labels based on grouping
+            if (!label) return '';
+            
+            if (label.includes('W')) {
+                // Weekly format: 2026-W05
+                const parts = label.split('-W');
+                return `Week ${parts[1]}`;
+            } else if (label.length === 7) {
+                // Monthly format: 2026-01
+                const [year, month] = label.split('-');
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                return `${monthNames[parseInt(month) - 1]} ${year}`;
+            } else {
+                // Daily format: 2026-01-15
+                const [year, month, day] = label.split('-');
+                return `${day}/${month}`;
+            }
+        },
+
+        formatNumber(num) {
+            return new Intl.NumberFormat('id-ID').format(Math.round(num));
+        },
 
         setQuickPeriod(period) {
             const today = new Date();

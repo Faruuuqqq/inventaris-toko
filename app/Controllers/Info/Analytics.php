@@ -41,6 +41,9 @@ class Analytics extends BaseController
         
         // Top products
         $topProducts = $this->getTopProducts($dateFrom, $dateTo, $db);
+        
+        // Revenue trend data for charts
+        $revenueTrend = $this->getRevenueTrend($dateFrom, $dateTo, $db);
 
         $data = [
             'title' => 'Analytics Dashboard',
@@ -49,6 +52,9 @@ class Analytics extends BaseController
             'revenueByCategory' => $revenueByCategory,
             'paymentMethods' => $paymentMethods,
             'topProducts' => $topProducts,
+            'revenueTrend' => $revenueTrend,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
         ];
 
         return view('info/analytics/dashboard', $data);
@@ -242,6 +248,46 @@ class Analytics extends BaseController
         }
 
         return $products;
+    }
+
+    /**
+     * Get revenue trend data for charts
+     */
+    private function getRevenueTrend($dateFrom, $dateTo, $db)
+    {
+        $daysDiff = (strtotime($dateTo) - strtotime($dateFrom)) / 86400;
+        
+        // Determine grouping (daily, weekly, monthly)
+        if ($daysDiff <= 31) {
+            // Daily grouping
+            $groupBy = 'DATE(s.created_at)';
+            $dateFormat = '%Y-%m-%d';
+        } elseif ($daysDiff <= 90) {
+            // Weekly grouping
+            $groupBy = 'YEARWEEK(s.created_at)';
+            $dateFormat = '%Y-W%v';
+        } else {
+            // Monthly grouping
+            $groupBy = 'DATE_FORMAT(s.created_at, "%Y-%m")';
+            $dateFormat = '%Y-%m';
+        }
+        
+        $result = $db->query("
+            SELECT 
+                DATE_FORMAT(s.created_at, ?) as period_label,
+                {$groupBy} as period,
+                SUM(s.total_amount) as revenue,
+                SUM(s.total_profit) as profit,
+                COUNT(*) as transactions
+            FROM sales s
+            WHERE s.created_at >= ?
+                AND s.created_at <= ?
+                AND s.deleted_at IS NULL
+            GROUP BY period
+            ORDER BY period ASC
+        ", [$dateFormat, $dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
+        
+        return $result;
     }
 
     /**
