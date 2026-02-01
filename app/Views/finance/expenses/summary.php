@@ -1,113 +1,163 @@
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col">
-            <h3 class="page-title"><?= $title ?></h3>
-            <p class="text-muted"><?= $subtitle ?? '' ?></p>
-        </div>
-        <div class="col-auto">
-            <a href="<?= base_url('/finance/expenses') ?>" class="btn btn-outline-secondary">
-                <i data-lucide="arrow-left"></i> Kembali
+
+<!-- Page Header -->
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
+            <?= icon('BarChart3', 'h-8 w-8 text-primary') ?>
+            Ringkasan Biaya
+        </h1>
+        <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Laporan pengeluaran berdasarkan kategori' ?></p>
+    </div>
+    <a href="<?= base_url('finance/expenses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+        <?= icon('ArrowLeft', 'h-5 w-5') ?>
+        Kembali
+    </a>
+</div>
+
+<!-- Filter Card -->
+<div class="mb-6 rounded-lg border bg-surface shadow-sm overflow-hidden">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('Filter', 'h-5 w-5 text-primary') ?>
+            Filter Periode
+        </h2>
+    </div>
+
+    <div class="p-6">
+        <form action="<?= base_url('finance/expenses/summary') ?>" method="get" class="grid gap-4 md:grid-cols-4 items-end">
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Tanggal Mulai</label>
+                <input type="date" name="start_date" value="<?= $startDate ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Tanggal Akhir</label>
+                <input type="date" name="end_date" value="<?= $endDate ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+
+            <button type="submit" class="h-10 inline-flex items-center justify-center gap-2 bg-primary text-white font-medium text-sm rounded-lg hover:bg-primary/90 transition">
+                <?= icon('Filter', 'h-4 w-4') ?>
+                Filter
+            </button>
+
+            <a href="<?= base_url('finance/expenses/summary') ?>" class="h-10 inline-flex items-center justify-center gap-2 border border-border/50 text-foreground font-medium text-sm rounded-lg hover:bg-muted transition">
+                <?= icon('RotateCcw', 'h-4 w-4') ?>
+                Reset
             </a>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid gap-6 md:grid-cols-3 mb-6">
+    <!-- Total Expenses Card -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 bg-primary/10 border-b border-primary/20">
+            <p class="text-xs font-medium text-primary uppercase mb-2">Total Biaya</p>
+            <p class="text-3xl font-bold text-primary">Rp <?= number_format($total, 0, ',', '.') ?></p>
+        </div>
+        <div class="p-4 bg-muted/50 text-center">
+            <p class="text-xs text-muted-foreground">
+                <?= format_date($startDate) ?> hingga <?= format_date($endDate) ?>
+            </p>
         </div>
     </div>
 
-    <!-- Date Filter -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form action="<?= base_url('/finance/expenses/summary') ?>" method="get" class="row g-3 align-items-end">
-                <div class="col-md-3">
-                    <label for="start_date" class="form-label">Tanggal Mulai</label>
-                    <input type="date" class="form-control" id="start_date" name="start_date" value="<?= $startDate ?>">
-                </div>
-                <div class="col-md-3">
-                    <label for="end_date" class="form-label">Tanggal Akhir</label>
-                    <input type="date" class="form-control" id="end_date" name="end_date" value="<?= $endDate ?>">
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
-            </form>
+    <!-- Category Count Card -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 bg-success/10 border-b border-success/20">
+            <p class="text-xs font-medium text-success uppercase mb-2">Kategori Digunakan</p>
+            <p class="text-3xl font-bold text-success"><?= count($byCategory) ?></p>
+        </div>
+        <div class="p-4 bg-muted/50 text-center">
+            <p class="text-xs text-muted-foreground">
+                Dari total <?= count($categories) ?> kategori tersedia
+            </p>
         </div>
     </div>
 
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card bg-primary text-white">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Total Biaya</h5>
-                    <h2><?= format_currency($total) ?></h2>
-                    <p class="mb-0">Periode: <?= format_date($startDate) ?> - <?= format_date($endDate) ?></p>
-                </div>
+    <!-- Transaction Count Card -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 bg-warning/10 border-b border-warning/20">
+            <p class="text-xs font-medium text-warning uppercase mb-2">Total Transaksi</p>
+            <p class="text-3xl font-bold text-warning"><?= array_sum(array_column($byCategory, 'count')) ?></p>
+        </div>
+        <div class="p-4 bg-muted/50 text-center">
+            <p class="text-xs text-muted-foreground">
+                Jumlah pencatatan biaya
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Category Breakdown Table -->
+<div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('Layers', 'h-5 w-5 text-primary') ?>
+            Biaya per Kategori
+        </h2>
+    </div>
+
+    <div class="p-6">
+        <?php if (empty($byCategory)): ?>
+            <!-- Empty State -->
+            <div class="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <?= icon('BarChart3', 'h-12 w-12 mb-3 opacity-50') ?>
+                <p class="text-sm">Tidak ada data biaya untuk periode ini.</p>
+                <a href="<?= base_url('finance/expenses') ?>" class="mt-4 text-primary hover:underline text-sm font-medium">
+                    Tambah biaya baru
+                </a>
             </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card bg-info text-white">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Jumlah Kategori</h5>
-                    <h2><?= count($byCategory) ?></h2>
-                    <p class="mb-0">Kategori biaya terpakai</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- By Category Table -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Biaya per Kategori</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
+        <?php else: ?>
+            <div class="relative w-full overflow-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-muted/50 border-b border-border/50">
                         <tr>
-                            <th>Kategori</th>
-                            <th class="text-center">Jumlah Transaksi</th>
-                            <th class="text-end">Total</th>
-                            <th class="text-end">Persentase</th>
+                            <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Kategori</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-20">Transaksi</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-32">Total</th>
+                            <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground flex-1">Persentase</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php if (empty($byCategory)): ?>
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">Tidak ada data</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($byCategory as $item): ?>
-                                <?php $percentage = $total > 0 ? ($item->total / $total) * 100 : 0; ?>
-                                <tr>
-                                    <td>
-                                        <span class="badge bg-secondary"><?= $categories[$item->category] ?? $item->category ?></span>
-                                    </td>
-                                    <td class="text-center"><?= $item->count ?></td>
-                                    <td class="text-end fw-bold"><?= format_currency($item->total) ?></td>
-                                    <td class="text-end">
-                                        <div class="d-flex align-items-center justify-content-end gap-2">
-                                            <div class="progress" style="width: 100px; height: 8px;">
-                                                <div class="progress-bar" style="width: <?= $percentage ?>%"></div>
-                                            </div>
-                                            <span><?= number_format($percentage, 1) ?>%</span>
+                    <tbody class="divide-y divide-border/50">
+                        <?php foreach ($byCategory as $item): ?>
+                            <?php $percentage = $total > 0 ? ($item->total / $total) * 100 : 0; ?>
+                            <tr class="hover:bg-muted/50 transition">
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center justify-center h-8 px-3 rounded-lg bg-primary/10 text-primary font-medium text-sm">
+                                        <?= $categories[$item->category] ?? $item->category ?>
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-right font-medium"><?= $item->count ?></td>
+                                <td class="px-4 py-3 text-right font-bold text-primary">Rp <?= number_format($item->total, 0, ',', '.') ?></td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <!-- Progress Bar -->
+                                        <div class="w-full max-w-xs bg-muted/50 rounded-full h-2">
+                                            <div class="bg-primary rounded-full h-2 transition-all" style="width: <?= $percentage ?>%"></div>
                                         </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                                        <!-- Percentage Text -->
+                                        <span class="text-sm font-semibold text-foreground w-12 text-right"><?= number_format($percentage, 1) ?>%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                     </tbody>
-                    <tfoot class="table-light">
-                        <tr>
-                            <th>Total</th>
-                            <th class="text-center"><?= array_sum(array_column($byCategory, 'count')) ?></th>
-                            <th class="text-end"><?= format_currency($total) ?></th>
-                            <th class="text-end">100%</th>
+                    <tfoot class="bg-muted/30 border-t border-border/50">
+                        <tr class="font-bold">
+                            <td class="px-4 py-3">Total</td>
+                            <td class="px-4 py-3 text-right"><?= array_sum(array_column($byCategory, 'count')) ?></td>
+                            <td class="px-4 py-3 text-right text-primary text-base">Rp <?= number_format($total, 0, ',', '.') ?></td>
+                            <td class="px-4 py-3 text-right">100.0%</td>
                         </tr>
                     </tfoot>
                 </table>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 </div>
 
