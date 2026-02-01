@@ -1,149 +1,163 @@
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col">
-            <h3 class="page-title"><?= $title ?></h3>
-            <p class="text-muted"><?= $subtitle ?? '' ?></p>
+
+<!-- Page Header -->
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
+            <?= icon('Wallet', 'h-8 w-8 text-warning') ?>
+            <?= $title ?? 'Biaya Operasional' ?>
+        </h1>
+        <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Kelola biaya dan pengeluaran operasional' ?></p>
+    </div>
+    <a href="<?= base_url('finance/expenses/create') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition whitespace-nowrap">
+        <?= icon('Plus', 'h-5 w-5') ?>
+        Tambah Biaya
+    </a>
+</div>
+
+<!-- Alert Messages -->
+<?php if (session()->getFlashdata('success')): ?>
+<div class="mb-4 rounded-lg border border-success/50 bg-success/10 p-4 flex items-start gap-3">
+    <?= icon('CheckCircle', 'h-5 w-5 text-success flex-shrink-0 mt-0.5') ?>
+    <p class="text-sm text-success font-medium"><?= session()->getFlashdata('success') ?></p>
+</div>
+<?php endif; ?>
+
+<?php if (session()->getFlashdata('error')): ?>
+<div class="mb-4 rounded-lg border border-destructive/50 bg-destructive/10 p-4 flex items-start gap-3">
+    <?= icon('AlertCircle', 'h-5 w-5 text-destructive flex-shrink-0 mt-0.5') ?>
+    <p class="text-sm text-destructive font-medium"><?= session()->getFlashdata('error') ?></p>
+</div>
+<?php endif; ?>
+
+<!-- Summary Cards -->
+<div class="grid gap-4 md:grid-cols-3 mb-6">
+    <div class="rounded-lg border bg-surface p-4 flex items-center gap-4">
+        <div class="h-12 w-12 rounded-lg bg-warning/15 flex items-center justify-center">
+            <?= icon('TrendingDown', 'h-6 w-6 text-warning') ?>
         </div>
-        <div class="col-auto">
-            <a href="<?= base_url('/finance/expenses/create') ?>" class="btn btn-primary">
-                <i data-lucide="plus"></i> Tambah Biaya
-            </a>
+        <div>
+            <p class="text-xs text-muted-foreground">Total Biaya</p>
+            <p class="text-2xl font-bold text-warning" id="totalAmount">Rp 0</p>
+        </div>
+    </div>
+    
+    <div class="rounded-lg border bg-surface p-4 flex items-center gap-4">
+        <div class="h-12 w-12 rounded-lg bg-primary/15 flex items-center justify-center">
+            <?= icon('Receipt', 'h-6 w-6 text-primary') ?>
+        </div>
+        <div>
+            <p class="text-xs text-muted-foreground">Jumlah Transaksi</p>
+            <p class="text-2xl font-bold text-primary" id="totalCount">0</p>
         </div>
     </div>
 
-    <!-- Alert Messages -->
-    <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <?= session()->getFlashdata('success') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <?= session()->getFlashdata('error') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-
-    <!-- Filter Section -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5 class="card-title mb-3">Filter</h5>
-            <div class="row g-3">
-                <div class="col-md-3">
-                    <label for="categoryFilter" class="form-label">Kategori</label>
-                    <select id="categoryFilter" class="form-select">
-                        <option value="">Semua Kategori</option>
-                        <?php foreach ($categories as $key => $label): ?>
-                            <option value="<?= $key ?>"><?= $label ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label for="startDate" class="form-label">Tanggal Mulai</label>
-                    <input type="date" id="startDate" class="form-control" value="<?= date('Y-m-01') ?>">
-                </div>
-                <div class="col-md-2">
-                    <label for="endDate" class="form-label">Tanggal Akhir</label>
-                    <input type="date" id="endDate" class="form-control" value="<?= date('Y-m-d') ?>">
-                </div>
-                <div class="col-md-2">
-                    <label for="paymentMethod" class="form-label">Metode Bayar</label>
-                    <select id="paymentMethod" class="form-select">
-                        <option value="">Semua</option>
-                        <option value="CASH">Tunai</option>
-                        <option value="TRANSFER">Transfer</option>
-                        <option value="CHECK">Cek/Giro</option>
-                    </select>
-                </div>
-                <div class="col-md-3 d-flex align-items-end gap-2">
-                    <button onclick="loadExpenses()" class="btn btn-primary">Filter</button>
-                    <button onclick="resetFilters()" class="btn btn-outline-secondary">Reset</button>
-                </div>
-            </div>
-        </div>
+    <div class="rounded-lg border bg-surface p-4">
+        <p class="text-xs text-muted-foreground mb-2">Aksi</p>
+        <a href="<?= base_url('finance/expenses/summary') ?>" class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition">
+            <?= icon('BarChart3', 'h-4 w-4') ?>
+            Lihat Ringkasan
+        </a>
     </div>
+</div>
 
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Total Biaya</h5>
-                    <h3 id="totalAmount">Rp 0</h3>
-                </div>
+<!-- Filter Section -->
+<div class="rounded-lg border bg-surface p-6 mb-6">
+    <div class="space-y-4">
+        <h3 class="text-lg font-semibold text-foreground">Filter & Cari</h3>
+        <div class="grid gap-4 md:grid-cols-5">
+            <!-- Category Filter -->
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Kategori</label>
+                <select id="categoryFilter" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <option value="">Semua Kategori</option>
+                    <?php foreach ($categories as $key => $label): ?>
+                        <option value="<?= $key ?>"><?= $label ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5 class="card-title">Jumlah Transaksi</h5>
-                    <h3 id="totalCount">0</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Aksi</h5>
-                    <a href="<?= base_url('/finance/expenses/summary') ?>" class="btn btn-outline-primary btn-sm">
-                        Lihat Ringkasan
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Expenses Table -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">Daftar Biaya</h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>No. Biaya</th>
-                            <th>Tanggal</th>
-                            <th>Kategori</th>
-                            <th>Deskripsi</th>
-                            <th>Metode</th>
-                            <th class="text-end">Jumlah</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="expensesTable">
-                        <tr>
-                            <td colspan="7" class="text-center text-muted">Klik Filter untuk menampilkan data</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Start Date -->
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Tanggal Mulai</label>
+                <input type="date" id="startDate" value="<?= date('Y-m-01') ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+
+            <!-- End Date -->
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Tanggal Akhir</label>
+                <input type="date" id="endDate" value="<?= date('Y-m-d') ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+            </div>
+
+            <!-- Payment Method -->
+            <div class="space-y-2">
+                <label class="text-sm font-medium text-foreground">Metode Bayar</label>
+                <select id="paymentMethod" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <option value="">Semua Metode</option>
+                    <option value="CASH">Tunai</option>
+                    <option value="TRANSFER">Transfer</option>
+                    <option value="CHECK">Cek/Giro</option>
+                </select>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-end gap-2">
+                <button onclick="loadExpenses()" class="flex-1 h-10 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
+                    <?= icon('Filter', 'h-4 w-4 inline mr-2') ?>
+                    Filter
+                </button>
+                <button onclick="resetFilters()" class="h-10 px-4 border border-border/50 bg-background text-foreground font-medium rounded-lg hover:bg-muted transition">
+                    <?= icon('RotateCcw', 'h-4 w-4') ?>
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Expenses Table -->
+<div class="rounded-lg border bg-surface overflow-hidden">
+    <div class="relative w-full overflow-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-muted/50 border-b border-border/50">
+                <tr>
+                    <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">No. Biaya</th>
+                    <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">Tanggal</th>
+                    <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">Kategori</th>
+                    <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">Deskripsi</th>
+                    <th class="h-12 px-6 text-center align-middle font-medium text-muted-foreground">Metode</th>
+                    <th class="h-12 px-6 text-right align-middle font-medium text-muted-foreground">Jumlah</th>
+                    <th class="h-12 px-6 text-center align-middle font-medium text-muted-foreground">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50" id="expensesTable">
+                <tr>
+                    <td colspan="7" class="px-6 py-8 text-center text-muted-foreground">
+                        <div class="flex flex-col items-center gap-2">
+                            <?= icon('Package', 'h-8 w-8 opacity-50') ?>
+                            <p>Klik Filter untuk menampilkan data</p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Konfirmasi Hapus</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus biaya ini?</p>
-                <p class="text-muted" id="deleteExpenseInfo"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-danger" id="confirmDelete">Hapus</button>
-            </div>
+<div id="deleteModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 transition-opacity duration-200">
+    <div class="bg-surface rounded-lg border border-border p-6 max-w-sm w-full mx-4 shadow-lg animate-in">
+        <h3 class="text-lg font-bold text-foreground mb-2">Hapus Biaya?</h3>
+        <p class="text-sm text-muted-foreground mb-1">Apakah Anda yakin ingin menghapus biaya ini?</p>
+        <p class="text-sm text-muted-foreground font-medium mb-6" id="deleteExpenseInfo"></p>
+        <div class="flex gap-3 justify-end">
+            <button onclick="closeDeleteModal()" class="h-10 px-4 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
+                Batal
+            </button>
+            <button type="button" id="confirmDelete" onclick="performDelete()" class="h-10 px-4 rounded-lg bg-destructive text-white font-medium hover:bg-destructive/90 transition">
+                Hapus
+            </button>
         </div>
     </div>
 </div>
@@ -168,7 +182,7 @@
             payment_method: paymentMethod
         });
 
-        fetch('<?= base_url('/finance/expenses/getData') ?>?' + params.toString())
+        fetch('<?= base_url('finance/expenses/getData') ?>?' + params.toString())
             .then(response => response.json())
             .then(result => {
                 renderExpenses(result.data);
@@ -185,7 +199,16 @@
         const tbody = document.getElementById('expensesTable');
 
         if (!expenses || expenses.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Tidak ada data</td></tr>';
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="px-6 py-8 text-center text-muted-foreground">
+                        <div class="flex flex-col items-center gap-2">
+                            <?= icon('Package', 'h-8 w-8 opacity-50') ?>
+                            <p>Tidak ada data</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
             return;
         }
 
@@ -199,31 +222,34 @@
             };
 
             return `
-                <tr>
-                    <td><code>${expense.expense_number}</code></td>
-                    <td>${formatDate(expense.expense_date)}</td>
-                    <td><span class="badge bg-secondary">${categories[expense.category] || expense.category}</span></td>
-                    <td>${expense.description}</td>
-                    <td>${methodLabel[expense.payment_method] || expense.payment_method}</td>
-                    <td class="text-end fw-bold">${formatCurrency(expense.amount)}</td>
-                    <td>
-                        <div class="btn-group btn-group-sm">
-                            <a href="<?= base_url('/finance/expenses/edit') ?>/${expense.id}" class="btn btn-outline-primary" title="Edit">
-                                <i data-lucide="edit" style="width:14px;height:14px;"></i>
+                <tr class="hover:bg-muted/50 transition">
+                    <td class="px-6 py-4 font-mono text-sm text-primary">${expense.expense_number}</td>
+                    <td class="px-6 py-4 text-sm text-muted-foreground">${formatDate(expense.expense_date)}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-warning/15 text-warning">
+                            ${categories[expense.category] || expense.category}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-foreground">${escapeHtml(expense.description)}</td>
+                    <td class="px-6 py-4 text-center text-sm text-muted-foreground">${methodLabel[expense.payment_method] || expense.payment_method}</td>
+                    <td class="px-6 py-4 text-right font-bold text-warning">${formatCurrency(expense.amount)}</td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <a href="<?= base_url('finance/expenses/edit/') ?>${expense.id}" 
+                               class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/50 transition"
+                               title="Edit">
+                                <?= icon('Edit', 'h-4 w-4') ?>
                             </a>
-                            <button onclick="confirmDelete(${expense.id}, '${expense.expense_number}')" class="btn btn-outline-danger" title="Hapus">
-                                <i data-lucide="trash" style="width:14px;height:14px;"></i>
+                            <button onclick="confirmDelete(${expense.id}, '${escapeHtml(expense.expense_number)}')"
+                                    class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-destructive/50 text-destructive hover:bg-destructive/10 transition"
+                                    title="Hapus">
+                                <?= icon('Trash2', 'h-4 w-4') ?>
                             </button>
                         </div>
                     </td>
                 </tr>
             `;
         }).join('');
-
-        // Re-initialize Lucide icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
     }
 
     function resetFilters() {
@@ -237,13 +263,18 @@
     function confirmDelete(id, expenseNumber) {
         deleteExpenseId = id;
         document.getElementById('deleteExpenseInfo').textContent = 'No. Biaya: ' + expenseNumber;
-        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        document.getElementById('deleteModal').classList.remove('hidden');
     }
 
-    document.getElementById('confirmDelete').addEventListener('click', function() {
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        deleteExpenseId = null;
+    }
+
+    function performDelete() {
         if (!deleteExpenseId) return;
 
-        fetch('<?= base_url('/finance/expenses/delete') ?>/' + deleteExpenseId, {
+        fetch('<?= base_url('finance/expenses/delete') ?>/' + deleteExpenseId, {
             method: 'DELETE',
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
@@ -251,7 +282,7 @@
         })
         .then(response => response.json())
         .then(result => {
-            bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+            closeDeleteModal();
             if (result.success) {
                 loadExpenses();
             } else {
@@ -262,15 +293,25 @@
             console.error('Error:', error);
             alert('Gagal menghapus data');
         });
-    });
+    }
 
     function formatDate(dateStr) {
         const date = new Date(dateStr);
-        return date.toLocaleDateString('id-ID');
+        return date.toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
     }
 
     function formatCurrency(amount) {
         return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 </script>
 
