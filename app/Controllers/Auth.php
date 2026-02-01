@@ -41,22 +41,28 @@ class Auth extends BaseController
                     ->withInput();
             }
 
-            if (password_verify($password, $user['password_hash'])) {
-                $sessionData = [
-                    'user_id' => $user['id'],
-                    'username' => $user['username'],
-                    'fullname' => $user['fullname'],
-                    'role' => $user['role'],
-                    'isLoggedIn' => true,
-                ];
-                session()->set($sessionData);
-                log_message('info', "User logged in: {$user['username']} (Role: {$user['role']})");
-                return redirect()->to('/dashboard')->with('success', 'Login berhasil');
+            if (!password_verify($password, $user->password_hash)) {
+                return redirect()->back()
+                    ->with('error', 'Username atau password salah')
+                    ->withInput();
             }
 
-            return redirect()->back()
-                ->with('error', 'Username atau password salah')
-                ->withInput();
+            // Password correct, set session
+            $sessionData = [
+                'user_id' => $user->id,
+                'username' => $user->username,
+                'fullname' => $user->fullname,
+                'role' => $user->role,
+                'isLoggedIn' => true,
+            ];
+            session()->set($sessionData);
+            
+            // Regenerate session ID for security
+            session()->regenerate();
+            
+            log_message('info', "User logged in: {$user->username} (Role: {$user->role})");
+            
+            return redirect()->to('/dashboard')->with('success', 'Login berhasil');
         } catch (\Exception $e) {
             log_message('error', 'Login error: ' . $e->getMessage());
             return redirect()->back()

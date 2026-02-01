@@ -37,12 +37,12 @@ class AuthController extends ResourceController
         
         $user = $this->userModel->where('username', $username)->first();
         
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user['password_hash'])) {
             // Generate API token
             $token = $this->generateApiToken($user);
             
             // Update last login
-            $this->userModel->update($user['id_user'], [
+            $this->userModel->update($user['id'], [
                 'last_login' => date('Y-m-d H:i:s')
             ]);
             
@@ -149,7 +149,7 @@ class AuthController extends ResourceController
         return $this->respond([
             'status' => 'success',
             'data' => [
-                'id' => $user['id_user'],
+                'id' => $user['id'],
                 'username' => $user['username'],
                 'fullname' => $user['fullname'],
                 'email' => $user['email'],
@@ -196,15 +196,15 @@ class AuthController extends ResourceController
             'email' => $this->request->getPost('email')
         ];
         
-        $updated = $this->userModel->update($user['id_user'], $data);
+        $updated = $this->userModel->update($user['id'], $data);
         
         if ($updated) {
-            $user = $this->userModel->find($user['id_user']);
+            $user = $this->userModel->find($user['id']);
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Profile updated successfully',
                 'data' => [
-                    'id' => $user['id_user'],
+                    'id' => $user['id'],
                     'username' => $user['username'],
                     'fullname' => $user['fullname'],
                     'email' => $user['email'],
@@ -252,13 +252,13 @@ class AuthController extends ResourceController
         $newPassword = $this->request->getPost('new_password');
         
         // Verify current password
-        if (!password_verify($currentPassword, $user['password'])) {
+        if (!password_verify($currentPassword, $user['password_hash'])) {
             return $this->failValidationError('Current password is incorrect');
         }
         
         // Update password
-        $updated = $this->userModel->update($user['id_user'], [
-            'password' => password_hash($newPassword, PASSWORD_DEFAULT)
+        $updated = $this->userModel->update($user['id'], [
+            'password_hash' => password_hash($newPassword, PASSWORD_DEFAULT)
         ]);
         
         if ($updated) {

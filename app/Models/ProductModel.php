@@ -19,18 +19,46 @@ class ProductModel extends Model
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
 
-    // Relationships
-    protected $with = ['category'];
+    // Validation Rules
+    protected $validationRules = [
+        'sku' => 'required|min_length[2]|max_length[50]|is_unique[products.sku,id,{id}]',
+        'name' => 'required|min_length[2]|max_length[200]',
+        'category_id' => 'required|integer',
+        'unit' => 'required|max_length[20]',
+        'price_buy' => 'required|numeric|greater_than[0]',
+        'price_sell' => 'required|numeric|greater_than[0]',
+        'min_stock_alert' => 'required|integer|greater_than_equal_to[0]',
+    ];
 
-    public function category()
-    {
-        return $this->belongsTo(CategoryModel::class, 'category_id');
-    }
-
-    public function stocks()
-    {
-        return $this->hasMany(ProductStockModel::class, 'product_id');
-    }
+    protected $validationMessages = [
+        'sku' => [
+            'required' => 'SKU harus diisi',
+            'is_unique' => 'SKU sudah digunakan',
+            'min_length' => 'SKU minimal 2 karakter',
+        ],
+        'name' => [
+            'required' => 'Nama produk harus diisi',
+            'min_length' => 'Nama produk minimal 2 karakter',
+        ],
+        'category_id' => [
+            'required' => 'Kategori harus dipilih',
+        ],
+        'unit' => [
+            'required' => 'Satuan harus diisi',
+        ],
+        'price_buy' => [
+            'required' => 'Harga beli harus diisi',
+            'greater_than' => 'Harga beli harus lebih dari 0',
+        ],
+        'price_sell' => [
+            'required' => 'Harga jual harus diisi',
+            'greater_than' => 'Harga jual harus lebih dari 0',
+        ],
+        'min_stock_alert' => [
+            'required' => 'Batas stok minimum harus diisi',
+            'greater_than_equal_to' => 'Batas stok minimum tidak boleh negatif',
+        ],
+    ];
 
     /**
      * Update stock for a product in a specific warehouse
@@ -40,11 +68,12 @@ class ProductModel extends Model
      * @param int $warehouseId
      * @param int $quantity Positive for IN, Negative for OUT
      * @param string $type IN, OUT, ADJUSTMENT_IN, ADJUSTMENT_OUT, TRANSFER
-     * @param string|null $referenceNumber Invoice number, etc.
+     * @param string|null $referenceType SALE, PURCHASE, RETURN_SALE, RETURN_PURCHASE, ADJUSTMENT
+     * @param int|null $referenceId
      * @param string|null $notes
      * @return bool
      */
-    public function updateStock($productId, $warehouseId, $quantity, $type, $referenceNumber = null, $notes = null)
+    public function updateStock($productId, $warehouseId, $quantity, $type, $referenceType = null, $referenceId = null, $notes = null)
     {
         $db = \Config\Database::connect();
 
@@ -74,7 +103,7 @@ class ProductModel extends Model
             $newBalance = $currentBalance + $quantity;
 
             // Check if stock is sufficient for OUT operations
-            if (in_array($type, ['OUT', 'ADJUSTMENT_OUT']) && $newBalance < 0) {
+            if ($quantity < 0 && $newBalance < 0) {
                 throw new \Exception('Stok tidak mencukupi');
             }
 
@@ -97,7 +126,7 @@ class ProductModel extends Model
                 'type' => $type,
                 'quantity' => $quantity,
                 'current_balance' => $newBalance,
-                'reference_number' => $referenceNumber,
+                'reference_number' => $referenceType ? "{$referenceType}-{$referenceId}" : null,
                 'notes' => $notes,
             ]);
 

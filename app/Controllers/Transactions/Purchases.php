@@ -3,6 +3,7 @@
 namespace App\Controllers\Transactions;
 
 use App\Controllers\BaseController;
+use App\Models\ProductModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\I18n\Time;
 
@@ -32,7 +33,7 @@ class Purchases extends BaseController
         $data = [
             'title' => 'Purchase Orders',
             'purchaseOrders' => $this->purchaseOrderModel
-                ->select('purchase_orders.*, suppliers.nama_supplier')
+                ->select('purchase_orders.*, suppliers.name')
                 ->join('suppliers', 'suppliers.id_supplier = purchase_orders.id_supplier')
                 ->orderBy('purchase_orders.tanggal_po', 'DESC')
                 ->findAll(),

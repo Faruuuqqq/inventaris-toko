@@ -1,3 +1,6 @@
+<?= $this->extend('layout/main') ?>
+
+<?= $this->section('content') ?>
 <!-- Receivables Payment Form -->
 <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
     <div class="p-6">
@@ -157,3 +160,5 @@
     // Show invoice section when reference type changes
     document.getElementById('reference_id').addEventListener('change', loadCustomerInvoices);
 </script>
+
+<?php $this->endSection() ?>

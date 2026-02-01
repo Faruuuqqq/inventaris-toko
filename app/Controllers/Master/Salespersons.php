@@ -1,81 +1,47 @@
 <?php
+
 namespace App\Controllers\Master;
 
-use App\Controllers\BaseController;
+use App\Controllers\BaseCRUDController;
 use App\Models\SalespersonModel;
+use CodeIgniter\Model;
 
-class Salespersons extends BaseController
+class Salespersons extends BaseCRUDController
 {
-    protected $salespersonModel;
+    protected string $viewPath = 'master/salespersons';
+    protected string $routePath = '/master/salespersons';
+    protected string $entityName = 'Sales';
+    protected string $entityNamePlural = 'Salespersons';
 
-    public function __construct()
+    protected function getModel(): Model
     {
-        $this->salespersonModel = new SalespersonModel();
+        return new SalespersonModel();
     }
 
-    public function index()
+    protected function getStoreValidationRules(): array
     {
-        $salespersons = $this->salespersonModel->findAll();
-        
-        $data = [
-            'title' => 'Sales',
-            'subtitle' => 'Kelola data salesperson',
-            'salespersons' => $salespersons,
+        return [
+            'name' => 'required',
+            'phone' => 'permit_empty',
         ];
-
-        return view('layout/main', $data)->renderSection('content', view('master/salespersons/index', $data));
     }
 
-    public function store()
+    protected function getDataFromRequest(): array
     {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required',
-            'phone' => 'permit_empty',
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Create salesperson
-        $this->salespersonModel->insert([
+        return [
             'name' => $this->request->getPost('name'),
             'phone' => $this->request->getPost('phone'),
-            'is_active' => 1,
-        ]);
-
-        return redirect()->to('/master/salespersons')->with('success', 'Sales berhasil ditambahkan');
+        ];
     }
 
-    public function update($id)
+    protected function getIndexData(): array
     {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required',
-            'phone' => 'permit_empty',
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Update salesperson
-        $this->salespersonModel->update($id, [
-            'name' => $this->request->getPost('name'),
-            'phone' => $this->request->getPost('phone'),
-        ]);
-
-        return redirect()->to('/master/salespersons')->with('success', 'Sales berhasil diperbarui');
+        return $this->model->asArray()->findAll();
     }
 
-    public function delete($id)
+    protected function beforeStore(array $data): array
     {
-        // Check if salesperson has sales transactions
-        // Simplified for now
-        $this->salespersonModel->delete($id);
-        return redirect()->to('/master/salespersons')->with('success', 'Sales berhasil dihapus');
+        $data['is_active'] = 1;
+        return $data;
     }
 }

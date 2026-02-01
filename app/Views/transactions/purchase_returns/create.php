@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/main') ?>
+<?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
 <div class="page-header">
@@ -47,7 +47,7 @@
                                         <option value="">Select Supplier</option>
                                         <?php foreach ($suppliers as $supplier): ?>
                                             <option value="<?= $supplier['id_supplier'] ?>" <?= selected($supplier['id_supplier'], old('id_supplier')) ?>>
-                                                <?= $supplier['nama_supplier'] ?>
+                                                <?= $supplier['name'] ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -60,7 +60,7 @@
                                         <option value="">Select Purchase Order</option>
                                         <?php foreach ($purchaseOrdersList as $po): ?>
                                             <option value="<?= $po['id_po'] ?>" data-supplier="<?= $po['id_supplier'] ?>">
-                                                <?= $po['nomor_po'] ?> - <?= format_date($po['tanggal_po']) ?> (<?= $po['nama_supplier'] ?>)
+                                                <?= $po['nomor_po'] ?> - <?= format_date($po['tanggal_po']) ?> (<?= $po['name'] ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

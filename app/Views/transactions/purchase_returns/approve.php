@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/main') ?>
+<?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
 <div class="page-header">
@@ -36,7 +36,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Supplier:</strong></td>
-                                    <td><?= $purchaseReturn['supplier']['nama_supplier'] ?></td>
+                                    <td><?= $purchaseReturn['supplier']['name'] ?></td>
                                 </tr>
                                 <tr>
                                     <td><strong>From Warehouse:</strong></td>

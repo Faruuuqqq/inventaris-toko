@@ -28,7 +28,10 @@ class Payments extends BaseController
     public function receivable()
     {
         $customers = $this->customerModel
-            ->where('receivable_balance >', 0)
+            ->select('customers.*, SUM(CASE WHEN sales.payment_type = "CREDIT" AND sales.payment_status != "PAID" THEN (sales.final_amount - sales.paid_amount) ELSE 0 END) as total_receivable')
+            ->join('sales', 'sales.customer_id = customers.id')
+            ->groupBy('customers.id')
+            ->having('total_receivable >', 0)
             ->findAll();
 
         $data = [
@@ -37,7 +40,8 @@ class Payments extends BaseController
             'customers' => $customers,
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('finance/payments/receivable', $data));
+        return view('layout/main', $data)
+            . view('finance/payments/receivable', $data);
     }
 
     public function storeReceivable()
@@ -60,14 +64,21 @@ class Payments extends BaseController
             }
 
             // Create payment record
-            $paymentId = $this->paymentModel->insert([
-                'payment_date' => date('Y-m-d H:i:s'),
-                'amount' => $amount,
-                'payment_method' => $paymentMethod,
-                'type' => 'RECEIVABLE',
-                'reference_id' => $referenceId,
-                'notes' => $notes,
-            ]);
+            $refType = 'SALE';
+            if ($referenceType === 'kontra_bon') {
+                $refType = 'KONTRA_BON';
+            }
+            
+            $this->paymentModel->createPayment(
+                'RECEIVABLE',
+                $refType,
+                $referenceId,
+                $amount,
+                $paymentMethod,
+                date('Y-m-d'),
+                $notes,
+                $customerId
+            );
 
             // Update customer receivable balance
             $this->customerModel->updateReceivableBalance($customerId, -$amount);
@@ -79,9 +90,9 @@ class Payments extends BaseController
                     $newPaidAmount = $sale['paid_amount'] + $amount;
                     $newStatus = 'UNPAID';
                     
-                    if ($newPaidAmount >= $sale['total_amount']) {
+                    if ($newPaidAmount >= $sale['final_amount']) {
                         $newStatus = 'PAID';
-                    } elseif ($newPaidAmount > 0 && $newPaidAmount < $sale['total_amount']) {
+                    } elseif ($newPaidAmount > 0 && $newPaidAmount < $sale['final_amount']) {
                         $newStatus = 'PARTIAL';
                     }
                     
@@ -89,7 +100,16 @@ class Payments extends BaseController
                         'paid_amount' => $newPaidAmount,
                         'payment_status' => $newStatus
                     ]);
+                    
+                    // Update customer receivable balance
+                    $this->customerModel->applyPayment($customerId, $amount);
                 }
+            }
+            
+            // If paying Kontra Bon, update Kontra Bon status
+            if ($referenceType === 'kontra_bon' && $referenceId) {
+                $this->kontraBonModel->updatePaidAmount($referenceId, $amount);
+                $this->customerModel->applyPayment($customerId, $amount);
             }
 
             $db->transComplete();
@@ -106,7 +126,10 @@ class Payments extends BaseController
     public function payable()
     {
         $suppliers = $this->supplierModel
-            ->where('debt_balance >', 0)
+            ->select('suppliers.*, SUM(CASE WHEN po.total_amount > 0 THEN (po.total_amount - po.paid_amount) ELSE 0 END) as total_payable')
+            ->join('purchase_orders po', 'po.supplier_id = suppliers.id')
+            ->groupBy('suppliers.id')
+            ->having('total_payable >', 0)
             ->findAll();
 
         $data = [
@@ -115,7 +138,8 @@ class Payments extends BaseController
             'suppliers' => $suppliers,
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('finance/payments/payable', $data));
+        return view('layout/main', $data)
+            . view('finance/payments/payable', $data);
     }
 
     public function storePayable()
@@ -136,17 +160,20 @@ class Payments extends BaseController
             }
 
             // Create payment record
-            $this->paymentModel->insert([
-                'payment_date' => date('Y-m-d H:i:s'),
-                'amount' => $amount,
-                'payment_method' => $paymentMethod,
-                'type' => 'PAYABLE',
-                'notes' => $notes,
-            ]);
+            $this->paymentModel->createPayment(
+                'PAYABLE',
+                'PURCHASE',
+                null,
+                $amount,
+                $paymentMethod,
+                date('Y-m-d'),
+                $notes,
+                null,
+                $supplierId
+            );
 
-            // Update supplier debt balance
-            $newDebtBalance = $supplier['debt_balance'] - $amount;
-            $this->supplierModel->update($supplierId, ['debt_balance' => $newDebtBalance]);
+            // Update supplier payable balance
+            $this->supplierModel->updatePayableBalance($supplierId, $amount);
 
             $db->transComplete();
 

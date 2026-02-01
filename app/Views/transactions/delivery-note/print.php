@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<?php $this->section('content') ?>
+<?php $this->extend('layout/main') ?>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -242,3 +244,6 @@
     </div>
 </body>
 </html>
+
+
+<?php $this->endSection() ?>

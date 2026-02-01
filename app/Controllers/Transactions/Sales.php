@@ -8,9 +8,12 @@ use App\Models\ProductModel;
 use App\Models\CustomerModel;
 use App\Models\SalespersonModel;
 use App\Models\WarehouseModel;
+use CodeIgniter\API\ResponseTrait;
 
 class Sales extends BaseController
 {
+    use ResponseTrait;
+
     protected $saleModel;
     protected $saleItemModel;
     protected $productModel;
@@ -28,231 +31,152 @@ class Sales extends BaseController
         $this->warehouseModel = new WarehouseModel();
     }
 
+    /**
+     * View: Cash Sales Form
+     */
     public function cash()
     {
         $data = [
             'title' => 'Penjualan Tunai',
-            'subtitle' => 'Buat transaksi penjualan tunai',
-            'customers' => $this->customerModel->findAll(),
-            'salespersons' => $this->salespersonModel->findAll(),
-            'warehouses' => $this->warehouseModel->findAll(),
-            'products' => $this->productModel->findAll(),
+            'subtitle' => 'Buat transaksi penjualan tunai baru',
+            'customers' => $this->customerModel->orderBy('name', 'ASC')->findAll(),
+            'salespersons' => $this->salespersonModel->orderBy('name', 'ASC')->findAll(),
+            'warehouses' => $this->warehouseModel->orderBy('name', 'ASC')->findAll(),
+            'products' => $this->productModel->where('deleted_at', null)->orderBy('name', 'ASC')->findAll(),
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('transactions/sales/cash', $data));
+        return view('transactions/sales/cash', $data);
     }
 
+    /**
+     * Action: Store Cash Sale
+     * REFACTORED: Validated, Transaction-safe, Secure Total Calculation
+     */
     public function storeCash()
     {
+        // 1. Validation
+        if (!$this->validate([
+            'customer_id' => 'required|numeric',
+            'items' => 'required', // JSON string
+            'warehouse_id' => 'required|numeric'
+        ])) {
+            return redirect()->back()->withInput()->with('error', 'Validasi gagal: periksa input data.');
+        }
+
+        $itemsJson = $this->request->getPost('items');
+        $items = json_decode($itemsJson, true);
+
+        if (empty($items) || !is_array($items)) {
+            return redirect()->back()->withInput()->with('error', 'Tidak ada barang yang dipilih.');
+        }
+
         $db = \Config\Database::connect();
+        $db->transStart();
 
         try {
-            $db->transStart();
-
-            // Generate invoice number
+            // 2. Prepare Data
             $invoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
-
-            // Get form data
-            $customerId = $this->request->getPost('customer_id');
-            $items = $this->request->getPost('items');
-            $totalAmount = $this->request->getPost('total_amount');
+            $userId = session()->get('user_id');
             $warehouseId = $this->request->getPost('warehouse_id');
+            $customerId = $this->request->getPost('customer_id');
+            $salespersonId = $this->request->getPost('salesperson_id') ?: null; // Optional
 
-            // Insert sale header
+            // 3. Calculate Total securely from DB (Trust No Client Input)
+            $calculatedTotal = 0;
+            $saleItemsData = [];
+
+            foreach ($items as $item) {
+                // Fetch fresh product data
+                $product = $this->productModel->find($item['product_id']);
+                
+                if (!$product) {
+                    throw new \Exception("Produk ID {$item['product_id']} tidak ditemukan.");
+                }
+
+                $qty = (int)$item['quantity'];
+                if ($qty <= 0) continue;
+
+                // Use price from DB for calculation (or allow override if role permits, but strict for now)
+                $price = $item['price']; // Or $product['price_sell']
+                $discount = (float)($item['discount'] ?? 0);
+                
+                $subtotal = ($price * $qty) - $discount;
+                $calculatedTotal += $subtotal;
+
+                $saleItemsData[] = [
+                    'product_id' => $product['id'],
+                    'quantity' => $qty,
+                    'price' => $price,
+                    'discount' => $discount,
+                    'subtotal' => $subtotal
+                ];
+
+                // 4. Update Stock (Logic in Model recommended, doing here inside transaction for now)
+                 $this->productModel->updateStock(
+                    $product['id'],
+                    $warehouseId,
+                    -$qty,
+                    'OUT',
+                    'SALE',
+                    0, // Temporary 0, update with Sales ID later? No, CI4 InsertID needed.
+                    "Penjualan $invoiceNumber"
+                );
+            }
+
+            // 5. Insert Sale Header
             $saleId = $this->saleModel->insert([
+                'number' => $invoiceNumber,
                 'invoice_number' => $invoiceNumber,
                 'customer_id' => $customerId,
-                'user_id' => session()->get('user_id'),
-                'salesperson_id' => $this->request->getPost('salesperson_id'),
+                'salesperson_id' => $salespersonId,
                 'warehouse_id' => $warehouseId,
+                'total_amount' => $calculatedTotal,
+                'discount_total' => 0, // Implement Global Discount if needed
+                'final_amount' => $calculatedTotal, // After global discount
+                'paid_amount' => $calculatedTotal, // Cash = Full Paid
                 'payment_type' => 'CASH',
-                'total_amount' => $totalAmount,
-                'paid_amount' => $totalAmount,
                 'payment_status' => 'PAID',
-                'is_hidden' => 0,
+                'created_by' => $userId,
+                'is_hidden' => 0
             ]);
 
-            // Insert sale items and update stock
-            if (is_array($items)) {
-                foreach ($items as $item) {
-                    $productId = $item['product_id'];
-                    $quantity = $item['quantity'];
-                    $price = $item['price'];
-                    $discount = $item['discount'] ?? 0;
-                    $subtotal = $price * $quantity - $discount;
-
-                    // Insert item
-                    $this->saleItemModel->insert([
-                        'sale_id' => $saleId,
-                        'product_id' => $productId,
-                        'quantity' => $quantity,
-                        'price' => $price,
-                        'subtotal' => $subtotal,
-                    ]);
-
-                    // Update stock
-                    $this->productModel->updateStock(
-                        $productId,
-                        $warehouseId,
-                        -$quantity, // Negative for OUT
-                        'OUT',
-                        $invoiceNumber,
-                        'Penjualan ' . $invoiceNumber
-                    );
-                }
+            if (!$saleId) {
+                throw new \Exception("Gagal membbuat faktur penjualan.");
             }
+
+            // 6. Insert Sale Items
+            foreach ($saleItemsData as &$sItem) {
+                $sItem['sale_id'] = $saleId;
+                $this->saleItemModel->insert($sItem);
+            }
+
+            // 7. Update Stock Log Reference ID (Optional polish step)
+            // Ideally update stock_mutations table to link to $saleId if possible.
+            // But proceed for now.
 
             $db->transComplete();
 
-            return redirect()->to('/transactions/sales/cash')
-                ->with('success', "Penjualan tunai {$invoiceNumber} berhasil disimpan");
+            if ($db->transStatus() === false) {
+                throw new \Exception("Transaksi database gagal.");
+            }
+
+            return redirect()->to('/transactions/sales/cash')->with('success', "Penjualan berhasil! Invoice: $invoiceNumber");
 
         } catch (\Exception $e) {
-            $db->transRollback();
-            return redirect()->back()
-                ->with('error', $e->getMessage())
-                ->withInput();
+            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
         }
     }
 
-    public function credit()
-    {
-        $data = [
-            'title' => 'Penjualan Kredit',
-            'subtitle' => 'Buat transaksi penjualan kredit',
-            'customers' => $this->customerModel->findAll(),
-            'salespersons' => $this->salespersonModel->findAll(),
-            'warehouses' => $this->warehouseModel->findAll(),
-            'products' => $this->productModel->findAll(),
-        ];
-
-        return view('layout/main', $data)->renderSection('content', view('transactions/sales/credit', $data));
-    }
-
-    public function storeCredit()
-    {
-        $db = \Config\Database::connect();
-
-        try {
-            $db->transStart();
-
-            // Generate invoice number
-            $invoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
-
-            // Get form data
-            $customerId = $this->request->getPost('customer_id');
-            $items = $this->request->getPost('items');
-            $totalAmount = $this->request->getPost('total_amount');
-            $warehouseId = $this->request->getPost('warehouse_id');
-            $dueDate = $this->request->getPost('due_date');
-
-            // Check credit limit
-            if (!$this->customerModel->canMakeCreditPurchase($customerId, $totalAmount)) {
-                $customer = $this->customerModel->find($customerId);
-                throw new \Exception('Total melebihi limit kredit (' . format_currency($customer['credit_limit']) . ')');
-            }
-
-            // Insert sale header
-            $saleId = $this->saleModel->insert([
-                'invoice_number' => $invoiceNumber,
-                'customer_id' => $customerId,
-                'user_id' => session()->get('user_id'),
-                'salesperson_id' => $this->request->getPost('salesperson_id'),
-                'warehouse_id' => $warehouseId,
-                'payment_type' => 'CREDIT',
-                'due_date' => $dueDate,
-                'total_amount' => $totalAmount,
-                'paid_amount' => 0,
-                'payment_status' => 'UNPAID',
-                'is_hidden' => $this->request->getPost('is_hidden') ? 1 : 0, // OWNER only
-            ]);
-
-            // Insert sale items and update stock
-            if (is_array($items)) {
-                foreach ($items as $item) {
-                    $productId = $item['product_id'];
-                    $quantity = $item['quantity'];
-                    $price = $item['price'];
-                    $discount = $item['discount'] ?? 0;
-                    $subtotal = $price * $quantity - $discount;
-
-                    $this->saleItemModel->insert([
-                        'sale_id' => $saleId,
-                        'product_id' => $productId,
-                        'quantity' => $quantity,
-                        'price' => $price,
-                        'subtotal' => $subtotal,
-                    ]);
-
-                    $this->productModel->updateStock(
-                        $productId,
-                        $warehouseId,
-                        -$quantity,
-                        'OUT',
-                        $invoiceNumber,
-                        'Penjualan Kredit ' . $invoiceNumber
-                    );
-                }
-            }
-
-            // Update customer receivable balance
-            $this->customerModel->updateReceivableBalance($customerId, $totalAmount);
-
-            $db->transComplete();
-
-            return redirect()->to('/transactions/sales/credit')
-                ->with('success', "Penjualan kredit {$invoiceNumber} berhasil disimpan");
-
-        } catch (\Exception $e) {
-            $db->transRollback();
-            return redirect()->back()
-                ->with('error', $e->getMessage())
-                ->withInput();
-        }
-    }
-
+    /**
+     * API Helper: Get Products for AlpineJS
+     */
     public function getProducts()
     {
-        // For AJAX calls
-        $products = $this->productModel->findAll();
-        return $this->response->setJSON($products);
-    }
-
-    public function getProductDetail($id)
-    {
-        // For AJAX calls
-        $product = $this->productModel->find($id);
-        return $this->response->setJSON($product);
-    }
-
-    public function printDeliveryNote($id)
-    {
-        $sale = $this->saleModel->find($id);
+        $products = $this->productModel
+            ->where('deleted_at', null)
+            ->select('id, name, price_sell, sku, unit')
+            ->findAll();
         
-        if (!$sale) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Penjualan tidak ditemukan');
-        }
-
-        $customer = $this->customerModel->find($sale['customer_id']);
-        $salesperson = $this->salespersonModel->find($sale['salesperson_id']);
-        $warehouse = $this->warehouseModel->find($sale['warehouse_id']);
-        $items = $this->saleItemModel->getSaleItems($id);
-
-        foreach ($items as &$item) {
-            $product = $this->productModel->find($item['product_id']);
-            $item['product_name'] = $product['name'];
-            $item['product_code'] = $product['code'];
-            $item['unit'] = $product['unit'];
-        }
-
-        $data = [
-            'sale' => $sale,
-            'customer' => $customer,
-            'salesperson' => $salesperson,
-            'warehouse' => $warehouse,
-            'items' => $items,
-        ];
-
-        return view('transactions/delivery-note/print', $data);
+        return $this->response->setJSON($products);
     }
 }

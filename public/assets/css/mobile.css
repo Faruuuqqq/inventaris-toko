@@ -1,0 +1,288 @@
+/* ================================================
+   MOBILE RESPONSIVE ENHANCEMENTS
+   ================================================ */
+
+/* Tablet and below */
+@media (max-width: 1023px) {
+
+    /* Sidebar */
+    aside {
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Header adjustments */
+    header h1 {
+        font-size: 1.125rem;
+    }
+
+    /* Stats grid - 2 columns on tablet */
+    .stats-grid,
+    .mb-8.grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    /* Table horizontal scroll */
+    .table-container,
+    .overflow-x-auto {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 600px;
+    }
+}
+
+/* Mobile phones */
+@media (max-width: 640px) {
+
+    /* Stats grid - 1 column on mobile */
+    .stats-grid,
+    .mb-8.grid,
+    .md\\:grid-cols-2,
+    .lg\\:grid-cols-4 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Reduce padding */
+    .p-6 {
+        padding: 1rem !important;
+    }
+
+    /* Card padding */
+    .card-header,
+    .card-content,
+    .rounded-lg.border.bg-card .p-6 {
+        padding: 1rem !important;
+    }
+
+    /* Header */
+    header {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    header h1 {
+        font-size: 1rem;
+    }
+
+    /* Hide elements on mobile */
+    .hidden-mobile {
+        display: none !important;
+    }
+
+    /* Quick actions grid */
+    .grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Form inputs - prevent zoom on iOS */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Button text */
+    .btn span {
+        font-size: 0.875rem;
+    }
+}
+
+/* ================================================
+   TOUCH-FRIENDLY IMPROVEMENTS
+   ================================================ */
+
+/* Minimum touch target size (44x44px) */
+.touch-target,
+button,
+a,
+.btn,
+input[type="checkbox"],
+input[type="radio"] {
+    min-height: 44px;
+}
+
+/* Better tap highlight */
+* {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Prevent text selection on buttons */
+button,
+.btn {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Larger click areas for icons */
+.icon-button {
+    padding: 0.75rem;
+}
+
+/* Touch-friendly spacing */
+.touch-spacing {
+    margin: 0.5rem 0;
+}
+
+/* ================================================
+   MOBILE TABLE IMPROVEMENTS
+   ================================================ */
+
+@media (max-width: 640px) {
+
+    /* Responsive table wrapper */
+    .table-responsive {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Table cells */
+    table td,
+    table th {
+        padding: 0.5rem !important;
+        font-size: 0.875rem;
+    }
+
+    /* Hide less important columns on mobile */
+    .hide-mobile {
+        display: none !important;
+    }
+}
+
+/* ================================================
+   MOBILE FORMS
+   ================================================ */
+
+@media (max-width: 640px) {
+
+    /* Form groups */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    /* Labels */
+    label {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Inputs */
+    .form-input {
+        height: 44px;
+        font-size: 16px;
+        /* Prevent zoom on iOS */
+    }
+
+    /* Buttons full width on mobile */
+    .btn-mobile-full {
+        width: 100%;
+    }
+}
+
+/* ================================================
+   MOBILE CARDS
+   ================================================ */
+
+@media (max-width: 640px) {
+
+    /* Card spacing */
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    /* Card title */
+    .card-title {
+        font-size: 1.125rem;
+    }
+}
+
+/* ================================================
+   LANDSCAPE ORIENTATION
+   ================================================ */
+
+@media (max-width: 1023px) and (orientation: landscape) {
+
+    /* Reduce header height in landscape */
+    header {
+        height: 3.5rem;
+    }
+
+    /* Adjust sidebar */
+    aside {
+        width: 16rem;
+    }
+}
+
+/* ================================================
+   PRINT STYLES
+   ================================================ */
+
+@media print {
+
+    /* Hide UI elements */
+    aside,
+    header,
+    .btn,
+    button,
+    .no-print {
+        display: none !important;
+    }
+
+    /* Remove margins */
+    .ml-64,
+    .ml-0 {
+        margin-left: 0 !important;
+    }
+
+    /* Optimize for print */
+    body {
+        background: white;
+    }
+
+    .card {
+        border: 1px solid #000;
+        page-break-inside: avoid;
+    }
+
+    table {
+        font-size: 0.75rem;
+    }
+}
+
+/* ================================================
+   ADDITIONAL UTILITIES
+   ================================================ */
+
+/* Fixed positioning utilities */
+.fixed {
+    position: fixed;
+}
+
+.inset-0 {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+/* Opacity utilities */
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-100 {
+    opacity: 1;
+}
+
+/* Duration utilities */
+.duration-300 {
+    transition-duration: 300ms;
+}
+
+/* Ease utilities */
+.ease-linear {
+    transition-timing-function: linear;
+}

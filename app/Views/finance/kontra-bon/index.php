@@ -1,3 +1,6 @@
+<?= $this->extend('layout/main') ?>
+
+<?= $this->section('content') ?>
 <!-- Kontra Bon Table -->
 <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
     <div class="p-6">
@@ -313,3 +316,5 @@
         alert('Detail untuk Kontra Bon #' + id);
     }
 </script>
+
+<?php $this->endSection() ?>

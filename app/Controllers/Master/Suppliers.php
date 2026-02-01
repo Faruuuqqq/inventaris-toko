@@ -1,82 +1,37 @@
 <?php
+
 namespace App\Controllers\Master;
 
-use App\Controllers\BaseController;
+use App\Controllers\BaseCRUDController;
 use App\Models\SupplierModel;
+use CodeIgniter\Model;
 
-class Suppliers extends BaseController
+class Suppliers extends BaseCRUDController
 {
-    protected $supplierModel;
+    protected string $viewPath = 'master/suppliers';
+    protected string $routePath = '/master/suppliers';
+    protected string $entityName = 'Supplier';
+    protected string $entityNamePlural = 'Suppliers';
 
-    public function __construct()
+    protected function getModel(): Model
     {
-        $this->supplierModel = new SupplierModel();
+        return new SupplierModel();
     }
 
-    public function index()
+    protected function getStoreValidationRules(): array
     {
-        $suppliers = $this->supplierModel->findAll();
-        
-        $data = [
-            'title' => 'Supplier',
-            'subtitle' => 'Kelola data supplier',
-            'suppliers' => $suppliers,
+        return [
+            'name' => 'required',
+            'phone' => 'permit_empty',
         ];
-
-        return view('layout/main', $data)->renderSection('content', view('master/suppliers/index', $data));
     }
 
-    public function store()
+    protected function getDataFromRequest(): array
     {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required',
-            'phone' => 'permit_empty',
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Create supplier
-        $this->supplierModel->insert([
+        return [
             'code' => $this->request->getPost('code'),
             'name' => $this->request->getPost('name'),
             'phone' => $this->request->getPost('phone'),
-        ]);
-
-        return redirect()->to('/master/suppliers')->with('success', 'Supplier berhasil ditambahkan');
-    }
-
-    public function update($id)
-    {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required',
-            'phone' => 'permit_empty',
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Update supplier
-        $this->supplierModel->update($id, [
-            'code' => $this->request->getPost('code'),
-            'name' => $this->request->getPost('name'),
-            'phone' => $this->request->getPost('phone'),
-        ]);
-
-        return redirect()->to('/master/suppliers')->with('success', 'Supplier berhasil diperbarui');
-    }
-
-    public function delete($id)
-    {
-        // Check if supplier has transactions
-        // Simplified for now
-        $this->supplierModel->delete($id);
-        return redirect()->to('/master/suppliers')->with('success', 'Supplier berhasil dihapus');
+        ];
     }
 }

@@ -33,7 +33,7 @@ class History extends BaseController
             'customers' => $this->customerModel->findAll(),
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('info/history/sales', $data));
+        return view('info/history/sales', $data);
     }
 
     public function salesData()
@@ -44,34 +44,50 @@ class History extends BaseController
         $endDate = $this->request->getGet('end_date');
         $paymentStatus = $this->request->getGet('payment_status');
 
-        $builder = $this->saleModel
-            ->select('sales.*, customers.name as customer_name, salespersons.name as salesperson_name')
-            ->join('customers', 'customers.id = sales.customer_id')
-            ->join('salespersons', 'salespersons.id = sales.salesperson_id', 'left');
+        // Use the model method that handles hidden sales properly
+        $sales = $this->saleModel->getAllSalesWithHidden(
+            $customerId,
+            $paymentType,
+            $startDate,
+            $endDate,
+            $paymentStatus
+        );
 
-        if ($customerId) {
-            $builder->where('sales.customer_id', $customerId);
+        // Add isOwner flag to response for UI
+        $isOwner = session()->get('role') === 'OWNER';
+
+        return $this->response->setJSON([
+            'data' => $sales,
+            'isOwner' => $isOwner
+        ]);
+    }
+
+    /**
+     * Toggle hide status for a sale (OWNER only)
+     */
+    public function toggleSaleHide($saleId)
+    {
+        // Check if user is OWNER
+        if (session()->get('role') !== 'OWNER') {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Akses ditolak. Hanya Owner yang dapat melakukan ini.'
+            ]);
         }
 
-        if ($paymentType) {
-            $builder->where('sales.payment_type', $paymentType);
+        try {
+            $this->saleModel->toggleHide($saleId);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Status visibilitas berhasil diubah'
+            ]);
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
         }
-
-        if ($paymentStatus) {
-            $builder->where('sales.payment_status', $paymentStatus);
-        }
-
-        if ($startDate) {
-            $builder->where('sales.created_at >=', $startDate . ' 00:00:00');
-        }
-
-        if ($endDate) {
-            $builder->where('sales.created_at <=', $endDate . ' 23:59:59');
-        }
-
-        $sales = $builder->orderBy('sales.created_at', 'DESC')->findAll(100);
-
-        return $this->response->setJSON($sales);
     }
 
     public function purchases()
@@ -82,7 +98,7 @@ class History extends BaseController
             'suppliers' => $this->supplierModel->findAll(),
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('info/history/purchases', $data));
+        return view('info/history/purchases', $data);
     }
 
     public function purchasesData()
@@ -126,7 +142,7 @@ class History extends BaseController
             'customers' => $this->customerModel->findAll(),
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('info/history/return-sales', $data));
+        return view('info/history/return-sales', $data);
     }
 
     public function salesReturnsData()
@@ -170,7 +186,7 @@ class History extends BaseController
             'suppliers' => $this->supplierModel->findAll(),
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('info/history/return-purchases', $data));
+        return view('info/history/return-purchases', $data);
     }
 
     public function purchaseReturnsData()
@@ -205,4 +221,141 @@ class History extends BaseController
 
         return $this->response->setJSON($returns);
     }
+
+    /**
+     * Payment History - Receivable (Piutang)
+     */
+    public function paymentsReceivable()
+    {
+        $data = [
+            'title' => 'Histori Pembayaran Piutang',
+            'subtitle' => 'Riwayat pembayaran dari customer',
+            'customers' => $this->customerModel->findAll(),
+        ];
+
+        return view('info/history/payments-receivable', $data);
+    }
+
+    /**
+     * Get Receivable Payments Data
+     */
+    public function paymentsReceivableData()
+    {
+        $customerId = $this->request->getGet('customer_id');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $paymentMethod = $this->request->getGet('payment_method');
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('payments')
+            ->select('payments.*, customers.name as customer_name, sales.invoice_number')
+            ->join('customers', 'customers.id = payments.customer_id', 'left')
+            ->join('sales', 'sales.id = payments.reference_id AND payments.reference_type = "SALE"', 'left')
+            ->where('payments.payment_type', 'RECEIVABLE');
+
+        if ($customerId) {
+            $builder->where('payments.customer_id', $customerId);
+        }
+
+        if ($startDate) {
+            $builder->where('payments.payment_date >=', $startDate);
+        }
+
+        if ($endDate) {
+            $builder->where('payments.payment_date <=', $endDate);
+        }
+
+        if ($paymentMethod) {
+            $builder->where('payments.payment_method', $paymentMethod);
+        }
+
+        $payments = $builder->orderBy('payments.payment_date', 'DESC')->get()->getResultArray();
+
+        return $this->response->setJSON($payments);
+    }
+
+    /**
+     * Payment History - Payable (Utang)
+     */
+    public function paymentsPayable()
+    {
+        $data = [
+            'title' => 'Histori Pembayaran Utang',
+            'subtitle' => 'Riwayat pembayaran ke supplier',
+            'suppliers' => $this->supplierModel->findAll(),
+        ];
+
+        return view('info/history/payments-payable', $data);
+    }
+
+    /**
+     * Get Payable Payments Data
+     */
+    public function paymentsPayableData()
+    {
+        $supplierId = $this->request->getGet('supplier_id');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $paymentMethod = $this->request->getGet('payment_method');
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('payments')
+            ->select('payments.*, suppliers.name as supplier_name, purchase_orders.po_number')
+            ->join('suppliers', 'suppliers.id = payments.supplier_id', 'left')
+            ->join('purchase_orders', 'purchase_orders.id = payments.reference_id AND payments.reference_type = "PURCHASE"', 'left')
+            ->where('payments.payment_type', 'PAYABLE');
+
+        if ($supplierId) {
+            $builder->where('payments.supplier_id', $supplierId);
+        }
+
+        if ($startDate) {
+            $builder->where('payments.payment_date >=', $startDate);
+        }
+
+        if ($endDate) {
+            $builder->where('payments.payment_date <=', $endDate);
+        }
+
+        if ($paymentMethod) {
+            $builder->where('payments.payment_method', $paymentMethod);
+        }
+
+        $payments = $builder->orderBy('payments.payment_date', 'DESC')->get()->getResultArray();
+
+        return $this->response->setJSON($payments);
+    }
+
+    /**
+     * Expense History (Biaya/Jasa)
+     */
+    public function expenses()
+    {
+        $expenseModel = new \App\Models\ExpenseModel();
+
+        $data = [
+            'title' => 'Histori Biaya/Jasa',
+            'subtitle' => 'Riwayat pengeluaran operasional',
+            'categories' => $expenseModel->getCategories(),
+        ];
+
+        return view('info/history/expenses', $data);
+    }
+
+    /**
+     * Get Expenses Data
+     */
+    public function expensesData()
+    {
+        $category = $this->request->getGet('category');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $paymentMethod = $this->request->getGet('payment_method');
+
+        $expenseModel = new \App\Models\ExpenseModel();
+        $expenses = $expenseModel->getExpenses($category, $startDate, $endDate, $paymentMethod);
+
+        return $this->response->setJSON($expenses);
+    }
 }
+

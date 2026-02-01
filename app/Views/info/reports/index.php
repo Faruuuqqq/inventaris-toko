@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/main') ?>
+<?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
 <div class="page-header">
@@ -134,11 +134,11 @@
                                     <?php foreach ($topProducts as $product): ?>
                                         <tr>
                                             <td>
-                                                <small class="text-muted"><?= $product['kode_produk'] ?></small><br>
-                                                <?= $product['nama_produk'] ?>
+                                                <small class="text-muted"><?= $product['sku'] ?? '' ?></small><br>
+                                                <?= $product['name'] ?? '' ?>
                                             </td>
-                                            <td class="text-center"><?= $product['total_sold'] ?></td>
-                                            <td class="text-right"><?= format_currency($product['revenue']) ?></td>
+                                            <td class="text-center"><?= $product['total_sold'] ?? 0 ?></td>
+                                            <td class="text-right"><?= format_currency($product['total_revenue'] ?? 0) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -173,9 +173,9 @@
                                 <?php else: ?>
                                     <?php foreach ($topCustomers as $customer): ?>
                                         <tr>
-                                            <td><?= $customer['nama_customer'] ?></td>
-                                            <td class="text-center"><?= $customer['transaction_count'] ?></td>
-                                            <td class="text-right"><?= format_currency($customer['total_spent']) ?></td>
+                                            <td><?= $customer['name'] ?? '' ?></td>
+                                            <td class="text-center"><?= $customer['transaction_count'] ?? 0 ?></td>
+                                            <td class="text-right"><?= format_currency($customer['total_spent'] ?? 0) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
@@ -213,17 +213,17 @@
                                     <?php foreach ($lowStockProducts as $product): ?>
                                         <tr>
                                             <td>
-                                                <small class="text-muted"><?= $product['kode_produk'] ?></small><br>
-                                                <?= $product['nama_produk'] ?>
+                                                <small class="text-muted"><?= $product['sku'] ?? '' ?></small><br>
+                                                <?= $product['name'] ?? '' ?>
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge <?= $product['stok'] > 0 ? 'bg-warning' : 'bg-danger' ?>">
-                                                    <?= $product['stok'] ?>
+                                                <span class="badge <?= ($product['total_stock'] ?? 0) > 0 ? 'bg-warning' : 'bg-danger' ?>">
+                                                    <?= $product['total_stock'] ?? 0 ?>
                                                 </span>
                                             </td>
-                                            <td class="text-center"><?= $product['minimal_stok'] ?></td>
+                                            <td class="text-center"><?= $product['min_stock_alert'] ?? 0 ?></td>
                                             <td>
-                                                <?php if ($product['stok'] == 0): ?>
+                                                <?php if (($product['total_stock'] ?? 0) == 0): ?>
                                                     <span class="badge bg-danger">Out of Stock</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-warning">Low Stock</span>

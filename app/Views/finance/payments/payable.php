@@ -1,3 +1,5 @@
+<?php $this->section('content') ?>
+<?php $this->extend('layout/main') ?>
 <!-- Payables Payment Form -->
 <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
     <div class="p-6">
@@ -63,3 +65,5 @@
         return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
     }
 </script>
+
+<?php $this->endSection() ?>

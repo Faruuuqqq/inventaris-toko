@@ -28,13 +28,13 @@ class ProductsController extends ResourceController
         $limit = $this->request->getGet('limit') ?? 20;
         $warehouse = $this->request->getGet('warehouse') ?? null;
         
-        $builder = $this->productModel->where('status', 'Aktif');
+        $builder = $this->productModel;
         
         if (!empty($search)) {
             $builder->groupStart()
-                   ->like('nama_produk', $search)
-                   ->orLike('kode_produk', $search)
-                   ->orLike('deskripsi', $search)
+                   ->like('name', $search)
+                   ->orLike('sku', $search)
+                   ->orLike('name', $search)
                    ->groupEnd();
         }
         

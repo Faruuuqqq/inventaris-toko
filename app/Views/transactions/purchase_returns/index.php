@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/main') ?>
+<?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
 <div class="page-header">
@@ -32,7 +32,7 @@
                                     <option value="">All Suppliers</option>
                                     <?php foreach ($suppliers as $supplier): ?>
                                         <option value="<?= $supplier['id_supplier'] ?>" <?= selected($supplier['id_supplier'], old('supplier', $this->request->getGet('supplier'))) ?>>
-                                            <?= $supplier['nama_supplier'] ?>
+                                            <?= $supplier['name'] ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -71,7 +71,7 @@
                                                 </a>
                                             </td>
                                             <td><?= format_date($retur['tanggal_retur']) ?></td>
-                                            <td><?= $retur['nama_supplier'] ?></td>
+                                            <td><?= $retur['name'] ?></td>
                                             <td><?= status_badge($retur['status']) ?></td>
                                             <td><?= format_currency($retur['total_refund']) ?></td>
                                             <td>

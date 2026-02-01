@@ -1,3 +1,14 @@
+<?= $this->extend('layout/main') ?>
+
+<?= $this->section('content') ?>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h3 class="page-title"><?= $title ?></h3>
+            <p class="text-muted"><?= $subtitle ?? '' ?></p>
+        </div>
+    </div>
+
 <!-- Filters Section -->
 <div class="mb-6 rounded-lg border bg-card text-card-foreground shadow-sm p-6">
     <h3 class="text-lg font-semibold mb-4">Filter Saldo Stok</h3>
@@ -32,14 +43,12 @@
     </div>
     <div class="flex gap-2 mt-4">
         <button onclick="loadStockBalance()" class="btn btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35"/></svg>
             Filter
         </button>
         <button onclick="resetFilters()" class="btn btn-outline">
             Reset
         </button>
         <button onclick="exportData()" class="btn btn-outline ml-auto">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4 M7 10l5 5 5-5 M12 15V3"/></svg>
             Export
         </button>
     </div>
@@ -102,20 +111,21 @@
         </table>
     </div>
 </div>
+</div>
 
 <script>
     function loadStockBalance() {
         const categoryId = document.getElementById('categoryFilter').value;
         const warehouseId = document.getElementById('warehouseFilter').value;
         const stockStatus = document.getElementById('stockStatus').value;
-        
+
         const params = new URLSearchParams({
             category_id: categoryId,
             warehouse_id: warehouseId,
             stock_status: stockStatus
         });
-        
-        fetch('/info/saldo/stockData?' + params.toString())
+
+        fetch('<?= base_url('/info/saldo/stockData') ?>?' + params.toString())
             .then(response => response.json())
             .then(data => {
                 renderStockBalance(data);
@@ -128,7 +138,7 @@
 
     function renderStockBalance(data) {
         const tbody = document.getElementById('stockTable');
-        
+
         if (data.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -137,7 +147,7 @@
                     </td>
                 </tr>
             `;
-            
+
             // Reset summary
             document.getElementById('totalProducts').textContent = '0';
             document.getElementById('totalStock').textContent = '0';
@@ -148,9 +158,9 @@
 
         // Calculate summary
         const totalProducts = new Set(data.map(item => item.product_id)).size;
-        const totalStock = data.reduce((sum, item) => sum + item.quantity, 0);
-        const stockValue = data.reduce((sum, item) => sum + (item.quantity * item.price_buy), 0);
-        const lowStock = data.filter(item => item.quantity <= item.min_stock_alert).length;
+        const totalStock = data.reduce((sum, item) => sum + parseInt(item.quantity), 0);
+        const stockValue = data.reduce((sum, item) => sum + (parseInt(item.quantity) * parseFloat(item.price_buy)), 0);
+        const lowStock = data.filter(item => parseInt(item.quantity) <= parseInt(item.min_stock_alert)).length;
 
         document.getElementById('totalProducts').textContent = totalProducts;
         document.getElementById('totalStock').textContent = totalStock.toLocaleString('id-ID');
@@ -158,8 +168,8 @@
         document.getElementById('lowStock').textContent = lowStock;
 
         tbody.innerHTML = data.map(item => {
-            const stockClass = item.quantity <= item.min_stock_alert ? 'text-destructive font-bold' : '';
-            
+            const stockClass = parseInt(item.quantity) <= parseInt(item.min_stock_alert) ? 'text-destructive font-bold' : '';
+
             return `
                 <tr>
                     <td class="font-medium">${item.product_code}</td>
@@ -195,3 +205,5 @@
         loadStockBalance();
     });
 </script>
+
+<?= $this->endSection() ?>

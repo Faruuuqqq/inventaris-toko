@@ -14,8 +14,8 @@ class SalesController extends ResourceController
     
     public function __construct()
     {
-        $this->salesModel = new \App\Models\SalesModel();
-        $this->salesDetailModel = new \App\Models\SalesDetailModel();
+        $this->salesModel = new \App\Models\SaleModel();
+        $this->salesDetailModel = new \App\Models\SaleItemModel();
     }
     
     /**
@@ -35,25 +35,25 @@ class SalesController extends ResourceController
         $builder = $this->salesModel;
         
         if ($customer) {
-            $builder->where('id_customer', $customer);
+            $builder->where('customer_id', $customer);
         }
         
         if ($dateFrom) {
-            $builder->where('tanggal_penjualan >=', $dateFrom);
+            $builder->where('date >=', $dateFrom);
         }
         
         if ($dateTo) {
-            $builder->where('tanggal_penjualan <=', $dateTo);
+            $builder->where('date <=', $dateTo);
         }
         
         if ($status) {
-            $builder->where('status', $status);
+            $builder->where('payment_status', $status);
         }
         
         $sales = $builder
-            ->select('penjualan.*, customers.nama_customer')
-            ->join('customers', 'customers.id_customer = penjualan.id_customer')
-            ->orderBy('penjualan.tanggal_penjualan', 'DESC')
+            ->select('sales.*, customers.name')
+            ->join('customers', 'customers.id = sales.customer_id')
+            ->orderBy('sales.date', 'DESC')
             ->paginate($limit, 'default', $page);
         
         $data = [
@@ -80,8 +80,8 @@ class SalesController extends ResourceController
     public function show($id = null)
     {
         $sale = $this->salesModel
-            ->select('penjualan.*, customers.nama_customer')
-            ->join('customers', 'customers.id_customer = penjualan.id_customer')
+            ->select('sales.*, customers.name')
+            ->join('customers', 'customers.id = sales.customer_id')
             ->find($id);
         
         if (!$sale) {
@@ -90,9 +90,9 @@ class SalesController extends ResourceController
         
         // Get sale details
         $sale['details'] = $this->salesDetailModel
-            ->select('penjualan_detail.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = penjualan_detail.id_produk')
-            ->where('id_penjualan', $id)
+            ->select('sale_items.*, products.name, products.sku')
+            ->join('products', 'products.id = sale_items.product_id')
+            ->where('sale_id', $id)
             ->findAll();
         
         return $this->respond([
@@ -109,16 +109,16 @@ class SalesController extends ResourceController
     public function create()
     {
         $rules = [
-            'nomor_penjualan' => 'required|is_unique[penjualan.nomor_penjualan]',
-            'tanggal_penjualan' => 'required|valid_date[Y-m-d]',
-            'id_customer' => 'required|is_natural_no_zero',
-            'id_salesperson' => 'required|is_natural_no_zero',
-            'tipe_bayar' => 'required|in_list[Cash,Kredit]',
-            'keterangan' => 'max_length[500]',
-            'produk' => 'required',
-            'produk.*.id_produk' => 'required|is_natural_no_zero',
-            'produk.*.jumlah' => 'required|greater_than[0]',
-            'produk.*.harga_jual' => 'required|greater_than[0]'
+            'number' => 'required',
+            'date' => 'required|valid_date[Y-m-d]',
+            'customer_id' => 'required|is_natural_no_zero',
+            'salesperson_id' => 'required|is_natural_no_zero',
+            'payment_type' => 'required|in_list[CASH,CREDIT]',
+            'notes' => 'max_length[500]',
+            'products' => 'required',
+            'products.*.product_id' => 'required|is_natural_no_zero',
+            'products.*.quantity' => 'required|greater_than[0]',
+            'products.*.price' => 'required|greater_than[0]'
         ];
         
         if (!$this->validate($rules)) {
@@ -131,47 +131,48 @@ class SalesController extends ResourceController
         try {
             // Create sale
             $salesData = [
-                'nomor_penjualan' => $this->request->getPost('nomor_penjualan'),
-                'tanggal_penjualan' => $this->request->getPost('tanggal_penjualan'),
-                'id_customer' => $this->request->getPost('id_customer'),
-                'id_salesperson' => $this->request->getPost('id_salesperson'),
-                'tipe_bayar' => $this->request->getPost('tipe_bayar'),
-                'keterangan' => $this->request->getPost('keterangan'),
-                'total_bayar' => 0,
-                'status' => 'Selesai',
-                'id_user' => $this->request->getPost('id_user') ?? session()->get('id_user')
+                'number' => $this->request->getPost('number'),
+                'date' => $this->request->getPost('date'),
+                'customer_id' => $this->request->getPost('customer_id'),
+                'salesperson_id' => $this->request->getPost('salesperson_id'),
+                'payment_type' => $this->request->getPost('payment_type'),
+                'notes' => $this->request->getPost('notes'),
+                'total_amount' => 0,
+                'payment_status' => 'PAID',
+                'created_by' => session()->get('user_id')
             ];
             
             $idSale = $this->salesModel->insert($salesData);
             
             // Calculate total and create details
-            $totalBayar = 0;
-            $produk = $this->request->getPost('produk');
+            $totalAmount = 0;
+            $products = $this->request->getPost('products');
             
-            foreach ($produk as $item) {
-                $subtotal = $item['jumlah'] * $item['harga_jual'];
-                $totalBayar += $subtotal;
+            foreach ($products as $item) {
+                $subtotal = $item['quantity'] * $item['price'];
+                $totalAmount += $subtotal;
                 
                 $detailData = [
-                    'id_penjualan' => $idSale,
-                    'id_produk' => $item['id_produk'],
-                    'jumlah' => $item['jumlah'],
-                    'harga_jual' => $item['harga_jual'],
+                    'sale_id' => $idSale,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['price'],
                     'subtotal' => $subtotal,
-                    'keterangan' => $item['keterangan'] ?? ''
+                    'notes' => $item['notes'] ?? ''
                 ];
                 
                 $this->salesDetailModel->insert($detailData);
                 
-                // Update product stock
-                $this->updateProductStock($item['id_produk'], -$item['jumlah']);
-                
-                // Create stock mutation
-                $this->createStockMutation($item['id_produk'], $item['jumlah'], $item['harga_jual'], $idSale, 'Penjualan');
+                // Update product stock using ProductModel
+                $productModel = new \App\Models\ProductModel();
+                $productModel->updateStock($item['product_id'], 1, -$item['quantity'], 'OUT', $salesData['number'], 'Sales transaction');
             }
             
             // Update total
-            $this->salesModel->update($idSale, ['total_bayar' => $totalBayar]);
+            $this->salesModel->update($idSale, [
+                'total_amount' => $totalAmount,
+                'final_amount' => $totalAmount
+            ]);
             
             $db->transComplete();
             
@@ -205,18 +206,18 @@ class SalesController extends ResourceController
             return $this->failNotFound('Sale not found');
         }
         
-        if ($sale['status'] === 'Selesai') {
-            return $this->failValidationError('Cannot update completed sale');
+        if ($sale['payment_status'] === 'PAID') {
+            return $this->failValidationError('Cannot update paid sale');
         }
         
         $rules = [
-            'nomor_penjualan' => "required|is_unique[penjualan.nomor_penjualan,id_penjualan,{$id}]",
-            'tanggal_penjualan' => 'required|valid_date[Y-m-d]',
-            'id_customer' => 'required|is_natural_no_zero',
-            'id_salesperson' => 'required|is_natural_no_zero',
-            'tipe_bayar' => 'required|in_list[Cash,Kredit]',
-            'keterangan' => 'max_length[500]',
-            'status' => 'required|in_list[Proses,Selesai,Batal]'
+            'number' => "required",
+            'date' => 'required|valid_date[Y-m-d]',
+            'customer_id' => 'required|is_natural_no_zero',
+            'salesperson_id' => 'required|is_natural_no_zero',
+            'payment_type' => 'required|in_list[CASH,CREDIT]',
+            'notes' => 'max_length[500]',
+            'payment_status' => 'required|in_list[PENDING,PAID,UNPAID]'
         ];
         
         if (!$this->validate($rules)) {
@@ -224,14 +225,14 @@ class SalesController extends ResourceController
         }
         
         $data = [
-            'nomor_penjualan' => $this->request->getPost('nomor_penjualan'),
-            'tanggal_penjualan' => $this->request->getPost('tanggal_penjualan'),
-            'id_customer' => $this->request->getPost('id_customer'),
-            'id_salesperson' => $this->request->getPost('id_salesperson'),
-            'tipe_bayar' => $this->request->getPost('tipe_bayar'),
-            'keterangan' => $this->request->getPost('keterangan'),
-            'status' => $this->request->getPost('status'),
-            'id_user' => $this->request->getPost('id_user') ?? session()->get('id_user')
+            'number' => $this->request->getPost('number'),
+            'date' => $this->request->getPost('date'),
+            'customer_id' => $this->request->getPost('customer_id'),
+            'salesperson_id' => $this->request->getPost('salesperson_id'),
+            'payment_type' => $this->request->getPost('payment_type'),
+            'notes' => $this->request->getPost('notes'),
+            'payment_status' => $this->request->getPost('payment_status'),
+            'created_by' => $this->request->getPost('user_id') ?? session()->get('user_id')
         ];
         
         $updated = $this->salesModel->update($id, $data);
@@ -261,8 +262,8 @@ class SalesController extends ResourceController
             return $this->failNotFound('Sale not found');
         }
         
-        if ($sale['status'] === 'Selesai') {
-            return $this->failValidationError('Cannot delete completed sale');
+        if ($sale['payment_status'] === 'PAID') {
+            return $this->failValidationError('Cannot delete paid sale');
         }
         
         $db = \Config\Database::connect();
@@ -270,17 +271,15 @@ class SalesController extends ResourceController
         
         try {
             // Delete sale details and restore stock
-            $details = $this->salesDetailModel->where('id_penjualan', $id)->findAll();
+            $details = $this->salesDetailModel->where('sale_id', $id)->findAll();
             
             foreach ($details as $detail) {
-                // Restore product stock
-                $this->updateProductStock($detail['id_produk'], $detail['jumlah']);
-                
-                // Create stock mutation
-                $this->createStockMutation($detail['id_produk'], $detail['jumlah'], $detail['harga_jual'], $id, 'Batal Penjualan', 'Masuk');
+                // Restore product stock using ProductModel
+                $productModel = new \App\Models\ProductModel();
+                $productModel->updateStock($detail['product_id'], 1, $detail['quantity'], 'IN', $sale['number'], 'Sale cancellation');
             }
             
-            $this->salesDetailModel->where('id_penjualan', $id)->delete();
+            $this->salesDetailModel->where('sale_id', $id)->delete();
             $this->salesModel->delete($id);
             
             $db->transComplete();
@@ -315,16 +314,16 @@ class SalesController extends ResourceController
         $builder = $this->salesModel;
         
         if ($customer) {
-            $builder->where('id_customer', $customer);
+            $builder->where('customer_id', $customer);
         }
         
-        $builder->where('tanggal_penjualan >=', $dateFrom);
-        $builder->where('tanggal_penjualan <=', $dateTo);
-        $builder->where('status', 'Selesai');
+        $builder->where('date >=', $dateFrom);
+        $builder->where('date <=', $dateTo);
+        $builder->where('payment_status', 'PAID');
         
         $stats = [
             'total_sales' => $builder->countAllResults(),
-            'total_revenue' => $builder->selectSum('total_bayar')->get()->getRow()->total_bayar ?? 0,
+            'total_revenue' => $builder->selectSum('final_amount')->get()->getRow()->final_amount ?? 0,
             'average_sale' => 0,
             'best_selling_product' => $this->getBestSellingProduct($dateFrom, $dateTo, $customer),
             'top_customer' => $this->getTopCustomer($dateFrom, $dateTo)
@@ -352,18 +351,17 @@ class SalesController extends ResourceController
         $builder = $this->salesModel;
         
         if ($customer) {
-            $builder->where('id_customer', $customer);
+            $builder->where('customer_id', $customer);
         }
         
         $receivables = $builder
-            ->select('penjualan.id_penjualan, penjualan.nomor_penjualan, penjualan.tanggal_penjualan, 
-                    penjualan.total_bayar, customers.nama_customer, customers.nama_customer,
-                    DATEDIFF(CURDATE(), penjualan.tanggal_penjualan) as days_overdue')
-            ->join('customers', 'customers.id_customer = penjualan.id_customer')
-            ->where('penjualan.tipe_bayar', 'Kredit')
-            ->where('penjualan.status', 'Selesai')
-            ->where('penjualan.total_bayar > (SELECT COALESCE(SUM(jumlah_bayar), 0) FROM pembayaran WHERE id_penjualan = penjualan.id_penjualan)')
-            ->orderBy('penjualan.tanggal_penjualan', 'ASC')
+            ->select('sales.id, sales.number, sales.date,
+                    sales.final_amount, customers.name,
+                    DATEDIFF(CURDATE(), sales.date) as days_overdue')
+            ->join('customers', 'customers.id = sales.customer_id')
+            ->where('sales.payment_type', 'CREDIT')
+            ->where('sales.payment_status', 'UNPAID')
+            ->orderBy('sales.date', 'ASC')
             ->findAll();
         
         return $this->respond([
@@ -410,18 +408,18 @@ class SalesController extends ResourceController
     {
         $builder = $this->salesDetailModel;
         
-        $builder->select('products.id_produk, products.nama_produk, SUM(penjualan_detail.jumlah) as total_sold, SUM(penjualan_detail.subtotal) as revenue')
-                   ->join('penjualan', 'penjualan.id_penjualan = penjualan_detail.id_penjualan')
-                   ->join('products', 'products.id_produk = penjualan_detail.id_produk')
-                   ->where('penjualan.status', 'Selesai')
-                   ->where('penjualan.tanggal_penjualan >=', $dateFrom)
-                   ->where('penjualan.tanggal_penjualan <=', $dateTo);
+        $builder->select('products.id, products.name, SUM(sale_items.quantity) as total_sold, SUM(sale_items.subtotal) as revenue')
+                   ->join('sales', 'sales.id = sale_items.sale_id')
+                   ->join('products', 'products.id = sale_items.product_id')
+                   ->where('sales.payment_status', 'PAID')
+                   ->where('sales.date >=', $dateFrom)
+                   ->where('sales.date <=', $dateTo);
         
         if ($customerId) {
-            $builder->where('penjualan.id_customer', $customerId);
+            $builder->where('sales.customer_id', $customerId);
         }
         
-        return $builder->groupBy('products.id_produk, products.nama_produk')
+        return $builder->groupBy('products.id, products.name')
                      ->orderBy('total_sold', 'DESC')
                      ->limit(1)
                      ->get()
@@ -434,12 +432,12 @@ class SalesController extends ResourceController
     private function getTopCustomer($dateFrom, $dateTo)
     {
         return $this->salesModel
-            ->select('customers.id_customer, customers.nama_customer, COUNT(*) as transaction_count, SUM(total_bayar) as total_spent')
-            ->join('customers', 'customers.id_customer = penjualan.id_customer')
-            ->where('penjualan.status', 'Selesai')
-            ->where('penjualan.tanggal_penjualan >=', $dateFrom)
-            ->where('penjualan.tanggal_penjualan <=', $dateTo)
-            ->groupBy('customers.id_customer, customers.nama_customer')
+            ->select('customers.id, customers.name, COUNT(*) as transaction_count, SUM(final_amount) as total_spent')
+            ->join('customers', 'customers.id = sales.customer_id')
+            ->where('sales.payment_status', 'PAID')
+            ->where('sales.date >=', $dateFrom)
+            ->where('sales.date <=', $dateTo)
+            ->groupBy('customers.id, customers.name')
             ->orderBy('total_spent', 'DESC')
             ->limit(1)
             ->get()

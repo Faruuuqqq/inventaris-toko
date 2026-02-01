@@ -1,133 +1,196 @@
-<div class="grid gap-6 lg:grid-cols-3">
-    <!-- Form Section -->
+<?= $this->extend('layout/main') ?>
+
+<?= $this->section('content') ?>
+
+<div class="grid gap-6 lg:grid-cols-3" 
+     x-data="salesForm()" 
+     x-init="initData()">
+     
+    <!-- Form Section (Left 2/3) -->
     <div class="lg:col-span-2">
-        <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
             <div class="flex flex-col space-y-1.5 p-6">
                 <h3 class="text-xl font-semibold flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="6" width="20" height="12" rx="2" stroke-width="2"/><circle cx="12" cy="12" r="2" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h.01 M18 12h.01" stroke-width="2"/></svg>
+                    <?= icon('Banknote', 'h-5 w-5') ?>
                     Form Penjualan Tunai
                 </h3>
             </div>
-            <div class="p-6 pt-0 space-y-6">
-                <!-- Header Info -->
-                <div class="grid gap-4 md:grid-cols-4">
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium">No. Faktur</label>
-                        <input type="text" value="<?= 'INV-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT) ?>" disabled class="form-input">
+            
+            <form id="sales-form" action="<?= base_url('transactions/sales/storeCash') ?>" method="POST" @submit.prevent="submitForm">
+                <?= csrf_field() ?>
+                <input type="hidden" name="items" :value="JSON.stringify(items)">
+                
+                <div class="p-6 pt-0 space-y-6">
+                    <!-- Alerts -->
+                    <?php if(session()->getFlashdata('error')): ?>
+                    <div class="p-4 rounded-md bg-destructive/15 text-destructive text-sm font-medium">
+                        <?= session()->getFlashdata('error') ?>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium">Tanggal</label>
-                        <input type="date" value="<?= date('Y-m-d') ?>" class="form-input">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium">Customer</label>
-                        <select name="customer_id" id="customer_id" class="form-input">
-                            <option value="">Pilih customer</option>
-                            <?php foreach ($customers as $customer): ?>
-                            <option value="<?= $customer['id'] ?>"><?= $customer['name'] ?></option>
-                            <?php endforeach; ?>
-                            <option value="walk">Walk-in Customer</option>
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium">Sales</label>
-                        <select name="salesperson_id" id="salesperson_id" class="form-input">
-                            <option value="">Pilih sales</option>
-                            <?php foreach ($salespersons as $salesperson): ?>
-                            <option value="<?= $salesperson['id'] ?>"><?= $salesperson['name'] ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
+                    <?php endif; ?>
 
-                <!-- Items Section -->
-                <div class="rounded-lg border p-4">
-                    <h4 class="mb-4 font-medium">Tambah Produk</h4>
-                    <div class="grid gap-4 md:grid-cols-5">
-                        <div class="md:col-span-2">
-                            <select id="productSelect" class="form-input">
-                                <option value="">Pilih produk</option>
-                                <?php foreach ($products ?? [] as $product): ?>
-                                <option value="<?= $product['id'] ?>"><?= $product['name'] ?> - <?= format_currency($product['price_sell']) ?></option>
+                    <?php if(session()->getFlashdata('success')): ?>
+                    <div class="p-4 rounded-md bg-green-100 text-green-700 text-sm font-medium">
+                        <?= session()->getFlashdata('success') ?>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Header Inputs Grid -->
+                    <div class="grid gap-4 md:grid-cols-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none">No. Faktur</label>
+                            <input type="text" value="Auto (INV-xxxx)" class="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" disabled>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none">Tanggal</label>
+                            <input type="date" value="<?= date('Y-m-d') ?>" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none">Customer</label>
+                            <select name="customer_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" required>
+                                <option value="">Pilih customer</option>
+                                <?php foreach ($customers as $c): ?>
+                                    <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <input type="number" id="quantity" placeholder="Qty" class="form-input">
-                        <input type="number" id="discount" placeholder="Diskon" class="form-input">
-                        <button type="button" class="btn btn-primary" onclick="addItem()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"/></svg>
-                            Tambah
-                        </button>
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium leading-none">Sales / Gudang</label>
+                            <select name="warehouse_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" required>
+                                <?php foreach ($warehouses as $w): ?>
+                                    <option value="<?= $w['id'] ?>"><?= $w['name'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Items Table -->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Produk</th>
-                            <th class="text-right">Qty</th>
-                            <th class="text-right">Harga</th>
-                            <th class="text-right">Diskon</th>
-                            <th class="text-right">Subtotal</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsTable">
-                        <!-- Items will be added dynamically -->
-                    </tbody>
-                </table>
-            </div>
+                    <!-- Add Product Section -->
+                    <div class="rounded-lg border p-4">
+                        <h4 class="mb-4 font-medium">Tambah Produk</h4>
+                        <div class="grid gap-4 md:grid-cols-5">
+                            <div class="md:col-span-2">
+                                <select x-model="tempItem.product_id" @change="fillPrice()" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                                    <option value="">Pilih Member...</option>
+                                    <template x-for="p in products" :key="p.id">
+                                        <option :value="p.id" x-text="p.name + ' - ' + formatRupiahSimple(p.price_sell)"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div>
+                                <input type="number" x-model.number="tempItem.quantity" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" placeholder="Qty">
+                            </div>
+                            <div>
+                                <input type="number" x-model.number="tempItem.discount" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" placeholder="Diskon (Rp)">
+                            </div>
+                            <button type="button" @click="addItem()" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                                <?= icon('Plus', 'mr-2 h-4 w-4') ?>
+                                Tambah
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Items Table -->
+                    <div class="relative w-full overflow-auto">
+                        <table class="w-full caption-bottom text-sm">
+                            <thead class="[&_tr]:border-b">
+                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                                    <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12">No</th>
+                                    <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
+                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Qty</th>
+                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Harga</th>
+                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Diskon</th>
+                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Subtotal</th>
+                                    <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground w-[50px]"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="[&_tr:last-child]:border-0">
+                                <template x-if="items.length === 0">
+                                    <tr>
+                                        <td colspan="7" class="p-4 text-center text-muted-foreground">Belum ada barang ditambahkan.</td>
+                                    </tr>
+                                </template>
+                                <template x-for="(item, index) in items" :key="index">
+                                    <tr class="border-b transition-colors hover:bg-muted/50">
+                                        <td class="p-4 align-middle" x-text="index + 1"></td>
+                                        <td class="p-4 align-middle" x-text="item.name"></td>
+                                        <td class="p-4 align-middle text-right">
+                                            <input type="number" x-model.number="item.quantity" class="w-16 rounded border px-2 py-1 text-center text-xs bg-transparent">
+                                        </td>
+                                        <td class="p-4 align-middle text-right" x-text="formatRupiahSimple(item.price)"></td>
+                                        <td class="p-4 align-middle text-right" x-text="formatRupiahSimple(item.discount)"></td>
+                                        <td class="p-4 align-middle text-right font-medium" x-text="formatRupiahSimple(itemSubtotal(item))"></td>
+                                        <td class="p-4 align-middle text-center">
+                                            <button type="button" @click="removeItem(index)" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 text-destructive">
+                                                <?= icon('Trash2', 'h-4 w-4') ?>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- Summary Section -->
+    <!-- Summary Section (Right 1/3) -->
     <div>
-        <div class="rounded-lg border bg-card text-card-foreground shadow-sm sticky top-24">
+        <div class="rounded-xl border bg-card text-card-foreground shadow-sm sticky top-24">
             <div class="flex flex-col space-y-1.5 p-6">
                 <h3 class="text-xl font-semibold flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2" stroke-width="2"/><line x1="8" y1="6" x2="16" y2="6" stroke-width="2"/><line x1="16" y1="14" x2="16" y2="14" stroke-width="2"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="2"/><line x1="8" y1="14" x2="8" y2="14" stroke-width="2"/></svg>
+                    <?= icon('Calculator', 'h-5 w-5') ?>
                     Ringkasan
                 </h3>
             </div>
+            
             <div class="p-6 pt-0 space-y-4">
+                <!-- Subtotal -->
                 <div class="flex justify-between text-sm">
-                    <span>Subtotal (<span id="totalItems">0</span> item)</span>
-                    <span id="subtotal">Rp 0</span>
+                    <span class="text-muted-foreground" x-text="'Subtotal (' + items.length + ' item)'"></span>
+                    <span x-text="formatRupiah(grandTotalWithoutDiscount())"></span>
                 </div>
+                <!-- Total Discount -->
                 <div class="flex justify-between text-sm">
-                    <span>Diskon Total</span>
-                    <span id="totalDiscount">Rp 0</span>
+                    <span class="text-muted-foreground">Diskon Total</span>
+                    <span x-text="formatRupiah(totalDiscount())"></span>
                 </div>
+                
+                <!-- Divider & Grand Total -->
                 <div class="border-t pt-4">
-                    <div class="flex justify-between">
+                    <div class="flex justify-between items-center">
                         <span class="font-semibold">Grand Total</span>
-                        <span class="text-xl font-bold text-primary" id="grandTotal">Rp 0</span>
+                        <span class="text-2xl font-bold text-primary" x-text="formatRupiah(grandTotal())"></span>
                     </div>
                 </div>
 
+                <!-- Pay Input -->
                 <div class="space-y-2 pt-4">
-                    <label class="text-sm font-medium">Bayar</label>
-                    <input type="number" id="paymentAmount" placeholder="0" class="form-input text-right text-lg">
+                    <label class="text-sm font-medium leading-none">Bayar</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Rp</span>
+                        <input type="number" x-model.number="payAmount" class="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 text-right text-lg font-medium ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="0">
+                    </div>
                 </div>
 
-                <div class="flex justify-between rounded-lg p-3" style="background-color: var(--success); color: white;">
-                    <span class="font-medium">Kembalian</span>
-                    <span class="font-bold" id="change">Rp 0</span>
+                <!-- Change Display -->
+                <div class="flex justify-between rounded-lg bg-green-100 p-3 dark:bg-green-900/20">
+                    <span class="font-medium text-green-700 dark:text-green-400">Kembalian</span>
+                    <span class="font-bold text-green-700 dark:text-green-400" x-text="formatRupiah(changeAmount())"></span>
                 </div>
 
+                <!-- Action Buttons -->
                 <div class="flex gap-2 pt-4">
-                    <button type="button" class="btn btn-outline flex-1">
+                    <button type="button" @click="resetForm()" class="inline-flex flex-1 items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Batal
                     </button>
-                    <button type="button" class="btn btn-primary flex-1" onclick="saveTransaction()">
+                    <button type="submit" form="sales-form" :disabled="items.length === 0" class="inline-flex flex-1 items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Simpan
                     </button>
                 </div>
-
-                <button type="button" class="btn btn-outline w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="6 9 6 2 18 2" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" stroke-width="2"/></svg>
+                
+                <button type="button" class="inline-flex w-full items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    <?= icon('Printer', 'mr-2 h-4 w-4') ?>
                     Cetak Struk
                 </button>
             </div>
@@ -136,144 +199,107 @@
 </div>
 
 <script>
-    let items = [];
-    let productData = {};
+    function salesForm() {
+        return {
+            items: [],
+            products: [],
+            payAmount: 0,
+            tempItem: {
+                product_id: '',
+                name: '',
+                price: 0,
+                quantity: 1,
+                discount: 0
+            },
+            
+            async initData() {
+                try {
+                    const res = await fetch('<?= base_url('transactions/sales/getProducts') ?>');
+                    this.products = await res.json();
+                } catch (e) {
+                    console.error("Failed to load products", e);
+                }
+            },
 
-    // Load products
-    fetch('/transactions/sales/getProducts')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(product => {
-                productData[product.id] = product;
-            });
-        });
+            fillPrice() {
+                const product = this.products.find(p => p.id == this.tempItem.product_id);
+                if (product) {
+                    this.tempItem.name = product.name;
+                    this.tempItem.price = parseFloat(product.price_sell);
+                }
+            },
 
-    function addItem() {
-        const productId = document.getElementById('productSelect').value;
-        const quantity = parseInt(document.getElementById('quantity').value) || 0;
-        const discount = parseFloat(document.getElementById('discount').value) || 0;
-        
-        if (!productId || quantity <= 0) {
-            alert('Pilih produk dan masukkan quantity');
-            return;
+            addItem() {
+                if (!this.tempItem.product_id) {
+                    alert('Pilih produk terlebih dahulu!');
+                    return;
+                }
+                
+                // Add item to list
+                this.items.push({ ...this.tempItem });
+                
+                // Reset form fields
+                this.tempItem.product_id = '';
+                this.tempItem.quantity = 1;
+                this.tempItem.price = 0;
+                this.tempItem.discount = 0;
+            },
+
+            removeItem(index) {
+                this.items.splice(index, 1);
+            },
+            
+            resetForm() {
+                if(confirm('Yakin ingin mereset transaksi?')) {
+                    this.items = [];
+                    this.payAmount = 0;
+                }
+            },
+
+            itemSubtotal(item) {
+                return (item.price * item.quantity) - item.discount;
+            },
+
+            totalDiscount() {
+                return this.items.reduce((acc, item) => acc + parseFloat(item.discount), 0);
+            },
+
+            grandTotalWithoutDiscount() {
+                 return this.items.reduce((acc, item) => acc + parseFloat(item.price * item.quantity), 0);
+            },
+
+            grandTotal() {
+                return this.items.reduce((acc, item) => {
+                    return acc + ((item.price * item.quantity) - item.discount);
+                }, 0);
+            },
+            
+            changeAmount() {
+                const total = this.grandTotal();
+                if (this.payAmount <= 0) return 0;
+                return Math.max(0, this.payAmount - total);
+            },
+
+            formatRupiah(number) {
+                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+            },
+            
+            formatRupiahSimple(number) {
+                 return new Intl.NumberFormat('id-ID').format(number);
+            },
+
+            submitForm(e) {
+                if (this.items.length === 0) {
+                    alert('Keranjang masih kosong!');
+                    return;
+                }
+                if (this.payAmount < this.grandTotal()) {
+                    alert('Peringatan: Jumlah bayar kurang dari total belanja! (Hanya Peringatan)');
+                    // allow submit for now or return
+                }
+                e.target.submit();
+            }
         }
-        
-        const product = productData[productId];
-        if (!product) return;
-        
-        const subtotal = (product.price_sell * quantity) - discount;
-        
-        items.push({
-            id: productId,
-            name: product.name,
-            price: product.price_sell,
-            quantity: quantity,
-            discount: discount,
-            subtotal: subtotal
-        });
-        
-        renderItems();
-        updateSummary();
-        
-        // Reset form
-        document.getElementById('productSelect').value = '';
-        document.getElementById('quantity').value = '';
-        document.getElementById('discount').value = '';
     }
-
-    function removeItem(index) {
-        items.splice(index, 1);
-        renderItems();
-        updateSummary();
-    }
-
-    function renderItems() {
-        const tbody = document.getElementById('itemsTable');
-        tbody.innerHTML = '';
-        
-        items.forEach((item, index) => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${item.name}</td>
-                <td class="text-right">${item.quantity}</td>
-                <td class="text-right">${formatCurrency(item.price)}</td>
-                <td class="text-right">${formatCurrency(item.discount)}</td>
-                <td class="text-right font-medium">${formatCurrency(item.subtotal)}</td>
-                <td>
-                    <button type="button" class="btn btn-ghost text-destructive" style="height: 32px; width: 32px; padding: 0;" onclick="removeItem(${index})">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    function updateSummary() {
-        const totalItems = items.length;
-        const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const totalDiscount = items.reduce((sum, item) => sum + item.discount, 0);
-        const grandTotal = subtotal - totalDiscount;
-        
-        document.getElementById('totalItems').textContent = totalItems;
-        document.getElementById('subtotal').textContent = formatCurrency(subtotal);
-        document.getElementById('totalDiscount').textContent = formatCurrency(totalDiscount);
-        document.getElementById('grandTotal').textContent = formatCurrency(grandTotal);
-        
-        // Calculate change
-        const paymentAmount = parseFloat(document.getElementById('paymentAmount').value) || 0;
-        const change = paymentAmount - grandTotal;
-        document.getElementById('change').textContent = formatCurrency(Math.max(0, change));
-    }
-
-    function saveTransaction() {
-        const customerId = document.getElementById('customer_id').value;
-        const salespersonId = document.getElementById('salesperson_id').value;
-        const warehouseId = '1'; // Default warehouse
-        
-        if (!customerId) {
-            alert('Pilih customer terlebih dahulu');
-            return;
-        }
-        
-        if (items.length === 0) {
-            alert('Tambah minimal 1 produk');
-            return;
-        }
-        
-        // Create form and submit
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.action = '/transactions/sales/storeCash';
-        
-        // Add hidden fields
-        const fields = {
-            customer_id: customerId,
-            salesperson_id: salespersonId,
-            warehouse_id: warehouseId,
-            total_amount: items.reduce((sum, item) => sum + item.subtotal, 0),
-            items: items
-        };
-        
-        for (const [key, value] of Object.entries(fields)) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = typeof value === 'object' ? JSON.stringify(value) : value;
-            form.appendChild(input);
-        }
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-
-    function formatCurrency(amount) {
-        return 'Rp ' + amount.toLocaleString('id-ID');
-    }
-
-    // Add event listeners
-    document.getElementById('paymentAmount').addEventListener('input', updateSummary);
-    
-    // Include helper functions
 </script>
+<?= $this->endSection() ?>

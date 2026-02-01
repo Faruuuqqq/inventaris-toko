@@ -20,4 +20,26 @@ class SaleItemModel extends Model
     {
         return $this->where('sale_id', $saleId)->findAll();
     }
+
+    /**
+     * Create sale items
+     */
+    public function createSaleItems($saleId, $items)
+    {
+        foreach ($items as $item) {
+            $price = $item['price'] ?? $item['unit_price'] ?? 0;
+            $quantity = $item['quantity'];
+            $subtotal = $item['subtotal'] ?? $item['total_price'] ?? ($price * $quantity);
+
+            $data = [
+                'sale_id' => $saleId,
+                'product_id' => $item['product_id'],
+                'quantity' => $quantity,
+                'price' => $price,
+                'subtotal' => $subtotal
+            ];
+
+            $this->insert($data);
+        }
+    }
 }

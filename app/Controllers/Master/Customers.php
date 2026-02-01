@@ -1,90 +1,46 @@
 <?php
+
 namespace App\Controllers\Master;
 
-use App\Controllers\BaseController;
+use App\Controllers\BaseCRUDController;
 use App\Models\CustomerModel;
+use CodeIgniter\Model;
 
-class Customers extends BaseController
+class Customers extends BaseCRUDController
 {
-    protected $customerModel;
+    protected string $viewPath = 'master/customers';
+    protected string $routePath = '/master/customers';
+    protected string $entityName = 'Customer';
+    protected string $entityNamePlural = 'Customers';
 
-    public function __construct()
+    protected function getModel(): Model
     {
-        $this->customerModel = new CustomerModel();
+        return new CustomerModel();
     }
 
-    public function index()
+    protected function getStoreValidationRules(): array
     {
-        $customers = $this->customerModel->findAll();
-        
-        $data = [
-            'title' => 'Customer',
-            'subtitle' => 'Kelola data pelanggan',
-            'customers' => $customers,
+        return [
+            'name' => 'required',
+            'phone' => 'permit_empty',
+            'address' => 'permit_empty',
+            'credit_limit' => 'required|numeric',
         ];
-
-        return view('layout/main', $data)->renderSection('content', view('master/customers/index', $data));
     }
 
-    public function store()
+    protected function getDataFromRequest(): array
     {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required',
-            'phone' => 'permit_empty',
-            'address' => 'permit_empty',
-            'credit_limit' => 'required|numeric',
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Create customer
-        $this->customerModel->insert([
+        return [
             'code' => $this->request->getPost('code'),
             'name' => $this->request->getPost('name'),
             'phone' => $this->request->getPost('phone'),
             'address' => $this->request->getPost('address'),
             'credit_limit' => $this->request->getPost('credit_limit'),
-        ]);
-
-        return redirect()->to('/master/customers')->with('success', 'Customer berhasil ditambahkan');
+        ];
     }
 
-    public function update($id)
+    protected function getIndexData(): array
     {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'name' => 'required',
-            'phone' => 'permit_empty',
-            'address' => 'permit_empty',
-            'credit_limit' => 'required|numeric',
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Update customer
-        $this->customerModel->update($id, [
-            'code' => $this->request->getPost('code'),
-            'name' => $this->request->getPost('name'),
-            'phone' => $this->request->getPost('phone'),
-            'address' => $this->request->getPost('address'),
-            'credit_limit' => $this->request->getPost('credit_limit'),
-        ]);
-
-        return redirect()->to('/master/customers')->with('success', 'Customer berhasil diperbarui');
-    }
-
-    public function delete($id)
-    {
-        // Check if customer has transactions
-        // Simplified for now
-        $this->customerModel->delete($id);
-        return redirect()->to('/master/customers')->with('success', 'Customer berhasil dihapus');
+        return $this->model->asArray()->findAll();
     }
 }

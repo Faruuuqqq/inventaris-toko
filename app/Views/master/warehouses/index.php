@@ -1,89 +1,150 @@
-<!-- Warehouse Table -->
-<div class="rounded-lg border bg-card text-card-foreground shadow-sm">
-    <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h3 class="text-xl font-semibold">Data Gudang</h3>
-                <p class="text-sm text-muted-foreground">Kelola data gudang</p>
-            </div>
-            <button 
-                class="btn btn-primary"
-                onclick="document.getElementById('warehouseModal').classList.remove('hidden')"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"/></svg>
-                Tambah Gudang
-            </button>
-        </div>
+<?= $this->extend('layout/main') ?>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Kode</th>
-                    <th>Nama Gudang</th>
-                    <th>Alamat</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($warehouses as $warehouse): ?>
-                <tr>
-                    <td><?= $warehouse['code'] ?></td>
-                    <td><?= $warehouse['name'] ?></td>
-                    <td><?= $warehouse['address'] ?? '-' ?></td>
-                    <td>
-                        <span class="badge <?php echo $warehouse['is_active'] ? 'badge-success' : 'badge-destructive'; ?>">
-                            <?php echo $warehouse['is_active'] ? 'Aktif' : 'Non-Aktif'; ?>
-                        </span>
-                    </td>
-                    <td>
+<?= $this->section('content') ?>
+
+<div x-data="warehouseManager()">
+    <!-- Summary Cards -->
+    <div class="mb-6 grid gap-4 md:grid-cols-3">
+        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div class="flex flex-col space-y-1.5 p-6 pb-2">
+                <p class="text-sm font-medium text-muted-foreground">Total Gudang</p>
+                <p class="text-2xl font-bold" x-text="warehouses.length"></p>
+            </div>
+        </div>
+        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div class="flex flex-col space-y-1.5 p-6 pb-2">
+                <p class="text-sm font-medium text-muted-foreground">Gudang Aktif</p>
+                <p class="text-2xl font-bold text-success" x-text="warehouses.filter(w => parseInt(w.is_active) === 1).length"></p>
+            </div>
+        </div>
+        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
+            <div class="flex flex-col space-y-1.5 p-6 pb-2">
+                <p class="text-sm font-medium text-muted-foreground">Total Produk Tersimpan</p>
+                <p class="text-2xl font-bold">0</p> <!-- Conceptual Placeholder -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toolbar: Search & Add Button -->
+    <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative w-full sm:w-72">
+            <span class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground">
+                <?= icon('Search', 'h-4 w-4') ?>
+            </span>
+            <input 
+                type="text" 
+                x-model="search"
+                placeholder="Cari gudang..." 
+                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-9"
+            >
+        </div>
+        
+        <button 
+            @click="isDialogOpen = true"
+            class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+        >
+            <?= icon('Plus', 'mr-2 h-4 w-4') ?>
+            Tambah Gudang
+        </button>
+    </div>
+
+    <!-- Warehouses Grid -->
+    <div class="grid gap-4 md:grid-cols-2">
+        <template x-for="gudang in filteredWarehouses" :key="gudang.id">
+            <div class="rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-md">
+                <div class="flex flex-col space-y-1.5 p-6 pb-3">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                                <?= icon('Warehouse', 'h-5 w-5 text-primary') ?>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xs text-muted-foreground" x-text="gudang.code || gudang.id"></p>
+                                    <span 
+                                        class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent"
+                                        :class="parseInt(gudang.is_active) === 1 ? 'bg-primary text-primary-foreground hover:bg-primary/80' : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'"
+                                        x-text="parseInt(gudang.is_active) === 1 ? 'Aktif' : 'Tidak Aktif'">
+                                    </span>
+                                </div>
+                                <h3 class="mt-1 text-lg font-semibold leading-none tracking-tight" x-text="gudang.name"></h3>
+                            </div>
+                        </div>
                         <div class="flex gap-1">
-                            <button class="btn btn-ghost" style="height: 32px; width: 32px; padding: 0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8">
+                                <?= icon('Pencil', 'h-4 w-4') ?>
                             </button>
-                            <button class="btn btn-ghost text-destructive" style="height: 32px; width: 32px; padding: 0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="3 6 5 6 21 6" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+                            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 text-destructive">
+                                <?= icon('Trash2', 'h-4 w-4') ?>
                             </button>
                         </div>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                    </div>
+                </div>
+                <div class="p-6 pt-0 space-y-3">
+                    <div class="flex items-start gap-2 text-sm text-muted-foreground">
+                        <?= icon('MapPin', 'mt-0.5 h-4 w-4 shrink-0') ?>
+                        <span x-text="gudang.address || 'Belum ada alamat'"></span>
+                    </div>
+                    <!-- Placeholder data for now as per controller -->
+                    <div class="grid grid-cols-2 gap-4 border-t pt-3">
+                        <div class="flex items-center gap-2">
+                            <?= icon('Package', 'h-4 w-4 text-muted-foreground') ?>
+                            <div>
+                                <p class="text-xs text-muted-foreground">Total Produk</p>
+                                <p class="font-semibold" x-text="'0'"></p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted-foreground">Nilai Stok</p>
+                            <p class="font-semibold text-primary">Rp 0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
-</div>
 
-<!-- Add Warehouse Modal -->
-<div id="warehouseModal" class="modal hidden">
-    <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-md">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-xl font-semibold">Tambah Gudang Baru</h3>
-        </div>
-        <div class="p-6 pt-0">
-            <form action="/master/warehouses" method="post" class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label for="code">Kode</label>
-                        <input type="text" name="code" id="code" class="form-input" placeholder="Kode Gudang" required>
-                    </div>
-                    <div class="space-y-2">
-                        <label for="name">Nama Gudang</label>
-                        <input type="text" name="name" id="name" class="form-input" placeholder="Masukkan nama" required>
-                    </div>
-                </div>
+    <!-- Modal (Dialog) -->
+    <div 
+        x-show="isDialogOpen" 
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+        x-transition.opacity
+        style="display: none;"
+    >
+        <div 
+            class="w-full max-w-lg rounded-lg border bg-background p-6 shadow-lg sm:rounded-lg"
+            @click.away="isDialogOpen = false"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+        >
+            <div class="flex flex-col space-y-1.5 text-center sm:text-left mb-4">
+                <h2 class="text-lg font-semibold leading-none tracking-tight">Tambah Gudang Baru</h2>
+            </div>
+            
+            <form action="<?= base_url('master/warehouses/store') ?>" method="POST" class="space-y-4">
+                <?= csrf_field() ?>
+                
                 <div class="space-y-2">
-                    <label for="address">Alamat</label>
-                    <textarea name="address" id="address" class="form-input" placeholder="Alamat gudang" rows="3"></textarea>
+                    <label class="text-sm font-medium leading-none" for="name">Nama Gudang</label>
+                    <input type="text" name="name" id="name" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 </div>
-                <div class="flex items-center space-y-2">
-                    <input type="checkbox" name="is_active" id="is_active" checked>
-                    <label for="is_active">Aktif</label>
+                
+                <div class="space-y-2">
+                    <label class="text-sm font-medium leading-none" for="code">Kode Gudang</label>
+                    <input type="text" name="code" id="code" required class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                 </div>
-                <div class="flex justify-end gap-2">
-                    <button type="button" class="btn btn-outline" onclick="document.getElementById('warehouseModal').classList.add('hidden')">
+
+                <div class="space-y-2">
+                    <label class="text-sm font-medium leading-none" for="address">Alamat</label>
+                    <input type="text" name="address" id="address" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" @click="isDialogOpen = false" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                         Batal
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
                         Simpan
                     </button>
                 </div>
@@ -91,3 +152,23 @@
         </div>
     </div>
 </div>
+
+<script>
+function warehouseManager() {
+    return {
+        warehouses: <?= json_encode($warehouses ?? []) ?>,
+        search: '',
+        isDialogOpen: false,
+
+        get filteredWarehouses() {
+            return this.warehouses.filter(w => {
+                const searchLower = this.search.toLowerCase();
+                return (w.name && w.name.toLowerCase().includes(searchLower)) ||
+                       (w.code && w.code.toLowerCase().includes(searchLower));
+            });
+        }
+    }
+}
+</script>
+
+<?= $this->endSection() ?>

@@ -28,7 +28,7 @@ class Stock extends BaseController
             'warehouses' => $this->warehouseModel->findAll(),
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('info/stock/card', $data));
+        return view('info/stock/card', $data);
     }
 
     public function balance()
@@ -75,7 +75,7 @@ class Stock extends BaseController
             'totalValue' => 0, // Will be calculated when product prices are available
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('info/stock/balance', $data));
+        return view('info/stock/balance', $data);
     }
 
     public function getMutations()
@@ -110,5 +110,92 @@ class Stock extends BaseController
         
         $mutations = $query->findAll();
         return $this->response->setJSON($mutations);
+    }
+    
+    /**
+     * Get stock card data
+     */
+    public function getStockCard()
+    {
+        $productId = $this->request->getGet('product_id');
+        $warehouseId = $this->request->getGet('warehouse_id');
+        
+        if (!$productId) {
+            return $this->response->setJSON([]);
+        }
+        
+        // Get product info
+        $product = $this->productModel->find($productId);
+        if (!$product) {
+            return $this->response->setJSON([]);
+        }
+        
+        // Get current stock
+        $productStocks = $this->productModel->getStockInAllWarehouses($productId);
+        
+        // Get mutations with proper field names
+        $mutations = $this->stockMutationModel
+            ->select('stock_mutations.*, products.name as product_name, warehouses.name as warehouse_name')
+            ->join('products', 'products.id = stock_mutations.product_id')
+            ->join('warehouses', 'warehouses.id = stock_mutations.warehouse_id')
+            ->where('stock_mutations.product_id', $productId)
+            ->orderBy('stock_mutations.created_at', 'DESC');
+            
+        if ($warehouseId) {
+            $mutations->where('stock_mutations.warehouse_id', $warehouseId);
+        }
+        
+        $mutations = $mutations->findAll();
+        
+        // Calculate running balance
+        $runningBalance = [];
+        $balance = 0;
+        
+        foreach ($mutations as $mutation) {
+            if ($mutation['mutation_type'] === 'IN') {
+                $balance += $mutation['quantity'];
+            } else {
+                $balance -= $mutation['quantity'];
+            }
+            
+            $mutation['running_balance'] = $balance;
+            $runningBalance[] = $mutation;
+        }
+        
+        $data = [
+            'product' => $product,
+            'currentStocks' => $productStocks,
+            'mutations' => $runningBalance,
+            'finalBalance' => $balance
+        ];
+        
+        return $this->response->setJSON($data);
+    }
+    
+    /**
+     * Get stock summary
+     */
+    public function getStockSummary()
+    {
+        $warehouseId = $this->request->getGet('warehouse_id');
+        $categoryId = $this->request->getGet('category_id');
+        
+        $productStockModel = new \App\Models\ProductStockModel();
+        $query = $productStockModel
+            ->select('products.name as product_name, products.sku, SUM(product_stocks.quantity) as total_quantity')
+            ->join('products', 'products.id = product_stocks.product_id')
+            ->groupBy('product_stocks.product_id');
+            
+        if ($warehouseId) {
+            $query->where('product_stocks.warehouse_id', $warehouseId);
+        }
+        
+        if ($categoryId) {
+            $query->where('products.category_id', $categoryId);
+        }
+        
+        $summary = $query->findAll();
+        
+        return $this->response->setJSON($summary);
     }
 }

@@ -1,85 +1,53 @@
 <?php
+
 namespace App\Controllers\Master;
 
-use App\Controllers\BaseController;
+use App\Controllers\BaseCRUDController;
 use App\Models\WarehouseModel;
+use CodeIgniter\Model;
 
-class Warehouses extends BaseController
+class Warehouses extends BaseCRUDController
 {
-    protected $warehouseModel;
+    protected string $viewPath = 'master/warehouses';
+    protected string $routePath = '/master/warehouses';
+    protected string $entityName = 'Gudang';
+    protected string $entityNamePlural = 'Warehouses';
 
-    public function __construct()
+    protected function getModel(): Model
     {
-        $this->warehouseModel = new WarehouseModel();
+        return new WarehouseModel();
     }
 
-    public function index()
+    protected function getStoreValidationRules(): array
     {
-        $warehouses = $this->warehouseModel->findAll();
-        
-        $data = [
-            'title' => 'Gudang',
-            'subtitle' => 'Kelola data gudang',
-            'warehouses' => $warehouses,
-        ];
-
-        return view('layout/main', $data)->renderSection('content', view('master/warehouses/index', $data));
-    }
-
-    public function store()
-    {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
+        return [
             'code' => 'required|is_unique[warehouses.code]',
             'name' => 'required',
             'address' => 'permit_empty',
-        ]);
-
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Create warehouse
-        $this->warehouseModel->insert([
-            'code' => $this->request->getPost('code'),
-            'name' => $this->request->getPost('name'),
-            'address' => $this->request->getPost('address'),
-            'is_active' => 1,
-        ]);
-
-        return redirect()->to('/master/warehouses')->with('success', 'Gudang berhasil ditambahkan');
+        ];
     }
 
-    public function update($id)
+    protected function getUpdateValidationRules(int|string $id): array
     {
-        // Validate input
-        $validation = \Config\Services::validation();
-        $validation->setRules([
-            'code' => 'required|is_unique[warehouses.code,id,'.$id.']',
+        return [
+            'code' => 'required|is_unique[warehouses.code,id,' . $id . ']',
             'name' => 'required',
             'address' => 'permit_empty',
-        ]);
+        ];
+    }
 
-        if (!$validation->withRequest($this->request)->run()) {
-            return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-        }
-
-        // Update warehouse
-        $this->warehouseModel->update($id, [
+    protected function getDataFromRequest(): array
+    {
+        return [
             'code' => $this->request->getPost('code'),
             'name' => $this->request->getPost('name'),
             'address' => $this->request->getPost('address'),
-        ]);
-
-        return redirect()->to('/master/warehouses')->with('success', 'Gudang berhasil diperbarui');
+        ];
     }
 
-    public function delete($id)
+    protected function beforeStore(array $data): array
     {
-        // Check if warehouse has stock
-        // Simplified for now
-        $this->warehouseModel->delete($id);
-        return redirect()->to('/master/warehouses')->with('success', 'Gudang berhasil dihapus');
+        $data['is_active'] = 1;
+        return $data;
     }
 }

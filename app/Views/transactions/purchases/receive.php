@@ -1,4 +1,6 @@
-<?= $this->extend('layouts/main') ?>
+<?php $this->section('content') ?>
+<?php $this->extend('layout/main') ?>
+<?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
 <div class="page-header">
@@ -39,7 +41,7 @@
                                     </tr>
                                     <tr>
                                         <td><strong>Supplier:</strong></td>
-                                        <td><?= $purchaseOrder['supplier']['nama_supplier'] ?></td>
+                                        <td><?= $purchaseOrder['supplier']['name'] ?></td>
                                     </tr>
                                     <tr>
                                         <td><strong>Warehouse:</strong></td>
@@ -172,3 +174,5 @@ document.addEventListener('alpine:init', () => {
 </script>
 
 <?= $this->endSection() ?>
+
+<?php $this->endSection() ?>

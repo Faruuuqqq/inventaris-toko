@@ -137,7 +137,7 @@ class CustomValidationRules
             return true;
         }
         
-        $salesModel = new \App\Models\SalesModel();
+        $salesModel = new \App\Models\SaleModel();
         $currentReceivable = $salesModel->getCustomerReceivable($customerId);
         $availableCredit = $customer['limit_kredit'] - $currentReceivable;
         

@@ -29,7 +29,8 @@ class Settings extends BaseController
             'config' => $config,
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('settings/index', $data));
+        return view('layout/main', $data)
+            . view('settings/index', $data);
     }
 
     public function updateProfile()

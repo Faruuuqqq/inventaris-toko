@@ -1,3 +1,5 @@
+<?php $this->section('content') ?>
+<?php $this->extend('layout/main') ?>
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
@@ -309,3 +311,6 @@
     }
 </script>
 <?= $this->endSection() ?>
+
+
+<?php $this->endSection() ?>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Entities\Salesperson;
@@ -13,4 +14,17 @@ class SalespersonModel extends Model
     protected $useSoftDeletes = false;
     protected $allowedFields = ['name', 'phone', 'is_active'];
     protected $useTimestamps = false;
+
+    // Validation Rules
+    protected $validationRules = [
+        'name' => 'required|min_length[2]|max_length[100]',
+        'phone' => 'permit_empty|max_length[20]',
+    ];
+
+    protected $validationMessages = [
+        'name' => [
+            'required' => 'Nama sales harus diisi',
+            'min_length' => 'Nama sales minimal 2 karakter',
+        ],
+    ];
 }

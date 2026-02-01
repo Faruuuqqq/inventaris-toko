@@ -28,16 +28,18 @@ class Dashboard extends BaseController
             $today = date('Y-m-d');
             
             // Today's sales
-            $todaySales = $this->saleModel
+            $todaySalesResult = $this->saleModel
                 ->where('DATE(created_at)', $today)
                 ->selectSum('total_amount')
-                ->first()['total_amount'] ?? 0;
+                ->first();
+            $todaySales = $todaySalesResult->total_amount ?? 0;
             
             // Today's purchases (simplified for now)
             $todayPurchases = 0;
             
             // Total products in stock
-            $totalStock = $this->productStockModel->selectSum('quantity')->first()['quantity'] ?? 0;
+            $totalStockResult = $this->productStockModel->selectSum('quantity')->first();
+            $totalStock = $totalStockResult->quantity ?? 0;
             
             // Active customers
             $activeCustomers = $this->customerModel->countAll();
@@ -69,7 +71,7 @@ class Dashboard extends BaseController
                 'lowStockItems' => $lowStockItems,
             ];
             
-            return view('layout/main', $data)->renderSection('content', view('dashboard/index', $data));
+            return view('dashboard/index', $data);
         } catch (\Exception $e) {
             log_message('error', 'Dashboard error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat dashboard: ' . $e->getMessage());

@@ -28,7 +28,8 @@ CREATE TABLE `users` (
   `role` ENUM('OWNER', 'ADMIN', 'GUDANG', 'SALES') NOT NULL DEFAULT 'ADMIN',
   `is_active` TINYINT(1) DEFAULT 1,
   `email` VARCHAR(100),
-  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- 2. WAREHOUSES Table
@@ -264,12 +265,30 @@ CREATE TABLE `system_config` (
   `config_value` TEXT
 ) ENGINE=InnoDB;
 
--- Insert default users (using simple password hashes)
+-- 21. EXPENSES Table
+CREATE TABLE `expenses` (
+  `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `expense_number` VARCHAR(50) NOT NULL UNIQUE,
+  `expense_date` DATE NOT NULL,
+  `category` VARCHAR(100) NOT NULL,
+  `description` VARCHAR(255) NOT NULL,
+  `amount` DECIMAL(15,2) NOT NULL,
+  `payment_method` ENUM('CASH', 'TRANSFER', 'CHECK') NOT NULL DEFAULT 'CASH',
+  `notes` TEXT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX `idx_expense_date` (`expense_date`),
+  INDEX `idx_category` (`category`),
+  FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+-- Insert default users (password: password123 for all)
 INSERT INTO `users` (`username`, `password_hash`, `fullname`, `role`, `is_active`, `email`) VALUES
-('owner', '$2y$10$etBdiyHVFWQFz0.UaLGdf.9MrD9itsk/TIr64ivvXbEnr3hIAbzY2', 'Owner', 1, 'owner@toko.com'),
-('admin', '$2y$10$kABjpRI/dwuEXRc8G4nU1uEKyNYc58QnT7t.syqZ6hFT/JpEdW8XW', 'Administrator', 1, 'admin@toko.com'),
-('gudang', '$2y$10$Ah6MjwWjDEUmK8bGsoSGyumqIbPX7MkbXIKQTmZIkL.XNk9SbRUt6', 'Staff Gudang', 1, 'gudang@toko.com'),
-('sales', '$2y$10$7Ko7rxaJ0FmYjwv3Q94iwu4o2w5fY803Fe5a2pt.sgQicSjxJqG', 'Salesman', 1, 'sales@toko.com');
+('owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Owner', 'OWNER', 1, 'owner@toko.com'),
+('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator', 'ADMIN', 1, 'admin@toko.com'),
+('gudang', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Staff Gudang', 'GUDANG', 1, 'gudang@toko.com'),
+('sales', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Salesman', 'SALES', 1, 'sales@toko.com');
 
 -- Insert default warehouse
 INSERT INTO `warehouses` (`code`, `name`, `address`) VALUES

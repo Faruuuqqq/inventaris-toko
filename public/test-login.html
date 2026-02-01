@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - TokoManager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #fafafa;
+            color: #0f172a;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flex {
+            display: flex;
+        flex-direction: column;
+        align-items: center;
+            justify-content: center;
+        flex: 1 0 auto;
+        min-height: 100vh;
+        padding: 1rem;
+        background-color: #fafafa;
+        color: #0f172a;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        .min-h-screen {
+            min-height: 100vh;
+        display: flex;
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+            justify-content: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        align-items: center;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .bg-background {
+            background-color: #fafafa;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .w-full {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .max-w-md {
+            max-width: 400px;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+            margin-top: 0;
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .flex {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .h-14 {
+            height: 3.5rem;
+            width: 3.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+        }
+
+        .w-14 {
+            width: 3.5rem;
+            height: 3.5rem;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            padding: 2rem;
+        }
+
+        .bg-primary {
+            background-color: #0ea5e9;
+            color: #ffffff;
+        }
+
+        .text-primary-foreground {
+            color: #ffffff;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 2rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.75rem;
+        }
+
+        .text-foreground {
+            color: #0f172a;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .tracking-tight {
+            letter-spacing: -0.025em;
+        }
+
+        .leading-none {
+            line-height: 1;
+        }
+
+        .text-muted-foreground {
+            color: #64748b;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            background-color: #ffffff;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .border {
+            border-width: 1px;
+            border-style: solid;
+            border-color: #e2e8f0;
+        }
+
+        .bg-card {
+            background-color: #ffffff;
+        color: #0f172a;
+        border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .text-card-foreground {
+            color: #0f172a;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+        }
+
+        .space-y-1\.5 {
+            gap: 0.5rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .pt-0 {
+            padding-top: 0;
+        }
+
+        .space-y-4 {
+            gap: 1rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            height: 2.5rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.375rem;
+            background-color: #ffffff;
+            color: #0f172a;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #94a3b8;
+        }
+
+        button {
+            width: 100%;
+            height: 2.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #ffffff;
+            background-color: #0ea5e9;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: #0284c7;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .border-input {
+            border-color: #e2e8f0;
+        }
+
+        .bg-background {
+            background-color: #fafafa;
+        }
+
+        .ring-offset-background {
+            --tw-ring-offset-width: 0px;
+        --tw-ring-color: #0ea5e9;
+        --tw-ring-offset-color: #ffffff;
+        box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+        }
+
+        .focus-visible\:ring-2 {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
+        }
+
+        .text-muted-foreground {
+            color: #64748b;
+        }
+
+        .placeholder\:text-muted-foreground::placeholder {
+            color: #94a3b8;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .space-y-2 {
+            gap: 0.5rem;
+        }
+
+        .bg-destructive\/10 {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+        }
+
+        .p-3 {
+            padding: 0.75rem;
+        }
+
+        .text-destructive {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex min-h-screen items-center justify-center bg-background p-4">
+        <div class="w-full max-w-md">
+            <div class="mb-8 text-center">
+                <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-7 w-7 text-primary-foreground">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 16V8a2 2 0 00 1.73-1 9.73l-7-4A2 2 0 00-1.73-1v10.26l7 4A2 2 0 001 7.73 1.73z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.27 6.96 12 12.01 22.08L12 22.08 5.72 21.03a2 2 0 0000-1.73-2.73V11.27" />
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-foreground">TokoManager</h1>
+                <p class="mt-1 text-muted-foreground">Sistem Manajemen Toko</p>
+            </div>
+
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
+                <div class="flex-col space-y-1.5 p-6 text-center">
+                    <h3 class="text-2xl font-semibold leading-none tracking-tight">Masuk ke Akun</h3>
+                    <p class="text-sm text-muted-foreground">Masukkan kredensial Anda</p>
+                </div>
+                <div class="p-6 pt-0">
+                    <form action="/login" method="post" class="space-y-4">
+                        <div class="space-y-2">
+                            <label for="username">Username</label>
+                            <input
+                                type="text"
+                                name="username"
+                                id="username"
+                                placeholder="Masukkan username"
+                                required
+                            >
+                        </div>
+                        <div class="space-y-2">
+                            <label for="password">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="•••••"
+                                required
+                            >
+                        </div>
+
+                        <button type="submit">
+                            Masuk
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 text-center text-sm text-muted-foreground">
+            <p>Demo: Username: owner, Admin | Password: password</p>
+        </div>
+    </div>
+</body>
+</html>

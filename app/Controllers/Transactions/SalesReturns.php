@@ -27,8 +27,8 @@ class SalesReturns extends BaseController
         $this->productModel = new \App\Models\ProductModel();
         $this->stockMutationModel = new \App\Models\StockMutationModel();
         $this->warehouseModel = new \App\Models\WarehouseModel();
-        $this->salesModel = new \App\Models\SalesModel();
-        $this->salesDetailModel = new \App\Models\SalesDetailModel();
+        $this->salesModel = new \App\Models\SaleModel();
+        $this->salesDetailModel = new \App\Models\SaleItemModel();
     }
     
     public function index()

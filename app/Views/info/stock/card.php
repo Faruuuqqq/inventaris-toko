@@ -1,3 +1,6 @@
+<?= $this->extend('layout/main') ?>
+
+<?= $this->section('content') ?>
 <!-- Filters Section -->
 <div class="mb-6 rounded-lg border bg-card text-card-foreground shadow-sm p-6">
     <h3 class="text-lg font-semibold mb-4">Filter Kartu Stok</h3>
@@ -7,7 +10,7 @@
             <select id="productFilter" class="form-input">
                 <option value="">Semua Produk</option>
                 <?php foreach ($products as $product): ?>
-                <option value="<?= $product['id'] ?>"><?= $product['name'] ?></option>
+                <option value="<?= is_array($product) ? $product['id'] : $product->id ?>"><?= is_array($product) ? $product['name'] : $product->name ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -16,7 +19,7 @@
             <select id="warehouseFilter" class="form-input">
                 <option value="">Semua Gudang</option>
                 <?php foreach ($warehouses as $warehouse): ?>
-                <option value="<?= $warehouse['id'] ?>"><?= $warehouse['name'] ?></option>
+                <option value="<?= is_array($warehouse) ? $warehouse['id'] : $warehouse->id ?>"><?= is_array($warehouse) ? $warehouse['name'] : $warehouse->name ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -77,14 +80,14 @@
         const warehouseId = document.getElementById('warehouseFilter').value;
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-        
+
         const params = new URLSearchParams({
             product_id: productId,
             warehouse_id: warehouseId,
             start_date: startDate,
             end_date: endDate
         });
-        
+
         fetch('/info/stock/getMutations?' + params.toString())
             .then(response => response.json())
             .then(data => {
@@ -95,11 +98,11 @@
                 alert('Gagal memuat data');
             });
     }
-    
+
     function renderMutations(mutations) {
         const tbody = document.getElementById('mutationsTable');
         tbody.innerHTML = '';
-        
+
         if (mutations.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -110,10 +113,10 @@
             `;
             return;
         }
-        
+
         mutations.forEach(mutation => {
             const row = document.createElement('tr');
-            
+
             const typeClass = {
                 'IN': 'badge-success',
                 'OUT': 'badge-destructive',
@@ -121,7 +124,7 @@
                 'ADJUSTMENT_OUT': 'badge-destructive',
                 'TRANSFER': 'badge-warning'
             }[mutation.type] || 'badge-secondary';
-            
+
             const typeName = {
                 'IN': 'Masuk',
                 'OUT': 'Keluar',
@@ -129,7 +132,7 @@
                 'ADJUSTMENT_OUT': 'Adjus Keluar',
                 'TRANSFER': 'Pindah'
             }[mutation.type] || mutation.type;
-            
+
             row.innerHTML = `
                 <td>${formatDate(mutation.created_at)}</td>
                 <td>${mutation.product_name}</td>
@@ -143,13 +146,13 @@
             tbody.appendChild(row);
         });
     }
-    
+
     function resetFilters() {
         document.getElementById('productFilter').value = '';
         document.getElementById('warehouseFilter').value = '';
         document.getElementById('startDate').value = '';
         document.getElementById('endDate').value = '';
-        
+
         document.getElementById('mutationsTable').innerHTML = `
             <tr>
                 <td colspan="9" class="text-center text-muted-foreground">
@@ -158,7 +161,7 @@
             </tr>
         `;
     }
-    
+
     function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('id-ID', {
@@ -167,17 +170,18 @@
             year: 'numeric'
         });
     }
-    
+
     // Load initial data on page load
     document.addEventListener('DOMContentLoaded', function() {
         // Set default date range (last 30 days)
         const endDate = new Date();
         const startDate = new Date();
         startDate.setDate(endDate.getDate() - 30);
-        
+
         document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
         document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
-        
+
         loadMutations();
     });
 </script>
+<?= $this->endSection() ?>

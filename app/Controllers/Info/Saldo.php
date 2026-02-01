@@ -58,7 +58,7 @@ class Saldo extends BaseController
             'totalReceivable' => $totalReceivable,
         ];
         
-        return view('layout/main', $data)->renderSection('content', view('info/saldo/receivable', $data));
+        return view('info/saldo/receivable', $data);
     }
 
     public function payable()
@@ -79,7 +79,7 @@ class Saldo extends BaseController
             'totalPayable' => $totalPayable,
         ];
         
-        return view('layout/main', $data)->renderSection('content', view('info/saldo/payable', $data));
+        return view('info/saldo/payable', $data);
     }
 
     private function calculateDaysOverdue($invoiceDate, $dueDate)
@@ -111,7 +111,7 @@ class Saldo extends BaseController
             'warehouses' => $warehouseModel->findAll(),
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('info/saldo/stock', $data));
+        return view('info/saldo/stock', $data);
     }
 
     public function stockData()

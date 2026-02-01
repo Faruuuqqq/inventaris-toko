@@ -30,8 +30,30 @@ Options -Indexes
 	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 </IfModule>
 
-<IfModule !mod_rewrite.c>
-	# If we don't have mod_rewrite installed, all 404's
-	# can be sent to index.php, and everything works as normal.
-	ErrorDocument 404 index.php
+# Allow access from public folder
+<IfModule mod_rewrite.c>
+    Options -Indexes -MultiViews
 </IfModule>
+
+# DirectoryIndex - sets the directory index
+<IfModule mod_autoindex.c>
+    DirectoryIndex index.php
+</IfModule>
+
+# Security: Prevent listing of hidden files
+<Files ~ "^\.">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Security: Disable directory browsing
+<Directory ~ "^\.(?!\.well-known).*">
+    Order allow,deny
+    Deny from all
+</Directory>
+
+# Security: Prevent access to sensitive files
+<Files ~ "^\.env$|^composer\.(json|lock|phar)">
+    Order allow,deny
+    Deny from all
+</Files>

@@ -1,42 +1,72 @@
 <?php
-$variant = $variant ?? 'default';
-$size = $size ?? 'default';
+/**
+ * Modern Button Component
+ * Versatile button with multiple variants and sizes
+ * 
+ * Usage:
+ * <?= view('components/button', [
+ *     'text' => 'Click Me',
+ *     'variant' => 'primary',  // primary, secondary, destructive, outline, ghost, link
+ *     'size' => 'md',  // sm, md, lg, icon
+ *     'disabled' => false,
+ *     'loading' => false,
+ *     'icon' => 'Plus'
+ * ]) ?>
+ */
+
+$text = $text ?? '';
+$variant = $variant ?? 'primary';
+$size = $size ?? 'md';
+$disabled = $disabled ?? false;
+$loading = $loading ?? false;
+$icon = $icon ?? null;
+$iconPosition = $iconPosition ?? 'left';
+$type = $type ?? 'button';
+$class = $class ?? '';
+$attributes = $attributes ?? '';
 
 $variants = [
-    'default' => 'bg-primary text-primary-foreground hover:bg-primary/90',
-    'destructive' => 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-    'outline' => 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-    'secondary' => 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-    'ghost' => 'hover:bg-accent hover:text-accent-foreground',
-    'link' => 'text-primary underline-offset-4 hover:underline',
+    'primary' => 'btn-primary',
+    'secondary' => 'btn-secondary',
+    'destructive' => 'btn-destructive',
+    'outline' => 'btn-outline',
+    'ghost' => 'btn-ghost',
+    'link' => 'btn-link',
 ];
 
 $sizes = [
-    'default' => 'h-10 px-4 py-2',
-    'sm' => 'h-9 rounded-md px-3',
-    'lg' => 'h-11 rounded-md px-8',
-    'icon' => 'h-10 w-10',
+    'sm' => 'btn-sm',
+    'md' => '',
+    'lg' => 'btn-lg',
+    'icon' => 'btn-icon',
 ];
 
-$class = trim(implode(' ', [
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-    $variants[$variant],
-    $sizes[$size],
-    $class ?? '',
-]));
+$variantClass = $variants[$variant] ?? 'btn-primary';
+$sizeClass = $sizes[$size] ?? '';
 
-$type = $type ?? 'button';
+$buttonClass = trim("btn {$variantClass} {$sizeClass} {$class}");
 
-if ($type === 'submit'): ?>
-    <button type="submit" class="<?= $class ?>" <?= $attributes ?? '' ?>>
-        <?= $slot ?>
-    </button>
-<?php elseif ($type === 'reset'): ?>
-    <button type="reset" class="<?= $class ?>" <?= $attributes ?? '' ?>>
-        <?= $slot ?>
-    </button>
-<?php else: ?>
-    <button type="button" class="<?= $class ?>" <?= $attributes ?? '' ?>>
-        <?= $slot ?>
-    </button>
-<?php endif; ?>
+if ($disabled || $loading) {
+    $attributes .= ' disabled';
+}
+?>
+
+<button type="<?= $type ?>" 
+        class="<?= $buttonClass ?>" 
+        <?= $attributes ?>>
+    <?php if ($loading): ?>
+        <span class="animate-spin">
+            <?= icon('Loader', 'h-4 w-4') ?>
+        </span>
+    <?php elseif ($icon && $iconPosition === 'left'): ?>
+        <span><?= icon($icon, 'h-4 w-4') ?></span>
+    <?php endif; ?>
+    
+    <?php if ($text): ?>
+        <span><?= $text ?></span>
+    <?php endif; ?>
+    
+    <?php if ($icon && $iconPosition === 'right'): ?>
+        <span><?= icon($icon, 'h-4 w-4') ?></span>
+    <?php endif; ?>
+</button>

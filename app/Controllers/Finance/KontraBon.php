@@ -33,7 +33,8 @@ class KontraBon extends BaseController
             'kontraBons' => $kontraBons,
         ];
 
-        return view('layout/main', $data)->renderSection('content', view('finance/kontra-bon/index', $data));
+        return view('layout/main', $data)
+            . view('finance/kontra-bon/index', $data);
     }
 
     public function create()
@@ -74,21 +75,19 @@ class KontraBon extends BaseController
                     throw new \Exception('Invoice sudah lunas');
                 }
 
-                $totalAmount += ($sale['total_amount'] - $sale['paid_amount']);
+$totalAmount += ($sale['final_amount'] - $sale['paid_amount']);
                 $sales[] = $sale;
             }
-
+            
             // Create Kontra Bon
             $customer = $this->customerModel->find($customerId);
             $documentNumber = 'KB-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
-
+            
             $kontraBonId = $this->kontraBonModel->insert([
-                'document_number' => $documentNumber,
+                'number' => $documentNumber,
                 'customer_id' => $customerId,
-                'created_at' => date('Y-m-d'),
-                'due_date' => $dueDate ?: date('Y-m-d', strtotime('+30 days')),
                 'total_amount' => $totalAmount,
-                'status' => 'UNPAID',
+                'status' => 'DRAFT',
                 'notes' => $notes,
             ]);
 
@@ -118,11 +117,12 @@ class KontraBon extends BaseController
         }
 
         $invoices = $this->saleModel
-            ->select('sales.id, sales.invoice_number, sales.total_amount, sales.paid_amount, sales.created_at')
+            ->select('sales.id, sales.number, sales.total_amount, sales.discount_amount, sales.final_amount, sales.paid_amount, sales.date')
             ->where('sales.customer_id', $customerId)
             ->where('sales.payment_status !=', 'PAID')
             ->where('sales.kontra_bon_id IS NULL')
-            ->orderBy('sales.created_at', 'ASC')
+            ->where('sales.payment_type', 'CREDIT')
+            ->orderBy('sales.date', 'ASC')
             ->findAll();
 
         return $this->response->setJSON($invoices);
@@ -146,23 +146,30 @@ class KontraBon extends BaseController
             }
 
             // Update Kontra Bon status
-            $newStatus = 'UNPAID';
-            if (($kontraBon['total_amount'] - $amount) <= 0) {
+            $newStatus = 'DRAFT';
+            $newPaidAmount = $kontraBon['paid_amount'] + $amount;
+            if (($kontraBon['total_amount'] - $newPaidAmount) <= 0) {
                 $newStatus = 'PAID';
             } else {
                 $newStatus = 'PARTIAL';
             }
 
-            $this->kontraBonModel->update($kontraBonId, ['status' => $newStatus]);
-
+$this->kontraBonModel->update($kontraBonId, [
+                'status' => $newStatus,
+                'paid_amount' => $newPaidAmount
+            ]);
+            
             // Create payment record
             $paymentModel = new \App\Models\PaymentModel();
             $paymentModel->insert([
-                'payment_date' => date('Y-m-d H:i:s'),
+                'payment_number' => 'PAY-' . date('YmdHis'),
+                'payment_type' => 'RECEIVABLE',
+                'reference_type' => 'KONTRA_BON',
+                'reference_id' => $kontraBonId,
+                'customer_id' => $kontraBon['customer_id'],
                 'amount' => $amount,
                 'payment_method' => $paymentMethod,
-                'type' => 'RECEIVABLE',
-                'reference_id' => $kontraBonId,
+                'payment_date' => date('Y-m-d'),
                 'notes' => $notes,
             ]);
 

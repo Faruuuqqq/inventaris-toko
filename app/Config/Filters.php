@@ -54,13 +54,12 @@ class Filters extends BaseFilters
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
-            'pagecache',  // Web Page Caching
+            'forcehttps',
+            'pagecache',
         ],
         'after' => [
-            'pagecache',   // Web Page Caching
-            'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
+            'pagecache',
+            'performance',
         ],
     ];
 
@@ -74,17 +73,8 @@ class Filters extends BaseFilters
      * }
      */
     public array $globals = [
-        'before' => [
-            // 'security', // Global security filter
-            // 'honeypot',
-            'csrf',
-            // 'invalidchars',
-        ],
-        'after' => [
-            // 'security', // Global security filter
-            // 'honeypot',
-            'secureheaders',
-        ],
+        'before' => ['security', 'honeypot'],
+        'after' => ['security', 'honeypot', 'secureheaders'],
     ];
 
     /**
@@ -111,5 +101,31 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'auth' => [
+            'before' => [
+                'dashboard*',
+                'master/*',
+                'transactions/*',
+                'reports/*',
+                'api/*',
+            ],
+        ],
+        'role:OWNER,ADMIN' => [
+            'before' => [
+                'master/users*',
+                'master/warehouses*',
+                'master/salespersons*',
+                'reports/*',
+            ],
+        ],
+        'role:OWNER,ADMIN,GUDANG' => [
+            'before' => [
+                'master/products*',
+                'master/categories*',
+                'transactions/purchases*',
+                'transactions/stock*',
+            ],
+        ],
+    ];
 }

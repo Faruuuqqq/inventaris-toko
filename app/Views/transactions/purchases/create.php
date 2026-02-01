@@ -1,4 +1,6 @@
-<?= $this->extend('layouts/main') ?>
+<?php $this->section('content') ?>
+<?php $this->extend('layout/main') ?>
+<?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
 <div class="page-header">
@@ -47,7 +49,7 @@
                                         <option value="">Select Supplier</option>
                                         <?php foreach ($suppliers as $supplier): ?>
                                             <option value="<?= $supplier['id_supplier'] ?>" <?= selected($supplier['id_supplier'], old('id_supplier')) ?>>
-                                                <?= $supplier['nama_supplier'] ?>
+                                                <?= $supplier['name'] ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -228,3 +230,5 @@ document.addEventListener('alpine:init', () => {
 </script>
 
 <?= $this->endSection() ?>
+
+<?php $this->endSection() ?>

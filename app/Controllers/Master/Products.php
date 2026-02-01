@@ -1,165 +1,157 @@
 <?php
+
 namespace App\Controllers\Master;
 
-use App\Controllers\BaseController;
+use App\Controllers\BaseCRUDController;
 use App\Models\ProductModel;
 use App\Models\CategoryModel;
+use App\Models\ProductStockModel;
+use CodeIgniter\Model;
 
-class Products extends BaseController
+class Products extends BaseCRUDController
 {
-    protected $productModel;
-    protected $categoryModel;
+    protected string $viewPath = 'master/products';
+    protected string $routePath = '/master/products';
+    protected string $entityName = 'Produk';
+    protected string $entityNamePlural = 'Products';
+
+    protected CategoryModel $categoryModel;
+    protected ProductStockModel $productStockModel;
 
     public function __construct()
     {
-        $this->productModel = new ProductModel();
+        parent::__construct();
         $this->categoryModel = new CategoryModel();
+        $this->productStockModel = new ProductStockModel();
     }
 
+    protected function getModel(): Model
+    {
+        return new ProductModel();
+    }
+
+    protected function getStoreValidationRules(): array
+    {
+        return [
+            'sku' => 'required|is_unique[products.sku]',
+            'name' => 'required',
+            'category_id' => 'required',
+            'unit' => 'required',
+            'price_buy' => 'required|numeric|greater_than[0]',
+            'price_sell' => 'required|numeric|greater_than[0]',
+            'min_stock_alert' => 'required|integer|greater_than_equal_to[0]',
+        ];
+    }
+
+    protected function getUpdateValidationRules(int|string $id): array
+    {
+        return [
+            'sku' => 'required|is_unique[products.sku,id,' . $id . ']',
+            'name' => 'required',
+            'category_id' => 'required',
+            'unit' => 'required',
+            'price_buy' => 'required|numeric|greater_than[0]',
+            'price_sell' => 'required|numeric|greater_than[0]',
+            'min_stock_alert' => 'required|integer|greater_than_equal_to[0]',
+        ];
+    }
+
+    protected function getDataFromRequest(): array
+    {
+        return [
+            'sku' => $this->request->getPost('sku'),
+            'name' => $this->request->getPost('name'),
+            'category_id' => $this->request->getPost('category_id'),
+            'unit' => $this->request->getPost('unit'),
+            'price_buy' => $this->request->getPost('price_buy'),
+            'price_sell' => $this->request->getPost('price_sell'),
+            'min_stock_alert' => $this->request->getPost('min_stock_alert'),
+        ];
+    }
+
+    protected function getIndexData(): array
+    {
+        $products = $this->model
+            ->select('products.*, categories.name as category_name')
+            ->join('categories', 'categories.id = products.category_id', 'left')
+            ->findAll();
+
+        // Add stock data to each product
+        foreach ($products as $product) {
+            $product->stock = $this->getProductTotalStock($product->id);
+        }
+
+        return $products;
+    }
+
+    protected function getAdditionalViewData(): array
+    {
+        $products = $this->getIndexData();
+        $categories = $this->categoryModel->findAll();
+
+        // Calculate statistics
+        $totalStock = 0;
+        $totalValue = 0;
+
+        foreach ($products as $product) {
+            $stock = $product->stock ?? 0;
+            $totalStock += $stock;
+            $totalValue += $product->price_sell * $stock;
+        }
+
+        return [
+            'subtitle' => 'Kelola daftar produk dan kategori',
+            'categories' => $categories,
+            'totalProducts' => count($products),
+            'totalCategories' => count($categories),
+            'totalStock' => $totalStock,
+            'totalValue' => $totalValue,
+        ];
+    }
+
+    // Override index to use custom logic
     public function index()
     {
         try {
-            $products = $this->productModel
-                ->select('products.*, categories.name as category_name')
-                ->join('categories', 'categories.id = products.category_id', 'left')
-                ->findAll();
+            $products = $this->getIndexData();
+            $additionalData = $this->getAdditionalViewData();
 
-            $categories = $this->categoryModel->findAll();
-
-            // Calculate statistics
-            $totalProducts = count($products);
-            $totalCategories = count($categories);
-            $totalStock = 0;
-            $totalValue = 0;
-
-            foreach ($products as $product) {
-                $totalStock += $this->getProductTotalStock($product['id']);
-                $totalValue += $product['price_sell'] * $this->getProductTotalStock($product['id']);
-            }
-
-            $data = [
-                'title' => 'Produk',
-                'subtitle' => 'Kelola daftar produk dan kategori',
+            $data = array_merge([
+                'title' => $this->entityName,
                 'products' => $products,
-                'categories' => $categories,
-                'totalProducts' => $totalProducts,
-                'totalCategories' => $totalCategories,
-                'totalStock' => $totalStock,
-                'totalValue' => $totalValue,
-            ];
+            ], $additionalData);
 
-            return view('layout/main', $data)->renderSection('content', view('master/products/index', $data));
+            return view($this->viewPath . '/index', $data);
         } catch (\Exception $e) {
             log_message('error', 'Products index error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data produk: ' . $e->getMessage());
         }
     }
 
-    public function store()
+    protected function afterStore($insertId): void
     {
-        try {
-            // Validate input
-            $validation = \Config\Services::validation();
-            $validation->setRules([
-                'sku' => 'required|is_unique[products.sku]',
-                'name' => 'required',
-                'category_id' => 'required',
-                'unit' => 'required',
-                'price_buy' => 'required|numeric|greater_than[0]',
-                'price_sell' => 'required|numeric|greater_than[0]',
-                'min_stock_alert' => 'required|integer|greater_than_equal_to[0]',
-            ]);
+        log_message('info', "Product created: ID {$insertId}, SKU: {$this->request->getPost('sku')}");
+    }
 
-            if (!$validation->withRequest($this->request)->run()) {
-                return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-            }
+    protected function afterUpdate($id): void
+    {
+        log_message('info', "Product updated: ID {$id}, SKU: {$this->request->getPost('sku')}");
+    }
 
-            // Create product
-            $productId = $this->productModel->insert([
-                'sku' => $this->request->getPost('sku'),
-                'name' => $this->request->getPost('name'),
-                'category_id' => $this->request->getPost('category_id'),
-                'unit' => $this->request->getPost('unit'),
-                'price_buy' => $this->request->getPost('price_buy'),
-                'price_sell' => $this->request->getPost('price_sell'),
-                'min_stock_alert' => $this->request->getPost('min_stock_alert'),
-            ]);
-
-            log_message('info', "Product created: ID {$productId}, SKU: {$this->request->getPost('sku')}");
-            return redirect()->to('/master/products')->with('success', 'Produk berhasil ditambahkan');
-        } catch (\Exception $e) {
-            log_message('error', 'Product creation error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat menambahkan produk: ' . $e->getMessage())->withInput();
+    protected function beforeDelete($id): void
+    {
+        $product = $this->model->find($id);
+        if ($product) {
+            log_message('info', "Product deleted: ID {$id}, SKU: {$product->sku}");
         }
     }
 
-    public function update($id)
+    private function getProductTotalStock($productId): int
     {
-        try {
-            // Check if product exists
-            $product = $this->productModel->find($id);
-            if (!$product) {
-                return redirect()->back()->with('error', 'Produk tidak ditemukan')->withInput();
-            }
-
-            // Validate input
-            $validation = \Config\Services::validation();
-            $validation->setRules([
-                'sku' => 'required|is_unique[products.sku,id,'.$id.']',
-                'name' => 'required',
-                'category_id' => 'required',
-                'unit' => 'required',
-                'price_buy' => 'required|numeric|greater_than[0]',
-                'price_sell' => 'required|numeric|greater_than[0]',
-                'min_stock_alert' => 'required|integer|greater_than_equal_to[0]',
-            ]);
-
-            if (!$validation->withRequest($this->request)->run()) {
-                return redirect()->back()->with('errors', $validation->getErrors())->withInput();
-            }
-
-            // Update product
-            $this->productModel->update($id, [
-                'sku' => $this->request->getPost('sku'),
-                'name' => $this->request->getPost('name'),
-                'category_id' => $this->request->getPost('category_id'),
-                'unit' => $this->request->getPost('unit'),
-                'price_buy' => $this->request->getPost('price_buy'),
-                'price_sell' => $this->request->getPost('price_sell'),
-                'min_stock_alert' => $this->request->getPost('min_stock_alert'),
-            ]);
-
-            log_message('info', "Product updated: ID {$id}, SKU: {$this->request->getPost('sku')}");
-            return redirect()->to('/master/products')->with('success', 'Produk berhasil diperbarui');
-        } catch (\Exception $e) {
-            log_message('error', 'Product update error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat memperbarui produk: ' . $e->getMessage())->withInput();
-        }
-    }
-
-    public function delete($id)
-    {
-        try {
-            // Check if product exists
-            $product = $this->productModel->find($id);
-            if (!$product) {
-                return redirect()->back()->with('error', 'Produk tidak ditemukan');
-            }
-
-            // Delete product
-            $this->productModel->delete($id);
-            log_message('info', "Product deleted: ID {$id}, SKU: {$product['sku']}");
-            return redirect()->to('/master/products')->with('success', 'Produk berhasil dihapus');
-        } catch (\Exception $e) {
-            log_message('error', 'Product deletion error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus produk: ' . $e->getMessage());
-        }
-    }
-
-    private function getProductTotalStock($productId)
-    {
-        $productStockModel = new \App\Models\ProductStockModel();
-        $result = $productStockModel->where('product_id', $productId)->selectSum('quantity')->first();
-        return $result['quantity'] ?? 0;
+        $result = $this->productStockModel
+            ->where('product_id', $productId)
+            ->selectSum('quantity')
+            ->first();
+        return (int)($result->quantity ?? 0);
     }
 }
