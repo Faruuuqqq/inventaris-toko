@@ -36,6 +36,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Customers
     $routes->group('customers', function($routes) {
         $routes->get('/', 'Customers::index');
+        $routes->get('(:num)', 'Customers::detail/$1');
         $routes->post('/', 'Customers::store');
         $routes->put('(:num)', 'Customers::update/$1');
         $routes->delete('(:num)', 'Customers::delete/$1');
@@ -44,6 +45,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Suppliers
     $routes->group('suppliers', function($routes) {
         $routes->get('/', 'Suppliers::index');
+        $routes->get('(:num)', 'Suppliers::detail/$1');
         $routes->post('/', 'Suppliers::store');
         $routes->put('(:num)', 'Suppliers::update/$1');
         $routes->delete('(:num)', 'Suppliers::delete/$1');
@@ -71,6 +73,10 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     
     // Sales Subgroup
     $routes->group('sales', function($routes) {
+        $routes->get('/', 'Sales::index');
+        $routes->get('create', 'Sales::create');
+        $routes->get('(:num)', 'Sales::detail/$1');
+        $routes->post('/', 'Sales::store');
         $routes->get('cash', 'Sales::cash');
         $routes->post('storeCash', 'Sales::storeCash');
         $routes->get('credit', 'Sales::credit');

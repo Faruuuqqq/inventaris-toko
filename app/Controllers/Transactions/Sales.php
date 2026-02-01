@@ -73,6 +73,19 @@ class Sales extends BaseController
     }
 
     /**
+     * Show create/type selection page
+     */
+    public function create()
+    {
+        $data = [
+            'title' => 'Buat Penjualan',
+            'subtitle' => 'Pilih tipe penjualan',
+        ];
+        
+        return view('transactions/sales/create', $data);
+    }
+
+    /**
      * View: Cash Sales Form
      */
     public function cash()
