@@ -8,82 +8,155 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
-    <!-- CSS -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts: Plus Jakarta Sans (Modern Professional) -->
+    <!-- Inter Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         * {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
+
         [x-cloak] { display: none !important; }
-        
-        /* Smooth transitions for interactive elements */
-        button, a, input, select, textarea {
-            transition: all 0.2s ease;
+
+        /* CSS Variables for Shadcn UI Design System */
+        :root {
+            --background: 210 20% 98%;
+            --foreground: 222 47% 11%;
+
+            --card: 0 0% 100%;
+            --card-foreground: 222 47% 11%;
+
+            --popover: 0 0% 100%;
+            --popover-foreground: 222 47% 11%;
+
+            --primary: 217 91% 50%;
+            --primary-foreground: 0 0% 100%;
+
+            --secondary: 215 20% 94%;
+            --secondary-foreground: 222 47% 11%;
+
+            --muted: 215 20% 94%;
+            --muted-foreground: 215 16% 47%;
+
+            --accent: 217 91% 95%;
+            --accent-foreground: 217 91% 40%;
+
+            --destructive: 0 84% 60%;
+            --destructive-foreground: 0 0% 100%;
+
+            --success: 142 76% 36%;
+            --success-foreground: 0 0% 100%;
+
+            --warning: 38 92% 50%;
+            --warning-foreground: 0 0% 100%;
+
+            --border: 214 32% 91%;
+            --input: 214 32% 91%;
+            --ring: 217 91% 50%;
+
+            --radius: 0.5rem;
+
+            --sidebar-background: 222 47% 11%;
+            --sidebar-foreground: 210 20% 90%;
+            --sidebar-primary: 217 91% 60%;
+            --sidebar-primary-foreground: 0 0% 100%;
+            --sidebar-accent: 222 40% 18%;
+            --sidebar-accent-foreground: 210 20% 98%;
+            --sidebar-border: 222 40% 20%;
+            --sidebar-ring: 217 91% 60%;
+            --sidebar-muted: 222 30% 25%;
         }
+
+        /* Tailwind Color System Mapping */
+        .bg-background { background-color: hsl(var(--background)); }
+        .text-foreground { color: hsl(var(--foreground)); }
         
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
+        .bg-card { background-color: hsl(var(--card)); }
+        .text-card-foreground { color: hsl(var(--card-foreground)); }
         
-        ::-webkit-scrollbar-track {
-            background: var(--background);
-        }
+        .bg-primary { background-color: hsl(var(--primary)); }
+        .text-primary { color: hsl(var(--primary)); }
+        .text-primary-foreground { color: hsl(var(--primary-foreground)); }
         
-        ::-webkit-scrollbar-thumb {
-            background: var(--muted-foreground);
-            border-radius: 4px;
-        }
+        .bg-secondary { background-color: hsl(var(--secondary)); }
+        .text-secondary { color: hsl(var(--secondary)); }
+        .text-secondary-foreground { color: hsl(var(--secondary-foreground)); }
         
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--foreground);
-        }
+        .bg-muted { background-color: hsl(var(--muted)); }
+        .text-muted { color: hsl(var(--muted)); }
+        .text-muted-foreground { color: hsl(var(--muted-foreground)); }
+        
+        .bg-accent { background-color: hsl(var(--accent)); }
+        .text-accent { color: hsl(var(--accent)); }
+        .text-accent-foreground { color: hsl(var(--accent-foreground)); }
+        
+        .bg-destructive { background-color: hsl(var(--destructive)); }
+        .text-destructive { color: hsl(var(--destructive)); }
+        .text-destructive-foreground { color: hsl(var(--destructive-foreground)); }
+        
+        .bg-success { background-color: hsl(var(--success)); }
+        .text-success { color: hsl(var(--success)); }
+        
+        .bg-warning { background-color: hsl(var(--warning)); }
+        .text-warning { color: hsl(var(--warning)); }
+        
+        .border-border { border-color: hsl(var(--border)); }
+        .bg-input { background-color: hsl(var(--input)); }
+        .ring-offset-ring { --tw-ring-color: hsl(var(--ring)); }
+        
+        /* Opacity Variants */
+        .bg-primary\/10 { background-color: hsl(var(--primary) / 0.1); }
+        .bg-success\/10 { background-color: hsl(var(--success) / 0.1); }
+        .bg-warning\/10 { background-color: hsl(var(--warning) / 0.1); }
+        .bg-destructive\/10 { background-color: hsl(var(--destructive) / 0.1); }
+        
+        .bg-background\/80 { background-color: hsl(var(--background) / 0.8); }
+
+        /* Sidebar Colors */
+        .bg-sidebar { background-color: hsl(var(--sidebar-background)); }
+        .text-sidebar-foreground { color: hsl(var(--sidebar-foreground)); }
+        .bg-sidebar-primary { background-color: hsl(var(--sidebar-primary)); }
+        .text-sidebar-primary-foreground { color: hsl(var(--sidebar-primary-foreground)); }
+        .bg-sidebar-accent { background-color: hsl(var(--sidebar-accent)); }
+        .text-sidebar-accent-foreground { color: hsl(var(--sidebar-accent-foreground)); }
+        .border-sidebar-border { border-color: hsl(var(--sidebar-border)); }
+
+        /* Rounded Radius */
+        .rounded-lg { border-radius: var(--radius); }
+        .rounded-md { border-radius: calc(var(--radius) - 2px); }
+        .rounded-sm { border-radius: calc(var(--radius) - 4px); }
     </style>
 </head>
-<body class="min-h-screen bg-background font-sans antialiased" x-data="{ sidebarOpen: false }" x-cloak>
+<body class="min-h-screen bg-background text-foreground" x-data="{ sidebarOpen: false }" x-cloak>
     
     <!-- Mobile Sidebar Backdrop -->
     <div x-show="sidebarOpen" 
-         x-transition:enter="transition-opacity ease-linear duration-300" 
-         x-transition:enter-start="opacity-0" 
-         x-transition:enter-end="opacity-100" 
-         x-transition:leave="transition-opacity ease-linear duration-300" 
-         x-transition:leave-start="opacity-100" 
-         x-transition:leave-end="opacity-0" 
-         class="fixed inset-0 z-40 bg-foreground/80 backdrop-blur-sm md:hidden" 
-         @click="sidebarOpen = false" 
-         x-cloak>
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         @click="sidebarOpen = false"
+         class="fixed inset-0 z-40 bg-background/80 md:hidden">
     </div>
 
-    <!-- Sidebar Component -->
+    <!-- Sidebar -->
     <?= view('layout/sidebar') ?>
 
     <!-- Main Content Wrapper -->
     <div class="flex min-h-screen flex-col transition-all duration-300 md:ml-64">
         
-        <!-- Sticky Header - Enhanced Design -->
+        <!-- Sticky Header -->
         <header class="sticky top-0 z-30 border-b border-border bg-card shadow-sm">
             <div class="flex h-16 items-center justify-between px-6">
                 
-                <!-- Left Section -->
+                <!-- Left Section: Menu Toggle + Title -->
                 <div class="flex items-center gap-4 flex-1">
                     <!-- Mobile Hamburger Toggle -->
                     <button @click="sidebarOpen = !sidebarOpen" 
@@ -92,7 +165,7 @@
                         <?= icon('Menu', 'h-5 w-5') ?>
                     </button>
 
-                    <!-- Page Title & Breadcrumb -->
+                    <!-- Page Title -->
                     <div class="flex flex-col gap-0.5">
                         <h1 class="text-lg font-semibold text-foreground leading-tight"><?= $title ?? 'Dashboard' ?></h1>
                         <?php if (isset($subtitle)): ?>
@@ -101,15 +174,13 @@
                     </div>
                 </div>
 
-                <!-- Right Section - Header Actions -->
+                <!-- Right Section: Header Actions -->
                 <div class="flex items-center gap-3 md:gap-4">
                     <!-- Global Search -->
-                    <div class="relative hidden sm:flex items-center" x-data="{ searchOpen: false }">
+                    <div class="relative hidden sm:flex items-center">
                         <input type="text" 
-                               @focus="searchOpen = true"
-                               @blur="setTimeout(() => searchOpen = false, 200)"
                                placeholder="Cari..." 
-                               class="hidden sm:flex h-9 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-transparent transition-all duration-200 w-0 sm:w-40 md:w-48 lg:w-56"
+                               class="h-9 rounded-lg border border-border bg-background px-3 py-1.5 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-transparent transition-all duration-200 w-40 md:w-48 lg:w-56"
                                aria-label="Global search">
                         <span class="absolute left-3 text-muted-foreground pointer-events-none">
                             <?= icon('Search', 'h-4 w-4') ?>
@@ -137,8 +208,7 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-95"
                              @click.away="notifOpen = false"
-                             class="absolute right-0 mt-2 w-80 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-50"
-                             x-cloak>
+                             class="absolute right-0 mt-2 w-80 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-50">
                             <div class="bg-background px-4 py-3 border-b border-border">
                                 <h3 class="font-semibold text-foreground text-sm">Notifikasi</h3>
                             </div>
@@ -173,8 +243,7 @@
                              x-transition:leave-start="opacity-100 scale-100 translate-y-0"
                              x-transition:leave-end="opacity-0 scale-95 -translate-y-2"
                              @click.away="userOpen = false"
-                             class="absolute right-0 mt-2 w-48 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-50"
-                             x-cloak>
+                             class="absolute right-0 mt-2 w-48 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-50">
                             <div class="px-4 py-3 border-b border-border bg-background">
                                 <p class="text-sm font-semibold text-foreground"><?= session()->get('fullname') ?? 'User' ?></p>
                                 <p class="text-xs text-muted-foreground capitalize mt-0.5"><?= session()->get('role') ?? 'Role' ?></p>
