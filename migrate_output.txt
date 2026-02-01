@@ -1,0 +1,69 @@
+
+CodeIgniter v4.6.4 Command Line Tool - Server Time: 2026-02-01 13:25:12 UTC+00:00
+
+Rolling back migrations to batch:  0
+Done rolling back migrations.
+Running all new migrations...
+[CodeIgniter\Database\Exceptions\DatabaseException]
+Table 'users' already exists
+at SYSTEMPATH\Database\BaseConnection.php:684
+
+  Caused by:
+  [CodeIgniter\Database\Exceptions\DatabaseException]
+  Table 'users' already exists
+  at SYSTEMPATH\Database\MySQLi\Connection.php:332
+
+  Caused by:
+  [mysqli_sql_exception]
+  Table 'users' already exists
+  at SYSTEMPATH\Database\MySQLi\Connection.php:327
+
+Backtrace:
+  1    SYSTEMPATH\Database\MySQLi\Connection.php:327
+       mysqli()->query()
+
+  2    SYSTEMPATH\Database\BaseConnection.php:729
+       CodeIgniter\Database\MySQLi\Connection()->execute()
+
+  3    SYSTEMPATH\Database\BaseConnection.php:646
+       CodeIgniter\Database\BaseConnection()->simpleQuery()
+
+  4    SYSTEMPATH\Database\Forge.php:570
+       CodeIgniter\Database\BaseConnection()->query()
+
+  5    APPPATH\Database\Migrations\2026-02-01-100000_CreateInitialTables.php:25
+       CodeIgniter\Database\Forge()->createTable()
+
+  6    SYSTEMPATH\Database\MigrationRunner.php:874
+       App\Database\Migrations\CreateInitialTables()->up()
+
+  7    SYSTEMPATH\Database\MigrationRunner.php:180
+       CodeIgniter\Database\MigrationRunner()->migrate()
+
+  8    SYSTEMPATH\Commands\Database\Migrate.php:85
+       CodeIgniter\Database\MigrationRunner()->latest()
+
+  9    SYSTEMPATH\CLI\Commands.php:74
+       CodeIgniter\Commands\Database\Migrate()->run()
+
+ 10    SYSTEMPATH\CLI\BaseCommand.php:119
+       CodeIgniter\CLI\Commands()->run()
+
+ 11    SYSTEMPATH\Commands\Database\MigrateRefresh.php:87
+       CodeIgniter\CLI\BaseCommand()->call()
+
+ 12    SYSTEMPATH\CLI\Commands.php:74
+       CodeIgniter\Commands\Database\MigrateRefresh()->run()
+
+ 13    SYSTEMPATH\CLI\Console.php:47
+       CodeIgniter\CLI\Commands()->run()
+
+ 14    SYSTEMPATH\Boot.php:388
+       CodeIgniter\CLI\Console()->run()
+
+ 15    SYSTEMPATH\Boot.php:133
+       CodeIgniter\Boot::runCommand()
+
+ 16    ROOTPATH\spark:87
+       CodeIgniter\Boot::bootSpark()
+

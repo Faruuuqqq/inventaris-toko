@@ -22,7 +22,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addKey('username');
         $this->forge->addKey('role');
-        $this->forge->createTable('users');
+        $this->forge->createTable('users', true);
 
         // 2. Warehouses table
         $this->forge->addField([
@@ -33,7 +33,7 @@ class CreateInitialTables extends Migration
             'is_active' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 1],
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('warehouses');
+        $this->forge->createTable('warehouses', true);
 
         // 3. Categories table
         $this->forge->addField([
@@ -41,7 +41,7 @@ class CreateInitialTables extends Migration
             'name' => ['type' => 'VARCHAR', 'constraint' => 50],
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('categories');
+        $this->forge->createTable('categories', true);
 
         // 4. Products table
         $this->forge->addField([
@@ -59,7 +59,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('sku');
         $this->forge->addKey('category_id');
         $this->forge->addForeignKey('category_id', 'categories', 'id', 'SET NULL', 'CASCADE');
-        $this->forge->createTable('products');
+        $this->forge->createTable('products', true);
 
         // 5. Product Stocks table
         $this->forge->addField([
@@ -73,7 +73,7 @@ class CreateInitialTables extends Migration
         $this->forge->addUniqueKey(['product_id', 'warehouse_id']);
         $this->forge->addForeignKey('product_id', 'products', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('warehouse_id', 'warehouses', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('product_stocks');
+        $this->forge->createTable('product_stocks', true);
 
         // 6. Customers table
         $this->forge->addField([
@@ -89,7 +89,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addKey('code');
         $this->forge->addKey('name');
-        $this->forge->createTable('customers');
+        $this->forge->createTable('customers', true);
 
         // 7. Suppliers table
         $this->forge->addField([
@@ -103,7 +103,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addKey('code');
         $this->forge->addKey('name');
-        $this->forge->createTable('suppliers');
+        $this->forge->createTable('suppliers', true);
 
         // 8. Salespersons table
         $this->forge->addField([
@@ -113,7 +113,7 @@ class CreateInitialTables extends Migration
             'is_active' => ['type' => 'TINYINT', 'constraint' => 1, 'default' => 1],
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('salespersons');
+        $this->forge->createTable('salespersons', true);
 
         // 9. Contra Bons table
         $this->forge->addField([
@@ -130,7 +130,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('customer_id');
         $this->forge->addKey('status');
         $this->forge->addForeignKey('customer_id', 'customers', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('contra_bons');
+        $this->forge->createTable('contra_bons', true);
 
         // 10. Sales table
         $this->forge->addField([
@@ -158,7 +158,7 @@ class CreateInitialTables extends Migration
         $this->forge->addForeignKey('salesperson_id', 'salespersons', 'id', 'SET NULL', 'CASCADE');
         $this->forge->addForeignKey('warehouse_id', 'warehouses', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('contra_bon_id', 'contra_bons', 'id', 'SET NULL', 'CASCADE');
-        $this->forge->createTable('sales');
+        $this->forge->createTable('sales', true);
 
         // 11. Sale Items table
         $this->forge->addField([
@@ -174,7 +174,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('product_id');
         $this->forge->addForeignKey('sale_id', 'sales', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('product_id', 'products', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('sale_items');
+        $this->forge->createTable('sale_items', true);
 
         // 12. Purchase Orders table
         $this->forge->addField([
@@ -193,7 +193,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('status');
         $this->forge->addForeignKey('supplier_id', 'suppliers', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('purchase_orders');
+        $this->forge->createTable('purchase_orders', true);
 
         // 13. Purchase Order Items table
         $this->forge->addField([
@@ -209,7 +209,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('product_id');
         $this->forge->addForeignKey('po_id', 'purchase_orders', 'id_po', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('product_id', 'products', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('purchase_order_items');
+        $this->forge->createTable('purchase_order_items', true);
 
         // 14. Stock Mutations table
         $this->forge->addField([
@@ -228,7 +228,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('warehouse_id');
         $this->forge->addForeignKey('product_id', 'products', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('warehouse_id', 'warehouses', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('stock_mutations');
+        $this->forge->createTable('stock_mutations', true);
 
         // 15. Payments table
         $this->forge->addField([
@@ -247,7 +247,7 @@ class CreateInitialTables extends Migration
         $this->forge->addKey('type');
         $this->forge->addKey('payment_date');
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->createTable('payments');
+        $this->forge->createTable('payments', true);
 
         // Continue in next part...
         // 16-24 tables: returns, expenses, delivery_notes, audit_logs, system_config
