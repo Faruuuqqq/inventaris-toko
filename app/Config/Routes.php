@@ -127,11 +127,34 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
     // History
     $routes->group('history', function($routes) {
         $routes->get('sales', 'History::sales');
+        $routes->get('sales-data', 'History::salesData'); // AJAX
+        $routes->get('sales-export', 'History::exportSalesCSV'); // Export
+        $routes->get('sales-summary', 'History::salesSummary'); // AJAX Summary
+        
         $routes->get('purchases', 'History::purchases');
+        $routes->get('purchases-data', 'History::purchasesData'); // AJAX
+        $routes->get('purchases-export', 'History::exportPurchasesCSV'); // Export
+        $routes->get('purchases-summary', 'History::purchasesSummary'); // AJAX Summary
+        
         $routes->get('return-sales', 'History::returnSales');
+        $routes->get('sales-returns-data', 'History::salesReturnsData'); // AJAX
+        
         $routes->get('return-purchases', 'History::returnPurchases');
+        $routes->get('purchase-returns-data', 'History::purchaseReturnsData'); // AJAX
+        
         $routes->get('payments-receivable', 'History::paymentsReceivable');
+        $routes->get('payments-receivable-data', 'History::paymentsReceivableData'); // AJAX
+        $routes->get('payments-receivable-export', 'History::exportPaymentsCSV'); // Export
+        
         $routes->get('payments-payable', 'History::paymentsPayable');
+        $routes->get('payments-payable-data', 'History::paymentsPayableData'); // AJAX
+        $routes->get('payments-payable-export', 'History::exportPaymentsCSV'); // Export
+        
+        $routes->get('expenses', 'History::expenses');
+        $routes->get('expenses-data', 'History::expensesData'); // AJAX
+        
+        $routes->get('stock-movements', 'History::stockMovements');
+        $routes->get('stock-movements-data', 'History::stockMovementsData'); // AJAX
     });
 
     // Stock Info

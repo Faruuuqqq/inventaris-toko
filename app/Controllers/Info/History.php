@@ -7,6 +7,8 @@ use App\Models\SaleItemModel;
 use App\Models\CustomerModel;
 use App\Models\SalespersonModel;
 use App\Models\SupplierModel;
+use App\Models\StockMutationModel;
+use App\Models\ProductModel;
 
 class History extends BaseController
 {
@@ -15,6 +17,8 @@ class History extends BaseController
     protected $customerModel;
     protected $salespersonModel;
     protected $supplierModel;
+    protected $stockMutationModel;
+    protected $productModel;
 
     public function __construct()
     {
@@ -23,6 +27,8 @@ class History extends BaseController
         $this->customerModel = new CustomerModel();
         $this->salespersonModel = new SalespersonModel();
         $this->supplierModel = new SupplierModel();
+        $this->stockMutationModel = new StockMutationModel();
+        $this->productModel = new ProductModel();
     }
 
     public function sales()
@@ -342,20 +348,271 @@ class History extends BaseController
         return view('info/history/expenses', $data);
     }
 
-    /**
-     * Get Expenses Data
-     */
-    public function expensesData()
-    {
-        $category = $this->request->getGet('category');
-        $startDate = $this->request->getGet('start_date');
-        $endDate = $this->request->getGet('end_date');
-        $paymentMethod = $this->request->getGet('payment_method');
+     /**
+      * Get Expenses Data
+      */
+     public function expensesData()
+     {
+         $category = $this->request->getGet('category');
+         $startDate = $this->request->getGet('start_date');
+         $endDate = $this->request->getGet('end_date');
+         $paymentMethod = $this->request->getGet('payment_method');
 
-        $expenseModel = new \App\Models\ExpenseModel();
-        $expenses = $expenseModel->getExpenses($category, $startDate, $endDate, $paymentMethod);
+         $expenseModel = new \App\Models\ExpenseModel();
+         $expenses = $expenseModel->getExpenses($category, $startDate, $endDate, $paymentMethod);
 
-        return $this->response->setJSON($expenses);
-    }
+         return $this->response->setJSON($expenses);
+     }
+
+     /**
+      * Stock Movement History - View all stock mutations
+      */
+     public function stockMovements()
+     {
+         // Check if user has warehouse access
+         if (!in_array(session()->get('role'), ['OWNER', 'ADMIN', 'GUDANG'])) {
+             return redirect()->to('/dashboard')->with('error', 'Access denied');
+         }
+
+         $data = [
+             'title' => 'Histori Pergerakan Stok',
+             'subtitle' => 'Riwayat lengkap pergerakan stok produk',
+             'products' => $this->productModel->findAll(),
+             'types' => ['SALE', 'PURCHASE', 'SALES_RETURN', 'PURCHASE_RETURN', 'ADJUSTMENT']
+         ];
+
+         return view('info/history/stock-movements', $data);
+     }
+
+     /**
+      * Get Stock Movement Data
+      */
+     public function stockMovementsData()
+     {
+         $productId = $this->request->getGet('product_id');
+         $type = $this->request->getGet('type');
+         $startDate = $this->request->getGet('start_date');
+         $endDate = $this->request->getGet('end_date');
+
+         $db = \Config\Database::connect();
+         $builder = $db->table('stock_mutations')
+             ->select('stock_mutations.*, products.name as product_name, products.sku, warehouses.name as warehouse_name')
+             ->join('products', 'products.id = stock_mutations.product_id')
+             ->join('warehouses', 'warehouses.id = stock_mutations.warehouse_id');
+
+         if ($productId) {
+             $builder->where('stock_mutations.product_id', $productId);
+         }
+
+         if ($type) {
+             $builder->where('stock_mutations.type', $type);
+         }
+
+         if ($startDate) {
+             $builder->where('stock_mutations.created_at >=', $startDate);
+         }
+
+         if ($endDate) {
+             $builder->where('stock_mutations.created_at <=', $endDate);
+         }
+
+         $movements = $builder->orderBy('stock_mutations.created_at', 'DESC')->get()->getResultArray();
+
+         return $this->response->setJSON($movements);
+     }
+
+     /**
+      * Export Sales History to CSV
+      */
+     public function exportSalesCSV()
+     {
+         $customerId = $this->request->getGet('customer_id');
+         $paymentType = $this->request->getGet('payment_type');
+         $startDate = $this->request->getGet('start_date');
+         $endDate = $this->request->getGet('end_date');
+         $paymentStatus = $this->request->getGet('payment_status');
+
+         $sales = $this->saleModel->getAllSalesWithHidden(
+             $customerId,
+             $paymentType,
+             $startDate,
+             $endDate,
+             $paymentStatus
+         );
+
+         // Prepare CSV
+         $filename = 'sales_history_' . date('Y-m-d_His') . '.csv';
+         $csv = "Nomor Invoice,Tanggal,Customer,Tipe Pembayaran,Total,Dibayar,Status Pembayaran,Salesman\n";
+
+         foreach ($sales as $sale) {
+             $csv .= "\"{$sale['invoice_number']}\",\"{$sale['created_at']}\",\"{$sale['customer_name']}\",\"{$sale['payment_type']}\",\"{$sale['total_amount']}\",\"{$sale['paid_amount']}\",\"{$sale['payment_status']}\",\"{$sale['salesperson_name']}\"\n";
+         }
+
+         return $this->response
+             ->setHeader('Content-Type', 'text/csv; charset=utf-8')
+             ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
+             ->setBody($csv);
+     }
+
+     /**
+      * Export Purchases History to CSV
+      */
+     public function exportPurchasesCSV()
+     {
+         $supplierId = $this->request->getGet('supplier_id');
+         $startDate = $this->request->getGet('start_date');
+         $endDate = $this->request->getGet('end_date');
+         $status = $this->request->getGet('status');
+
+         $db = \Config\Database::connect();
+         $builder = $db->table('purchase_orders')
+             ->select('purchase_orders.*, suppliers.name as supplier_name')
+             ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id');
+
+         if ($supplierId) {
+             $builder->where('purchase_orders.supplier_id', $supplierId);
+         }
+         if ($status) {
+             $builder->where('purchase_orders.status', $status);
+         }
+         if ($startDate) {
+             $builder->where('purchase_orders.tanggal_po >=', $startDate);
+         }
+         if ($endDate) {
+             $builder->where('purchase_orders.tanggal_po <=', $endDate);
+         }
+
+         $purchases = $builder->orderBy('purchase_orders.tanggal_po', 'DESC')->get()->getResultArray();
+
+         // Prepare CSV
+         $filename = 'purchases_history_' . date('Y-m-d_His') . '.csv';
+         $csv = "Nomor PO,Tanggal PO,Supplier,Total,Status\n";
+
+         foreach ($purchases as $po) {
+             $csv .= "\"{$po['po_number']}\",\"{$po['tanggal_po']}\",\"{$po['supplier_name']}\",\"{$po['total_amount']}\",\"{$po['status']}\"\n";
+         }
+
+         return $this->response
+             ->setHeader('Content-Type', 'text/csv; charset=utf-8')
+             ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
+             ->setBody($csv);
+     }
+
+     /**
+      * Export Payment History to CSV
+      */
+     public function exportPaymentsCSV()
+     {
+         $type = $this->request->getGet('type'); // RECEIVABLE or PAYABLE
+         $startDate = $this->request->getGet('start_date');
+         $endDate = $this->request->getGet('end_date');
+
+         $db = \Config\Database::connect();
+
+         if ($type === 'RECEIVABLE') {
+             $builder = $db->table('payments')
+                 ->select('payments.*, customers.name as customer_name')
+                 ->join('customers', 'customers.id = payments.customer_id', 'left')
+                 ->where('payments.payment_type', 'RECEIVABLE');
+             $filename = 'payments_receivable_' . date('Y-m-d_His') . '.csv';
+             $csv = "ID Pembayaran,Tanggal,Customer,Metode Pembayaran,Jumlah\n";
+         } else {
+             $builder = $db->table('payments')
+                 ->select('payments.*, suppliers.name as supplier_name')
+                 ->join('suppliers', 'suppliers.id = payments.supplier_id', 'left')
+                 ->where('payments.payment_type', 'PAYABLE');
+             $filename = 'payments_payable_' . date('Y-m-d_His') . '.csv';
+             $csv = "ID Pembayaran,Tanggal,Supplier,Metode Pembayaran,Jumlah\n";
+         }
+
+         if ($startDate) {
+             $builder->where('payments.payment_date >=', $startDate);
+         }
+         if ($endDate) {
+             $builder->where('payments.payment_date <=', $endDate);
+         }
+
+         $payments = $builder->orderBy('payments.payment_date', 'DESC')->get()->getResultArray();
+
+         // Build CSV rows
+         foreach ($payments as $payment) {
+             if ($type === 'RECEIVABLE') {
+                 $csv .= "\"{$payment['id']}\",\"{$payment['payment_date']}\",\"{$payment['customer_name']}\",\"{$payment['payment_method']}\",\"{$payment['amount']}\"\n";
+             } else {
+                 $csv .= "\"{$payment['id']}\",\"{$payment['payment_date']}\",\"{$payment['supplier_name']}\",\"{$payment['payment_method']}\",\"{$payment['amount']}\"\n";
+             }
+         }
+
+         return $this->response
+             ->setHeader('Content-Type', 'text/csv; charset=utf-8')
+             ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
+             ->setBody($csv);
+     }
+
+     /**
+      * Get Summary Statistics for Sales History
+      */
+     public function salesSummary()
+     {
+         $customerId = $this->request->getGet('customer_id');
+         $startDate = $this->request->getGet('start_date');
+         $endDate = $this->request->getGet('end_date');
+
+         $db = \Config\Database::connect();
+         $builder = $db->table('sales')
+             ->select('
+                 COUNT(DISTINCT sales.id) as total_transactions,
+                 SUM(sales.total_amount) as total_amount,
+                 SUM(sales.paid_amount) as total_paid,
+                 SUM(CASE WHEN sales.payment_status IN ("UNPAID", "PARTIAL") THEN (sales.total_amount - sales.paid_amount) ELSE 0 END) as outstanding,
+                 AVG(sales.total_amount) as average_transaction
+             ');
+
+         if ($customerId) {
+             $builder->where('sales.customer_id', $customerId);
+         }
+         if ($startDate) {
+             $builder->where('sales.created_at >=', $startDate);
+         }
+         if ($endDate) {
+             $builder->where('sales.created_at <=', $endDate);
+         }
+
+         $summary = $builder->first();
+
+         return $this->response->setJSON($summary);
+     }
+
+     /**
+      * Get Summary Statistics for Purchases History
+      */
+     public function purchasesSummary()
+     {
+         $supplierId = $this->request->getGet('supplier_id');
+         $startDate = $this->request->getGet('start_date');
+         $endDate = $this->request->getGet('end_date');
+
+         $db = \Config\Database::connect();
+         $builder = $db->table('purchase_orders')
+             ->select('
+                 COUNT(DISTINCT purchase_orders.id) as total_transactions,
+                 SUM(purchase_orders.total_amount) as total_amount,
+                 AVG(purchase_orders.total_amount) as average_transaction
+             ');
+
+         if ($supplierId) {
+             $builder->where('purchase_orders.supplier_id', $supplierId);
+         }
+         if ($startDate) {
+             $builder->where('purchase_orders.tanggal_po >=', $startDate);
+         }
+         if ($endDate) {
+             $builder->where('purchase_orders.tanggal_po <=', $endDate);
+         }
+
+         $summary = $builder->first();
+
+         return $this->response->setJSON($summary);
+     }
 }
 
