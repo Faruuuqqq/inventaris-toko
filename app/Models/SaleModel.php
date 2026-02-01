@@ -9,17 +9,18 @@ class SaleModel extends Model
     protected $table = 'sales';
     protected $primaryKey = 'id';
     protected $returnType = Sale::class;
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
+    protected $deletedField = 'deleted_at';
     protected $allowedFields = [
         'invoice_number', 'customer_id', 'warehouse_id', 'salesperson_id', 'user_id',
         'total_amount', 'due_date', 'paid_amount',
         'payment_type', 'payment_status', 'is_hidden',
-        'kontra_bon_id'
+        'kontra_bon_id', 'deleted_at'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
 
-    // GLOBAL SCOPE: Hide hidden sales from non-Owner users
+    // GLOBAL SCOPE: Hide hidden sales from non-Owner users, hide soft deleted
     public function findAll(?int $limit = null, ?int $offset = 0)
     {
         $userRole = session()->get('role');
@@ -29,6 +30,13 @@ class SaleModel extends Model
         }
 
         return parent::findAll($limit, $offset);
+    }
+
+    // Include soft deleted records if explicitly requested
+    public function withDeleted()
+    {
+        $this->builder()->where('deleted_at !=', null);
+        return $this;
     }
 
     /**
