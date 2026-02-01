@@ -2,201 +2,328 @@
 
 <?= $this->section('content') ?>
 
-<div class="grid gap-6 lg:grid-cols-3" 
-     x-data="salesForm()" 
-     x-init="initData()">
-     
-    <!-- Form Section (Left 2/3) -->
-    <div class="lg:col-span-2">
-        <div class="rounded-xl border bg-card text-card-foreground shadow-sm">
-            <div class="flex flex-col space-y-1.5 p-6">
-                <h3 class="text-xl font-semibold flex items-center gap-2">
-                    <?= icon('Banknote', 'h-5 w-5') ?>
-                    Form Penjualan Tunai
-                </h3>
-            </div>
-            
-            <form id="sales-form" action="<?= base_url('transactions/sales/storeCash') ?>" method="POST" @submit.prevent="submitForm">
-                <?= csrf_field() ?>
-                <input type="hidden" name="items" :value="JSON.stringify(items)">
-                
-                <div class="p-6 pt-0 space-y-6">
-                    <!-- Alerts -->
-                    <?php if(session()->getFlashdata('error')): ?>
-                    <div class="p-4 rounded-md bg-destructive/15 text-destructive text-sm font-medium">
-                        <?= session()->getFlashdata('error') ?>
-                    </div>
-                    <?php endif; ?>
-
-                    <?php if(session()->getFlashdata('success')): ?>
-                    <div class="p-4 rounded-md bg-green-100 text-green-700 text-sm font-medium">
-                        <?= session()->getFlashdata('success') ?>
-                    </div>
-                    <?php endif; ?>
-
-                    <!-- Header Inputs Grid -->
-                    <div class="grid gap-4 md:grid-cols-4">
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none">No. Faktur</label>
-                            <input type="text" value="Auto (INV-xxxx)" class="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm ring-offset-background disabled:cursor-not-allowed disabled:opacity-50" disabled>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none">Tanggal</label>
-                            <input type="date" value="<?= date('Y-m-d') ?>" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none">Customer</label>
-                            <select name="customer_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" required>
-                                <option value="">Pilih customer</option>
-                                <?php foreach ($customers as $c): ?>
-                                    <option value="<?= $c['id'] ?>"><?= $c['name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium leading-none">Sales / Gudang</label>
-                            <select name="warehouse_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" required>
-                                <?php foreach ($warehouses as $w): ?>
-                                    <option value="<?= $w['id'] ?>"><?= $w['name'] ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Add Product Section -->
-                    <div class="rounded-lg border p-4">
-                        <h4 class="mb-4 font-medium">Tambah Produk</h4>
-                        <div class="grid gap-4 md:grid-cols-5">
-                            <div class="md:col-span-2">
-                                <select x-model="tempItem.product_id" @change="fillPrice()" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                                    <option value="">Pilih Member...</option>
-                                    <template x-for="p in products" :key="p.id">
-                                        <option :value="p.id" x-text="p.name + ' - ' + formatRupiahSimple(p.price_sell)"></option>
-                                    </template>
-                                </select>
-                            </div>
-                            <div>
-                                <input type="number" x-model.number="tempItem.quantity" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" placeholder="Qty">
-                            </div>
-                            <div>
-                                <input type="number" x-model.number="tempItem.discount" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" placeholder="Diskon (Rp)">
-                            </div>
-                            <button type="button" @click="addItem()" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                                <?= icon('Plus', 'mr-2 h-4 w-4') ?>
-                                Tambah
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Items Table -->
-                    <div class="relative w-full overflow-auto">
-                        <table class="w-full caption-bottom text-sm">
-                            <thead class="[&_tr]:border-b">
-                                <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                                    <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-12">No</th>
-                                    <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
-                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Qty</th>
-                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Harga</th>
-                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Diskon</th>
-                                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground">Subtotal</th>
-                                    <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground w-[50px]"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="[&_tr:last-child]:border-0">
-                                <template x-if="items.length === 0">
-                                    <tr>
-                                        <td colspan="7" class="p-4 text-center text-muted-foreground">Belum ada barang ditambahkan.</td>
-                                    </tr>
-                                </template>
-                                <template x-for="(item, index) in items" :key="index">
-                                    <tr class="border-b transition-colors hover:bg-muted/50">
-                                        <td class="p-4 align-middle" x-text="index + 1"></td>
-                                        <td class="p-4 align-middle" x-text="item.name"></td>
-                                        <td class="p-4 align-middle text-right">
-                                            <input type="number" x-model.number="item.quantity" class="w-16 rounded border px-2 py-1 text-center text-xs bg-transparent">
-                                        </td>
-                                        <td class="p-4 align-middle text-right" x-text="formatRupiahSimple(item.price)"></td>
-                                        <td class="p-4 align-middle text-right" x-text="formatRupiahSimple(item.discount)"></td>
-                                        <td class="p-4 align-middle text-right font-medium" x-text="formatRupiahSimple(itemSubtotal(item))"></td>
-                                        <td class="p-4 align-middle text-center">
-                                            <button type="button" @click="removeItem(index)" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8 text-destructive">
-                                                <?= icon('Trash2', 'h-4 w-4') ?>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </form>
+<!-- POS Split Screen Layout -->
+<div class="h-screen flex flex-col" x-data="posManager()" x-init="initData()">
+    
+    <!-- Header Bar -->
+    <div class="bg-surface border-b border-border/50 p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <?= icon('ShoppingCart', 'h-6 w-6 text-primary') ?>
+            <h1 class="text-2xl font-bold text-foreground">Penjualan Tunai - POS</h1>
+        </div>
+        <div class="text-sm text-muted-foreground">
+            Tanggal: <span x-text="new Date().toLocaleDateString('id-ID')"></span>
         </div>
     </div>
 
-    <!-- Summary Section (Right 1/3) -->
-    <div>
-        <div class="rounded-xl border bg-card text-card-foreground shadow-sm sticky top-24">
-            <div class="flex flex-col space-y-1.5 p-6">
-                <h3 class="text-xl font-semibold flex items-center gap-2">
-                    <?= icon('Calculator', 'h-5 w-5') ?>
-                    Ringkasan
-                </h3>
-            </div>
+    <!-- Main Content Grid: Left (Products) + Right (Cart) -->
+    <div class="flex-1 flex overflow-hidden gap-4 p-4">
+        
+        <!-- LEFT PANEL: Product Selection (65%) -->
+        <div class="flex-[2] flex flex-col overflow-hidden bg-surface rounded-lg border border-border/50">
             
-            <div class="p-6 pt-0 space-y-4">
-                <!-- Subtotal -->
-                <div class="flex justify-between text-sm">
-                    <span class="text-muted-foreground" x-text="'Subtotal (' + items.length + ' item)'"></span>
-                    <span x-text="formatRupiah(grandTotalWithoutDiscount())"></span>
-                </div>
-                <!-- Total Discount -->
-                <div class="flex justify-between text-sm">
-                    <span class="text-muted-foreground">Diskon Total</span>
-                    <span x-text="formatRupiah(totalDiscount())"></span>
-                </div>
+            <!-- Search Bar -->
+            <div class="p-4 border-b border-border/50 space-y-3">
+                <input type="text" 
+                       x-model="search" 
+                       placeholder="Cari produk... (Tekan F2)" 
+                       @keydown.f2="$el.focus()" 
+                       class="w-full h-12 rounded-lg border border-border bg-background px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                 
-                <!-- Divider & Grand Total -->
-                <div class="border-t pt-4">
-                    <div class="flex justify-between items-center">
-                        <span class="font-semibold">Grand Total</span>
-                        <span class="text-2xl font-bold text-primary" x-text="formatRupiah(grandTotal())"></span>
+                <!-- Category Filter Pills -->
+                <div class="flex flex-wrap gap-2">
+                    <template x-for="cat in categories" :key="cat">
+                        <button @click="selectedCategory = cat"
+                                :class="selectedCategory === cat ? 'bg-primary text-white' : 'bg-muted text-foreground border border-border/50'"
+                                class="px-4 py-2 rounded-full text-xs font-medium transition-all">
+                            <span x-text="cat === 'all' ? 'Semua Produk' : cat"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Product Grid (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <template x-for="product in filteredProducts" :key="product.id">
+                        <div @click="addToCart(product)" 
+                             class="bg-background border border-border/50 rounded-lg p-3 cursor-pointer hover:shadow-lg hover:border-primary/50 transition-all group">
+                            
+                            <!-- Product Image Placeholder -->
+                            <div class="bg-muted h-24 rounded-lg flex items-center justify-center mb-2 group-hover:bg-muted/80 transition">
+                                <svg class="h-10 w-10 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m0 0v10l8 4"/>
+                                </svg>
+                            </div>
+                            
+                            <!-- Product Info -->
+                            <h3 class="font-semibold text-xs text-foreground truncate" x-text="product.name"></h3>
+                            <p class="text-lg font-bold text-primary mt-1" x-text="'Rp ' + formatNumber(product.price_sell)"></p>
+                            
+                            <!-- Stock Badge -->
+                            <div class="flex items-center justify-between mt-2">
+                                <span class="inline-flex text-xs px-2 py-1 rounded-full" 
+                                      :class="product.stock > 0 ? 'bg-success/15 text-success' : 'bg-destructive/15 text-destructive'"
+                                      x-text="product.stock + ' stok'"></span>
+                                <span class="text-primary group-hover:scale-110 transition">
+                                    <?= icon('Plus', 'h-5 w-5') ?>
+                                </span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Empty State -->
+                <template x-if="filteredProducts.length === 0">
+                    <div class="h-full flex flex-col items-center justify-center text-muted-foreground">
+                        <?= icon('Package', 'h-12 w-12 mb-3 opacity-50') ?>
+                        <p class="text-sm">Tidak ada produk</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Cart Summary (35%) -->
+        <div class="flex-1 flex flex-col bg-surface rounded-lg border border-border/50 overflow-hidden">
+            
+            <!-- Cart Header -->
+            <div class="p-4 border-b border-border/50 flex items-center justify-between">
+                <h2 class="font-bold text-foreground flex items-center gap-2">
+                    <?= icon('ShoppingBag', 'h-5 w-5') ?>
+                    <span x-text="'Keranjang (' + cart.length + ')'"></span>
+                </h2>
+                <button @click="clearCart()" x-show="cart.length > 0" class="text-xs text-destructive hover:text-destructive/80 font-medium">
+                    Hapus Semua
+                </button>
+            </div>
+
+            <!-- Cart Items (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                <template x-for="(item, index) in cart" :key="index">
+                    <div class="bg-background border border-border/50 rounded-lg p-3 space-y-2">
+                        <!-- Item Name & Remove -->
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-sm text-foreground" x-text="item.name"></h4>
+                                <p class="text-xs text-muted-foreground" x-text="'Rp ' + formatNumber(item.price_sell)"></p>
+                            </div>
+                            <button @click="removeFromCart(index)" class="text-destructive hover:text-destructive/80 transition">
+                                <?= icon('Trash2', 'h-4 w-4') ?>
+                            </button>
+                        </div>
+
+                        <!-- Quantity Controls & Line Total -->
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2 bg-muted rounded-lg">
+                                <button @click="updateQty(index, item.qty - 1)" class="px-2 py-1 text-primary hover:bg-background transition">
+                                    −
+                                </button>
+                                <span class="w-8 text-center text-sm font-medium" x-text="item.qty"></span>
+                                <button @click="updateQty(index, item.qty + 1)" class="px-2 py-1 text-primary hover:bg-background transition">
+                                    +
+                                </button>
+                            </div>
+                            <span class="font-bold text-sm text-foreground" x-text="'Rp ' + formatNumber(item.price_sell * item.qty)"></span>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Empty Cart State -->
+                <template x-if="cart.length === 0">
+                    <div class="h-full flex flex-col items-center justify-center text-muted-foreground">
+                        <?= icon('ShoppingCart', 'h-12 w-12 mb-3 opacity-50') ?>
+                        <p class="text-sm">Keranjang kosong</p>
+                        <p class="text-xs mt-1">Pilih produk untuk mulai</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Cart Summary (Sticky Bottom) -->
+            <div class="border-t border-border/50 bg-background p-4 space-y-3">
+                
+                <!-- Summary Lines -->
+                <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-muted-foreground">Subtotal</span>
+                        <span x-text="'Rp ' + formatNumber(subtotal())"></span>
+                    </div>
+                    <div class="flex justify-between text-sm" x-show="totalDiscount() > 0">
+                        <span class="text-muted-foreground">Diskon</span>
+                        <span class="text-destructive" x-text="'- Rp ' + formatNumber(totalDiscount())"></span>
                     </div>
                 </div>
 
-                <!-- Pay Input -->
-                <div class="space-y-2 pt-4">
-                    <label class="text-sm font-medium leading-none">Bayar</label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">Rp</span>
-                        <input type="number" x-model.number="payAmount" class="flex h-12 w-full rounded-md border border-input bg-background px-3 py-2 pl-9 text-right text-lg font-medium ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="0">
+                <!-- Grand Total -->
+                <div class="border-t border-border/50 pt-3">
+                    <div class="flex justify-between items-baseline">
+                        <span class="font-semibold text-muted-foreground">Total Bayar</span>
+                        <span class="text-3xl font-bold text-primary" x-text="'Rp ' + formatNumber(grandTotal())"></span>
                     </div>
+                </div>
+
+                <!-- Payment Input -->
+                <div class="space-y-2">
+                    <label class="text-xs font-medium text-muted-foreground">Bayar</label>
+                    <input type="number" 
+                           x-model.number="payAmount" 
+                           @keydown.enter="checkout()"
+                           placeholder="0" 
+                           class="w-full h-12 rounded-lg border border-border bg-surface px-4 text-right text-lg font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary/50">
                 </div>
 
                 <!-- Change Display -->
-                <div class="flex justify-between rounded-lg bg-green-100 p-3 dark:bg-green-900/20">
-                    <span class="font-medium text-green-700 dark:text-green-400">Kembalian</span>
-                    <span class="font-bold text-green-700 dark:text-green-400" x-text="formatRupiah(changeAmount())"></span>
+                <div class="bg-success/15 rounded-lg p-3 text-center" x-show="payAmount > 0">
+                    <p class="text-xs text-muted-foreground mb-1">Kembalian</p>
+                    <p class="text-2xl font-bold text-success" x-text="'Rp ' + formatNumber(changeAmount())"></p>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-2 pt-4">
-                    <button type="button" @click="resetForm()" class="inline-flex flex-1 items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                <form id="sales-form" action="<?= base_url('transactions/sales/storeCash') ?>" method="POST" @submit.prevent="submitForm()" class="space-y-2">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="items" :value="JSON.stringify(cartItems())">
+                    <input type="hidden" name="customer_id" value="">
+                    <input type="hidden" name="warehouse_id" value="">
+                    <input type="hidden" name="payment_amount" :value="payAmount">
+
+                    <button type="button" @click="clearCart()" x-show="cart.length > 0" class="w-full h-10 border border-border/50 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition">
                         Batal
                     </button>
-                    <button type="submit" form="sales-form" :disabled="items.length === 0" class="inline-flex flex-1 items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
-                        Simpan
+
+                    <button type="submit" :disabled="cart.length === 0" class="w-full h-12 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2">
+                        <?= icon('Check', 'h-5 w-5') ?>
+                        <span x-show="payAmount >= grandTotal()">Bayar Sekarang</span>
+                        <span x-show="payAmount < grandTotal()">Kurang Bayar</span>
                     </button>
-                </div>
-                
-                <button type="button" class="inline-flex w-full items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
-                    <?= icon('Printer', 'mr-2 h-4 w-4') ?>
-                    Cetak Struk
-                </button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function posManager() {
+        return {
+            // State
+            products: [],
+            cart: [],
+            search: '',
+            selectedCategory: 'all',
+            payAmount: 0,
+            categories: ['all'],
+
+            // Initialize Data
+            async initData() {
+                try {
+                    const res = await fetch('<?= base_url('transactions/sales/getProducts') ?>');
+                    this.products = await res.json();
+                    
+                    // Extract unique categories
+                    const cats = new Set(['all']);
+                    this.products.forEach(p => {
+                        if (p.category) cats.add(p.category);
+                    });
+                    this.categories = Array.from(cats);
+                } catch (e) {
+                    console.error("Failed to load products", e);
+                }
+
+                // Focus search on load for quick access
+                setTimeout(() => {
+                    document.querySelector('input[placeholder*="Cari"]')?.focus();
+                }, 100);
+            },
+
+            // Computed Properties
+            get filteredProducts() {
+                return this.products.filter(p => {
+                    const matchSearch = this.search === '' || 
+                        p.name.toLowerCase().includes(this.search.toLowerCase());
+                    const matchCategory = this.selectedCategory === 'all' || 
+                        (p.category && p.category === this.selectedCategory);
+                    return matchSearch && matchCategory;
+                });
+            },
+
+            // Cart Management
+            addToCart(product) {
+                const existing = this.cart.find(item => item.id === product.id);
+                if (existing) {
+                    existing.qty++;
+                } else {
+                    this.cart.push({
+                        ...product,
+                        qty: 1
+                    });
+                }
+            },
+
+            removeFromCart(index) {
+                this.cart.splice(index, 1);
+            },
+
+            updateQty(index, newQty) {
+                if (newQty <= 0) {
+                    this.removeFromCart(index);
+                } else {
+                    this.cart[index].qty = newQty;
+                }
+            },
+
+            clearCart() {
+                if (confirm('Yakin ingin mengosongkan keranjang?')) {
+                    this.cart = [];
+                    this.payAmount = 0;
+                    this.search = '';
+                }
+            },
+
+            // Calculations
+            subtotal() {
+                return this.cart.reduce((sum, item) => sum + (item.price_sell * item.qty), 0);
+            },
+
+            totalDiscount() {
+                return 0; // Can be extended later
+            },
+
+            grandTotal() {
+                return this.subtotal() - this.totalDiscount();
+            },
+
+            changeAmount() {
+                return Math.max(0, this.payAmount - this.grandTotal());
+            },
+
+            // Submit
+            cartItems() {
+                return this.cart.map(item => ({
+                    product_id: item.id,
+                    name: item.name,
+                    price: item.price_sell,
+                    quantity: item.qty,
+                    discount: 0
+                }));
+            },
+
+            submitForm() {
+                if (this.cart.length === 0) {
+                    alert('Keranjang masih kosong!');
+                    return;
+                }
+                
+                // You can add additional validation here
+                document.getElementById('sales-form').submit();
+            },
+
+            // Utilities
+            formatNumber(num) {
+                return new Intl.NumberFormat('id-ID').format(num || 0);
+            }
+        }
+    }
+</script>
+
+<?= $this->endSection() ?>
 
 <script>
     function salesForm() {
