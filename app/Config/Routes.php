@@ -105,8 +105,19 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
     // Expenses
     $routes->group('expenses', function($routes) {
         $routes->get('/', 'Expenses::index');
-        $routes->post('store', 'Expenses::store');
-        $routes->delete('delete/(:num)', 'Expenses::delete/$1');
+        $routes->get('create', 'Expenses::create');
+        $routes->post('/', 'Expenses::store');
+        $routes->get('(:num)/edit', 'Expenses::edit/$1');
+        $routes->put('(:num)', 'Expenses::update/$1');
+        $routes->delete('(:num)', 'Expenses::delete/$1');
+        $routes->get('get-data', 'Expenses::getData'); // AJAX
+        $routes->get('summary', 'Expenses::summary');
+        $routes->get('analyze-data', 'Expenses::analyzeData'); // AJAX
+        $routes->get('summary-stats', 'Expenses::summaryStats'); // AJAX
+        $routes->get('compare-data', 'Expenses::compareData'); // AJAX
+        $routes->get('export-csv', 'Expenses::exportCSV'); // Export
+        $routes->get('budget', 'Expenses::budget');
+        $routes->get('budget-data', 'Expenses::getBudgetData'); // AJAX
     });
 
     // Payments
