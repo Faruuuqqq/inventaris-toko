@@ -556,4 +556,198 @@ class Reports extends BaseController
             ->orderBy('total_spent', 'DESC')
             ->findAll();
     }
+
+    /**
+     * Stock Card Report - Complete stock movement history for a product
+     */
+    public function stockCard()
+    {
+        // Check if user is Owner, Admin, or Warehouse staff
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN', 'GUDANG'])) {
+            return redirect()->to('/dashboard')->with('error', 'Access denied');
+        }
+
+        $productId = $this->request->getGet('product_id');
+        $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
+        $endDate = $this->request->getGet('end_date') ?? date('Y-m-t');
+
+        $data = [
+            'title' => 'Stock Card Report',
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'products' => $this->productModel->findAll(),
+            'productId' => $productId,
+            'movements' => $productId ? $this->getStockMovements($productId, $startDate, $endDate) : [],
+            'summary' => $productId ? $this->getStockSummary($productId, $startDate, $endDate) : null
+        ];
+
+        return view('info/reports/stock_card', $data);
+    }
+
+    /**
+     * Get stock movements for a product within date range
+     */
+    private function getStockMovements($productId, $startDate, $endDate)
+    {
+        return $this->stockMutationModel
+            ->select('stock_mutations.*, products.name as product_name, products.sku')
+            ->join('products', 'products.id = stock_mutations.product_id')
+            ->where('stock_mutations.product_id', $productId)
+            ->where('stock_mutations.created_at >=', $startDate)
+            ->where('stock_mutations.created_at <=', $endDate)
+            ->orderBy('stock_mutations.created_at', 'ASC')
+            ->findAll();
+    }
+
+    /**
+     * Get stock summary for a product
+     */
+    private function getStockSummary($productId, $startDate, $endDate)
+    {
+        $beginning = $this->stockMutationModel
+            ->select('COALESCE(SUM(qty_in) - SUM(qty_out), 0) as balance')
+            ->where('product_id', $productId)
+            ->where('created_at <', $startDate)
+            ->first()['balance'] ?? 0;
+
+        $totalIn = $this->stockMutationModel
+            ->select('COALESCE(SUM(qty_in), 0) as total')
+            ->where('product_id', $productId)
+            ->where('created_at >=', $startDate)
+            ->where('created_at <=', $endDate)
+            ->first()['total'] ?? 0;
+
+        $totalOut = $this->stockMutationModel
+            ->select('COALESCE(SUM(qty_out), 0) as total')
+            ->where('product_id', $productId)
+            ->where('created_at >=', $startDate)
+            ->where('created_at <=', $endDate)
+            ->first()['total'] ?? 0;
+
+        return [
+            'beginning_balance' => $beginning,
+            'total_in' => $totalIn,
+            'total_out' => $totalOut,
+            'ending_balance' => $beginning + $totalIn - $totalOut
+        ];
+    }
+
+    /**
+     * Aging Analysis Report - Shows outstanding receivables by age
+     */
+    public function agingAnalysis()
+    {
+        // Check if user is Owner or Admin
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
+            return redirect()->to('/dashboard')->with('error', 'Access denied');
+        }
+
+        $asOfDate = $this->request->getGet('as_of_date') ?? date('Y-m-d');
+
+        $data = [
+            'title' => 'Aging Analysis Report',
+            'asOfDate' => $asOfDate,
+            'agingBuckets' => $this->getAgingBuckets($asOfDate),
+            'totalOutstanding' => $this->getTotalOutstandingReceivables($asOfDate)
+        ];
+
+        return view('info/reports/aging_analysis', $data);
+    }
+
+    /**
+     * Get aging buckets for receivables
+     */
+    private function getAgingBuckets($asOfDate)
+    {
+        $today = strtotime($asOfDate);
+        $thirtyDaysAgo = $today - (30 * 86400);
+        $sixtyDaysAgo = $today - (60 * 86400);
+        $ninetyDaysAgo = $today - (90 * 86400);
+
+        return [
+            'current' => [
+                'label' => 'Current (0-30 days)',
+                'from_date' => date('Y-m-d', $thirtyDaysAgo),
+                'to_date' => $asOfDate,
+                'data' => $this->getOutstandingByDateRange(date('Y-m-d', $thirtyDaysAgo), $asOfDate)
+            ],
+            'thirty_sixty' => [
+                'label' => '31-60 days',
+                'from_date' => date('Y-m-d', $sixtyDaysAgo),
+                'to_date' => date('Y-m-d', $thirtyDaysAgo - 1),
+                'data' => $this->getOutstandingByDateRange(date('Y-m-d', $sixtyDaysAgo), date('Y-m-d', $thirtyDaysAgo - 1))
+            ],
+            'sixty_ninety' => [
+                'label' => '61-90 days',
+                'from_date' => date('Y-m-d', $ninetyDaysAgo),
+                'to_date' => date('Y-m-d', $sixtyDaysAgo - 1),
+                'data' => $this->getOutstandingByDateRange(date('Y-m-d', $ninetyDaysAgo), date('Y-m-d', $sixtyDaysAgo - 1))
+            ],
+            'over_ninety' => [
+                'label' => 'Over 90 days',
+                'from_date' => '2000-01-01',
+                'to_date' => date('Y-m-d', $ninetyDaysAgo - 1),
+                'data' => $this->getOutstandingByDateRange('2000-01-01', date('Y-m-d', $ninetyDaysAgo - 1))
+            ]
+        ];
+    }
+
+    /**
+     * Get outstanding receivables for a date range
+     */
+    private function getOutstandingByDateRange($startDate, $endDate)
+    {
+        return $this->saleModel
+            ->select('customers.id, customers.name, customers.phone,
+                    SUM(CASE WHEN sales.payment_status = "UNPAID" THEN (sales.total_amount - sales.paid_amount) 
+                        WHEN sales.payment_status = "PARTIAL" THEN (sales.total_amount - sales.paid_amount) 
+                        ELSE 0 END) as outstanding_amount,
+                    MAX(sales.created_at) as last_transaction_date,
+                    COUNT(DISTINCT sales.id) as invoice_count')
+            ->join('customers', 'customers.id = sales.customer_id')
+            ->where('sales.created_at >=', $startDate)
+            ->where('sales.created_at <=', $endDate)
+            ->whereIn('sales.payment_status', ['UNPAID', 'PARTIAL'])
+            ->where('sales.payment_type', 'CREDIT')
+            ->groupBy('customers.id, customers.name, customers.phone')
+            ->orderBy('outstanding_amount', 'DESC')
+            ->findAll();
+    }
+
+    /**
+     * Get total outstanding receivables
+     */
+    private function getTotalOutstandingReceivables($asOfDate)
+    {
+        return $this->saleModel
+            ->select('COALESCE(SUM(CASE WHEN sales.payment_status = "UNPAID" THEN (sales.total_amount - sales.paid_amount) 
+                        WHEN sales.payment_status = "PARTIAL" THEN (sales.total_amount - sales.paid_amount) 
+                        ELSE 0 END), 0) as total')
+            ->where('sales.payment_type', 'CREDIT')
+            ->whereIn('sales.payment_status', ['UNPAID', 'PARTIAL'])
+            ->where('sales.created_at <=', $asOfDate)
+            ->first()['total'] ?? 0;
+    }
+
+    /**
+     * AJAX: Get stock movements for autocomplete
+     */
+    public function getStockCardData()
+    {
+        $productId = $this->request->getGet('product_id');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+
+        if (!$productId || !$startDate || !$endDate) {
+            return $this->response->setJSON(['error' => 'Missing parameters']);
+        }
+
+        $movements = $this->getStockMovements($productId, $startDate, $endDate);
+        $summary = $this->getStockSummary($productId, $startDate, $endDate);
+
+        return $this->response->setJSON([
+            'movements' => $movements,
+            'summary' => $summary
+        ]);
+    }
 }
