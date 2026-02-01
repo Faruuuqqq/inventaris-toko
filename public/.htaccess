@@ -1,59 +1,34 @@
-# Disable directory browsing
+# Force HTTPS
+#RewriteEngine On
+#RewriteCond %{HTTPS} off
+#RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Remove index.php from URL
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
+
+# CSP Headers
+<IfModule mod_headers.c>
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com 'self' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self'"
+    Header always set X-Frame-Options SAMEORIGIN
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Security
 Options -Indexes
+ServerSignature Off
 
-# ----------------------------------------------------------------------
-# Rewrite engine
-# ----------------------------------------------------------------------
-
-# Turning on rewrite engine is necessary for the following rules and features.
-# FollowSymlinks must be enabled for this to work.
-<IfModule mod_rewrite.c>
-	Options +FollowSymlinks
-	RewriteEngine On
-
-	# Redirect Trailing Slashes If Not Folder
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_URI} (.+)/$
-	RewriteRule ^ %1 [L,R=301]
-
-	# If you installed CodeIgniter in a subfolder, you will need to
-	# change the following line to match the subfolder you need.
-	RewriteBase /
-
-	# Allow access to the front controller (index.php)
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
-
-	# Ensure Authorization header is passed along
-	RewriteCond %{HTTP:Authorization} .
-	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+# Cache Control
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/ico "access plus 1 month"
 </IfModule>
-
-# Allow access from public folder
-<IfModule mod_rewrite.c>
-    Options -Indexes -MultiViews
-</IfModule>
-
-# DirectoryIndex - sets the directory index
-<IfModule mod_autoindex.c>
-    DirectoryIndex index.php
-</IfModule>
-
-# Security: Prevent listing of hidden files
-<Files ~ "^\.">
-    Order allow,deny
-    Deny from all
-</Files>
-
-# Security: Disable directory browsing
-<Directory ~ "^\.(?!\.well-known).*">
-    Order allow,deny
-    Deny from all
-</Directory>
-
-# Security: Prevent access to sensitive files
-<Files ~ "^\.env$|^composer\.(json|lock|phar)">
-    Order allow,deny
-    Deny from all
-</Files>
