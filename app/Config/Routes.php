@@ -142,8 +142,16 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
 
     // Reports
     $routes->group('reports', function($routes) {
+        $routes->get('/', 'Reports::index');
         $routes->get('daily', 'Reports::daily');
         $routes->get('profit-loss', 'Reports::profitLoss');
+        $routes->get('cash-flow', 'Reports::cashFlow');
+        $routes->get('monthly-summary', 'Reports::monthlySummary');
+        $routes->get('product-performance', 'Reports::productPerformance');
+        $routes->get('customer-analysis', 'Reports::customerAnalysis');
+        $routes->get('stock-card', 'Reports::stockCard');
+        $routes->get('aging-analysis', 'Reports::agingAnalysis');
+        $routes->get('stock-card-data', 'Reports::getStockCardData'); // AJAX endpoint
     });
 });
 
