@@ -86,10 +86,18 @@ class Stock extends BaseController
         $db = \Config\Database::connect();
         
         // Get all products with current stock levels
-        $products = $db->table('products')
-            ->select('products.id, products.name, products.sku, products.price, products.category_id, categories.name as category_name')
-            ->join('categories', 'categories.id = products.category_id', 'LEFT')
-            ->where('products.deleted_at', null)
+        // Check if products table has deleted_at column
+        $hasDeletedAt = $db->fieldExists('deleted_at', 'products');
+        
+        $productsQuery = $db->table('products')
+            ->select('products.id, products.name, products.sku, products.price, products.min_stock, products.max_stock, products.category_id, categories.name as category_name')
+            ->join('categories', 'categories.id = products.category_id', 'LEFT');
+            
+        if ($hasDeletedAt) {
+            $productsQuery->where('products.deleted_at', null);
+        }
+        
+        $products = $productsQuery
             ->orderBy('products.name', 'ASC')
             ->get()
             ->getResultArray();
@@ -103,15 +111,19 @@ class Stock extends BaseController
                 ->getRow();
             
             $product['current_stock'] = (int)($stock->current_stock ?? 0);
-            $product['min_stock'] = $product['min_stock'] ?? 10; // Default min stock
-            $product['max_stock'] = $product['max_stock'] ?? 100; // Default max stock
+            $product['min_stock'] = (int)($product['min_stock'] ?? 10); // Default min stock
+            $product['max_stock'] = (int)($product['max_stock'] ?? 100); // Default max stock
         }
 
         // Get categories
-        $categories = $db->table('categories')
-            ->where('deleted_at', null)
-            ->get()
-            ->getResultArray();
+        $categoriesQuery = $db->table('categories');
+        
+        // Check if categories table has deleted_at column
+        if ($db->fieldExists('deleted_at', 'categories')) {
+            $categoriesQuery->where('deleted_at', null);
+        }
+        
+        $categories = $categoriesQuery->get()->getResultArray();
 
         $data = [
             'title' => 'Manajemen Inventaris',
@@ -121,6 +133,104 @@ class Stock extends BaseController
         ];
 
         return view('info/inventory/management', $data);
+    }
+
+    /**
+     * Export Inventory to CSV
+     */
+    public function exportInventory()
+    {
+        $db = \Config\Database::connect();
+        
+        // Get all products with current stock levels (same query as management method)
+        $hasDeletedAt = $db->fieldExists('deleted_at', 'products');
+        
+        $productsQuery = $db->table('products')
+            ->select('products.id, products.name, products.sku, products.price, products.min_stock, products.max_stock, products.category_id, categories.name as category_name')
+            ->join('categories', 'categories.id = products.category_id', 'LEFT');
+            
+        if ($hasDeletedAt) {
+            $productsQuery->where('products.deleted_at', null);
+        }
+        
+        $products = $productsQuery
+            ->orderBy('products.name', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        // Add current stock for each product
+        foreach ($products as &$product) {
+            $stock = $db->table('product_stocks')
+                ->selectSum('quantity', 'current_stock')
+                ->where('product_id', $product['id'])
+                ->get()
+                ->getRow();
+            
+            $product['current_stock'] = (int)($stock->current_stock ?? 0);
+            $product['min_stock'] = (int)($product['min_stock'] ?? 10);
+            $product['max_stock'] = (int)($product['max_stock'] ?? 100);
+        }
+        
+        // Set response headers for CSV download
+        $filename = 'inventory_export_' . date('Y-m-d_His') . '.csv';
+        $this->response->setHeader('Content-Type', 'text/csv; charset=utf-8');
+        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        $this->response->setHeader('Pragma', 'no-cache');
+        $this->response->setHeader('Expires', '0');
+        
+        // Open output stream
+        $output = fopen('php://output', 'w');
+        
+        // Add UTF-8 BOM for Excel compatibility
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+        
+        // Write header row
+        fputcsv($output, [
+            'Product Name',
+            'SKU',
+            'Category',
+            'Current Stock',
+            'Min Stock',
+            'Max Stock',
+            'Unit Price (Rp)',
+            'Total Value (Rp)',
+            'Stock Status'
+        ]);
+        
+        // Write data rows
+        foreach ($products as $product) {
+            $currentStock = $product['current_stock'];
+            $minStock = $product['min_stock'];
+            $maxStock = $product['max_stock'];
+            $price = (float)($product['price'] ?? 0);
+            $totalValue = $currentStock * $price;
+            
+            // Determine stock status
+            if ($currentStock == 0) {
+                $status = 'Out of Stock';
+            } elseif ($currentStock <= $minStock) {
+                $status = 'Low Stock';
+            } elseif ($currentStock > $maxStock) {
+                $status = 'Overstock';
+            } else {
+                $status = 'Normal';
+            }
+            
+            fputcsv($output, [
+                $product['name'],
+                $product['sku'],
+                $product['category_name'] ?? 'Uncategorized',
+                $currentStock,
+                $minStock,
+                $maxStock,
+                number_format($price, 0, ',', '.'),
+                number_format($totalValue, 0, ',', '.'),
+                $status
+            ]);
+        }
+        
+        fclose($output);
+        return $this->response;
     }
 
     public function getMutations()

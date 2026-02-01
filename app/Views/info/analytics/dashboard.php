@@ -365,7 +365,12 @@ function analyticsManager() {
         },
 
         exportReport() {
-            alert('Fitur export report akan diimplementasikan segera.');
+            // Build URL with current date range
+            const params = new URLSearchParams({
+                date_from: this.dateRange.from,
+                date_to: this.dateRange.to
+            });
+            window.location.href = '<?= base_url('info/analytics/export-csv') ?>?' + params.toString();
         },
 
         formatCurrency(value) {

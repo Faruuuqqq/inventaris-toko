@@ -190,6 +190,7 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
     // Inventory Management
     $routes->group('inventory', function($routes) {
         $routes->get('management', 'Stock::management');
+        $routes->get('export-csv', 'Stock::exportInventory');
     });
 
     // Reports
@@ -209,6 +210,7 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
     // Analytics
     $routes->group('analytics', function($routes) {
         $routes->get('dashboard', 'Analytics::dashboard');
+        $routes->get('export-csv', 'Analytics::exportDashboard');
     });
 });
 

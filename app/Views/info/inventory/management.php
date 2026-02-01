@@ -394,7 +394,7 @@ function inventoryManager() {
         },
 
         exportCSV() {
-            alert('Fitur export CSV akan diimplementasikan segera.');
+            window.location.href = '<?= base_url('info/inventory/export-csv') ?>';
         }
     };
 }
