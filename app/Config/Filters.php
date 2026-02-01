@@ -72,10 +72,10 @@ class Filters extends BaseFilters
      *     after: array<string, array{except: list<string>|string}>|list<string>
      * }
      */
-    public array $globals = [
-        'before' => ['security', 'honeypot'],
-        'after' => ['security', 'honeypot', 'secureheaders'],
-    ];
+     public array $globals = [
+         'before' => ['security', 'honeypot'],
+         'after' => ['security', 'honeypot'],
+     ];
 
     /**
      * List of filter aliases that works on a

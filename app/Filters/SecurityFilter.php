@@ -142,6 +142,9 @@ class SecurityFilter implements FilterInterface
         // Enable XSS protection
         $response->setHeader('X-XSS-Protection', '1; mode=block');
         
+        // Permissions Policy (replaces Feature-Policy)
+        $response->setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+        
         // Content Security Policy
         // Note: unsafe-eval is needed for Alpine.js x-data attribute evaluation
         // This is acceptable since Alpine.js input is from our trusted application code
@@ -149,5 +152,16 @@ class SecurityFilter implements FilterInterface
         
         // Referrer Policy
         $response->setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        
+        // HSTS (HTTP Strict Transport Security)
+        $response->setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        
+        // Disable server information disclosure
+        $response->setHeader('Server', 'TokoManager');
+        
+        // Prevent caching of sensitive content
+        $response->setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+        $response->setHeader('Pragma', 'no-cache');
+        $response->setHeader('Expires', '0');
     }
 }
