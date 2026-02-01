@@ -88,6 +88,8 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     // Purchases
     $routes->group('purchases', function($routes) {
         $routes->get('/', 'Purchases::index');
+        $routes->get('create', 'Purchases::create');
+        $routes->get('(:num)', 'Purchases::detail/$1');
         $routes->post('/', 'Purchases::store');
         $routes->delete('(:num)', 'Purchases::delete/$1');
     });
@@ -95,12 +97,16 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     // Returns
     $routes->group('sales-returns', function($routes) {
         $routes->get('/', 'SalesReturns::index');
+        $routes->get('create', 'SalesReturns::create');
+        $routes->get('(:num)', 'SalesReturns::detail/$1');
         $routes->post('/', 'SalesReturns::store');
         $routes->delete('(:num)', 'SalesReturns::delete/$1');
     });
 
     $routes->group('purchase-returns', function($routes) {
         $routes->get('/', 'PurchaseReturns::index');
+        $routes->get('create', 'PurchaseReturns::create');
+        $routes->get('(:num)', 'PurchaseReturns::detail/$1');
         $routes->post('/', 'PurchaseReturns::store');
         $routes->delete('(:num)', 'PurchaseReturns::delete/$1');
     });
