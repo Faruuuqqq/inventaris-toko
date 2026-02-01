@@ -127,3 +127,22 @@ _modules/*
 node_modules/
 npm-debug.log
 yarn-error.log
+
+#-------------------------
+# Project Specific
+#-------------------------
+# Testing and utility scripts
+add_columns_simple.php
+add_phase4_columns.sql
+add_phase4_columns_script.php
+check_columns.php
+check_sale_items.php
+check_sales.php
+get_products.php
+test_analytics.php
+test_pages.php
+verify_sales.php
+run_migration_fix.sql
+
+# Session files in wrong directory
+public/null/
