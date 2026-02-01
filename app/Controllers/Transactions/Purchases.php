@@ -4,6 +4,9 @@ namespace App\Controllers\Transactions;
 
 use App\Controllers\BaseController;
 use App\Models\ProductModel;
+use App\Services\StockService;
+use App\Services\BalanceService;
+use App\Exceptions\InvalidTransactionException;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\I18n\Time;
 
@@ -15,8 +18,9 @@ class Purchases extends BaseController
     protected $purchaseOrderDetailModel;
     protected $supplierModel;
     protected $productModel;
-    protected $stockMutationModel;
     protected $warehouseModel;
+    protected $stockService;
+    protected $balanceService;
     
     public function __construct()
     {
@@ -24,29 +28,58 @@ class Purchases extends BaseController
         $this->purchaseOrderDetailModel = new \App\Models\PurchaseOrderDetailModel();
         $this->supplierModel = new \App\Models\SupplierModel();
         $this->productModel = new \App\Models\ProductModel();
-        $this->stockMutationModel = new \App\Models\StockMutationModel();
         $this->warehouseModel = new \App\Models\WarehouseModel();
+        $this->stockService = new StockService();
+        $this->balanceService = new BalanceService();
     }
     
+    /**
+     * Display list of all purchase orders with filters
+     */
     public function index()
     {
+        $filters = [
+            'start_date' => $this->request->getGet('start_date'),
+            'end_date' => $this->request->getGet('end_date'),
+            'supplier_id' => $this->request->getGet('supplier_id'),
+            'status' => $this->request->getGet('status')
+        ];
+
+        $query = $this->purchaseOrderModel
+            ->select('purchase_orders.*, suppliers.nama_supplier')
+            ->join('suppliers', 'suppliers.id_supplier = purchase_orders.id_supplier');
+
+        // Apply filters
+        if ($filters['start_date']) {
+            $query->where('DATE(purchase_orders.tanggal_po) >=', $filters['start_date']);
+        }
+        if ($filters['end_date']) {
+            $query->where('DATE(purchase_orders.tanggal_po) <=', $filters['end_date']);
+        }
+        if ($filters['supplier_id']) {
+            $query->where('purchase_orders.id_supplier', $filters['supplier_id']);
+        }
+        if ($filters['status']) {
+            $query->where('purchase_orders.status', $filters['status']);
+        }
+
         $data = [
-            'title' => 'Purchase Orders',
-            'purchaseOrders' => $this->purchaseOrderModel
-                ->select('purchase_orders.*, suppliers.name')
-                ->join('suppliers', 'suppliers.id_supplier = purchase_orders.id_supplier')
-                ->orderBy('purchase_orders.tanggal_po', 'DESC')
-                ->findAll(),
-            'suppliers' => $this->supplierModel->findAll()
+            'title' => 'Pembelian',
+            'purchaseOrders' => $query->orderBy('purchase_orders.tanggal_po', 'DESC')->findAll(),
+            'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
+            'filters' => $filters
         ];
         
         return view('transactions/purchases/index', $data);
     }
     
+    /**
+     * Show create purchase order form
+     */
     public function create()
     {
         $data = [
-            'title' => 'Create Purchase Order',
+            'title' => 'Buat Pesanan Pembelian',
             'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
             'products' => $this->productModel->where('status', 'Aktif')->findAll(),
             'warehouses' => $this->warehouseModel->where('status', 'Aktif')->findAll(),
@@ -56,6 +89,10 @@ class Purchases extends BaseController
         return view('transactions/purchases/create', $data);
     }
     
+    /**
+     * Create new purchase order with stock addition and balance update
+     * Pattern: Inverse of Sales.storeCash (adds stock instead of deducting)
+     */
     public function store()
     {
         $rules = [
@@ -79,44 +116,92 @@ class Purchases extends BaseController
         $db->transStart();
         
         try {
-            // Create purchase order
+            $supplierId = $this->request->getPost('id_supplier');
+            $warehouseId = $this->request->getPost('id_warehouse');
+            $produk = $this->request->getPost('produk');
+            
+            // Validate supplier exists
+            $supplier = $this->supplierModel->find($supplierId);
+            if (!$supplier) {
+                throw new InvalidTransactionException('Supplier tidak ditemukan');
+            }
+            
+            // Validate warehouse exists
+            $warehouse = $this->warehouseModel->find($warehouseId);
+            if (!$warehouse) {
+                throw new InvalidTransactionException('Gudang tidak ditemukan');
+            }
+            
+            // Validate items exist
+            if (empty($produk)) {
+                throw new InvalidTransactionException('Tidak ada barang yang dipilih');
+            }
+            
+            // Validate all products exist and get fresh prices from DB
+            $totalBayar = 0;
+            $itemsData = [];
+            
+            foreach ($produk as $item) {
+                $product = $this->productModel->find($item['id_produk']);
+                if (!$product) {
+                    throw new InvalidTransactionException('Produk ID ' . $item['id_produk'] . ' tidak ditemukan');
+                }
+                
+                $qty = (int)$item['jumlah'];
+                $hargaBeli = (float)$item['harga_beli'];
+                $subtotal = $qty * $hargaBeli;
+                $totalBayar += $subtotal;
+                
+                $itemsData[] = [
+                    'id_produk' => $product['id_produk'],
+                    'qty' => $qty,
+                    'harga_beli' => $hargaBeli,
+                    'subtotal' => $subtotal
+                ];
+            }
+            
+            // Create purchase order record
             $purchaseOrderData = [
                 'nomor_po' => $this->request->getPost('nomor_po'),
                 'tanggal_po' => $this->request->getPost('tanggal_po'),
-                'id_supplier' => $this->request->getPost('id_supplier'),
-                'id_warehouse' => $this->request->getPost('id_warehouse'),
+                'id_supplier' => $supplierId,
+                'id_warehouse' => $warehouseId,
                 'estimasi_tanggal' => $this->request->getPost('estimasi_tanggal'),
                 'status' => $this->request->getPost('status'),
-                'keterangan' => $this->request->getPost('keterangan'),
-                'total_bayar' => 0,
+                'keterangan' => $this->request->getPost('keterangan') ?? '',
+                'total_bayar' => $totalBayar,
                 'id_user' => session()->get('id_user')
             ];
             
             $idPO = $this->purchaseOrderModel->insert($purchaseOrderData);
             
-            // Calculate total and create details
-            $totalBayar = 0;
-            $produk = $this->request->getPost('produk');
-            
-            foreach ($produk as $item) {
-                $subtotal = $item['jumlah'] * $item['harga_beli'];
-                $totalBayar += $subtotal;
-                
+            // Create purchase order details and add stock
+            foreach ($itemsData as $item) {
+                // Create detail record
                 $detailData = [
                     'id_po' => $idPO,
                     'id_produk' => $item['id_produk'],
-                    'jumlah' => $item['jumlah'],
+                    'jumlah' => $item['qty'],
                     'harga_beli' => $item['harga_beli'],
-                    'subtotal' => $subtotal,
-                    'jumlah_diterima' => 0,
-                    'keterangan' => $item['keterangan'] ?? ''
+                    'subtotal' => $item['subtotal'],
+                    'jumlah_diterima' => 0
                 ];
                 
                 $this->purchaseOrderDetailModel->insert($detailData);
+                
+                // Add stock via StockService (inverse of sales deduction)
+                $this->stockService->addStock(
+                    $item['id_produk'],
+                    $warehouseId,
+                    $item['qty'],
+                    'PURCHASE',
+                    $idPO,
+                    'PO: ' . $purchaseOrderData['nomor_po']
+                );
             }
             
-            // Update total
-            $this->purchaseOrderModel->update($idPO, ['total_bayar' => $totalBayar]);
+            // Update supplier debt balance
+            $this->balanceService->calculateSupplierDebt($supplierId);
             
             $db->transComplete();
             
@@ -124,19 +209,32 @@ class Purchases extends BaseController
                 throw new \Exception('Transaction failed');
             }
             
-            return redirect()->to('/transactions/purchases')->with('success', 'Purchase Order created successfully');
+            return redirect()->to('/transactions/purchases/' . $idPO)
+                ->with('success', 'Pesanan pembelian berhasil dibuat');
             
+        } catch (InvalidTransactionException $e) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'Failed to create purchase order: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal membuat pembelian: ' . $e->getMessage());
         }
     }
     
+    /**
+     * Show edit form for purchase order
+     * Only allowed if not fully received
+     */
     public function edit($id)
     {
         $purchaseOrder = $this->purchaseOrderModel->find($id);
         if (!$purchaseOrder) {
-            return redirect()->to('/transactions/purchases')->with('error', 'Purchase Order not found');
+            return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
+        }
+        
+        // Check if already fully received
+        if ($purchaseOrder['status'] === 'Diterima Semua') {
+            return redirect()->back()->with('error', 'Pesanan pembelian yang sudah diterima penuh tidak dapat diubah');
         }
         
         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
@@ -148,7 +246,7 @@ class Purchases extends BaseController
             ->findAll();
         
         $data = [
-            'title' => 'Edit Purchase Order',
+            'title' => 'Ubah Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder,
             'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
             'products' => $this->productModel->where('status', 'Aktif')->findAll(),
@@ -158,21 +256,21 @@ class Purchases extends BaseController
         return view('transactions/purchases/edit', $data);
     }
     
+    /**
+     * Update purchase order
+     * Reverts old stock additions and creates new ones
+     * Recalculates supplier debt
+     */
     public function update($id)
     {
         $purchaseOrder = $this->purchaseOrderModel->find($id);
         if (!$purchaseOrder) {
-            return redirect()->to('/transactions/purchases')->with('error', 'Purchase Order not found');
+            return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
         }
         
-        // Check if already received (can't edit)
-        $receivedDetails = $this->purchaseOrderDetailModel
-            ->where('id_po', $id)
-            ->where('jumlah_diterima >', 0)
-            ->findAll();
-            
-        if (!empty($receivedDetails)) {
-            return redirect()->back()->with('error', 'Cannot edit purchase order that has been partially or fully received');
+        // Check if fully received
+        if ($purchaseOrder['status'] === 'Diterima Semua') {
+            return redirect()->back()->with('error', 'Pesanan pembelian yang sudah diterima penuh tidak dapat diubah');
         }
         
         $rules = [
@@ -196,15 +294,76 @@ class Purchases extends BaseController
         $db->transStart();
         
         try {
+            $supplierId = $this->request->getPost('id_supplier');
+            $warehouseId = $this->request->getPost('id_warehouse');
+            $produk = $this->request->getPost('produk');
+            
+            // Validate supplier exists
+            $supplier = $this->supplierModel->find($supplierId);
+            if (!$supplier) {
+                throw new InvalidTransactionException('Supplier tidak ditemukan');
+            }
+            
+            // Validate warehouse exists
+            $warehouse = $this->warehouseModel->find($warehouseId);
+            if (!$warehouse) {
+                throw new InvalidTransactionException('Gudang tidak ditemukan');
+            }
+            
+            // Get old details to revert stock
+            $oldDetails = $this->purchaseOrderDetailModel->where('id_po', $id)->findAll();
+            
+            // Revert old stock additions
+            foreach ($oldDetails as $detail) {
+                try {
+                    // Deduct the previously added stock
+                    $this->stockService->deductStock(
+                        $detail['id_produk'],
+                        $purchaseOrder['id_warehouse'],
+                        $detail['jumlah'],
+                        'PURCHASE_REVERSAL',
+                        $id,
+                        'Pembalikan PO: ' . $purchaseOrder['nomor_po']
+                    );
+                } catch (\Exception $e) {
+                    // Log the error but continue
+                    log_message('error', 'Failed to revert stock for product ' . $detail['id_produk'] . ': ' . $e->getMessage());
+                }
+            }
+            
+            // Validate all products exist and get fresh prices
+            $totalBayar = 0;
+            $itemsData = [];
+            
+            foreach ($produk as $item) {
+                $product = $this->productModel->find($item['id_produk']);
+                if (!$product) {
+                    throw new InvalidTransactionException('Produk ID ' . $item['id_produk'] . ' tidak ditemukan');
+                }
+                
+                $qty = (int)$item['jumlah'];
+                $hargaBeli = (float)$item['harga_beli'];
+                $subtotal = $qty * $hargaBeli;
+                $totalBayar += $subtotal;
+                
+                $itemsData[] = [
+                    'id_produk' => $product['id_produk'],
+                    'qty' => $qty,
+                    'harga_beli' => $hargaBeli,
+                    'subtotal' => $subtotal
+                ];
+            }
+            
             // Update purchase order
             $purchaseOrderData = [
                 'nomor_po' => $this->request->getPost('nomor_po'),
                 'tanggal_po' => $this->request->getPost('tanggal_po'),
-                'id_supplier' => $this->request->getPost('id_supplier'),
-                'id_warehouse' => $this->request->getPost('id_warehouse'),
+                'id_supplier' => $supplierId,
+                'id_warehouse' => $warehouseId,
                 'estimasi_tanggal' => $this->request->getPost('estimasi_tanggal'),
                 'status' => $this->request->getPost('status'),
-                'keterangan' => $this->request->getPost('keterangan'),
+                'keterangan' => $this->request->getPost('keterangan') ?? '',
+                'total_bayar' => $totalBayar,
                 'id_user' => session()->get('id_user')
             ];
             
@@ -213,29 +372,32 @@ class Purchases extends BaseController
             // Delete old details
             $this->purchaseOrderDetailModel->where('id_po', $id)->delete();
             
-            // Calculate total and create new details
-            $totalBayar = 0;
-            $produk = $this->request->getPost('produk');
-            
-            foreach ($produk as $item) {
-                $subtotal = $item['jumlah'] * $item['harga_beli'];
-                $totalBayar += $subtotal;
-                
+            // Create new details and add stock
+            foreach ($itemsData as $item) {
                 $detailData = [
                     'id_po' => $id,
                     'id_produk' => $item['id_produk'],
-                    'jumlah' => $item['jumlah'],
+                    'jumlah' => $item['qty'],
                     'harga_beli' => $item['harga_beli'],
-                    'subtotal' => $subtotal,
-                    'jumlah_diterima' => 0,
-                    'keterangan' => $item['keterangan'] ?? ''
+                    'subtotal' => $item['subtotal'],
+                    'jumlah_diterima' => 0
                 ];
                 
                 $this->purchaseOrderDetailModel->insert($detailData);
+                
+                // Add new stock
+                $this->stockService->addStock(
+                    $item['id_produk'],
+                    $warehouseId,
+                    $item['qty'],
+                    'PURCHASE',
+                    $id,
+                    'PO: ' . $purchaseOrderData['nomor_po']
+                );
             }
             
-            // Update total
-            $this->purchaseOrderModel->update($id, ['total_bayar' => $totalBayar]);
+            // Recalculate supplier debt
+            $this->balanceService->calculateSupplierDebt($supplierId);
             
             $db->transComplete();
             
@@ -243,37 +405,61 @@ class Purchases extends BaseController
                 throw new \Exception('Transaction failed');
             }
             
-            return redirect()->to('/transactions/purchases')->with('success', 'Purchase Order updated successfully');
+            return redirect()->to('/transactions/purchases/' . $id)
+                ->with('success', 'Pesanan pembelian berhasil diubah');
             
+        } catch (InvalidTransactionException $e) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'Failed to update purchase order: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal mengubah pembelian: ' . $e->getMessage());
         }
     }
     
+    /**
+     * Delete purchase order (soft delete)
+     * Reverts all stock additions
+     * Recalculates supplier debt
+     */
     public function delete($id)
     {
         $purchaseOrder = $this->purchaseOrderModel->find($id);
         if (!$purchaseOrder) {
-            return redirect()->to('/transactions/purchases')->with('error', 'Purchase Order not found');
-        }
-        
-        // Check if already received (can't delete)
-        $receivedDetails = $this->purchaseOrderDetailModel
-            ->where('id_po', $id)
-            ->where('jumlah_diterima >', 0)
-            ->findAll();
-            
-        if (!empty($receivedDetails)) {
-            return redirect()->back()->with('error', 'Cannot delete purchase order that has been partially or fully received');
+            return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
         }
         
         $db = \Config\Database::connect();
         $db->transStart();
         
         try {
+            // Get all details
+            $details = $this->purchaseOrderDetailModel->where('id_po', $id)->findAll();
+            
+            // Revert stock for each item
+            foreach ($details as $detail) {
+                try {
+                    $this->stockService->deductStock(
+                        $detail['id_produk'],
+                        $purchaseOrder['id_warehouse'],
+                        $detail['jumlah'],
+                        'PURCHASE_REVERSAL',
+                        $id,
+                        'Penghapusan PO: ' . $purchaseOrder['nomor_po']
+                    );
+                } catch (\Exception $e) {
+                    log_message('error', 'Failed to revert stock for product ' . $detail['id_produk'] . ': ' . $e->getMessage());
+                }
+            }
+            
+            // Delete details
             $this->purchaseOrderDetailModel->where('id_po', $id)->delete();
+            
+            // Soft delete purchase order
             $this->purchaseOrderModel->delete($id);
+            
+            // Recalculate supplier debt
+            $this->balanceService->calculateSupplierDebt($purchaseOrder['id_supplier']);
             
             $db->transComplete();
             
@@ -281,23 +467,26 @@ class Purchases extends BaseController
                 throw new \Exception('Transaction failed');
             }
             
-            return redirect()->to('/transactions/purchases')->with('success', 'Purchase Order deleted successfully');
+            return redirect()->to('/transactions/purchases')->with('success', 'Pesanan pembelian berhasil dihapus');
             
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->with('error', 'Failed to delete purchase order: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus pembelian: ' . $e->getMessage());
         }
     }
     
+    /**
+     * Show receive form for purchase order
+     */
     public function receive($id)
     {
         $purchaseOrder = $this->purchaseOrderModel->find($id);
         if (!$purchaseOrder) {
-            return redirect()->to('/transactions/purchases')->with('error', 'Purchase Order not found');
+            return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
         }
         
         if ($purchaseOrder['status'] === 'Diterima Semua') {
-            return redirect()->back()->with('error', 'Purchase Order already fully received');
+            return redirect()->back()->with('error', 'Pesanan pembelian sudah diterima penuh');
         }
         
         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
@@ -309,7 +498,7 @@ class Purchases extends BaseController
             ->findAll();
         
         $data = [
-            'title' => 'Receive Purchase Order',
+            'title' => 'Terima Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder,
             'warehouses_good' => $this->warehouseModel->where('jenis', 'Baik')->findAll(),
             'warehouses_damaged' => $this->warehouseModel->where('jenis', 'Rusak')->findAll()
@@ -318,11 +507,15 @@ class Purchases extends BaseController
         return view('transactions/purchases/receive', $data);
     }
     
+    /**
+     * Process purchase order receipt
+     * Updates stock status and warehouse allocation
+     */
     public function processReceive($id)
     {
         $purchaseOrder = $this->purchaseOrderModel->find($id);
         if (!$purchaseOrder) {
-            return redirect()->to('/transactions/purchases')->with('error', 'Purchase Order not found');
+            return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
         }
         
         $rules = [
@@ -348,22 +541,23 @@ class Purchases extends BaseController
             
             foreach ($produk as $item) {
                 $idDetail = $item['id_detail'];
-                $jumlahDiterima = $item['jumlah_diterima'];
-                $jumlahBaik = $item['jumlah_baik'] ?? 0;
-                $jumlahRusak = $item['jumlah_rusak'] ?? 0;
-                $idWarehouseBaik = $item['id_warehouse_baik'] ?? null;
-                $idWarehouseRusak = $item['id_warehouse_rusak'] ?? null;
+                $jumlahDiterima = (int)$item['jumlah_diterima'];
+                $jumlahBaik = (int)($item['jumlah_baik'] ?? 0);
+                $jumlahRusak = (int)($item['jumlah_rusak'] ?? 0);
                 
                 // Get current detail
                 $detail = $this->purchaseOrderDetailModel->find($idDetail);
+                if (!$detail) {
+                    throw new InvalidTransactionException('Detail pesanan pembelian tidak ditemukan');
+                }
                 
                 // Validate received quantity
                 if (($jumlahBaik + $jumlahRusak) > $jumlahDiterima) {
-                    throw new \Exception('Total received quantity exceeds amount received');
+                    throw new InvalidTransactionException('Total barang diterima melebihi jumlah yang diterima');
                 }
                 
                 if ($jumlahDiterima > ($detail['jumlah'] - $detail['jumlah_diterima'])) {
-                    throw new \Exception('Received quantity exceeds remaining order quantity');
+                    throw new InvalidTransactionException('Jumlah diterima melebihi sisa pesanan');
                 }
                 
                 // Update detail
@@ -381,46 +575,37 @@ class Purchases extends BaseController
                     $someReceived = true;
                 }
                 
-                // Create stock mutations for good items
-                if ($jumlahBaik > 0 && $idWarehouseBaik) {
-                    $mutationData = [
-                        'id_produk' => $detail['id_produk'],
-                        'id_warehouse' => $idWarehouseBaik,
-                        'tipe_mutasi' => 'Masuk',
-                        'jumlah' => $jumlahBaik,
-                        'harga_beli' => $detail['harga_beli'],
-                        'tanggal_mutasi' => $tanggalTerima,
-                        'id_referensi' => $id,
-                        'tipe_referensi' => 'PO',
-                        'keterangan' => "Penerimaan PO: " . $purchaseOrder['nomor_po'] . " - " . $detail['keterangan'],
-                        'id_user' => session()->get('id_user')
-                    ];
+                // Log the received items via StockService
+                // Since we already added stock during PO creation, we just log the receipt
+                if ($jumlahBaik > 0 || $jumlahRusak > 0) {
+                    $warehouseGood = $item['id_warehouse_baik'] ?? $purchaseOrder['id_warehouse'];
+                    $warehouseDamaged = $item['id_warehouse_rusak'] ?? null;
                     
-                    $this->stockMutationModel->insert($mutationData);
+                    if ($jumlahBaik > 0) {
+                        $this->stockService->logStockMovement(
+                            $detail['id_produk'],
+                            $warehouseGood,
+                            $jumlahBaik,
+                            0,
+                            0, // balance will be updated by StockService
+                            'PURCHASE_RECEIVED',
+                            $id,
+                            'Penerimaan PO: ' . $purchaseOrder['nomor_po']
+                        );
+                    }
                     
-                    // Update product stock
-                    $this->updateProductStock($detail['id_produk'], $jumlahBaik);
-                }
-                
-                // Create stock mutations for damaged items
-                if ($jumlahRusak > 0 && $idWarehouseRusak) {
-                    $mutationData = [
-                        'id_produk' => $detail['id_produk'],
-                        'id_warehouse' => $idWarehouseRusak,
-                        'tipe_mutasi' => 'Masuk',
-                        'jumlah' => $jumlahRusak,
-                        'harga_beli' => $detail['harga_beli'],
-                        'tanggal_mutasi' => $tanggalTerima,
-                        'id_referensi' => $id,
-                        'tipe_referensi' => 'PO',
-                        'keterangan' => "Penerimaan PO (Rusak): " . $purchaseOrder['nomor_po'] . " - " . $detail['keterangan'],
-                        'id_user' => session()->get('id_user')
-                    ];
-                    
-                    $this->stockMutationModel->insert($mutationData);
-                    
-                    // Update product stock
-                    $this->updateProductStock($detail['id_produk'], $jumlahRusak);
+                    if ($jumlahRusak > 0 && $warehouseDamaged) {
+                        $this->stockService->logStockMovement(
+                            $detail['id_produk'],
+                            $warehouseDamaged,
+                            $jumlahRusak,
+                            0,
+                            0,
+                            'PURCHASE_RECEIVED_DAMAGED',
+                            $id,
+                            'Penerimaan PO (Rusak): ' . $purchaseOrder['nomor_po']
+                        );
+                    }
                 }
             }
             
@@ -440,19 +625,25 @@ class Purchases extends BaseController
                 throw new \Exception('Transaction failed');
             }
             
-            return redirect()->to('/transactions/purchases')->with('success', 'Purchase Order received successfully');
+            return redirect()->to('/transactions/purchases')->with('success', 'Pesanan pembelian berhasil diterima');
             
+        } catch (InvalidTransactionException $e) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'Failed to receive purchase order: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal menerima pembelian: ' . $e->getMessage());
         }
     }
     
+    /**
+     * Show purchase order detail
+     */
     public function detail($id)
     {
         $purchaseOrder = $this->purchaseOrderModel->find($id);
         if (!$purchaseOrder) {
-            return redirect()->to('/transactions/purchases')->with('error', 'Purchase Order not found');
+            return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
         }
         
         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
@@ -464,13 +655,16 @@ class Purchases extends BaseController
             ->findAll();
         
         $data = [
-            'title' => 'Purchase Order Detail',
+            'title' => 'Detail Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder
         ];
         
         return view('transactions/purchases/detail', $data);
     }
     
+    /**
+     * AJAX endpoint to get product price
+     */
     public function getProductPrice()
     {
         $idSupplier = $this->request->getPost('id_supplier');
@@ -478,16 +672,20 @@ class Purchases extends BaseController
         
         $product = $this->productModel->find($idProduct);
         if (!$product) {
-            return $this->respond(['status' => 'error', 'message' => 'Product not found']);
+            return $this->respond(['status' => 'error', 'message' => 'Produk tidak ditemukan']);
         }
         
         return $this->respond([
             'status' => 'success',
-            'harga_beli_terakhir' => $product['harga_beli_terakhir'],
-            'stok' => $product['stok']
+            'harga_beli_terakhir' => $product['harga_beli_terakhir'] ?? 0,
+            'stok' => $product['stok'] ?? 0
         ]);
     }
     
+    /**
+     * Generate unique PO number with date prefix
+     * Format: PO-202501001, PO-202501002, etc.
+     */
     private function generateNomorPO()
     {
         $prefix = 'PO-' . date('Ym');
@@ -505,13 +703,5 @@ class Purchases extends BaseController
         }
         
         return $prefix . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
-    }
-    
-    private function updateProductStock($idProduct, $quantity)
-    {
-        $product = $this->productModel->find($idProduct);
-        $newStock = $product['stok'] + $quantity;
-        
-        $this->productModel->update($idProduct, ['stok' => $newStock]);
     }
 }
