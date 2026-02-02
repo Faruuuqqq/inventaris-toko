@@ -208,7 +208,7 @@
             </tr>
         `;
 
-        fetch('<?= base_url('/info/saldo/stockData') ?>?' + params.toString())
+        fetch('<?= base_url('/info/saldo/stock-data') ?>?' + params.toString())
             .then(response => response.json())
             .then(data => {
                 renderStockBalance(data);

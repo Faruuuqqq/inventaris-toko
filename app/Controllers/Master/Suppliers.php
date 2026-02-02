@@ -4,10 +4,13 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\SupplierModel;
+use App\Traits\ApiResponseTrait;
 use CodeIgniter\Model;
 
 class Suppliers extends BaseCRUDController
 {
+    use ApiResponseTrait;
+    
     protected string $viewPath = 'master/suppliers';
     protected string $routePath = '/master/suppliers';
     protected string $entityName = 'Supplier';
@@ -33,6 +36,20 @@ class Suppliers extends BaseCRUDController
             'name' => $this->request->getPost('name'),
             'phone' => $this->request->getPost('phone'),
         ];
+    }
+
+    /**
+     * AJAX: Get supplier list for dropdown/select2
+     * Returns simplified supplier data for forms
+     */
+    public function getList()
+    {
+        $suppliers = $this->model
+            ->select('id, code, name, phone')
+            ->orderBy('name', 'ASC')
+            ->findAll();
+        
+        return $this->respondData($suppliers);
     }
 
     /**
