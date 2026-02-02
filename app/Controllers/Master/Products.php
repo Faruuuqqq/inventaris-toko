@@ -86,18 +86,16 @@ class Products extends BaseCRUDController
 
     protected function getAdditionalViewData(): array
     {
-        $products = $this->getIndexData();
-        $categories = $this->categoryModel->findAll();
-
-        // Calculate statistics
-        $totalStock = 0;
-        $totalValue = 0;
-
-        foreach ($products as $product) {
-            $stock = $product->stock ?? 0;
-            $totalStock += $stock;
-            $totalValue += $product->price_sell * $stock;
-        }
+        // Get all categories as array (not Entity objects)
+        $categories = $this->categoryModel->asArray()->findAll();
+        
+        return [
+            'categories' => $categories,
+            'totalProducts' => $this->model->countAllResults(),
+            'totalCategories' => count($categories),
+            'lowStockCount' => $this->model->where('quantity <=', 'min_stock_alert', false)->countAllResults(),
+        ];
+    }
 
         return [
             'subtitle' => 'Kelola daftar produk dan kategori',

@@ -28,7 +28,10 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Products
     $routes->group('products', function($routes) {
         $routes->get('/', 'Products::index');
+        $routes->get('edit/(:num)', 'Products::edit/$1');
+        $routes->get('delete/(:num)', 'Products::delete/$1');  // GET for simple delete links
         $routes->post('/', 'Products::store');
+        $routes->post('store', 'Products::store');
         $routes->put('(:num)', 'Products::update/$1');
         $routes->delete('(:num)', 'Products::delete/$1');
     });
@@ -37,8 +40,11 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     $routes->group('customers', function($routes) {
         $routes->get('/', 'Customers::index');
         $routes->get('(:num)', 'Customers::detail/$1');
+        $routes->get('edit/(:num)', 'Customers::edit/$1');
+        $routes->get('(:num)/edit', 'Customers::edit/$1');  // Alternative URL pattern
+        $routes->get('delete/(:num)', 'Customers::delete/$1');
         $routes->post('/', 'Customers::store');
-        $routes->post('store', 'Customers::store');  // Alternative route for form action
+        $routes->post('store', 'Customers::store');
         $routes->put('(:num)', 'Customers::update/$1');
         $routes->delete('(:num)', 'Customers::delete/$1');
     });
@@ -47,8 +53,12 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     $routes->group('suppliers', function($routes) {
         $routes->get('/', 'Suppliers::index');
         $routes->get('(:num)', 'Suppliers::detail/$1');
+        $routes->get('edit/(:num)', 'Suppliers::edit/$1');
+        $routes->get('(:num)/edit', 'Suppliers::edit/$1');  // Alternative URL pattern
+        $routes->get('delete/(:num)', 'Suppliers::delete/$1');
+        $routes->get('getList', 'Suppliers::getList');  // AJAX endpoint
         $routes->post('/', 'Suppliers::store');
-        $routes->post('store', 'Suppliers::store');  // Alternative route for form action
+        $routes->post('store', 'Suppliers::store');
         $routes->put('(:num)', 'Suppliers::update/$1');
         $routes->delete('(:num)', 'Suppliers::delete/$1');
     });
@@ -56,8 +66,10 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Warehouses
     $routes->group('warehouses', function($routes) {
         $routes->get('/', 'Warehouses::index');
+        $routes->get('edit/(:num)', 'Warehouses::edit/$1');
+        $routes->get('delete/(:num)', 'Warehouses::delete/$1');
         $routes->post('/', 'Warehouses::store');
-        $routes->post('store', 'Warehouses::store');  // Alternative route for form action
+        $routes->post('store', 'Warehouses::store');
         $routes->put('(:num)', 'Warehouses::update/$1');
         $routes->delete('(:num)', 'Warehouses::delete/$1');
     });
@@ -65,6 +77,8 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Salespersons
     $routes->group('salespersons', function($routes) {
         $routes->get('/', 'Salespersons::index');
+        $routes->get('edit/(:num)', 'Salespersons::edit/$1');
+        $routes->get('delete/(:num)', 'Salespersons::delete/$1');
         $routes->post('/', 'Salespersons::store');
         $routes->put('(:num)', 'Salespersons::update/$1');
         $routes->delete('(:num)', 'Salespersons::delete/$1');
@@ -78,8 +92,11 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     $routes->group('sales', function($routes) {
         $routes->get('/', 'Sales::index');
         $routes->get('create', 'Sales::create');
+        $routes->get('edit/(:num)', 'Sales::edit/$1');
         $routes->get('(:num)', 'Sales::detail/$1');
         $routes->post('/', 'Sales::store');
+        $routes->post('store', 'Sales::store');
+        $routes->put('(:num)', 'Sales::update/$1');
         $routes->get('cash', 'Sales::cash');
         $routes->post('storeCash', 'Sales::storeCash');
         $routes->get('credit', 'Sales::credit');
@@ -92,8 +109,13 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     $routes->group('purchases', function($routes) {
         $routes->get('/', 'Purchases::index');
         $routes->get('create', 'Purchases::create');
+        $routes->get('edit/(:num)', 'Purchases::edit/$1');
+        $routes->get('receive/(:num)', 'Purchases::receive/$1');
+        $routes->post('processReceive/(:num)', 'Purchases::processReceive/$1');
         $routes->get('(:num)', 'Purchases::detail/$1');
         $routes->post('/', 'Purchases::store');
+        $routes->post('store', 'Purchases::store');
+        $routes->put('(:num)', 'Purchases::update/$1');
         $routes->delete('(:num)', 'Purchases::delete/$1');
     });
 
@@ -101,16 +123,30 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     $routes->group('sales-returns', function($routes) {
         $routes->get('/', 'SalesReturns::index');
         $routes->get('create', 'SalesReturns::create');
+        $routes->get('edit/(:num)', 'SalesReturns::edit/$1');
+        $routes->get('approve/(:num)', 'SalesReturns::approve/$1');
+        $routes->post('processApproval/(:num)', 'SalesReturns::processApproval/$1');
+        $routes->get('detail/(:num)', 'SalesReturns::detail/$1');
         $routes->get('(:num)', 'SalesReturns::detail/$1');
         $routes->post('/', 'SalesReturns::store');
+        $routes->post('store', 'SalesReturns::store');
+        $routes->put('(:num)', 'SalesReturns::update/$1');
+        $routes->post('update/(:num)', 'SalesReturns::update/$1');
         $routes->delete('(:num)', 'SalesReturns::delete/$1');
     });
 
     $routes->group('purchase-returns', function($routes) {
         $routes->get('/', 'PurchaseReturns::index');
         $routes->get('create', 'PurchaseReturns::create');
+        $routes->get('edit/(:num)', 'PurchaseReturns::edit/$1');
+        $routes->get('approve/(:num)', 'PurchaseReturns::approve/$1');
+        $routes->post('processApproval/(:num)', 'PurchaseReturns::processApproval/$1');
+        $routes->get('detail/(:num)', 'PurchaseReturns::detail/$1');
         $routes->get('(:num)', 'PurchaseReturns::detail/$1');
         $routes->post('/', 'PurchaseReturns::store');
+        $routes->post('store', 'PurchaseReturns::store');
+        $routes->put('(:num)', 'PurchaseReturns::update/$1');
+        $routes->post('update/(:num)', 'PurchaseReturns::update/$1');
         $routes->delete('(:num)', 'PurchaseReturns::delete/$1');
     });
 });
@@ -141,6 +177,7 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
         $routes->post('storeReceivable', 'Payments::storeReceivable');
         $routes->get('payable', 'Payments::payable');
         $routes->post('storePayable', 'Payments::storePayable');
+        $routes->get('getSupplierPurchases', 'Payments::getSupplierPurchases');  // AJAX endpoint
     });
 
     // Kontra Bon

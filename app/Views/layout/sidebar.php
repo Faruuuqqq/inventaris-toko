@@ -28,7 +28,7 @@ $menuItems = [
             ['title' => 'Pembayaran Piutang', 'icon' => 'arrow-down-circle', 'path' => 'finance/payments/receivable'],
             ['title' => 'Retur Pembelian', 'icon' => 'undo', 'path' => 'transactions/purchase-returns'],
             ['title' => 'Retur Penjualan', 'icon' => 'undo', 'path' => 'transactions/sales-returns'],
-            ['title' => 'Kontra Bon', 'icon' => 'clipboard', 'path' => 'finance/kontra-bon'],
+            // ['title' => 'Kontra Bon', 'icon' => 'clipboard', 'path' => 'finance/kontra-bon'],  // Temporarily disabled - table not exists
         ]
     ],
     [
