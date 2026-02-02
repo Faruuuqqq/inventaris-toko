@@ -183,7 +183,7 @@
 
         showTableLoading('returnsTable', 8);
 
-        fetch(buildUrl('/info/history/salesReturnsData', params))
+        fetch(buildUrl('/info/history/sales-returns-data', params))
             .then(response => response.json())
             .then(data => {
                 renderReturns(data);

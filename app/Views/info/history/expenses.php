@@ -182,7 +182,7 @@
 
         showTableLoading('expensesTable', 7);
 
-        fetch(buildUrl('/info/history/expensesData', params))
+        fetch(buildUrl('/info/history/expenses-data', params))
             .then(response => response.json())
             .then(data => {
                 renderExpenses(data);

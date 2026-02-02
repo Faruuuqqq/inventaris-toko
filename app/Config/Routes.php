@@ -178,6 +178,7 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
         $routes->post('update/(:num)', 'Expenses::update/$1');  // POST fallback for update
         $routes->get('delete/(:num)', 'Expenses::delete/$1');  // GET for simple delete links
         $routes->delete('(:num)', 'Expenses::delete/$1');  // RESTful DELETE
+        $routes->post('delete/(:num)', 'Expenses::delete/$1');  // POST fallback for delete
         $routes->get('get-data', 'Expenses::getData'); // AJAX
         $routes->get('summary', 'Expenses::summary');
         $routes->get('analyze-data', 'Expenses::analyzeData'); // AJAX
@@ -257,6 +258,7 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
         $routes->get('card', 'Stock::card');
         $routes->get('balance', 'Stock::balance');
         $routes->get('management', 'Stock::management');
+        $routes->get('getMutations', 'Stock::getMutations');  // AJAX endpoint for stock mutations
     });
     
     // Stock card alias for compatibility
@@ -308,6 +310,7 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
         $routes->delete('(:num)', 'FileController::delete/$1');
         $routes->get('delete/(:num)', 'FileController::delete/$1');  // Alternative for simple links
         $routes->get('download/(:num)', 'FileController::download/$1');
+        $routes->get('view/(:num)', 'FileController::view/$1');  // View file endpoint
     });
 });
 
