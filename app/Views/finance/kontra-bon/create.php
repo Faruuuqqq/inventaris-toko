@@ -60,8 +60,8 @@
                     <option value="">Pilih Customer</option>
                     <?php if (isset($customers) && is_array($customers)): ?>
                         <?php foreach ($customers as $customer): ?>
-                            <option value="<?= esc($customer['id']) ?>" <?= old('customer_id') == $customer['id'] ? 'selected' : '' ?>>
-                                <?= esc($customer['name']) ?> - <?= esc($customer['phone'] ?? 'Tidak ada telepon') ?>
+                            <option value="<?= esc($customer->id ?? $customer['id'] ?? '') ?>" <?= old('customer_id') == ($customer->id ?? $customer['id'] ?? '') ? 'selected' : '' ?>>
+                                <?= esc($customer->name ?? $customer['name'] ?? '') ?> - <?= esc($customer->phone ?? $customer['phone'] ?? 'Tidak ada telepon') ?>
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>
