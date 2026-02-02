@@ -17,8 +17,8 @@
 <div class="mb-8 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
     
     <!-- Card 1: Today's Sales - Emerald Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-105 duration-300">
-        <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary to-primary-light opacity-90"></div>
+    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-600"></div>
         <div class="relative p-6">
             <!-- Background accent -->
             <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
@@ -27,30 +27,30 @@
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white/80">Penjualan Hari Ini</p>
+                        <p class="text-sm font-semibold text-emerald-100">Penjualan Hari Ini</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= format_currency($todaySales) ?></p>
                         <div class="mt-3 flex items-center gap-1">
-                            <svg class="h-4 w-4 text-green-300" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-4 w-4 text-emerald-200" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h.01a1 1 0 110 2H12zm-3.976 7a1 1 0 110-2h.01a1 1 0 110 2h-.01zM3.064 9.1a1 1 0 100-2h-.01a1 1 0 000 2h.01zm0 3.192a1 1 0 110-2h.01a1 1 0 110 2h-.01z" clip-rule="evenodd"/>
                             </svg>
-                            <p class="text-xs text-green-300 font-semibold">↑ 12.5% dari kemarin</p>
+                            <p class="text-xs text-emerald-100 font-semibold">↑ 12.5% dari kemarin</p>
                         </div>
                     </div>
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
                         <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8L5.586 19.414M21 21H3a2 2 0 01-2-2V5a2 2 0 012-2h16a2 2 0 012 2v14a2 2 0 01-2 2z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-11 11"/>
                         </svg>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/0 via-white/20 to-white/0"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         <a href="<?= base_url('info/history/sales') ?>" class="absolute inset-0 z-20"></a>
     </div>
 
     <!-- Card 2: Today's Purchases - Blue Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-105 duration-300">
-        <div class="absolute inset-0 bg-gradient-to-br from-secondary via-blue-500 to-secondary opacity-90"></div>
+    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600"></div>
         <div class="relative p-6">
             <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
             <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-28 w-28 rounded-full bg-white/5"></div>
@@ -58,11 +58,11 @@
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white/80">Pembelian Hari Ini</p>
+                        <p class="text-sm font-semibold text-blue-100">Pembelian Hari Ini</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= format_currency($todayPurchases) ?></p>
-                        <p class="mt-3 text-xs text-blue-200 font-medium">5 transaksi</p>
+                        <p class="mt-3 text-xs text-blue-100 font-medium">5 transaksi</p>
                     </div>
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
                         <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
@@ -70,13 +70,13 @@
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/0 via-white/20 to-white/0"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         <a href="<?= base_url('transactions/purchases') ?>" class="absolute inset-0 z-20"></a>
     </div>
 
-    <!-- Card 3: Total Stock - Amber Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-105 duration-300">
-        <div class="absolute inset-0 bg-gradient-to-br from-warning via-orange-400 to-orange-500 opacity-90"></div>
+    <!-- Card 3: Total Stock - Orange Gradient -->
+    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600"></div>
         <div class="relative p-6">
             <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
             <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-28 w-28 rounded-full bg-white/5"></div>
@@ -84,25 +84,25 @@
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white/80">Total Stok</p>
+                        <p class="text-sm font-semibold text-orange-100">Total Stok</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= number_format($totalStock, 0, ',', '.') ?></p>
                         <p class="mt-3 text-xs text-orange-100 font-medium"><?= $activeCustomers ?? 0 ?> produk aktif</p>
                     </div>
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
                         <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20.25 6.375c0 2.278-4.022 4.125-9 4.125S2.25 8.653 2.25 6.375m18 0A2.25 2.25 0 0020.25 4.125H3.75A2.25 2.25 0 002.25 6.375m18 0B9 12h11.25m-11-8.684c5.232 0 9.531 1.697 9.531 3.75 0 .385-.049.761-.144 1.126M7.5 14.25c5.232 0 9.531 1.697 9.531 3.75 0 .384-.049.761-.144 1.126m-15.882-3.876a9 9 0 014.586-3.876m0 0a9 9 0 014.586 3.876"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                         </svg>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/0 via-white/20 to-white/0"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         <a href="<?= base_url('info/saldo/stock') ?>" class="absolute inset-0 z-20"></a>
     </div>
 
-    <!-- Card 4: Active Customers - Green Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-105 duration-300">
-        <div class="absolute inset-0 bg-gradient-to-br from-success via-green-500 to-emerald-600 opacity-90"></div>
+    <!-- Card 4: Active Customers - Purple Gradient -->
+    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600"></div>
         <div class="relative p-6">
             <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
             <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-28 w-28 rounded-full bg-white/5"></div>
@@ -110,16 +110,16 @@
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
-                        <p class="text-sm font-medium text-white/80">Customer Aktif</p>
+                        <p class="text-sm font-semibold text-purple-100">Customer Aktif</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= number_format($activeCustomers, 0, ',', '.') ?></p>
                         <div class="mt-3 flex items-center gap-1">
-                            <svg class="h-4 w-4 text-green-200" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="h-4 w-4 text-purple-200" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h.01a1 1 0 110 2H12zm-3.976 7a1 1 0 110-2h.01a1 1 0 110 2h-.01zM3.064 9.1a1 1 0 100-2h-.01a1 1 0 000 2h.01zm0 3.192a1 1 0 110-2h.01a1 1 0 110 2h-.01z" clip-rule="evenodd"/>
                             </svg>
-                            <p class="text-xs text-green-200 font-semibold">↑ 3 pelanggan baru minggu ini</p>
+                            <p class="text-xs text-purple-100 font-semibold">↑ 3 pelanggan baru minggu ini</p>
                         </div>
                     </div>
-                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
                         <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20h12a6 6 0 00-6-6 6 6 0 00-6 6z"/>
                         </svg>
@@ -127,7 +127,7 @@
                 </div>
             </div>
         </div>
-        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-white/0 via-white/20 to-white/0"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         <a href="<?= base_url('master/customers') ?>" class="absolute inset-0 z-20"></a>
     </div>
 </div>

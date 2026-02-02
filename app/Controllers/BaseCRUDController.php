@@ -179,6 +179,33 @@ abstract class BaseCRUDController extends BaseController
     }
 
     /**
+     * Show edit form
+     */
+    public function edit($id)
+    {
+        // Check access
+        if (!$this->checkUpdateAccess($id)) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+        
+        // Find record
+        $record = $this->model->find($id);
+        
+        if (!$record) {
+            return redirect()->back()->with('error', $this->entityName . ' tidak ditemukan');
+        }
+        
+        // Prepare data
+        $data = array_merge([
+            'title' => 'Edit ' . $this->entityName,
+            'subtitle' => 'Ubah data ' . strtolower($this->entityName),
+            strtolower($this->entityName) => $record,
+        ], $this->getAdditionalViewData());
+        
+        return view($this->viewPath . '/edit', $data);
+    }
+
+    /**
      * Check if user has access to store - override if needed
      */
     protected function checkStoreAccess(): bool
