@@ -27,9 +27,9 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => '',
+        'username'     => 'root',
         'password'     => '',
-        'database'     => '',
+        'database'     => 'inventaris_toko',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -193,6 +193,15 @@ class Database extends Config
     public function __construct()
     {
         parent::__construct();
+
+        // Apply environment variables with fallback defaults
+        $this->default['hostname'] = getenv('database.default.hostname') ?: 'localhost';
+        $this->default['username'] = getenv('database.default.username') ?: 'root';
+        $this->default['password'] = getenv('database.default.password') ?? '';
+        $this->default['database'] = getenv('database.default.database') ?: 'inventaris_toko';
+        $this->default['DBDriver'] = getenv('database.default.DBDriver') ?: 'MySQLi';
+        $this->default['DBPrefix'] = getenv('database.default.DBPrefix') ?? '';
+        $this->default['port'] = (int)(getenv('database.default.port') ?: 3306);
 
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that

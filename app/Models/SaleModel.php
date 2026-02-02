@@ -18,6 +18,7 @@ class SaleModel extends Model
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
+    protected $updatedField = 'updated_at';
 
     // GLOBAL SCOPE: Hide hidden sales from non-Owner users
     public function findAll(?int $limit = null, ?int $offset = 0)
@@ -42,7 +43,7 @@ class SaleModel extends Model
             $builder->where('payment_status', $status);
         }
 
-        return $builder->orderBy('date', 'DESC')->findAll();
+        return $builder->orderBy('created_at', 'DESC')->findAll();
     }
 
     /**
@@ -57,7 +58,7 @@ class SaleModel extends Model
             $builder->where('customer_id', $customerId);
         }
 
-        return $builder->orderBy('date', 'ASC')->findAll();
+        return $builder->orderBy('created_at', 'ASC')->findAll();
     }
 
     /**
