@@ -53,7 +53,7 @@ class SalesController extends ResourceController
         $sales = $builder
             ->select('sales.*, customers.name')
             ->join('customers', 'customers.id = sales.customer_id')
-            ->orderBy('sales.date', 'DESC')
+            ->orderBy('sales.created_at', 'DESC')
             ->paginate($limit, 'default', $page);
         
         $data = [
@@ -355,13 +355,13 @@ class SalesController extends ResourceController
         }
         
         $receivables = $builder
-            ->select('sales.id, sales.number, sales.date,
+            ->select('sales.id, sales.number, sales.created_at,
                     sales.final_amount, customers.name,
-                    DATEDIFF(CURDATE(), sales.date) as days_overdue')
+                    DATEDIFF(CURDATE(), sales.created_at) as days_overdue')
             ->join('customers', 'customers.id = sales.customer_id')
             ->where('sales.payment_type', 'CREDIT')
             ->where('sales.payment_status', 'UNPAID')
-            ->orderBy('sales.date', 'ASC')
+            ->orderBy('sales.created_at', 'ASC')
             ->findAll();
         
         return $this->respond([
@@ -412,8 +412,8 @@ class SalesController extends ResourceController
                    ->join('sales', 'sales.id = sale_items.sale_id')
                    ->join('products', 'products.id = sale_items.product_id')
                    ->where('sales.payment_status', 'PAID')
-                   ->where('sales.date >=', $dateFrom)
-                   ->where('sales.date <=', $dateTo);
+                   ->where('sales.created_at >=', $dateFrom)
+                   ->where('sales.created_at <=', $dateTo);
         
         if ($customerId) {
             $builder->where('sales.customer_id', $customerId);
@@ -435,8 +435,8 @@ class SalesController extends ResourceController
             ->select('customers.id, customers.name, COUNT(*) as transaction_count, SUM(final_amount) as total_spent')
             ->join('customers', 'customers.id = sales.customer_id')
             ->where('sales.payment_status', 'PAID')
-            ->where('sales.date >=', $dateFrom)
-            ->where('sales.date <=', $dateTo)
+            ->where('sales.created_at >=', $dateFrom)
+            ->where('sales.created_at <=', $dateTo)
             ->groupBy('customers.id, customers.name')
             ->orderBy('total_spent', 'DESC')
             ->limit(1)

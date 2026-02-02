@@ -281,9 +281,9 @@ class Reports extends BaseController
         return $this->saleModel
             ->select('sales.*, customers.name as customer_name')
             ->join('customers', 'customers.id = sales.customer_id')
-            ->where('sales.date', $date)
+            ->where('DATE(sales.created_at)', $date)
             ->where('sales.payment_status', 'PAID')
-            ->orderBy('sales.date', 'DESC')
+            ->orderBy('sales.created_at', 'DESC')
             ->findAll();
     }
     
@@ -353,8 +353,8 @@ class Reports extends BaseController
             ->join('sale_items', 'sale_items.sale_id = sales.id')
             ->join('products', 'products.id = sale_items.product_id')
             ->where('sales.payment_status', 'PAID')
-            ->where('sales.date >=', $startDate)
-            ->where('sales.date <=', $endDate)
+            ->where('DATE(sales.created_at) >=', $startDate)
+            ->where('DATE(sales.created_at) <=', $endDate)
             ->first()['total'] ?? 0;
     }
     
@@ -532,8 +532,8 @@ class Reports extends BaseController
             ->join('sale_items', 'sale_items.sale_id = sales.id')
             ->join('products', 'products.id = sale_items.product_id')
             ->where('sales.payment_status', 'PAID')
-            ->where('sales.date >=', $startDate)
-            ->where('sales.date <=', $endDate)
+            ->where('DATE(sales.created_at) >=', $startDate)
+            ->where('DATE(sales.created_at) <=', $endDate)
             ->groupBy('products.id, products.name, products.sku')
             ->orderBy('revenue', 'DESC')
             ->findAll();
@@ -544,14 +544,14 @@ class Reports extends BaseController
         return $this->saleModel
             ->select('customers.id, customers.name, 
                     COUNT(*) as transaction_count, 
-                    SUM(sales.final_amount) as total_spent,
-                    AVG(sales.final_amount) as avg_transaction_value,
-                    MIN(sales.date) as first_transaction,
-                    MAX(sales.date) as last_transaction')
+                    SUM(sales.total_amount) as total_spent,
+                    AVG(sales.total_amount) as avg_transaction_value,
+                    MIN(DATE(sales.created_at)) as first_transaction,
+                    MAX(DATE(sales.created_at)) as last_transaction')
             ->join('customers', 'customers.id = sales.customer_id')
             ->where('sales.payment_status', 'PAID')
-            ->where('sales.date >=', $startDate)
-            ->where('sales.date <=', $endDate)
+            ->where('DATE(sales.created_at) >=', $startDate)
+            ->where('DATE(sales.created_at) <=', $endDate)
             ->groupBy('customers.id, customers.name')
             ->orderBy('total_spent', 'DESC')
             ->findAll();

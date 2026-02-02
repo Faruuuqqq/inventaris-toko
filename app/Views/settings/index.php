@@ -40,7 +40,7 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-medium">Email</label>
-                            <input type="email" name="email" value="<?= esc($user['email'] ?? '') ?>" class="form-input">
+                            <input type="email" name="email" value="<?= esc($user->email ?? $user['email'] ?? '') ?>" class="form-input">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary mt-4">Simpan Perubahan</button>

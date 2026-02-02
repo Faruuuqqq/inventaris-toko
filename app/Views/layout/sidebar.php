@@ -58,17 +58,21 @@ $menuItems = [
 ];
 
 // Robust Active State Helper
-function isPathActive($path) {
-    if (empty($path)) return false;
-    $current = current_url(true)->getPath();
-    return str_contains($current, $path); 
+if (!function_exists('isPathActive')) {
+    function isPathActive($path) {
+        if (empty($path)) return false;
+        $current = current_url(true)->getPath();
+        return str_contains($current, $path); 
+    }
 }
 
-function isGroupActive($children) {
-    foreach ($children as $child) {
-        if (isPathActive($child['path'])) return true;
+if (!function_exists('isGroupActive')) {
+    function isGroupActive($children) {
+        foreach ($children as $child) {
+            if (isPathActive($child['path'])) return true;
+        }
+        return false;
     }
-    return false;
 }
 
 // Simple SVG icon generator

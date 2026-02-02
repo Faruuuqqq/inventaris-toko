@@ -38,6 +38,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
         $routes->get('/', 'Customers::index');
         $routes->get('(:num)', 'Customers::detail/$1');
         $routes->post('/', 'Customers::store');
+        $routes->post('store', 'Customers::store');  // Alternative route for form action
         $routes->put('(:num)', 'Customers::update/$1');
         $routes->delete('(:num)', 'Customers::delete/$1');
     });
@@ -47,6 +48,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
         $routes->get('/', 'Suppliers::index');
         $routes->get('(:num)', 'Suppliers::detail/$1');
         $routes->post('/', 'Suppliers::store');
+        $routes->post('store', 'Suppliers::store');  // Alternative route for form action
         $routes->put('(:num)', 'Suppliers::update/$1');
         $routes->delete('(:num)', 'Suppliers::delete/$1');
     });
@@ -55,6 +57,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     $routes->group('warehouses', function($routes) {
         $routes->get('/', 'Warehouses::index');
         $routes->post('/', 'Warehouses::store');
+        $routes->post('store', 'Warehouses::store');  // Alternative route for form action
         $routes->put('(:num)', 'Warehouses::update/$1');
         $routes->delete('(:num)', 'Warehouses::delete/$1');
     });

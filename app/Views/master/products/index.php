@@ -102,7 +102,7 @@
             >
                 <option value="all">Semua Kategori</option>
                 <?php foreach ($categories as $cat): ?>
-                    <option value="<?= $cat['name'] ?>"><?= $cat['name'] ?></option>
+                    <option value="<?= esc($cat->name ?? $cat['name']) ?>"><?= esc($cat->name ?? $cat['name']) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
