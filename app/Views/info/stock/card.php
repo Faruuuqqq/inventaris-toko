@@ -5,42 +5,42 @@
 <div class="mb-6 rounded-lg border bg-card text-card-foreground shadow-sm p-6">
     <h3 class="text-lg font-semibold mb-4">Filter Kartu Stok</h3>
     <div class="grid gap-4 md:grid-cols-4">
-        <div class="space-y-2">
-            <label for="productFilter">Produk</label>
-            <select id="productFilter" class="form-input">
-                <option value="">Semua Produk</option>
-                <?php foreach ($products as $product): ?>
-                <option value="<?= is_array($product) ? $product['id'] : $product->id ?>"><?= is_array($product) ? $product['name'] : $product->name ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="space-y-2">
-            <label for="warehouseFilter">Gudang</label>
-            <select id="warehouseFilter" class="form-input">
-                <option value="">Semua Gudang</option>
-                <?php foreach ($warehouses as $warehouse): ?>
-                <option value="<?= esc($warehouse->id ?? $warehouse['id'] ?? '') ?>"><?= esc($warehouse->name ?? $warehouse['name'] ?? '') ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="space-y-2">
-            <label for="startDate">Tanggal Mulai</label>
-            <input type="date" id="startDate" class="form-input">
-        </div>
-        <div class="space-y-2">
-            <label for="endDate">Tanggal Akhir</label>
-            <input type="date" id="endDate" class="form-input">
-        </div>
-    </div>
-    <div class="flex gap-2 mt-4">
-        <button onclick="loadMutations()" class="btn btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35"/></svg>
-            Filter
-        </button>
-        <button onclick="resetFilters()" class="btn btn-outline">
-            Reset
-        </button>
-    </div>
+         <div class="space-y-2">
+             <label for="productFilter" class="text-sm font-medium">Produk</label>
+             <select id="productFilter" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                 <option value="">Semua Produk</option>
+                 <?php foreach ($products as $product): ?>
+                 <option value="<?= is_array($product) ? $product['id'] : $product->id ?>"><?= is_array($product) ? $product['name'] : $product->name ?></option>
+                 <?php endforeach; ?>
+             </select>
+         </div>
+         <div class="space-y-2">
+             <label for="warehouseFilter" class="text-sm font-medium">Gudang</label>
+             <select id="warehouseFilter" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                 <option value="">Semua Gudang</option>
+                 <?php foreach ($warehouses as $warehouse): ?>
+                 <option value="<?= esc($warehouse->id ?? $warehouse['id'] ?? '') ?>"><?= esc($warehouse->name ?? $warehouse['name'] ?? '') ?></option>
+                 <?php endforeach; ?>
+             </select>
+         </div>
+         <div class="space-y-2">
+             <label for="startDate" class="text-sm font-medium">Tanggal Mulai</label>
+             <input type="date" id="startDate" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+         </div>
+         <div class="space-y-2">
+             <label for="endDate" class="text-sm font-medium">Tanggal Akhir</label>
+             <input type="date" id="endDate" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+         </div>
+     </div>
+     <div class="flex gap-2 mt-4">
+         <button onclick="loadMutations()" class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary/90 transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35"/></svg>
+             Filter
+         </button>
+         <button onclick="resetFilters()" class="inline-flex items-center justify-center rounded-lg border border-border bg-background text-foreground hover:bg-muted transition h-10 px-4 gap-2 text-sm font-semibold">
+             Reset
+         </button>
+     </div>
 </div>
 
 <!-- Stock Mutations Table -->
@@ -49,29 +49,29 @@
         <h3 class="text-xl font-semibold">Histori Mutasi Stok</h3>
     </div>
     <div class="p-0">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>Produk</th>
-                    <th>Gudang</th>
-                    <th>Tipe</th>
-                    <th>Qty</th>
-                    <th>Saldo Akhir</th>
-                    <th>Referensi</th>
-                    <th>Keterangan</th>
-                </tr>
-            </thead>
-            <tbody id="mutationsTable">
-                <!-- Data will be loaded via AJAX -->
-                <tr>
-                    <td colspan="9" class="text-center text-muted-foreground">
-                        Pilih produk dan filter untuk menampilkan data
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+         <table class="w-full border-collapse">
+             <thead class="bg-muted/50 border-b border-border">
+                 <tr>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Tanggal</th>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Produk</th>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Gudang</th>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Tipe</th>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Qty</th>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Saldo Akhir</th>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Referensi</th>
+                     <th class="px-4 py-3 text-left text-sm font-semibold text-foreground">Keterangan</th>
+                 </tr>
+             </thead>
+             <tbody id="mutationsTable" class="divide-y divide-border">
+                 <!-- Data will be loaded via AJAX -->
+                 <tr>
+                     <td colspan="9" class="text-center text-muted-foreground py-8">
+                         Pilih produk dan filter untuk menampilkan data
+                     </td>
+                 </tr>
+             </tbody>
+         </table>
+     </div>
 </div>
 
 <script>
@@ -104,15 +104,15 @@
         tbody.innerHTML = '';
 
         if (mutations.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="text-center text-muted-foreground">
-                        Tidak ada data mutasi yang ditemukan
-                    </td>
-                </tr>
-            `;
-            return;
-        }
+             tbody.innerHTML = `
+                 <tr>
+                     <td colspan="9" class="text-center text-muted-foreground py-8">
+                         Tidak ada data mutasi yang ditemukan
+                     </td>
+                 </tr>
+             `;
+             return;
+         }
 
         mutations.forEach(mutation => {
             const row = document.createElement('tr');
@@ -133,16 +133,16 @@
                 'TRANSFER': 'Pindah'
             }[mutation.type] || mutation.type;
 
-            row.innerHTML = `
-                <td>${formatDate(mutation.created_at)}</td>
-                <td>${mutation.product_name}</td>
-                <td>${mutation.warehouse_name}</td>
-                <td><span class="badge ${typeClass}">${typeName}</span></td>
-                <td>${mutation.quantity}</td>
-                <td>${mutation.current_balance}</td>
-                <td>${mutation.reference_number || '-'}</td>
-                <td>${mutation.notes || '-'}</td>
-            `;
+             row.innerHTML = `
+                 <td class="px-4 py-3 text-sm">${formatDate(mutation.created_at)}</td>
+                 <td class="px-4 py-3 text-sm">${mutation.product_name}</td>
+                 <td class="px-4 py-3 text-sm">${mutation.warehouse_name}</td>
+                 <td class="px-4 py-3 text-sm"><span class="badge ${typeClass}">${typeName}</span></td>
+                 <td class="px-4 py-3 text-sm">${mutation.quantity}</td>
+                 <td class="px-4 py-3 text-sm">${mutation.current_balance}</td>
+                 <td class="px-4 py-3 text-sm">${mutation.reference_number || '-'}</td>
+                 <td class="px-4 py-3 text-sm">${mutation.notes || '-'}</td>
+             `;
             tbody.appendChild(row);
         });
     }
