@@ -1,258 +1,295 @@
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
-<div class="page-header">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title"><?= $title ?></h3>
+
+<!-- Page Header with Filter -->
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
+            <?= icon('Calendar', 'h-8 w-8 text-primary') ?>
+            Laporan Harian
+        </h1>
+        <p class="text-sm text-muted-foreground mt-1">Ringkasan transaksi penjualan dan pembelian per hari</p>
+    </div>
+    
+    <form action="<?= base_url('/info/reports/daily') ?>" method="get" class="flex flex-col sm:flex-row gap-3 items-end">
+        <div class="space-y-2 w-full sm:w-auto">
+            <label for="date" class="text-sm font-medium text-foreground">Pilih Tanggal</label>
+            <div class="flex gap-2">
+                <input type="date" id="date" name="date" value="<?= $date ?>" class="h-10 rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <button type="submit" class="inline-flex items-center justify-center gap-2 h-10 px-4 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition whitespace-nowrap">
+                    <?= icon('Filter', 'h-5 w-5') ?>
+                    Tampilkan
+                </button>
             </div>
-            <div class="col-auto">
-                <form action="<?= base_url('/info/reports/daily') ?>" method="get" class="d-flex gap-2">
-                    <input type="date" name="date" value="<?= $date ?>" class="form-control">
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </form>
+        </div>
+    </form>
+</div>
+
+<!-- Summary Cards -->
+<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+    <!-- Total Sales -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Penjualan</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= format_currency($summary['total_sales'] ?? 0) ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-primary/10">
+                    <?= icon('ShoppingCart', 'h-6 w-6 text-primary') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Purchases -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Pembelian</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= format_currency($summary['total_purchases'] ?? 0) ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-success/10">
+                    <?= icon('Package', 'h-6 w-6 text-success') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Returns -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Retur</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= format_currency($summary['total_returns'] ?? 0) ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-warning/10">
+                    <?= icon('RotateCcw', 'h-6 w-6 text-warning') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Transactions -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Transaksi</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= $summary['transaction_count'] ?? 0 ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-info/10">
+                    <?= icon('FileText', 'h-6 w-6 text-info') ?>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container-fluid">
-    <!-- Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4><?= format_currency($summary['total_sales'] ?? 0) ?></h4>
-                            <span>Total Penjualan</span>
-                        </div>
-                        <div class="align-self-center">
-                            <i data-lucide="shopping-cart" class="icon-lg"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Sales Table -->
+<div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-8">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('ShoppingCart', 'h-5 w-5 text-primary') ?>
+            Penjualan - <?= format_date($date) ?>
+        </h2>
+    </div>
+    <div class="p-6 overflow-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-muted/50 border-b border-border/50">
+                <tr>
+                    <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">No. Faktur</th>
+                    <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Customer</th>
+                    <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Tipe</th>
+                    <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Status</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Total</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50">
+                <?php if (empty($sales)): ?>
+                    <tr>
+                        <td colspan="5" class="px-4 py-8 text-center text-muted-foreground">
+                            <div class="flex flex-col items-center justify-center gap-2">
+                                <?= icon('ShoppingCart', 'h-8 w-8 text-muted-foreground/50') ?>
+                                <span class="text-sm">Tidak ada penjualan pada tanggal ini</span>
+                            </div>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($sales as $sale): ?>
+                        <tr class="hover:bg-muted/50 transition">
+                            <td class="px-4 py-3 font-semibold text-foreground"><?= $sale['invoice_number'] ?? '' ?></td>
+                            <td class="px-4 py-3 text-foreground"><?= $sale['customer_name'] ?? '' ?></td>
+                            <td class="px-4 py-3 text-center"><?= badge_status($sale['payment_type'] ?? '') ?></td>
+                            <td class="px-4 py-3 text-center"><?= badge_status($sale['payment_status'] ?? '') ?></td>
+                            <td class="px-4 py-3 text-right font-semibold text-primary">
+                                <?= format_currency($sale['final_amount'] ?? 0) ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+            <tfoot class="bg-muted/30 border-t border-border/50 font-semibold">
+                <tr>
+                    <th colspan="4" class="px-4 py-3 text-right text-foreground">Total Penjualan:</th>
+                    <th class="px-4 py-3 text-right text-primary">
+                        <?= format_currency($summary['total_sales'] ?? 0) ?>
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
 
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4><?= format_currency($summary['total_purchases'] ?? 0) ?></h4>
-                            <span>Total Pembelian</span>
-                        </div>
-                        <div class="align-self-center">
-                            <i data-lucide="package" class="icon-lg"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Purchases Table -->
+<div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-8">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('Package', 'h-5 w-5 text-primary') ?>
+            Pembelian - <?= format_date($date) ?>
+        </h2>
+    </div>
+    <div class="p-6 overflow-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-muted/50 border-b border-border/50">
+                <tr>
+                    <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">No. PO</th>
+                    <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Supplier</th>
+                    <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Status</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Total</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50">
+                <?php if (empty($purchases)): ?>
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-muted-foreground">
+                            <div class="flex flex-col items-center justify-center gap-2">
+                                <?= icon('Package', 'h-8 w-8 text-muted-foreground/50') ?>
+                                <span class="text-sm">Tidak ada pembelian pada tanggal ini</span>
+                            </div>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($purchases as $purchase): ?>
+                        <tr class="hover:bg-muted/50 transition">
+                            <td class="px-4 py-3 font-semibold text-foreground"><?= $purchase['po_number'] ?? '' ?></td>
+                            <td class="px-4 py-3 text-foreground"><?= $purchase['supplier_name'] ?? '' ?></td>
+                            <td class="px-4 py-3 text-center"><?= badge_status($purchase['status'] ?? '') ?></td>
+                            <td class="px-4 py-3 text-right font-semibold text-primary">
+                                <?= format_currency($purchase['total_amount'] ?? 0) ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+            <tfoot class="bg-muted/30 border-t border-border/50 font-semibold">
+                <tr>
+                    <th colspan="3" class="px-4 py-3 text-right text-foreground">Total Pembelian:</th>
+                    <th class="px-4 py-3 text-right text-primary">
+                        <?= format_currency($summary['total_purchases'] ?? 0) ?>
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
 
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4><?= format_currency($summary['total_returns'] ?? 0) ?></h4>
-                            <span>Total Retur</span>
-                        </div>
-                        <div class="align-self-center">
-                            <i data-lucide="rotate-ccw" class="icon-lg"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!-- Returns Section -->
+<div class="grid gap-6 lg:grid-cols-2">
+    <!-- Sales Returns -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border/50 bg-muted/30">
+            <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+                <?= icon('RotateCcw', 'h-5 w-5 text-primary') ?>
+                Retur Penjualan
+            </h2>
         </div>
-
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <h4><?= $summary['transaction_count'] ?? 0 ?></h4>
-                            <span>Total Transaksi</span>
-                        </div>
-                        <div class="align-self-center">
-                            <i data-lucide="file-text" class="icon-lg"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="p-6 overflow-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-muted/50 border-b border-border/50">
+                    <tr>
+                        <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Customer</th>
+                        <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Alasan</th>
+                        <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border/50">
+                    <?php if (empty($returns['sales_returns'])): ?>
+                        <tr>
+                            <td colspan="3" class="px-4 py-6 text-center text-muted-foreground">
+                                <div class="flex flex-col items-center justify-center gap-2">
+                                    <?= icon('RotateCcw', 'h-6 w-6 text-muted-foreground/50') ?>
+                                    <span class="text-xs">Tidak ada retur penjualan</span>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($returns['sales_returns'] as $return): ?>
+                            <tr class="hover:bg-muted/50 transition">
+                                <td class="px-4 py-3 font-medium text-foreground"><?= $return['customer_name'] ?? '' ?></td>
+                                <td class="px-4 py-3 text-sm text-muted-foreground"><?= $return['reason'] ?? '' ?></td>
+                                <td class="px-4 py-3 text-right font-semibold text-primary">
+                                    <?= format_currency($return['final_amount'] ?? 0) ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Sales Table -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Penjualan - <?= format_date($date) ?></h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>No. Faktur</th>
-                                    <th>Customer</th>
-                                    <th>Tipe</th>
-                                    <th>Status</th>
-                                    <th class="text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($sales)): ?>
-                                    <tr>
-                                        <td colspan="5" class="text-center">Tidak ada penjualan</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($sales as $sale): ?>
-                                        <tr>
-                                            <td><?= $sale['invoice_number'] ?? '' ?></td>
-                                            <td><?= $sale['customer_name'] ?? '' ?></td>
-                                            <td><?= badge_status($sale['payment_type'] ?? '') ?></td>
-                                            <td><?= badge_status($sale['payment_status'] ?? '') ?></td>
-                                            <td class="text-right"><?= format_currency($sale['final_amount'] ?? 0) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                            <tfoot>
-                                <tr class="font-weight-bold">
-                                    <td colspan="4" class="text-right">Total Penjualan:</td>
-                                    <td class="text-right"><?= format_currency($summary['total_sales'] ?? 0) ?></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <!-- Purchase Returns -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border/50 bg-muted/30">
+            <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+                <?= icon('RotateCcw', 'h-5 w-5 text-primary') ?>
+                Retur Pembelian
+            </h2>
         </div>
-    </div>
-
-    <!-- Purchases Table -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Pembelian - <?= format_date($date) ?></h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>No. PO</th>
-                                    <th>Supplier</th>
-                                    <th>Status</th>
-                                    <th class="text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($purchases)): ?>
-                                    <tr>
-                                        <td colspan="4" class="text-center">Tidak ada pembelian</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($purchases as $purchase): ?>
-                                        <tr>
-                                            <td><?= $purchase['po_number'] ?? '' ?></td>
-                                            <td><?= $purchase['supplier_name'] ?? '' ?></td>
-                                            <td><?= badge_status($purchase['status'] ?? '') ?></td>
-                                            <td class="text-right"><?= format_currency($purchase['total_amount'] ?? 0) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                            <tfoot>
-                                <tr class="font-weight-bold">
-                                    <td colspan="3" class="text-right">Total Pembelian:</td>
-                                    <td class="text-right"><?= format_currency($summary['total_purchases'] ?? 0) ?></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Returns Section -->
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Retur Penjualan</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Customer</th>
-                                    <th>Alasan</th>
-                                    <th class="text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($returns['sales_returns'])): ?>
-                                    <tr>
-                                        <td colspan="3" class="text-center">Tidak ada retur penjualan</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($returns['sales_returns'] as $return): ?>
-                                        <tr>
-                                            <td><?= $return['customer_name'] ?? '' ?></td>
-                                            <td><?= $return['reason'] ?? '' ?></td>
-                                            <td class="text-right"><?= format_currency($return['final_amount'] ?? 0) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Retur Pembelian</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Supplier</th>
-                                    <th>Alasan</th>
-                                    <th class="text-right">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($returns['purchase_returns'])): ?>
-                                    <tr>
-                                        <td colspan="3" class="text-center">Tidak ada retur pembelian</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($returns['purchase_returns'] as $return): ?>
-                                        <tr>
-                                            <td><?= $return['supplier_name'] ?? '' ?></td>
-                                            <td><?= $return['reason'] ?? '' ?></td>
-                                            <td class="text-right"><?= format_currency($return['final_amount'] ?? 0) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+        <div class="p-6 overflow-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-muted/50 border-b border-border/50">
+                    <tr>
+                        <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Supplier</th>
+                        <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Alasan</th>
+                        <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Total</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border/50">
+                    <?php if (empty($returns['purchase_returns'])): ?>
+                        <tr>
+                            <td colspan="3" class="px-4 py-6 text-center text-muted-foreground">
+                                <div class="flex flex-col items-center justify-center gap-2">
+                                    <?= icon('RotateCcw', 'h-6 w-6 text-muted-foreground/50') ?>
+                                    <span class="text-xs">Tidak ada retur pembelian</span>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach ($returns['purchase_returns'] as $return): ?>
+                            <tr class="hover:bg-muted/50 transition">
+                                <td class="px-4 py-3 font-medium text-foreground"><?= $return['supplier_name'] ?? '' ?></td>
+                                <td class="px-4 py-3 text-sm text-muted-foreground"><?= $return['reason'] ?? '' ?></td>
+                                <td class="px-4 py-3 text-right font-semibold text-primary">
+                                    <?= format_currency($return['final_amount'] ?? 0) ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
