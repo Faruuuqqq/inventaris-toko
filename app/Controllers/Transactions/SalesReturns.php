@@ -49,7 +49,7 @@ class SalesReturns extends BaseController
         ];
 
         $query = $this->salesReturnModel
-            ->select('sales_returns.*, customers.nama_customer')
+            ->select('sales_returns.*, customers.name as nama_customer')
             ->join('customers', 'customers.id_customer = sales_returns.id_customer');
 
         // Apply filters
@@ -673,7 +673,7 @@ class SalesReturns extends BaseController
     public function getSalesList()
     {
         return $this->saleModel
-            ->select('penjualan.id_penjualan, penjualan.nomor_penjualan, penjualan.tanggal_penjualan, customers.nama_customer')
+            ->select('penjualan.id_penjualan, penjualan.nomor_penjualan, penjualan.tanggal_penjualan, customers.name as nama_customer')
             ->join('customers', 'customers.id_customer = penjualan.id_customer')
             ->where('penjualan.payment_status', 'PAID')
             ->orderBy('penjualan.tanggal_penjualan', 'DESC')

@@ -45,7 +45,7 @@
 
                         <div>
                             <p class="text-xs font-medium text-muted-foreground uppercase mb-1">Customer</p>
-                            <p class="text-sm font-semibold text-foreground"><?= $salesReturn['customer']['nama_customer'] ?></p>
+                            <p class="text-sm font-semibold text-foreground"><?= $salesReturn['customer']['name'] ?></p>
                         </div>
 
                         <div>

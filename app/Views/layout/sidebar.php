@@ -76,8 +76,9 @@ if (!function_exists('isGroupActive')) {
 }
 
 // Simple SVG icon generator
-function getSvgIcon($name) {
-    $icons = [
+if (!function_exists('getSvgIcon')) {
+    function getSvgIcon($name) {
+        $icons = [
         'dashboard' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 6.908C9.75 6.287 10.254 5.783 10.875 5.783h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V6.908zm6.75 12.084c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V19.5c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V18.992z"/></svg>',
         'database' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 6.375c0 2.278-4.022 4.125-9 4.125S2.25 8.653 2.25 6.375m18 0A2.25 2.25 0 0020.25 4.125H3.75A2.25 2.25 0 002.25 6.375m18 0B9 12h11.25m-11-8.684c5.232 0 9.531 1.697 9.531 3.75 0 .385-.049.761-.144 1.126M7.5 14.25c5.232 0 9.531 1.697 9.531 3.75 0 .384-.049.761-.144 1.126m-15.882-3.876a9 9 0 014.586-3.876m0 0a9 9 0 014.586 3.876"/></svg>',
         'truck' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16h12m0 0l-3-3m3 3l-3 3M9 12H3m0 0l3-3m-3 3l3 3m9-8H3v10a2 2 0 002 2h14a2 2 0 002-2V4a2 2 0 00-2-2h-5l-2 3z"/></svg>',
@@ -101,6 +102,7 @@ function getSvgIcon($name) {
         'settings' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>',
     ];
     return $icons[$name] ?? '<svg class="w-full h-full" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>';
+    }
 }
 ?>
 

@@ -74,7 +74,7 @@
                         <option value="">Pilih Customer</option>
                         <?php foreach ($customers as $customer): ?>
                             <option value="<?= $customer['id_customer'] ?>" <?= selected($customer['id_customer'], old('id_customer', $salesReturn['id_customer'])) ?>>
-                                <?= $customer['nama_customer'] ?>
+                                <?= $customer['name'] ?>
                             </option>
                         <?php endforeach; ?>
                     </select>

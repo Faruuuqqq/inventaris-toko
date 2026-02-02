@@ -49,7 +49,7 @@ class PurchaseReturns extends BaseController
         ];
 
         $query = $this->purchaseReturnModel
-            ->select('purchase_returns.*, suppliers.nama_supplier')
+            ->select('purchase_returns.*, suppliers.name as nama_supplier')
             ->join('suppliers', 'suppliers.id_supplier = purchase_returns.id_supplier');
 
         // Apply filters
@@ -675,7 +675,7 @@ class PurchaseReturns extends BaseController
     public function getPurchaseOrdersList()
     {
         return $this->purchaseOrderModel
-            ->select('purchase_orders.id_po, purchase_orders.nomor_po, purchase_orders.tanggal_po, suppliers.nama_supplier')
+            ->select('purchase_orders.id_po, purchase_orders.nomor_po, purchase_orders.tanggal_po, suppliers.name as nama_supplier')
             ->join('suppliers', 'suppliers.id_supplier = purchase_orders.id_supplier')
             ->where('purchase_orders.status', 'Diterima Semua')
             ->orderBy('purchase_orders.tanggal_po', 'DESC')

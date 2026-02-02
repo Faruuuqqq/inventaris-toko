@@ -36,7 +36,7 @@
                                 </tr>
                                 <tr>
                                     <td><strong>Customer:</strong></td>
-                                    <td><?= $salesReturn['customer']['nama_customer'] ?></td>
+                                    <td><?= $salesReturn['customer']['name'] ?></td>
                                 </tr>
                                 <tr>
                                     <td><strong>From Warehouse:</strong></td>

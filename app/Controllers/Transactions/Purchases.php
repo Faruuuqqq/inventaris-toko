@@ -46,7 +46,7 @@ class Purchases extends BaseController
         ];
 
         $query = $this->purchaseOrderModel
-            ->select('purchase_orders.*, suppliers.nama_supplier')
+            ->select('purchase_orders.*, suppliers.name as nama_supplier')
             ->join('suppliers', 'suppliers.id_supplier = purchase_orders.id_supplier');
 
         // Apply filters

@@ -200,7 +200,7 @@
                             </td>
 
                             <!-- Customer -->
-                            <td class="px-6 py-4 font-medium text-foreground" x-text="sale.nama_customer || '-'"></td>
+                            <td class="px-6 py-4 font-medium text-foreground" x-text="sale.customer_name || '-'"></td>
 
                             <!-- Sale Type Badge -->
                             <td class="px-6 py-4 text-center">
@@ -302,7 +302,7 @@ function salesManager() {
             return this.sales.filter(sale => {
                 const searchLower = this.search.toLowerCase();
                 const matchesSearch = (sale.nomor_faktur && sale.nomor_faktur.toLowerCase().includes(searchLower)) ||
-                                    (sale.nama_customer && sale.nama_customer.toLowerCase().includes(searchLower));
+                                    (sale.customer_name && sale.customer_name.toLowerCase().includes(searchLower));
                 
                 const matchesCustomer = this.customerFilter === 'all' || 
                                        sale.id_customer == this.customerFilter;
