@@ -1,5 +1,3 @@
-<?php $this->section('content') ?>
-<?php $this->extend('layout/main') ?>
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
@@ -36,19 +34,19 @@
                     <div class="grid gap-4 md:grid-cols-2">
                         <div class="space-y-2">
                             <label class="text-sm font-medium">Nama Lengkap</label>
-                            <input type="text" name="fullname" value="<?= esc(session()->get('fullname')) ?>" class="form-input">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">Email</label>
-                            <input type="email" name="email" value="<?= esc($user->email ?? $user['email'] ?? '') ?>" class="form-input">
+                            <input type="text" name="fullname" value="<?= esc(session()->get('fullname')) ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                         </div>
+                         <div class="space-y-2">
+                             <label class="text-sm font-medium">Email</label>
+                             <input type="email" name="email" value="<?= esc($user->email ?? $user['email'] ?? '') ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary mt-4">Simpan Perubahan</button>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary/90 transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md mt-4">Simpan Perubahan</button>
                 </form>
-            </div>
-        </div>
-
-        <!-- Store Settings -->
+             </div>
+         </div>
+ 
+         <!-- Store Settings -->
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <div class="flex flex-col space-y-1.5 p-6">
                 <h3 class="text-xl font-semibold flex items-center gap-2">
@@ -61,30 +59,30 @@
                     <?= csrf_field() ?>
                     <div class="grid gap-4 md:grid-cols-2">
                         <div class="space-y-2">
-                            <label class="text-sm font-medium">Nama Toko</label>
-                            <input type="text" name="store_name" value="<?= esc($config['company_name'] ?? 'Toko Sejahtera') ?>" class="form-input">
+                             <label class="text-sm font-medium">Nama Toko</label>
+                             <input type="text" name="store_name" value="<?= esc($config['company_name'] ?? 'Toko Sejahtera') ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                         </div>
+                         <div class="space-y-2">
+                             <label class="text-sm font-medium">No. Telepon</label>
+                             <input type="text" name="store_phone" value="<?= esc($config['company_phone'] ?? '') ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                         </div>
+                     </div>
+                     <div class="space-y-2 mt-4">
+                         <label class="text-sm font-medium">Alamat</label>
+                         <input type="text" name="store_address" value="<?= esc($config['company_address'] ?? '') ?>" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                     </div>
+                     <div class="grid gap-4 md:grid-cols-2 mt-4">
+                         <div class="space-y-2">
+                             <label class="text-sm font-medium">NPWP</label>
+                             <input type="text" name="store_npwp" value="<?= esc($config['tax_number'] ?? '') ?>" placeholder="Masukkan NPWP" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">No. Telepon</label>
-                            <input type="text" name="store_phone" value="<?= esc($config['company_phone'] ?? '') ?>" class="form-input">
-                        </div>
-                    </div>
-                    <div class="space-y-2 mt-4">
-                        <label class="text-sm font-medium">Alamat</label>
-                        <input type="text" name="store_address" value="<?= esc($config['company_address'] ?? '') ?>" class="form-input">
-                    </div>
-                    <div class="grid gap-4 md:grid-cols-2 mt-4">
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">NPWP</label>
-                            <input type="text" name="store_npwp" value="<?= esc($config['tax_number'] ?? '') ?>" placeholder="Masukkan NPWP" class="form-input">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-4">Simpan Perubahan</button>
+                     </div>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary/90 transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md mt-4">Simpan Perubahan</button>
                 </form>
-            </div>
-        </div>
-
-        <!-- Security Settings -->
+             </div>
+         </div>
+ 
+         <!-- Security Settings -->
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <div class="flex flex-col space-y-1.5 p-6">
                 <h3 class="text-xl font-semibold flex items-center gap-2">
@@ -96,20 +94,20 @@
                 <form action="<?= base_url('settings/changePassword') ?>" method="POST">
                     <?= csrf_field() ?>
                     <div class="space-y-2">
-                        <label class="text-sm font-medium">Password Saat Ini</label>
-                        <input type="password" name="current_password" placeholder="********" class="form-input">
-                    </div>
-                    <div class="grid gap-4 md:grid-cols-2 mt-4">
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">Password Baru</label>
-                            <input type="password" name="new_password" placeholder="********" class="form-input">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-medium">Konfirmasi Password</label>
-                            <input type="password" name="confirm_password" placeholder="********" class="form-input">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary mt-4">Ubah Password</button>
+                         <label class="text-sm font-medium">Password Saat Ini</label>
+                         <input type="password" name="current_password" placeholder="********" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                     </div>
+                     <div class="grid gap-4 md:grid-cols-2 mt-4">
+                         <div class="space-y-2">
+                             <label class="text-sm font-medium">Password Baru</label>
+                             <input type="password" name="new_password" placeholder="********" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                         </div>
+                         <div class="space-y-2">
+                             <label class="text-sm font-medium">Konfirmasi Password</label>
+                             <input type="password" name="confirm_password" placeholder="********" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                         </div>
+                     </div>
+                    <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary/90 transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md mt-4">Ubah Password</button>
                 </form>
             </div>
         </div>
