@@ -5,9 +5,11 @@ use App\Controllers\BaseController;
 use App\Models\StockMutationModel;
 use App\Models\ProductModel;
 use App\Models\WarehouseModel;
+use App\Traits\ApiResponseTrait;
 
 class Stock extends BaseController
 {
+    use ApiResponseTrait;
     protected $stockMutationModel;
     protected $productModel;
     protected $warehouseModel;
@@ -264,7 +266,7 @@ class Stock extends BaseController
         }
         
         $mutations = $query->findAll();
-        return $this->response->setJSON($mutations);
+        return $this->respondData($mutations);
     }
     
     /**
@@ -276,13 +278,13 @@ class Stock extends BaseController
         $warehouseId = $this->request->getGet('warehouse_id');
         
         if (!$productId) {
-            return $this->response->setJSON([]);
+            return $this->respondEmpty();
         }
         
         // Get product info
         $product = $this->productModel->find($productId);
         if (!$product) {
-            return $this->response->setJSON([]);
+            return $this->respondEmpty();
         }
         
         // Get current stock
@@ -324,7 +326,7 @@ class Stock extends BaseController
             'finalBalance' => $balance
         ];
         
-        return $this->response->setJSON($data);
+        return $this->respondData($data);
     }
     
     /**
@@ -351,6 +353,6 @@ class Stock extends BaseController
         
         $summary = $query->findAll();
         
-        return $this->response->setJSON($summary);
+        return $this->respondData($summary);
     }
 }

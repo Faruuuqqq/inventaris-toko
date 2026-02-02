@@ -9,9 +9,11 @@ use App\Models\SalespersonModel;
 use App\Models\SupplierModel;
 use App\Models\StockMutationModel;
 use App\Models\ProductModel;
+use App\Traits\ApiResponseTrait;
 
 class History extends BaseController
 {
+    use ApiResponseTrait;
     protected $saleModel;
     protected $saleItemModel;
     protected $customerModel;
@@ -62,7 +64,7 @@ class History extends BaseController
         // Add isOwner flag to response for UI
         $isOwner = session()->get('role') === 'OWNER';
 
-        return $this->response->setJSON([
+        return $this->respondSuccess([
             'data' => $sales,
             'isOwner' => $isOwner
         ]);
@@ -75,24 +77,15 @@ class History extends BaseController
     {
         // Check if user is OWNER
         if (session()->get('role') !== 'OWNER') {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => 'Akses ditolak. Hanya Owner yang dapat melakukan ini.'
-            ]);
+            return $this->respondForbidden('Akses ditolak. Hanya Owner yang dapat melakukan ini.');
         }
 
         try {
             $this->saleModel->toggleHide($saleId);
 
-            return $this->response->setJSON([
-                'success' => true,
-                'message' => 'Status visibilitas berhasil diubah'
-            ]);
+            return $this->respondSuccess(null, 'Status visibilitas berhasil diubah');
         } catch (\Exception $e) {
-            return $this->response->setJSON([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]);
+            return $this->respondError($e->getMessage());
         }
     }
 
@@ -137,7 +130,7 @@ class History extends BaseController
 
         $purchases = $builder->orderBy('purchase_orders.tanggal_po', 'DESC')->get()->getResultArray();
 
-        return $this->response->setJSON($purchases);
+        return $this->respondData($purchases);
     }
 
     public function returnSales()
@@ -181,7 +174,7 @@ class History extends BaseController
 
         $returns = $builder->orderBy('sales_returns.tanggal_retur', 'DESC')->get()->getResultArray();
 
-        return $this->response->setJSON($returns);
+        return $this->respondData($returns);
     }
 
     public function returnPurchases()
@@ -225,7 +218,7 @@ class History extends BaseController
 
         $returns = $builder->orderBy('purchase_returns.tanggal_retur', 'DESC')->get()->getResultArray();
 
-        return $this->response->setJSON($returns);
+        return $this->respondData($returns);
     }
 
     /**
@@ -277,7 +270,7 @@ class History extends BaseController
 
         $payments = $builder->orderBy('payments.payment_date', 'DESC')->get()->getResultArray();
 
-        return $this->response->setJSON($payments);
+        return $this->respondData($payments);
     }
 
     /**
@@ -329,7 +322,7 @@ class History extends BaseController
 
         $payments = $builder->orderBy('payments.payment_date', 'DESC')->get()->getResultArray();
 
-        return $this->response->setJSON($payments);
+        return $this->respondData($payments);
     }
 
     /**
@@ -361,7 +354,7 @@ class History extends BaseController
          $expenseModel = new \App\Models\ExpenseModel();
          $expenses = $expenseModel->getExpenses($category, $startDate, $endDate, $paymentMethod);
 
-         return $this->response->setJSON($expenses);
+         return $this->respondData($expenses);
      }
 
      /**
@@ -418,7 +411,7 @@ class History extends BaseController
 
          $movements = $builder->orderBy('stock_mutations.created_at', 'DESC')->get()->getResultArray();
 
-         return $this->response->setJSON($movements);
+         return $this->respondData($movements);
      }
 
      /**
@@ -580,7 +573,7 @@ class History extends BaseController
 
          $summary = $builder->first();
 
-         return $this->response->setJSON($summary);
+         return $this->respondData($summary);
      }
 
      /**
@@ -612,7 +605,7 @@ class History extends BaseController
 
          $summary = $builder->first();
 
-         return $this->response->setJSON($summary);
+         return $this->respondData($summary);
      }
 }
 

@@ -38,8 +38,8 @@ $selected = $selected ?? '';
         <option value=""><?= $placeholder ?></option>
         <?php foreach ($options as $option): ?>
             <?php
-            $value = is_array($option) ? $option[$valueKey] : $option->$valueKey;
-            $text = is_array($option) ? $option[$labelKey] : $option->$labelKey;
+            $value = $option->$valueKey ?? $option[$valueKey] ?? '';
+            $text = $option->$labelKey ?? $option[$labelKey] ?? '';
             $isSelected = ($value == $selected) ? 'selected' : '';
             ?>
             <option value="<?= $value ?>" <?= $isSelected ?>><?= esc($text) ?></option>
