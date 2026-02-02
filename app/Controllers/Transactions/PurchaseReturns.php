@@ -50,7 +50,7 @@ class PurchaseReturns extends BaseController
 
         $query = $this->purchaseReturnModel
             ->select('purchase_returns.*, suppliers.name as nama_supplier')
-            ->join('suppliers', 'suppliers.id_supplier = purchase_returns.id_supplier');
+            ->join('suppliers', 'suppliers.id = purchase_returns.supplier_id');
 
         // Apply filters
         if ($filters['start_date']) {
@@ -676,7 +676,7 @@ class PurchaseReturns extends BaseController
     {
         return $this->purchaseOrderModel
             ->select('purchase_orders.id_po, purchase_orders.nomor_po, purchase_orders.tanggal_po, suppliers.name as nama_supplier')
-            ->join('suppliers', 'suppliers.id_supplier = purchase_orders.id_supplier')
+            ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id')
             ->where('purchase_orders.status', 'Diterima Semua')
             ->orderBy('purchase_orders.tanggal_po', 'DESC')
             ->findAll();
