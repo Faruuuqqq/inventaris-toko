@@ -9,11 +9,11 @@ use App\Models\CustomerModel;
 use App\Models\SupplierModel;
 use App\Models\PurchaseOrderModel;
 use App\Services\BalanceService;
-use CodeIgniter\API\ResponseTrait;
+use App\Traits\ApiResponseTrait;
 
 class Payments extends BaseController
 {
-    use ResponseTrait;
+    use ApiResponseTrait;
 
     protected $paymentModel;
     protected $saleModel;
@@ -32,6 +32,14 @@ class Payments extends BaseController
         $this->supplierModel = new SupplierModel();
         $this->poModel = new PurchaseOrderModel();
         $this->balanceService = new BalanceService();
+    }
+
+    /**
+     * Index: Redirect to receivable payments page
+     */
+    public function index()
+    {
+        return redirect()->to('finance/payments/receivable');
     }
 
     /**
@@ -287,7 +295,7 @@ class Payments extends BaseController
         $customerId = $this->request->getGet('customer_id');
         
         if (!$customerId) {
-            return $this->response->setJSON([]);
+            return $this->respondEmpty();
         }
 
         $invoices = $this->saleModel
@@ -309,19 +317,20 @@ class Payments extends BaseController
             ];
         }, $invoices);
 
-        return $this->response->setJSON($result);
+        return $this->respondData($result);
     }
 
     /**
      * AJAX: Get outstanding purchase orders for a supplier
      * Used to populate PO selection in payment form
+     * Renamed from getSupplierPOs to match route definition
      */
-    public function getSupplierPOs()
+    public function getSupplierPurchases()
     {
         $supplierId = $this->request->getGet('supplier_id');
         
         if (!$supplierId) {
-            return $this->response->setJSON([]);
+            return $this->respondEmpty();
         }
 
         $pos = $this->poModel
@@ -343,6 +352,38 @@ class Payments extends BaseController
             ];
         }, $pos);
 
-        return $this->response->setJSON($result);
+        return $this->respondData($result);
+    }
+
+    /**
+     * AJAX: Get Kontra Bon list for a customer
+     * Used to populate Kontra Bon selection in payment form
+     */
+    public function getKontraBons()
+    {
+        $customerId = $this->request->getGet('customer_id');
+        
+        if (!$customerId) {
+            return $this->respondEmpty();
+        }
+        
+        $kontraBons = $this->kontraBonModel
+            ->where('customer_id', $customerId)
+            ->whereIn('status', ['PENDING', 'APPROVED'])
+            ->where('deleted_at', null)
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+        
+        $result = array_map(function($kb) {
+            return [
+                'id' => $kb['id'],
+                'nomor_kontra_bon' => $kb['nomor_kontra_bon'],
+                'tanggal' => $kb['tanggal'],
+                'total_amount' => (float)$kb['total_amount'],
+                'status' => $kb['status']
+            ];
+        }, $kontraBons);
+        
+        return $this->respondData($result);
     }
 }

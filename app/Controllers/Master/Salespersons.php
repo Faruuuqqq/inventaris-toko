@@ -4,16 +4,19 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\SalespersonModel;
+use App\Traits\ApiResponseTrait;
 use CodeIgniter\Model;
 
 class Salespersons extends BaseCRUDController
 {
+    use ApiResponseTrait;
+    
     protected string $viewPath = 'master/salespersons';
     protected string $routePath = '/master/salespersons';
     protected string $entityName = 'Sales';
     protected string $entityNamePlural = 'Salespersons';
 
-    protected function getModel(): Model
+    protected function getModel(): SalespersonModel
     {
         return new SalespersonModel();
     }
@@ -43,5 +46,20 @@ class Salespersons extends BaseCRUDController
     {
         $data['is_active'] = 1;
         return $data;
+    }
+
+    /**
+     * AJAX: Get salesperson list for dropdown selection
+     * Used in sales forms
+     */
+    public function getList()
+    {
+        $salespersons = $this->model
+            ->select('id, name, phone')
+            ->where('is_active', 1)
+            ->orderBy('name', 'ASC')
+            ->findAll();
+        
+        return $this->respondData($salespersons);
     }
 }

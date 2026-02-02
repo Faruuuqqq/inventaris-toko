@@ -4,16 +4,19 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\WarehouseModel;
+use App\Traits\ApiResponseTrait;
 use CodeIgniter\Model;
 
 class Warehouses extends BaseCRUDController
 {
+    use ApiResponseTrait;
+    
     protected string $viewPath = 'master/warehouses';
     protected string $routePath = '/master/warehouses';
     protected string $entityName = 'Gudang';
     protected string $entityNamePlural = 'Warehouses';
 
-    protected function getModel(): Model
+    protected function getModel(): WarehouseModel
     {
         return new WarehouseModel();
     }
@@ -49,5 +52,20 @@ class Warehouses extends BaseCRUDController
     {
         $data['is_active'] = 1;
         return $data;
+    }
+
+    /**
+     * AJAX: Get warehouse list for dropdown selection
+     * Used in transaction forms
+     */
+    public function getList()
+    {
+        $warehouses = $this->model
+            ->select('id, code, name, address')
+            ->where('is_active', 1)
+            ->orderBy('name', 'ASC')
+            ->findAll();
+        
+        return $this->respondData($warehouses);
     }
 }

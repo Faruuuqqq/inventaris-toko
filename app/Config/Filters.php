@@ -38,6 +38,7 @@ class Filters extends BaseFilters
         'api-auth'      => \App\Filters\ApiAuthFilter::class,
         'role'          => \App\Filters\RoleFilter::class,
         'security'      => \App\Filters\SecurityFilter::class,
+        'requestlog'    => \App\Filters\RequestLogger::class,  // Request/Response logging
     ];
 
     /**

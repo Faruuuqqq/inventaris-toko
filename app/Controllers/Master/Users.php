@@ -13,7 +13,7 @@ class Users extends BaseCRUDController
     protected string $entityName = 'Pengguna';
     protected string $entityNamePlural = 'Users';
 
-    protected function getModel(): Model
+    protected function getModel(): UserModel
     {
         return new UserModel();
     }

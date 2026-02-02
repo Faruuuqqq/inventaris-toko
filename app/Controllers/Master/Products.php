@@ -25,7 +25,7 @@ class Products extends BaseCRUDController
         $this->productStockModel = new ProductStockModel();
     }
 
-    protected function getModel(): Model
+    protected function getModel(): ProductModel
     {
         return new ProductModel();
     }
@@ -94,16 +94,6 @@ class Products extends BaseCRUDController
             'totalProducts' => $this->model->countAllResults(),
             'totalCategories' => count($categories),
             'lowStockCount' => $this->model->where('quantity <=', 'min_stock_alert', false)->countAllResults(),
-        ];
-    }
-
-        return [
-            'subtitle' => 'Kelola daftar produk dan kategori',
-            'categories' => $categories,
-            'totalProducts' => count($products),
-            'totalCategories' => count($categories),
-            'totalStock' => $totalStock,
-            'totalValue' => $totalValue,
         ];
     }
 

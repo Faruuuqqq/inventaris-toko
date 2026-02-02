@@ -2,18 +2,20 @@
 
 namespace App\Controllers\Master;
 
-use App\Controllers\BaseCRUDController;
+use App\Controllers\BaseController;
 use App\Models\CustomerModel;
-use CodeIgniter\Model;
+use App\Models\SaleModel;
+use App\Traits\ApiResponseTrait;
 
-class Customers extends BaseCRUDController
+class Customers extends BaseController
 {
+    use ApiResponseTrait;
     protected string $viewPath = 'master/customers';
     protected string $routePath = '/master/customers';
     protected string $entityName = 'Customer';
     protected string $entityNamePlural = 'Customers';
 
-    protected function getModel(): Model
+    protected function getModel(): CustomerModel
     {
         return new CustomerModel();
     }
@@ -42,6 +44,20 @@ class Customers extends BaseCRUDController
     protected function getIndexData(): array
     {
         return $this->model->asArray()->findAll();
+    }
+
+    /**
+     * AJAX: Get customer list for dropdown/select2
+     * Returns simplified customer data for forms
+     */
+    public function getList()
+    {
+        $customers = $this->model
+            ->select('id, code, name, phone, address, credit_limit, receivable_balance')
+            ->orderBy('name', 'ASC')
+            ->findAll();
+        
+        return $this->respondData($customers);
     }
 
     /**

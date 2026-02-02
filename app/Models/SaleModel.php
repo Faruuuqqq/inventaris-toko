@@ -19,7 +19,7 @@ class SaleModel extends Model
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
 
-    // GLOBAL SCOPE: Hide hidden sales from non-Owner users, hide soft deleted
+    // GLOBAL SCOPE: Hide hidden sales from non-Owner users
     public function findAll(?int $limit = null, ?int $offset = 0)
     {
         $userRole = session()->get('role');
@@ -29,15 +29,6 @@ class SaleModel extends Model
         }
 
         return parent::findAll($limit, $offset);
-    }
-
-    // Include soft deleted records if explicitly requested
-    public function withDeleted(bool $val = true)
-    {
-        if ($val) {
-            $this->builder()->where('deleted_at !=', null);
-        }
-        return $this;
     }
 
     /**

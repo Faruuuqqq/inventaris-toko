@@ -13,7 +13,7 @@ class Suppliers extends BaseCRUDController
     protected string $entityName = 'Supplier';
     protected string $entityNamePlural = 'Suppliers';
 
-    protected function getModel(): Model
+    protected function getModel(): SupplierModel
     {
         return new SupplierModel();
     }

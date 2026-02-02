@@ -84,9 +84,11 @@
             <label for="customerFilter" class="text-sm font-medium text-foreground">Customer</label>
             <select id="customerFilter" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                 <option value="">Semua Customer</option>
-                <?php if (isset($customers) && is_array($customers)): ?>
+                <?php if (isset($customers)): ?>
                     <?php foreach ($customers as $customer): ?>
-                        <option value="<?= esc(is_array($customer) ? $customer['id'] : $customer->id) ?>"><?= esc(is_array($customer) ? $customer['name'] : $customer->name) ?></option>
+                        <option value="<?= esc($customer->id ?? $customer['id'] ?? '') ?>">
+                            <?= esc($customer->name ?? $customer['name'] ?? '') ?>
+                        </option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
