@@ -29,33 +29,36 @@ class AuthController extends ResourceController
         ];
         
         if (!$this->validate($rules)) {
-            return $this->fail($this->validator->getErrors());
+            return $this->failValidationErrors($this->validator->getErrors());
         }
         
-        $username = $this->request->getPost('username');
-        $password = $this->request->getPost('password');
+        // Try getVar() for JSON data if getPost() doesn't work
+        $username = $this->request->getPost('username') ?? $this->request->getVar('username');
+        $password = $this->request->getPost('password') ?? $this->request->getVar('password');
         
         $user = $this->userModel->where('username', $username)->first();
         
-        if ($user && password_verify($password, $user['password_hash'])) {
-            // Generate API token
-            $token = $this->generateApiToken($user);
+        if ($user && password_verify($password, $user->password_hash)) {
+            // Generate API token (convert entity to array for token generation)
+            $userArray = $user->toArray();
+            $token = $this->generateApiToken($userArray);
             
-            // Update last login
-            $this->userModel->update($user['id'], [
-                'last_login' => date('Y-m-d H:i:s')
-            ]);
+            // Note: last_login column doesn't exist in users table
+            // Uncomment below if you add the column via migration
+            // $this->userModel->update($user->id, [
+            //     'last_login' => date('Y-m-d H:i:s')
+            // ]);
             
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Login successful',
                 'data' => [
                     'user' => [
-                        'id' => $user['id_user'],
-                        'username' => $user['username'],
-                        'fullname' => $user['fullname'],
-                        'email' => $user['email'],
-                        'role' => $user['role']
+                        'id' => $user->id,
+                        'username' => $user->username,
+                        'fullname' => $user->fullname,
+                        'email' => $user->email,
+                        'role' => $user->role
                     ],
                     'token' => $token,
                     'expires_in' => 3600 // 1 hour
@@ -154,8 +157,7 @@ class AuthController extends ResourceController
                 'fullname' => $user['fullname'],
                 'email' => $user['email'],
                 'role' => $user['role'],
-                'created_at' => $user['created_at'],
-                'last_login' => $user['last_login']
+                'created_at' => $user['created_at']
             ]
         ]);
     }
@@ -184,11 +186,11 @@ class AuthController extends ResourceController
         
         $rules = [
             'fullname' => 'required|min_length[3]|max_length[100]',
-            'email' => "required|valid_email|max_length[100]|is_unique[users.email,id_user,{$user['id_user']}]"
+            'email' => "required|valid_email|max_length[100]|is_unique[users.email,id,{$user['id']}]"
         ];
         
         if (!$this->validate($rules)) {
-            return $this->fail($this->validator->getErrors());
+            return $this->failValidationErrors($this->validator->getErrors());
         }
         
         $data = [
@@ -245,7 +247,7 @@ class AuthController extends ResourceController
         ];
         
         if (!$this->validate($rules)) {
-            return $this->fail($this->validator->getErrors());
+            return $this->failValidationErrors($this->validator->getErrors());
         }
         
         $currentPassword = $this->request->getPost('current_password');
@@ -253,7 +255,7 @@ class AuthController extends ResourceController
         
         // Verify current password
         if (!password_verify($currentPassword, $user['password_hash'])) {
-            return $this->failValidationError('Current password is incorrect');
+            return $this->failValidationErrors(['current_password' => 'Current password is incorrect']);
         }
         
         // Update password
@@ -263,7 +265,7 @@ class AuthController extends ResourceController
         
         if ($updated) {
             // Invalidate all user tokens
-            $this->invalidateAllUserTokens($user['id_user']);
+            $this->invalidateAllUserTokens($user['id']);
             
             return $this->respond([
                 'status' => 'success',
@@ -285,7 +287,7 @@ class AuthController extends ResourceController
         // Store token in database
         $db = \Config\Database::connect();
         $db->table('api_tokens')->insert([
-            'user_id' => $user['id_user'],
+            'user_id' => $user['id'],
             'token' => $token,
             'expires_at' => $expiresAt,
             'created_at' => date('Y-m-d H:i:s')
@@ -303,7 +305,7 @@ class AuthController extends ResourceController
         
         $result = $db->table('api_tokens')
             ->select('api_tokens.user_id, users.*')
-            ->join('users', 'users.id_user = api_tokens.user_id')
+            ->join('users', 'users.id = api_tokens.user_id')
             ->where('api_tokens.token', $token)
             ->where('api_tokens.expires_at >', date('Y-m-d H:i:s'))
             ->where('api_tokens.is_revoked', 0)

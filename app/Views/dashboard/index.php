@@ -252,11 +252,11 @@
                 <?php foreach ($lowStockItems as $item): ?>
                     <div class="flex items-center justify-between p-4 rounded-lg border-l-4 border-l-destructive bg-destructive/5 hover:bg-destructive/10 transition-colors">
                         <div class="min-w-0 flex-1">
-                            <p class="text-sm font-semibold text-foreground truncate"><?= $item['name'] ?></p>
-                            <p class="text-xs text-muted-foreground mt-1">Min: <?= $item['min_stock_alert'] ?> unit</p>
+                            <p class="text-sm font-semibold text-foreground truncate"><?= $item->name ?></p>
+                            <p class="text-xs text-muted-foreground mt-1">Min: <?= $item->min_stock_alert ?? $item->min_stock ?? 0 ?> unit</p>
                         </div>
                         <span class="rounded-lg bg-destructive text-white px-3 py-1 text-sm font-bold flex-shrink-0 ml-3">
-                            <?= $item['quantity'] ?>
+                            <?= $item->current_stock ?? $item->quantity ?? 0 ?>
                         </span>
                     </div>
                 <?php endforeach; ?>

@@ -214,4 +214,56 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
     });
 });
 
+// =============================================================================
+// API Routes (Version 1)
+// =============================================================================
+$routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($routes) {
+    
+    // Public Auth Routes (No Authentication Required)
+    $routes->post('auth/login', 'AuthController::login');
+    $routes->post('auth/register', 'AuthController::register');
+    
+    // Protected Routes (Requires API Authentication)
+    $routes->group('', ['filter' => 'api-auth'], function($routes) {
+        
+        // Auth Management
+        $routes->post('auth/logout', 'AuthController::logout');
+        $routes->post('auth/refresh', 'AuthController::refresh');
+        $routes->get('auth/profile', 'AuthController::profile');
+        $routes->put('auth/profile', 'AuthController::updateProfile');
+        
+        // Products API
+        $routes->group('products', function($routes) {
+            $routes->get('/', 'ProductsController::index');           // GET /api/v1/products
+            $routes->get('(:num)', 'ProductsController::show/$1');    // GET /api/v1/products/1
+            $routes->post('/', 'ProductsController::create');         // POST /api/v1/products
+            $routes->put('(:num)', 'ProductsController::update/$1');  // PUT /api/v1/products/1
+            $routes->delete('(:num)', 'ProductsController::delete/$1'); // DELETE /api/v1/products/1
+            $routes->get('search', 'ProductsController::search');     // GET /api/v1/products/search?q=...
+        });
+        
+        // Sales API
+        $routes->group('sales', function($routes) {
+            $routes->get('/', 'SalesController::index');              // GET /api/v1/sales
+            $routes->get('(:num)', 'SalesController::show/$1');       // GET /api/v1/sales/1
+            $routes->post('/', 'SalesController::create');            // POST /api/v1/sales
+            $routes->put('(:num)', 'SalesController::update/$1');     // PUT /api/v1/sales/1
+            $routes->delete('(:num)', 'SalesController::delete/$1');  // DELETE /api/v1/sales/1
+            $routes->get('stats', 'SalesController::stats');          // GET /api/v1/sales/stats
+        });
+        
+        // Stock Management API
+        $routes->group('stock', function($routes) {
+            $routes->get('/', 'StockController::index');              // GET /api/v1/stock
+            $routes->get('(:num)', 'StockController::show/$1');       // GET /api/v1/stock/1
+            $routes->post('adjust', 'StockController::adjust');       // POST /api/v1/stock/adjust
+            $routes->post('transfer', 'StockController::transfer');   // POST /api/v1/stock/transfer
+            $routes->get('movements', 'StockController::movements');  // GET /api/v1/stock/movements
+            $routes->get('low-stock', 'StockController::lowStock');   // GET /api/v1/stock/low-stock
+            $routes->get('card/(:num)', 'StockController::card/$1');  // GET /api/v1/stock/card/1
+        });
+        
+    });
+});
+
 $routes->setAutoRoute(false);

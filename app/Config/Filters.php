@@ -35,6 +35,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'auth'          => \App\Filters\AuthFilter::class,
+        'api-auth'      => \App\Filters\ApiAuthFilter::class,
         'role'          => \App\Filters\RoleFilter::class,
         'security'      => \App\Filters\SecurityFilter::class,
     ];
@@ -108,7 +109,9 @@ class Filters extends BaseFilters
                 'master/*',
                 'transactions/*',
                 'reports/*',
-                'api/*',
+            ],
+            'except' => [
+                'api/*',  // API routes use api-auth filter instead
             ],
         ],
         'role:OWNER,ADMIN' => [
