@@ -36,13 +36,13 @@
             <tbody>
                 <?php foreach ($productStocks as $productName => $product): ?>
                 <tr>
-                    <td class="font-medium"><?= is_array($product) ? $product['name'] : $product->name ?></td>
-                    <td><?= is_array($product) ? $product['total_stock'] : $product->total_stock ?></td>
+                    <td class="font-medium"><?= esc($product->name ?? $product['name'] ?? '') ?></td>
+                    <td><?= esc($product->total_stock ?? $product['total_stock'] ?? 0) ?></td>
                     <td>
-                        <?php $warehouses = is_array($product) ? $product['warehouses'] : $product->warehouses; ?>
+                        <?php $warehouses = $product->warehouses ?? $product['warehouses'] ?? []; ?>
                         <?php foreach ($warehouses as $warehouse): ?>
                         <span class="inline-block rounded px-2 py-1 bg-secondary text-secondary-foreground mr-2">
-                            <?= is_array($warehouse) ? $warehouse['warehouse'] : $warehouse->warehouse ?>: <?= is_array($warehouse) ? $warehouse['quantity'] : $warehouse->quantity ?>
+                            <?= esc($warehouse->warehouse ?? $warehouse['warehouse'] ?? '') ?>: <?= esc($warehouse->quantity ?? $warehouse['quantity'] ?? 0) ?>
                         </span>
                         <?php endforeach; ?>
                     </td>

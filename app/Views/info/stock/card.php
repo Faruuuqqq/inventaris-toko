@@ -19,7 +19,7 @@
             <select id="warehouseFilter" class="form-input">
                 <option value="">Semua Gudang</option>
                 <?php foreach ($warehouses as $warehouse): ?>
-                <option value="<?= is_array($warehouse) ? $warehouse['id'] : $warehouse->id ?>"><?= is_array($warehouse) ? $warehouse['name'] : $warehouse->name ?></option>
+                <option value="<?= esc($warehouse->id ?? $warehouse['id'] ?? '') ?>"><?= esc($warehouse->name ?? $warehouse['name'] ?? '') ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
