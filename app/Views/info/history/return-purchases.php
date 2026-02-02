@@ -86,7 +86,7 @@
                 <option value="">Semua Supplier</option>
                 <?php if (isset($suppliers) && is_array($suppliers)): ?>
                     <?php foreach ($suppliers as $supplier): ?>
-                        <option value="<?= esc(is_array($supplier) ? $supplier['id'] : $supplier->id) ?>"><?= esc(is_array($supplier) ? $supplier['name'] : $supplier->name) ?></option>
+                        <option value="<?= esc($supplier->id ?? $supplier['id'] ?? '') ?>"><?= esc($supplier->name ?? $supplier['name'] ?? '') ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>

@@ -86,7 +86,7 @@
                 <option value="">Semua Customer</option>
                 <?php if (isset($customers) && is_array($customers)): ?>
                     <?php foreach ($customers as $customer): ?>
-                        <option value="<?= esc(is_array($customer) ? $customer['id'] : $customer->id) ?>"><?= esc(is_array($customer) ? $customer['name'] : $customer->name) ?></option>
+                        <option value="<?= esc($customer->id ?? $customer['id'] ?? '') ?>"><?= esc($customer->name ?? $customer['name'] ?? '') ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
