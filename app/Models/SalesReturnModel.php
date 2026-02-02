@@ -10,7 +10,8 @@ class SalesReturnModel extends Model
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
     protected $returnType = SalesReturn::class;
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
+    protected $deletedField = 'deleted_at';
     protected $allowedFields = [
         'no_retur', 'tanggal_retur', 'sale_id', 'customer_id',
         'alasan', 'status', 'total_retur'

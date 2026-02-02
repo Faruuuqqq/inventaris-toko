@@ -9,7 +9,8 @@ class SaleModel extends Model
     protected $table = 'sales';
     protected $primaryKey = 'id';
     protected $returnType = Sale::class;
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
+    protected $deletedField = 'deleted_at';
     protected $allowedFields = [
         'invoice_number', 'customer_id', 'warehouse_id', 'salesperson_id', 'user_id',
         'total_amount', 'due_date', 'paid_amount',

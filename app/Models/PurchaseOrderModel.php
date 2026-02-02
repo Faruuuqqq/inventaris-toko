@@ -10,7 +10,8 @@ class PurchaseOrderModel extends Model
     protected $primaryKey = 'id_po';
     protected $useAutoIncrement = true;
     protected $returnType = PurchaseOrder::class;
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
+    protected $deletedField = 'deleted_at';
     protected $allowedFields = [
         'nomor_po', 'tanggal_po', 'supplier_id', 'user_id',
         'total_amount', 'received_amount', 'status', 'notes'
