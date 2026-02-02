@@ -197,41 +197,7 @@ if (!function_exists('getSvgIcon')) {
         <?php endforeach; ?>
     </nav>
 
-    <!-- Bottom Divider -->
-    <div class="h-px bg-sidebar-border/50"></div>
 
-    <!-- User Profile Footer - Modern card design -->
-    <div class="p-4">
-        <!-- Settings Button -->
-        <a href="<?= base_url('settings') ?>" 
-           class="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-sidebar-fg/75 hover:bg-sidebar-accent/50 hover:text-sidebar-fg transition-all duration-200 mb-2"
-           :class="<?= isPathActive('settings') ? "'bg-primary text-white shadow-md'" : "''" ?>">
-            <span class="flex items-center justify-center h-5 w-5 flex-shrink-0">
-                <?= getSvgIcon('settings') ?>
-            </span>
-            <span>Pengaturan</span>
-        </a>
-
-        <!-- User Profile Card -->
-        <div class="mt-3 rounded-xl bg-sidebar-accent/50 p-3 border border-sidebar-border/50">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white text-sm font-bold flex-shrink-0 shadow-md">
-                    <?= substr(session()->get('fullname') ?? 'U', 0, 1) ?>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-semibold text-sidebar-fg truncate leading-tight"><?= session()->get('fullname') ?? 'User' ?></p>
-                    <p class="text-xs text-sidebar-fg/60 capitalize truncate leading-tight"><?= session()->get('role') ?? 'Role' ?></p>
-                </div>
-            </div>
-            <a href="<?= base_url('logout') ?>" 
-               class="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-sidebar-fg/75 hover:bg-sidebar-accent hover:text-destructive transition-all duration-200">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                </svg>
-                <span>Keluar</span>
-            </a>
-        </div>
-    </div>
 </aside>
 
 <style>

@@ -181,8 +181,17 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
     });
 
     // Kontra Bon
-    $routes->get('kontra-bon', 'KontraBon::index');
-    $routes->post('kontra-bon', 'KontraBon::create');
+    $routes->group('kontra-bon', function($routes) {
+        $routes->get('/', 'KontraBon::index');
+        $routes->get('create', 'KontraBon::create');
+        $routes->post('store', 'KontraBon::store');
+        $routes->get('edit/(:num)', 'KontraBon::edit/$1');
+        $routes->post('update/(:num)', 'KontraBon::update/$1');
+        $routes->post('delete/(:num)', 'KontraBon::delete/$1');
+        $routes->get('detail/(:num)', 'KontraBon::detail/$1');
+        $routes->get('pdf/(:num)', 'KontraBon::exportPdf/$1');
+        $routes->post('update-status/(:num)', 'KontraBon::updateStatus/$1');
+    });
 });
 
 // Info Group

@@ -1,320 +1,219 @@
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
-<!-- Kontra Bon Table -->
-<div class="rounded-lg border bg-card text-card-foreground shadow-sm">
-    <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h3 class="text-xl font-semibold">Kontra Bon</h3>
-                <p class="text-sm text-muted-foreground">Konsolidasi invoice B2B</p>
-            </div>
-            <button 
-                class="btn btn-primary"
-                onclick="document.getElementById('kontraBonModal').classList.remove('hidden')"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14m-7-7h14"/></svg>
-                Buat Kontra Bon
-            </button>
-        </div>
 
-        <table class="table">
+<!-- Page Header -->
+<div class="mb-6">
+    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-foreground"><?= $title ?></h2>
+            <p class="mt-1 text-sm text-muted-foreground"><?= $subtitle ?></p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="<?= base_url('finance/kontra-bon/create') ?>" 
+               class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-primary/90 hover:shadow-md">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Tambah Kontra Bon
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="mb-6 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- Total -->
+    <div class="card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-muted-foreground">Total Kontra Bon</p>
+                <p class="mt-2 text-2xl font-bold text-foreground"><?= number_format($stats['total'] ?? 0) ?></p>
+            </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending -->
+    <div class="card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-muted-foreground">Pending</p>
+                <p class="mt-2 text-2xl font-bold text-warning"><?= number_format($stats['pending'] ?? 0) ?></p>
+            </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
+                <svg class="h-6 w-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paid -->
+    <div class="card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-muted-foreground">Paid</p>
+                <p class="mt-2 text-2xl font-bold text-success"><?= number_format($stats['paid'] ?? 0) ?></p>
+            </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
+                <svg class="h-6 w-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Amount -->
+    <div class="card p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-muted-foreground">Total Amount</p>
+                <p class="mt-2 text-2xl font-bold text-foreground"><?= format_currency($stats['total_amount'] ?? 0) ?></p>
+            </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary/10">
+                <svg class="h-6 w-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts -->
+<?php if (session()->has('success')): ?>
+<div class="mb-6 rounded-lg border border-success/20 bg-success/10 p-4">
+    <div class="flex items-start gap-3">
+        <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-sm font-medium text-success"><?= session('success') ?></p>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if (session()->has('error')): ?>
+<div class="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+    <div class="flex items-start gap-3">
+        <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p class="text-sm font-medium text-destructive"><?= session('error') ?></p>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- Data Table -->
+<div class="card">
+    <div class="w-full overflow-auto">
+        <table class="w-full text-sm">
             <thead>
-                <tr>
-                    <th>No. Dokumen</th>
-                    <th>Customer</th>
-                    <th>Tanggal</th>
-                    <th>Jatuh Tempo</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
+                <tr class="border-b border-border bg-muted/40">
+                    <th class="px-6 py-4 text-left font-semibold text-foreground">No. Dokumen</th>
+                    <th class="px-6 py-4 text-left font-semibold text-foreground">Customer</th>
+                    <th class="px-6 py-4 text-left font-semibold text-foreground">Tanggal</th>
+                    <th class="px-6 py-4 text-left font-semibold text-foreground">Jatuh Tempo</th>
+                    <th class="px-6 py-4 text-right font-semibold text-foreground">Total Amount</th>
+                    <th class="px-6 py-4 text-center font-semibold text-foreground">Status</th>
+                    <th class="px-6 py-4 text-center font-semibold text-foreground">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($kontraBons as $kb): ?>
+                <?php if (empty($kontraBons)): ?>
                 <tr>
-                    <td class="font-medium text-primary"><?= $kb['document_number'] ?></td>
-                    <td><?= $kb['customer_name'] ?></td>
-                    <td><?= format_date($kb['created_at']) ?></td>
-                    <td><?= format_date($kb['due_date']) ?></td>
-                    <td class="text-right font-medium"><?= format_currency($kb['total_amount']) ?></td>
-                    <td>
-                        <?= badge_status($kb['status']) ?>
-                    </td>
-                    <td>
-                        <div class="flex gap-1">
-                            <button class="btn btn-ghost" style="height: 32px; width: 32px; padding: 0;" onclick="viewDetails(<?= $kb['id'] ?>)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 01-6 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 7 12 7c-2.568 0-4.786-.586-6.352-1.464"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l9 9m0 0L9 9m0 0V3m0 9H9m12 0a9 9 0 01-18 0 9 9 0 0118 0z"/></svg>
-                            </button>
-                            <?php if ($kb['status'] !== 'PAID'): ?>
-                            <button class="btn btn-ghost" style="height: 32px; width: 32px; padding: 0;" onclick="makePayment(<?= $kb['id'] ?>)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="2" width="16" height="20" rx="2" stroke-width="2"/><line x1="8" y1="6" x2="16" y2="6" stroke-width="2"/><line x1="16" y1="14" x2="8" y2="14" stroke-width="2"/><line x1="12" y1="14" x2="12" y2="14" stroke-width="2"/></svg>
-                            </button>
-                            <?php endif; ?>
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <svg class="h-16 w-16 text-muted-foreground/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="font-medium text-muted-foreground">Belum ada data kontra bon</p>
+                            <p class="text-sm text-muted-foreground/70">Klik tombol "Tambah Kontra Bon" untuk membuat yang baru</p>
                         </div>
                     </td>
                 </tr>
-                <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach ($kontraBons as $kb): ?>
+                    <tr class="border-b border-border/50 transition-colors hover:bg-muted/30">
+                        <td class="px-6 py-4">
+                            <span class="font-semibold text-primary"><?= esc($kb['document_number']) ?></span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="font-medium text-foreground"><?= esc($kb['customer_name']) ?></span>
+                                <?php if (!empty($kb['customer_phone'])): ?>
+                                <span class="text-xs text-muted-foreground"><?= esc($kb['customer_phone']) ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-muted-foreground">
+                            <?= date('d M Y', strtotime($kb['created_at'])) ?>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-muted-foreground">
+                            <?= $kb['due_date'] ? date('d M Y', strtotime($kb['due_date'])) : '-' ?>
+                        </td>
+                        <td class="px-6 py-4 text-right whitespace-nowrap">
+                            <span class="font-bold text-foreground"><?= format_currency($kb['total_amount']) ?></span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <?php
+                            $statusClass = match($kb['status']) {
+                                'PAID' => 'bg-success/10 text-success border-success/30',
+                                'PENDING' => 'bg-warning/10 text-warning border-warning/30',
+                                'CANCELLED' => 'bg-destructive/10 text-destructive border-destructive/30',
+                                default => 'bg-muted/10 text-muted-foreground border-border',
+                            };
+                            ?>
+                            <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap <?= $statusClass ?>">
+                                <?= esc($kb['status']) ?>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="<?= base_url('finance/kontra-bon/detail/' . $kb['id']) ?>" 
+                                   class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/10 text-secondary transition-colors hover:bg-secondary/20"
+                                   title="Detail">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </a>
+                                <a href="<?= base_url('finance/kontra-bon/edit/' . $kb['id']) ?>" 
+                                   class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary transition-colors hover:bg-primary/20"
+                                   title="Edit">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                                <a href="<?= base_url('finance/kontra-bon/pdf/' . $kb['id']) ?>" 
+                                   class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-success/10 text-success transition-colors hover:bg-success/20"
+                                   title="Export PDF"
+                                   target="_blank">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </a>
+                                <form action="<?= base_url('finance/kontra-bon/delete/' . $kb['id']) ?>" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus kontra bon ini?')">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" 
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
+                                            title="Hapus">
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Create Kontra Bon Modal -->
-<div id="kontraBonModal" class="modal hidden">
-    <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-2xl">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-xl font-semibold">Buat Kontra Bon Baru</h3>
-        </div>
-        <div class="p-6 pt-0 space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <label for="kb_customer_id">Customer</label>
-                    <select id="kb_customer_id" class="form-input" onchange="loadInvoices()">
-                        <option value="">Pilih customer</option>
-                        <?php foreach ($customers ?? [] as $customer): ?>
-                        <option value="<?= $customer['id'] ?>"><?= $customer['name'] ?> (Piutang: <?= format_currency($customer['receivable_balance']) ?>)</option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="space-y-2">
-                    <label for="kb_due_date">Jatuh Tempo</label>
-                    <input type="date" id="kb_due_date" class="form-input">
-                </div>
-            </div>
-            <div class="space-y-2">
-                <label>Pilih Invoice Belum Lunas</label>
-                <div id="invoicesList" class="border rounded p-4 h-40 overflow-y-auto space-y-2">
-                    <p class="text-muted-foreground text-center">Pilih customer terlebih dahulu</p>
-                </div>
-            </div>
-            <div class="space-y-2">
-                <label for="kb_notes">Catatan</label>
-                <textarea id="kb_notes" class="form-input" placeholder="Catatan (opsional)" rows="3"></textarea>
-            </div>
-            <div class="flex justify-between">
-                <div class="text-sm">
-                    <span class="text-muted-foreground">Total Tagihan: </span>
-                    <span id="totalTagihan" class="font-bold text-primary">Rp 0</span>
-                </div>
-                <div class="flex gap-2">
-                    <button type="button" class="btn btn-outline" onclick="document.getElementById('kontraBonModal').classList.add('hidden')">
-                        Batal
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="createKontraBon()">
-                        Buat Kontra Bon
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Payment Modal -->
-<div id="paymentModal" class="modal hidden">
-    <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-md">
-        <div class="flex flex-col space-y-1.5 p-6">
-            <h3 class="text-xl font-semibold">Pembayaran Kontra Bon</h3>
-        </div>
-        <div class="p-6 pt-0 space-y-4">
-            <input type="hidden" id="payment_kontra_bon_id">
-            <div class="space-y-2">
-                <label for="payment_amount">Jumlah Pembayaran</label>
-                <input type="number" id="payment_amount" class="form-input" placeholder="0" step="0.01">
-            </div>
-            <div class="space-y-2">
-                <label for="payment_method">Metode Pembayaran</label>
-                <select id="payment_method" class="form-input">
-                    <option value="CASH">Tunai</option>
-                    <option value="TRANSFER">Transfer Bank</option>
-                    <option value="CHECK">Cek/Giro</option>
-                </select>
-            </div>
-            <div class="space-y-2">
-                <label for="payment_notes">Catatan</label>
-                <textarea id="payment_notes" class="form-input" placeholder="Catatan (opsional)" rows="3"></textarea>
-            </div>
-            <div class="flex justify-end gap-2">
-                <button type="button" class="btn btn-outline" onclick="document.getElementById('paymentModal').classList.add('hidden')">
-                    Batal
-                </button>
-                <button type="button" class="btn btn-primary" onclick="processPayment()">
-                    Bayar
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    let selectedInvoices = [];
-    let invoiceData = {};
-
-    function loadInvoices() {
-        const customerId = document.getElementById('kb_customer_id').value;
-        
-        if (!customerId) {
-            document.getElementById('invoicesList').innerHTML = '<p class="text-muted-foreground text-center">Pilih customer terlebih dahulu</p>';
-            return;
-        }
-        
-        fetch(`/finance/kontra-bon/getUnpaidInvoices?customer_id=${customerId}`)
-            .then(response => response.json())
-            .then(data => {
-                renderInvoices(data);
-                updateTotal();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Gagal memuat data invoice');
-            });
-    }
-    
-    function renderInvoices(invoices) {
-        const container = document.getElementById('invoicesList');
-        
-        if (invoices.length === 0) {
-            container.innerHTML = '<p class="text-muted-foreground text-center">Tidak ada invoice unpaid untuk customer ini</p>';
-            return;
-        }
-        
-        container.innerHTML = invoices.map(invoice => {
-            const isChecked = selectedInvoices.includes(invoice.id.toString());
-            
-            return `
-                <label class="flex items-center space-x-2 cursor-pointer hover:bg-muted p-2 rounded">
-                    <input type="checkbox" value="${invoice.id}" ${isChecked ? 'checked' : ''} onchange="toggleInvoice('${invoice.id}', ${JSON.stringify(invoice).replace(/"/g, '&quot;')})" onclick="event.stopPropagation()">
-                    <div class="flex-1">
-                        <div class="font-medium">${invoice.invoice_number}</div>
-                        <div class="text-sm text-muted-foreground">
-                            ${formatDate(invoice.created_at)} - Total: ${formatCurrency(invoice.total_amount)} - Belum: ${formatCurrency(invoice.total_amount - invoice.paid_amount)}
-                        </div>
-                    </div>
-                </label>
-            `;
-        }).join('');
-    }
-    
-    function toggleInvoice(id, data) {
-        const index = selectedInvoices.indexOf(id);
-        if (index > -1) {
-            selectedInvoices.splice(index, 1);
-            delete invoiceData[id];
-        } else {
-            selectedInvoices.push(id);
-            invoiceData[id] = JSON.parse(data);
-        }
-        updateTotal();
-    }
-    
-    function updateTotal() {
-        let total = 0;
-        selectedInvoices.forEach(id => {
-            if (invoiceData[id]) {
-                total += (invoiceData[id].total_amount - invoiceData[id].paid_amount);
-            }
-        });
-        document.getElementById('totalTagihan').textContent = formatCurrency(total);
-    }
-    
-    function createKontraBon() {
-        const customerId = document.getElementById('kb_customer_id').value;
-        const dueDate = document.getElementById('kb_due_date').value;
-        const notes = document.getElementById('kb_notes').value;
-        
-        if (!customerId) {
-            alert('Pilih customer terlebih dahulu');
-            return;
-        }
-        
-        if (selectedInvoices.length === 0) {
-            alert('Pilih minimal satu invoice');
-            return;
-        }
-        
-        // Create form and submit
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.action = '/finance/kontra-bon/create';
-        
-        // Add hidden fields
-        const fields = {
-            customer_id: customerId,
-            sale_ids: selectedInvoices,
-            due_date: dueDate,
-            notes: notes
-        };
-        
-        for (const [key, value] of Object.entries(fields)) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = typeof value === 'object' ? JSON.stringify(value) : value;
-            form.appendChild(input);
-        }
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-    
-    function makePayment(kontraBonId) {
-        document.getElementById('payment_kontra_bon_id').value = kontraBonId;
-        document.getElementById('paymentModal').classList.remove('hidden');
-    }
-    
-    function processPayment() {
-        const kontraBonId = document.getElementById('payment_kontra_bon_id').value;
-        const amount = document.getElementById('payment_amount').value;
-        const paymentMethod = document.getElementById('payment_method').value;
-        const notes = document.getElementById('payment_notes').value;
-        
-        if (!amount || amount <= 0) {
-            alert('Masukkan jumlah pembayaran');
-            return;
-        }
-        
-        // Create form and submit
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.action = '/finance/kontra-bon/makePayment';
-        
-        // Add hidden fields
-        const fields = {
-            kontra_bon_id: kontraBonId,
-            amount: amount,
-            payment_method: paymentMethod,
-            notes: notes
-        };
-        
-        for (const [key, value] of Object.entries(fields)) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = value;
-            form.appendChild(input);
-        }
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-    
-    function formatCurrency(amount) {
-        return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
-    }
-    
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('id-ID', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
-    }
-    
-    function viewDetails(id) {
-        // Placeholder for view details functionality
-        alert('Detail untuk Kontra Bon #' + id);
-    }
-</script>
-
-<?php $this->endSection() ?>
+<?= $this->endSection() ?>

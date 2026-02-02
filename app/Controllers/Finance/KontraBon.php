@@ -1,303 +1,268 @@
 <?php
+
 namespace App\Controllers\Finance;
 
 use App\Controllers\BaseController;
 use App\Models\KontraBonModel;
-use App\Models\SaleModel;
 use App\Models\CustomerModel;
-use App\Models\PaymentModel;
-use App\Services\BalanceService;
-use CodeIgniter\API\ResponseTrait;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class KontraBon extends BaseController
 {
-    use ResponseTrait;
-
     protected $kontraBonModel;
-    protected $saleModel;
     protected $customerModel;
-    protected $paymentModel;
-    protected $balanceService;
 
     public function __construct()
     {
         $this->kontraBonModel = new KontraBonModel();
-        $this->saleModel = new SaleModel();
         $this->customerModel = new CustomerModel();
-        $this->paymentModel = new PaymentModel();
-        $this->balanceService = new BalanceService();
     }
 
     /**
-     * View: List all Kontra Bons
+     * Display list of all Kontra Bons
      */
     public function index()
     {
-        $kontraBons = $this->kontraBonModel
-            ->select('kontra_bons.*, customers.name as customer_name')
-            ->join('customers', 'customers.id = kontra_bons.customer_id')
-            ->orderBy('kontra_bons.created_at', 'DESC')
-            ->findAll();
+        $kontraBons = $this->kontraBonModel->getAllWithCustomer();
+        $stats = $this->kontraBonModel->getStatistics();
 
         $data = [
             'title' => 'Kontra Bon',
-            'subtitle' => 'Konsolidasi invoice B2B',
+            'subtitle' => 'Kelola data kontra bon pelanggan',
             'kontraBons' => $kontraBons,
+            'stats' => $stats,
         ];
 
-        return view('layout/main', $data)
-            . view('finance/kontra-bon/index', $data);
+        return view('finance/kontra-bon/index', $data);
     }
 
     /**
-     * Action: Create Kontra Bon (Consolidation)
-     * 
-     * Groups multiple unpaid invoices into a single settlement document.
-     * Consolidates receivables from multiple sales into one.
+     * Show create form
      */
     public function create()
     {
-        // 1. Validation
-        if (!$this->validate([
+        $customers = $this->customerModel->asArray()->findAll();
+
+        $data = [
+            'title' => 'Tambah Kontra Bon',
+            'subtitle' => 'Buat kontra bon baru',
+            'customers' => $customers,
+        ];
+
+        return view('finance/kontra-bon/create', $data);
+    }
+
+    /**
+     * Store new kontra bon
+     */
+    public function store()
+    {
+        // Validation
+        $rules = [
             'customer_id' => 'required|numeric',
-            'sale_ids' => 'required'
-        ])) {
+            'due_date' => 'permit_empty|valid_date',
+            'total_amount' => 'required|decimal',
+            'status' => 'required|in_list[PENDING,PAID,CANCELLED]',
+            'notes' => 'permit_empty|string',
+        ];
+
+        if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $customerId = (int)$this->request->getPost('customer_id');
-        $selectedSales = $this->request->getPost('sale_ids');
-        $notes = $this->request->getPost('notes') ?? '';
-        $userId = session()->get('id');
-
-        if (empty($selectedSales) || !is_array($selectedSales)) {
-            return redirect()->back()->withInput()->with('error', 'Pilih minimal satu invoice');
-        }
-
-        $db = \Config\Database::connect();
-        $db->transStart();
-
         try {
-            // 2. Validate customer exists
-            $customer = $this->customerModel->find($customerId);
-            if (!$customer) {
-                throw new \Exception('Customer tidak ditemukan');
-            }
+            // Generate document number
+            $documentNumber = $this->kontraBonModel->generateDocumentNumber();
 
-            // 3. Validate and calculate total from selected sales
-            $totalAmount = 0;
-            $sales = [];
-
-            foreach ($selectedSales as $saleId) {
-                $sale = $this->saleModel->find((int)$saleId);
-
-                if (!$sale) {
-                    throw new \Exception("Invoice #{$saleId} tidak ditemukan");
-                }
-
-                // Verify customer matches
-                if ((int)$sale['customer_id'] != $customerId) {
-                    throw new \Exception('Invoice tidak sesuai dengan customer');
-                }
-
-                // Verify not already in Kontra Bon
-                if ($sale['kontra_bon_id']) {
-                    throw new \Exception("Invoice {$sale['invoice_number']} sudah masuk Kontra Bon lain");
-                }
-
-                // Verify unpaid or partial (not PAID)
-                if ($sale['payment_status'] == 'PAID') {
-                    throw new \Exception("Invoice {$sale['invoice_number']} sudah lunas");
-                }
-
-                // Only credit sales can be consolidated
-                if ($sale['payment_type'] != 'CREDIT') {
-                    throw new \Exception("Invoice {$sale['invoice_number']} bukan penjualan kredit");
-                }
-
-                // Calculate outstanding amount
-                $outstanding = (float)$sale['total_amount'] - (float)$sale['paid_amount'];
-                $totalAmount += $outstanding;
-                $sales[] = $sale;
-            }
-
-            if (empty($sales)) {
-                throw new \Exception('Tidak ada invoice yang valid untuk dikonsolidasi');
-            }
-
-            // 4. Create Kontra Bon record
-            $documentNumber = 'KB-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
-            
-            $kontraBonId = $this->kontraBonModel->insert([
-                'number' => $documentNumber,
-                'customer_id' => $customerId,
-                'total_amount' => $totalAmount,
-                'paid_amount' => 0,
-                'status' => 'DRAFT',
-                'notes' => $notes,
-                'user_id' => $userId,
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            if (!$kontraBonId) {
-                throw new \Exception('Gagal membuat Kontra Bon');
-            }
-
-            // 5. Link sales to Kontra Bon
-            foreach ($sales as $sale) {
-                $this->saleModel->update($sale['id'], ['kontra_bon_id' => $kontraBonId]);
-            }
-
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                throw new \Exception('Transaksi database gagal');
-            }
-
-            return redirect()->to('finance/kontra-bon')
-                ->with('success', "Kontra Bon {$documentNumber} berhasil dibuat dengan " . count($sales) . " invoice");
-
-        } catch (\Exception $e) {
-            $db->transRollback();
-            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * AJAX: Get unpaid invoices for consolidation
-     */
-    public function getUnpaidInvoices()
-    {
-        $customerId = $this->request->getGet('customer_id');
-        
-        if (!$customerId) {
-            return $this->response->setJSON([]);
-        }
-
-        $invoices = $this->saleModel
-            ->select('sales.id, sales.invoice_number, sales.total_amount, sales.paid_amount, sales.created_at')
-            ->where('sales.customer_id', $customerId)
-            ->whereIn('sales.payment_status', ['UNPAID', 'PARTIAL'])
-            ->where('sales.payment_type', 'CREDIT')
-            ->where('sales.kontra_bon_id', null)
-            ->where('sales.deleted_at', null)
-            ->orderBy('sales.created_at', 'ASC')
-            ->findAll();
-
-        $result = array_map(function($invoice) {
-            return [
-                'id' => $invoice['id'],
-                'invoice_number' => $invoice['invoice_number'],
-                'total_amount' => (float)$invoice['total_amount'],
-                'paid_amount' => (float)$invoice['paid_amount'],
-                'outstanding' => (float)$invoice['total_amount'] - (float)$invoice['paid_amount'],
-                'created_at' => $invoice['created_at']
+            $data = [
+                'document_number' => $documentNumber,
+                'customer_id' => $this->request->getPost('customer_id'),
+                'due_date' => $this->request->getPost('due_date') ?: null,
+                'total_amount' => $this->request->getPost('total_amount'),
+                'status' => $this->request->getPost('status'),
+                'notes' => $this->request->getPost('notes') ?: null,
             ];
-        }, $invoices);
 
-        return $this->response->setJSON($result);
+            $this->kontraBonModel->insert($data);
+
+            return redirect()
+                ->to('finance/kontra-bon')
+                ->with('success', 'Kontra Bon berhasil ditambahkan dengan nomor: ' . $documentNumber);
+        } catch (\Exception $e) {
+            log_message('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
-     * Action: Record Payment for Kontra Bon
-     * 
-     * Processes payment against consolidated kontra bon.
-     * Updates kontra bon status and linked sales payment status.
-     * Recalculates customer balance using BalanceService.
+     * Show edit form
      */
-    public function makePayment()
+    public function edit($id)
     {
-        // 1. Validation
-        if (!$this->validate([
-            'kontra_bon_id' => 'required|numeric',
-            'amount' => 'required|numeric|greater_than[0]',
-            'payment_method' => 'required|string',
-            'payment_date' => 'required|valid_date[Y-m-d]'
-        ])) {
+        $kontraBon = $this->kontraBonModel->find($id);
+
+        if (!$kontraBon) {
+            return redirect()->back()->with('error', 'Kontra Bon tidak ditemukan');
+        }
+
+        $customers = $this->customerModel->asArray()->findAll();
+
+        $data = [
+            'title' => 'Edit Kontra Bon',
+            'subtitle' => 'Ubah data kontra bon',
+            'kontraBon' => $kontraBon,
+            'customers' => $customers,
+        ];
+
+        return view('finance/kontra-bon/edit', $data);
+    }
+
+    /**
+     * Update kontra bon
+     */
+    public function update($id)
+    {
+        // Check if exists
+        $kontraBon = $this->kontraBonModel->find($id);
+        if (!$kontraBon) {
+            return redirect()->back()->with('error', 'Kontra Bon tidak ditemukan');
+        }
+
+        // Validation
+        $rules = [
+            'customer_id' => 'required|numeric',
+            'due_date' => 'permit_empty|valid_date',
+            'total_amount' => 'required|decimal',
+            'status' => 'required|in_list[PENDING,PAID,CANCELLED]',
+            'notes' => 'permit_empty|string',
+        ];
+
+        if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        $db = \Config\Database::connect();
-        $db->transStart();
+        try {
+            $data = [
+                'customer_id' => $this->request->getPost('customer_id'),
+                'due_date' => $this->request->getPost('due_date') ?: null,
+                'total_amount' => $this->request->getPost('total_amount'),
+                'status' => $this->request->getPost('status'),
+                'notes' => $this->request->getPost('notes') ?: null,
+            ];
+
+            $this->kontraBonModel->update($id, $data);
+
+            return redirect()
+                ->to('finance/kontra-bon')
+                ->with('success', 'Kontra Bon berhasil diperbarui');
+        } catch (\Exception $e) {
+            log_message('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete kontra bon
+     */
+    public function delete($id)
+    {
+        try {
+            $kontraBon = $this->kontraBonModel->find($id);
+
+            if (!$kontraBon) {
+                return redirect()->back()->with('error', 'Kontra Bon tidak ditemukan');
+            }
+
+            // Check if can be deleted (not PAID)
+            if ($kontraBon['status'] === 'PAID') {
+                return redirect()->back()->with('error', 'Kontra Bon yang sudah PAID tidak dapat dihapus');
+            }
+
+            $this->kontraBonModel->delete($id);
+
+            return redirect()
+                ->to('finance/kontra-bon')
+                ->with('success', 'Kontra Bon berhasil dihapus');
+        } catch (\Exception $e) {
+            log_message('error', $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update status
+     */
+    public function updateStatus($id)
+    {
+        $status = $this->request->getPost('status');
+
+        if (!in_array($status, ['PENDING', 'PAID', 'CANCELLED'])) {
+            return redirect()->back()->with('error', 'Status tidak valid');
+        }
 
         try {
-            // 2. Fetch and validate data
-            $kontraBonId = (int)$this->request->getPost('kontra_bon_id');
-            $amount = (float)$this->request->getPost('amount');
-            $paymentMethod = $this->request->getPost('payment_method');
-            $paymentDate = $this->request->getPost('payment_date');
-            $notes = $this->request->getPost('notes') ?? '';
-            $userId = session()->get('id');
+            $this->kontraBonModel->updateStatus($id, $status);
 
-            $kontraBon = $this->kontraBonModel->find($kontraBonId);
-            if (!$kontraBon) {
-                throw new \Exception('Kontra Bon tidak ditemukan');
-            }
-
-            $customerId = (int)$kontraBon['customer_id'];
-
-            // Validate payment amount
-            $outstanding = (float)$kontraBon['total_amount'] - (float)($kontraBon['paid_amount'] ?? 0);
-            if ($amount > $outstanding) {
-                throw new \Exception(
-                    'Jumlah pembayaran melebihi saldo Kontra Bon. ' .
-                    'Tersisa: ' . number_format($outstanding, 0) .
-                    ', Pembayaran: ' . number_format($amount, 0)
-                );
-            }
-
-            // 3. Update Kontra Bon payment
-            $newPaidAmount = (float)($kontraBon['paid_amount'] ?? 0) + $amount;
-            $newStatus = 'DRAFT';
-            
-            if ($newPaidAmount >= (float)$kontraBon['total_amount']) {
-                $newStatus = 'PAID';
-            } elseif ($newPaidAmount > 0) {
-                $newStatus = 'PARTIAL';
-            }
-
-            $this->kontraBonModel->update($kontraBonId, [
-                'status' => $newStatus,
-                'paid_amount' => $newPaidAmount
-            ]);
-
-            // 4. Create payment record
-            $paymentNumber = $this->paymentModel->generatePaymentNumber();
-            $this->paymentModel->insert([
-                'payment_number' => $paymentNumber,
-                'payment_date' => $paymentDate,
-                'type' => 'RECEIVABLE',
-                'reference_id' => $kontraBonId,
-                'amount' => $amount,
-                'method' => $paymentMethod,
-                'notes' => $notes ?? '',
-                'user_id' => $userId,
-                'customer_id' => $customerId
-            ]);
-
-            // 5. Update linked sales payment status if Kontra Bon fully paid
-            if ($newStatus == 'PAID') {
-                $this->saleModel
-                    ->where('kontra_bon_id', $kontraBonId)
-                    ->set(['payment_status' => 'PAID'])
-                    ->update();
-            }
-
-            // 6. Recalculate customer balance using BalanceService
-            $this->balanceService->calculateCustomerReceivable($customerId);
-
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                throw new \Exception('Transaksi database gagal');
-            }
-
-            return redirect()->to('finance/kontra-bon')
-                ->with('success', "Pembayaran Kontra Bon berhasil dicatat! No. Bukti: $paymentNumber");
-
+            return redirect()
+                ->to('finance/kontra-bon')
+                ->with('success', 'Status berhasil diupdate');
         } catch (\Exception $e) {
-            $db->transRollback();
-            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal update status: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Export to PDF
+     */
+    public function exportPdf($id)
+    {
+        $kontraBon = $this->kontraBonModel->getById($id);
+
+        if (!$kontraBon) {
+            return redirect()->back()->with('error', 'Kontra Bon tidak ditemukan');
+        }
+
+        // Setup Dompdf
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($options);
+
+        // Generate HTML
+        $html = view('finance/kontra-bon/pdf', ['kontraBon' => $kontraBon]);
+
+        // Load HTML to dompdf
+        $dompdf->loadHtml($html);
+
+        // Setup paper
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $dompdf->render();
+
+        // Output PDF
+        $filename = 'Kontra-Bon-' . $kontraBon['document_number'] . '.pdf';
+        $dompdf->stream($filename, ['Attachment' => true]);
+    }
+
+    /**
+     * View detail
+     */
+    public function detail($id)
+    {
+        $kontraBon = $this->kontraBonModel->getById($id);
+
+        if (!$kontraBon) {
+            return redirect()->back()->with('error', 'Kontra Bon tidak ditemukan');
+        }
+
+        $data = [
+            'title' => 'Detail Kontra Bon',
+            'subtitle' => 'Detail kontra bon #' . $kontraBon['document_number'],
+            'kontraBon' => $kontraBon,
+        ];
+
+        return view('finance/kontra-bon/detail', $data);
     }
 }
