@@ -190,6 +190,14 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
         $routes->get('management', 'Stock::management');
     });
 
+    // Saldo (Balance) - Financial Balance Reports
+    $routes->group('saldo', function($routes) {
+        $routes->get('receivable', 'Saldo::receivable');  // Receivable balances (Piutang)
+        $routes->get('payable', 'Saldo::payable');        // Payable balances (Utang)
+        $routes->get('stock', 'Saldo::stock');            // Stock balances (Stok)
+        $routes->get('stock-data', 'Saldo::stockData');   // AJAX endpoint for stock data
+    });
+
     // Inventory Management
     $routes->group('inventory', function($routes) {
         $routes->get('management', 'Stock::management');
