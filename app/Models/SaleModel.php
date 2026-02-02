@@ -21,6 +21,44 @@ class SaleModel extends Model
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
 
+    // Validation Rules
+    protected $validationRules = [
+        'invoice_number' => 'required|min_length[5]|max_length[50]|is_unique[sales.invoice_number,id,{id}]',
+        'customer_id' => 'required|integer|greater_than[0]',
+        'warehouse_id' => 'required|integer|greater_than[0]',
+        'salesperson_id' => 'permit_empty|integer|greater_than_equal_to[0]',
+        'user_id' => 'required|integer|greater_than[0]',
+        'total_amount' => 'required|numeric|greater_than_equal_to[0]',
+        'due_date' => 'permit_empty|valid_date[Y-m-d]',
+        'paid_amount' => 'required|numeric|greater_than_equal_to[0]',
+        'payment_type' => 'required|in_list[CASH,CREDIT]',
+        'payment_status' => 'required|in_list[UNPAID,PARTIAL,PAID]',
+        'is_hidden' => 'permit_empty|in_list[0,1]',
+    ];
+
+    protected $validationMessages = [
+        'invoice_number' => [
+            'required' => 'Nomor invoice harus diisi',
+            'is_unique' => 'Nomor invoice sudah terdaftar',
+        ],
+        'customer_id' => [
+            'required' => 'Pelanggan harus dipilih',
+            'integer' => 'Pelanggan tidak valid',
+        ],
+        'warehouse_id' => [
+            'required' => 'Gudang harus dipilih',
+        ],
+        'total_amount' => [
+            'required' => 'Total penjualan harus diisi',
+            'numeric' => 'Total harus berupa angka',
+            'greater_than_equal_to' => 'Total tidak boleh negatif',
+        ],
+        'payment_type' => [
+            'required' => 'Jenis pembayaran harus dipilih',
+            'in_list' => 'Jenis pembayaran tidak valid',
+        ],
+    ];
+
     // GLOBAL SCOPE: Hide hidden sales from non-Owner users
     public function findAll(?int $limit = null, ?int $offset = 0)
     {

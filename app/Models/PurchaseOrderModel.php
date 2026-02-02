@@ -18,6 +18,42 @@ class PurchaseOrderModel extends Model
     ];
     protected $useTimestamps = false;
 
+    // Validation Rules
+    protected $validationRules = [
+        'nomor_po' => 'required|min_length[3]|max_length[50]|is_unique[purchase_orders.nomor_po,id_po,{id_po}]',
+        'tanggal_po' => 'required|valid_date[Y-m-d]',
+        'supplier_id' => 'required|integer|greater_than[0]',
+        'user_id' => 'required|integer|greater_than[0]',
+        'total_amount' => 'required|numeric|greater_than[0]',
+        'received_amount' => 'required|numeric|greater_than_equal_to[0]',
+        'status' => 'required|in_list[Draft,Dipesan,Diterima Sebagian,Diterima Semua,Dibatalkan]',
+        'notes' => 'permit_empty|max_length[500]',
+    ];
+
+    protected $validationMessages = [
+        'nomor_po' => [
+            'required' => 'Nomor PO harus diisi',
+            'is_unique' => 'Nomor PO sudah terdaftar',
+        ],
+        'tanggal_po' => [
+            'required' => 'Tanggal PO harus diisi',
+            'valid_date' => 'Format tanggal tidak valid (YYYY-MM-DD)',
+        ],
+        'supplier_id' => [
+            'required' => 'Supplier harus dipilih',
+            'integer' => 'Supplier tidak valid',
+        ],
+        'total_amount' => [
+            'required' => 'Total PO harus diisi',
+            'numeric' => 'Total harus berupa angka',
+            'greater_than' => 'Total harus lebih dari 0',
+        ],
+        'status' => [
+            'required' => 'Status harus dipilih',
+            'in_list' => 'Status tidak valid',
+        ],
+    ];
+
     /**
      * Get purchase orders with unpaid status
      */

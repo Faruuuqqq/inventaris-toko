@@ -19,6 +19,46 @@ class PaymentModel extends Model
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
 
+    // Validation Rules
+    protected $validationRules = [
+        'payment_number' => 'required|min_length[5]|max_length[50]|is_unique[payments.payment_number,id,{id}]',
+        'payment_date' => 'required|valid_date[Y-m-d]',
+        'type' => 'required|in_list[RECEIVABLE,PAYABLE]',
+        'reference_id' => 'required|integer|greater_than[0]',
+        'amount' => 'required|numeric|greater_than[0]',
+        'method' => 'required|in_list[CASH,TRANSFER,CHEQUE]',
+        'notes' => 'permit_empty|max_length[500]',
+    ];
+
+    protected $validationMessages = [
+        'payment_number' => [
+            'required' => 'Nomor pembayaran harus diisi',
+            'is_unique' => 'Nomor pembayaran sudah terdaftar',
+        ],
+        'payment_date' => [
+            'required' => 'Tanggal pembayaran harus diisi',
+            'valid_date' => 'Format tanggal tidak valid (YYYY-MM-DD)',
+        ],
+        'type' => [
+            'required' => 'Jenis pembayaran harus dipilih',
+            'in_list' => 'Jenis pembayaran tidak valid',
+        ],
+        'reference_id' => [
+            'required' => 'Referensi harus diisi',
+            'integer' => 'Referensi harus berupa angka',
+            'greater_than' => 'Referensi tidak valid',
+        ],
+        'amount' => [
+            'required' => 'Jumlah pembayaran harus diisi',
+            'numeric' => 'Jumlah harus berupa angka',
+            'greater_than' => 'Jumlah harus lebih dari 0',
+        ],
+        'method' => [
+            'required' => 'Metode pembayaran harus dipilih',
+            'in_list' => 'Metode pembayaran tidak valid',
+        ],
+    ];
+
     /**
      * Get receivable payments
      */

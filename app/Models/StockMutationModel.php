@@ -19,6 +19,40 @@ class StockMutationModel extends Model
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
 
+    // Validation Rules
+    protected $validationRules = [
+        'product_id' => 'required|integer|greater_than[0]',
+        'warehouse_id' => 'required|integer|greater_than[0]',
+        'type' => 'required|in_list[IN,OUT,ADJUSTMENT_IN,ADJUSTMENT_OUT,TRANSFER]',
+        'quantity' => 'required|integer|not_equals[0]',
+        'current_balance' => 'required|integer|greater_than_equal_to[0]',
+        'reference_number' => 'permit_empty|max_length[50]',
+        'notes' => 'permit_empty|max_length[500]',
+    ];
+
+    protected $validationMessages = [
+        'product_id' => [
+            'required' => 'Produk harus dipilih',
+            'integer' => 'Produk tidak valid',
+        ],
+        'warehouse_id' => [
+            'required' => 'Gudang harus dipilih',
+        ],
+        'type' => [
+            'required' => 'Jenis mutasi harus dipilih',
+            'in_list' => 'Jenis mutasi tidak valid',
+        ],
+        'quantity' => [
+            'required' => 'Kuantitas harus diisi',
+            'integer' => 'Kuantitas harus berupa angka',
+            'not_equals' => 'Kuantitas tidak boleh 0',
+        ],
+        'current_balance' => [
+            'required' => 'Saldo harus diisi',
+            'greater_than_equal_to' => 'Saldo tidak boleh negatif',
+        ],
+    ];
+
     /**
      * Create stock mutation
      */

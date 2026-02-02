@@ -18,6 +18,39 @@ class SalesReturnModel extends Model
     ];
     protected $useTimestamps = false;
 
+    // Validation Rules
+    protected $validationRules = [
+        'no_retur' => 'required|min_length[3]|max_length[50]|is_unique[sales_returns.no_retur,id,{id}]',
+        'tanggal_retur' => 'required|valid_date[Y-m-d]',
+        'sale_id' => 'required|integer|greater_than[0]',
+        'customer_id' => 'required|integer|greater_than[0]',
+        'alasan' => 'required|min_length[5]|max_length[500]',
+        'status' => 'required|in_list[Pending,Diproses,Selesai,Dibatalkan]',
+        'total_retur' => 'required|numeric|greater_than[0]',
+    ];
+
+    protected $validationMessages = [
+        'no_retur' => [
+            'required' => 'Nomor retur harus diisi',
+            'is_unique' => 'Nomor retur sudah terdaftar',
+        ],
+        'tanggal_retur' => [
+            'required' => 'Tanggal retur harus diisi',
+            'valid_date' => 'Format tanggal tidak valid',
+        ],
+        'sale_id' => [
+            'required' => 'Penjualan harus dipilih',
+        ],
+        'alasan' => [
+            'required' => 'Alasan retur harus diisi',
+            'min_length' => 'Alasan minimal 5 karakter',
+        ],
+        'total_retur' => [
+            'required' => 'Total retur harus diisi',
+            'greater_than' => 'Total retur harus lebih dari 0',
+        ],
+    ];
+
     /**
      * Get sales returns by status
      */
