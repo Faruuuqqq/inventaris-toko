@@ -1,130 +1,143 @@
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
-<div class="page-header">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title"><?= $title ?></h3>
+
+<!-- Page Header -->
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
+            <?= icon('CheckCircle', 'h-8 w-8 text-primary') ?>
+            Persetujuan Retur Pembelian
+        </h1>
+        <p class="text-sm text-muted-foreground mt-1">Tinjau dan setujui permintaan retur dari supplier</p>
+    </div>
+    <a href="<?= base_url('transactions/purchase-returns') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+        <?= icon('ArrowLeft', 'h-5 w-5') ?>
+        Kembali
+    </a>
+</div>
+
+<!-- Return Information -->
+<div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-6">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('FileText', 'h-5 w-5 text-primary') ?>
+            Informasi Retur
+        </h2>
+    </div>
+
+    <div class="p-6 grid gap-6 md:grid-cols-2">
+        <!-- Left Column: Return Details -->
+        <div class="space-y-4">
+            <div>
+                <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">No. Retur</p>
+                <p class="text-lg font-bold text-foreground mt-1"><?= $purchaseReturn['nomor_retur'] ?></p>
             </div>
-            <div class="col-auto">
-                <a href="<?= base_url('/transactions/purchase-returns') ?>" class="btn btn-outline-secondary">
-                    <i data-lucide="arrow-left"></i>
-                    Back
-                </a>
+            <div>
+                <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Tanggal Retur</p>
+                <p class="text-sm font-medium text-foreground mt-1"><?= format_date($purchaseReturn['tanggal_retur']) ?></p>
+            </div>
+            <div>
+                <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Supplier</p>
+                <p class="text-sm font-medium text-foreground mt-1"><?= $purchaseReturn['supplier']['name'] ?></p>
+            </div>
+            <div>
+                <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Gudang Asal</p>
+                <p class="text-sm font-medium text-foreground mt-1"><?= $purchaseReturn['warehouse']['nama_warehouse'] ?></p>
+            </div>
+            <div>
+                <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Status</p>
+                <div class="mt-1"><?= status_badge($purchaseReturn['status']) ?></div>
+            </div>
+        </div>
+
+        <!-- Right Column: Approval Form -->
+        <div class="space-y-4">
+            <div class="space-y-2">
+                <label for="tanggal_proses" class="text-sm font-medium text-foreground">Tanggal Proses *</label>
+                <input type="date" id="tanggal_proses" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" value="<?= date('Y-m-d') ?>" required>
+            </div>
+            <div class="space-y-2">
+                <label for="approval_notes" class="text-sm font-medium text-foreground">Catatan Persetujuan</label>
+                <textarea id="approval_notes" rows="3" placeholder="Masukkan catatan persetujuan..." class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"></textarea>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h6>Return Information</h6>
-                            <table class="table table-sm table-borderless">
-                                <tr>
-                                    <td><strong>Return Number:</strong></td>
-                                    <td><?= $purchaseReturn['nomor_retur'] ?></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Date:</strong></td>
-                                    <td><?= format_date($purchaseReturn['tanggal_retur']) ?></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Supplier:</strong></td>
-                                    <td><?= $purchaseReturn['supplier']['name'] ?></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>From Warehouse:</strong></td>
-                                    <td><?= $purchaseReturn['warehouse']['nama_warehouse'] ?></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Status:</strong></td>
-                                    <td><?= status_badge($purchaseReturn['status']) ?></td>
-                                </tr>
-                            </table>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="tanggal_proses" class="form-label">Process Date</label>
-                                <input type="date" class="form-control" id="tanggal_proses" name="tanggal_proses" value="<?= date('Y-m-d') ?>" required>
+<!-- Products to Process -->
+<div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-6">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('Package', 'h-5 w-5 text-primary') ?>
+            Produk Retur
+        </h2>
+    </div>
+
+    <div class="p-6 overflow-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-muted/50 border-b border-border/50">
+                <tr>
+                    <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
+                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Qty Diminta</th>
+                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Qty Setuju</th>
+                    <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-32">Jumlah Refund</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50">
+                <?php foreach ($purchaseReturn['details'] as $index => $detail): ?>
+                    <tr class="hover:bg-muted/50 transition">
+                        <input type="hidden" name="produk[<?= $index ?>][id_detail]" value="<?= $detail['id_detail'] ?>">
+                        <input type="hidden" name="produk[<?= $index ?>][id_produk]" value="<?= $detail['id_produk'] ?>">
+                        <td class="px-4 py-3">
+                            <div>
+                                <p class="font-semibold text-foreground"><?= $detail['nama_produk'] ?></p>
+                                <p class="text-xs text-muted-foreground"><?= $detail['kode_produk'] ?></p>
+                                <p class="text-xs text-primary/70 mt-1">Alasan: <?= $detail['alasan'] ?></p>
                             </div>
-                            <div class="mb-3">
-                                <label for="approval_notes" class="form-label">Approval Notes</label>
-                                <textarea class="form-control" id="approval_notes" name="approval_notes" rows="3"></textarea>
+                        </td>
+                        <td class="px-4 py-3 text-right font-medium text-foreground"><?= $detail['jumlah'] ?></td>
+                        <td class="px-4 py-3">
+                            <input type="number" class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/50" name="produk[<?= $index ?>][jumlah_dikembalikan]" min="0" max="<?= $detail['jumlah'] ?>" value="<?= $detail['jumlah'] ?>" required>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div class="space-y-1">
+                                <input type="number" class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/50 refund-input" name="produk[<?= $index ?>][jumlah_refund]" min="0" value="<?= $detail['jumlah'] * $detail['harga_beli_terakhir'] ?>" step="1">
+                                <p class="text-xs text-muted-foreground">Max: Rp <?= number_format($detail['jumlah'] * $detail['harga_beli_terakhir'], 0, ',', '.') ?></p>
                             </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <h5>Products to Process</h5>
-                    <div class="table-responsive mb-3">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Requested Quantity</th>
-                                    <th>Approved Quantity</th>
-                                    <th>Refund Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($purchaseReturn['details'] as $index => $detail): ?>
-                                    <tr>
-                                        <input type="hidden" name="produk[<?= $index ?>][id_detail]" value="<?= $detail['id_detail'] ?>">
-                                        <input type="hidden" name="produk[<?= $index ?>][id_produk]" value="<?= $detail['id_produk'] ?>">
-                                        <td>
-                                            <strong><?= $detail['nama_produk'] ?></strong><br>
-                                            <small class="text-muted"><?= $detail['kode_produk'] ?></small><br>
-                                            <small class="text-info">Reason: <?= $detail['alasan'] ?></small>
-                                        </td>
-                                        <td><?= $detail['jumlah'] ?></td>
-                                        <td>
-                                            <input type="number" class="form-control" name="produk[<?= $index ?>][jumlah_dikembalikan]" min="0" max="<?= $detail['jumlah'] ?>" value="<?= $detail['jumlah'] ?>" required>
-                                        </td>
-                                        <td>
-                                            <input type="number" class="form-control" name="produk[<?= $index ?>][jumlah_refund]" min="0" value="<?= $detail['jumlah'] * $detail['harga_beli_terakhir'] ?>" step="0.01">
-                                            <small class="text-muted">Max: <?= $detail['jumlah'] * $detail['harga_beli_terakhir'] ?></small>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colspan="3" class="text-end">Total Refund:</th>
-                                    <th class="fw-bold" id="totalRefundDisplay">0</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
-                    <div class="d-flex justify-content-between">
-                        <div>
-                            <button type="button" class="btn btn-danger" onclick="processReject()">
-                                <i data-lucide="x"></i>
-                                Reject
-                            </button>
-                        </div>
-                        <div>
-                            <a href="<?= base_url('/transactions/purchase-returns') ?>" class="btn btn-secondary">Cancel</a>
-                            <button type="button" class="btn btn-success" onclick="processApprove()">
-                                <i data-lucide="check"></i>
-                                Approve Return
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+            <tfoot class="bg-muted/30 border-t border-border/50 font-semibold">
+                <tr>
+                    <th colspan="3" class="px-4 py-3 text-right">Total Refund:</th>
+                    <th class="px-4 py-3 text-right text-foreground" id="totalRefundDisplay">Rp 0</th>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 
-<form id="approvalForm" method="post" action="<?= base_url('/transactions/purchase-returns/processApproval/' . $purchaseReturn['id_retur_pembelian']) ?>">
+<!-- Action Buttons -->
+<div class="flex items-center justify-between gap-3">
+    <button type="button" onclick="processReject()" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-destructive text-white font-medium rounded-lg hover:bg-destructive/90 transition">
+        <?= icon('X', 'h-5 w-5') ?>
+        Tolak
+    </button>
+    <div class="flex gap-3">
+        <a href="<?= base_url('transactions/purchase-returns') ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+            Batal
+        </a>
+        <button type="button" onclick="processApprove()" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-success text-white font-medium rounded-lg hover:bg-success/90 transition">
+            <?= icon('Check', 'h-5 w-5') ?>
+            Setujui Retur
+        </button>
+    </div>
+</div>
+
+<!-- Hidden Form for Submission -->
+<form id="approvalForm" method="post" action="<?= base_url('transactions/purchase-returns/processApproval/' . $purchaseReturn['id_retur_pembelian']) ?>" class="hidden">
     <?= csrf_field() ?>
     <input type="hidden" name="action" id="actionValue">
     <input type="hidden" name="tanggal_proses" id="hiddenTanggalProses">
@@ -147,6 +160,7 @@ function processApprove() {
 }
 
 function processReject() {
+    if (!confirm('Apakah Anda yakin ingin menolak retur ini?')) return;
     document.getElementById('actionValue').value = 'reject';
     document.getElementById('hiddenTanggalProses').value = document.getElementById('tanggal_proses').value;
     document.getElementById('hiddenApprovalNotes').value = document.getElementById('approval_notes').value;
@@ -166,11 +180,8 @@ function calculateTotalRefund() {
     }).format(total);
 }
 
-// Initialize total refund display
 document.addEventListener('DOMContentLoaded', () => {
     calculateTotalRefund();
-    
-    // Add event listeners to refund amount inputs
     document.querySelectorAll('input[name*="jumlah_refund"]').forEach(input => {
         input.addEventListener('input', calculateTotalRefund);
     });
