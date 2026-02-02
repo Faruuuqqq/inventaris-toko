@@ -1,178 +1,240 @@
 <?= $this->extend('layout/main') ?>
 
 <?= $this->section('content') ?>
-<div class="page-header">
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col">
-                <h3 class="page-title"><?= $title ?></h3>
+
+<!-- Page Header -->
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
+            <?= icon('TrendingUp', 'h-8 w-8 text-primary') ?>
+            Ringkasan Bulanan
+        </h1>
+        <p class="text-sm text-muted-foreground mt-1">Analisis tren penjualan, pembelian, dan profit per bulan</p>
+    </div>
+    <a href="<?= base_url('/info/reports') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+        <?= icon('ArrowLeft', 'h-5 w-5') ?>
+        Kembali
+    </a>
+</div>
+
+<!-- Filter Form Card -->
+<div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-8">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('Filter', 'h-5 w-5 text-primary') ?>
+            Filter Data
+        </h2>
+    </div>
+    <div class="p-6">
+        <form method="get" class="flex flex-col sm:flex-row gap-4 items-end">
+            <div class="space-y-2 flex-1">
+                <label for="year" class="text-sm font-medium text-foreground">Pilih Tahun</label>
+                <select id="year" name="year" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <?php for ($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
+                        <option value="<?= $y ?>" <?= selected($y, $year) ?>><?= $y ?></option>
+                    <?php endfor; ?>
+                </select>
             </div>
-            <div class="col-auto">
-                <a href="<?= base_url('/info/reports') ?>" class="btn btn-outline-secondary">
-                    <i data-lucide="arrow-left"></i>
-                    Back
+            <div class="flex gap-2">
+                <button type="submit" class="inline-flex items-center justify-center gap-2 h-10 px-4 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
+                    <?= icon('Filter', 'h-5 w-5') ?>
+                    Tampilkan
+                </button>
+                <a href="<?= base_url('/info/reports/monthly-summary?year=' . date('Y')) ?>" class="inline-flex items-center justify-center gap-2 h-10 px-4 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+                    <?= icon('RefreshCw', 'h-5 w-5') ?>
+                    Reset
                 </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Year Summary Cards -->
+<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+    <!-- Total Revenue -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Revenue</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'revenue'))) ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-primary/10">
+                    <?= icon('TrendingUp', 'h-6 w-6 text-primary') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total COGS -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total COGS</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'cogs'))) ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-destructive/10">
+                    <?= icon('TrendingDown', 'h-6 w-6 text-destructive') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Returns -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Returns</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'returns'))) ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-warning/10">
+                    <?= icon('RotateCcw', 'h-6 w-6 text-warning') ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Net Profit -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Net Profit</p>
+                    <p class="text-2xl font-bold text-foreground mt-2">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'net_profit'))) ?>
+                    </p>
+                </div>
+                <div class="p-3 rounded-lg bg-success/10">
+                    <?= icon('CheckCircle', 'h-6 w-6 text-success') ?>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container-fluid">
-    <!-- Filter Form -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="get" class="row g-3">
-                <div class="col-md-4">
-                    <label for="year" class="form-label">Year</label>
-                    <select class="form-select" id="year" name="year">
-                        <?php for ($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
-                            <option value="<?= $y ?>" <?= selected($y, $year) ?>><?= $y ?></option>
-                        <?php endfor; ?>
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">
-                        <i data-lucide="filter"></i>
-                        Apply Filter
-                    </button>
-                    <a href="<?= base_url('/info/reports/monthly-summary?year=' . date('Y')) ?>" class="btn btn-outline-secondary">
-                        <i data-lucide="refresh-cw"></i>
-                        Current Year
-                    </a>
-                </div>
-            </form>
+<!-- Monthly Data Table -->
+<div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-8">
+    <div class="p-6 border-b border-border/50 bg-muted/30">
+        <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+            <?= icon('FileText', 'h-5 w-5 text-primary') ?>
+            Breakdown Bulanan
+        </h2>
+    </div>
+    <div class="p-6 overflow-auto">
+        <table class="w-full text-sm">
+            <thead class="bg-muted/50 border-b border-border/50">
+                <tr>
+                    <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Bulan</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Revenue</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">COGS</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Retur</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Gross Profit</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Biaya</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Net Profit</th>
+                    <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Penjualan</th>
+                    <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Pembelian</th>
+                    <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Margin</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border/50">
+                <?php foreach ($monthlyData as $month): ?>
+                    <tr class="hover:bg-muted/50 transition">
+                        <td class="px-4 py-3 font-medium text-foreground"><?= $month['month_name'] ?></td>
+                        <td class="px-4 py-3 text-right text-foreground"><?= format_currency($month['revenue']) ?></td>
+                        <td class="px-4 py-3 text-right text-foreground"><?= format_currency($month['cogs']) ?></td>
+                        <td class="px-4 py-3 text-right text-foreground"><?= format_currency($month['returns']) ?></td>
+                        <td class="px-4 py-3 text-right font-medium <?= $month['gross_profit'] >= 0 ? 'text-success' : 'text-destructive' ?>">
+                            <?= format_currency($month['gross_profit']) ?>
+                        </td>
+                        <td class="px-4 py-3 text-right text-foreground"><?= format_currency($month['expenses']) ?></td>
+                        <td class="px-4 py-3 text-right font-semibold <?= $month['net_profit'] >= 0 ? 'text-success' : 'text-destructive' ?>">
+                            <?= format_currency($month['net_profit']) ?>
+                        </td>
+                        <td class="px-4 py-3 text-center font-medium text-foreground"><?= $month['sales_count'] ?></td>
+                        <td class="px-4 py-3 text-center font-medium text-foreground"><?= $month['purchase_count'] ?></td>
+                        <td class="px-4 py-3 text-right font-medium <?= $month['revenue'] > 0 && ($month['net_profit']/$month['revenue']*100) >= 0 ? 'text-success' : 'text-destructive' ?>">
+                            <?= $month['revenue'] > 0 ? round($month['net_profit']/$month['revenue']*100, 2) : 0 ?>%
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+            <tfoot class="bg-muted/30 border-t border-border/50 font-semibold">
+                <tr>
+                    <td class="px-4 py-3 text-foreground">Total</td>
+                    <td class="px-4 py-3 text-right text-foreground">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'revenue'))) ?>
+                    </td>
+                    <td class="px-4 py-3 text-right text-foreground">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'cogs'))) ?>
+                    </td>
+                    <td class="px-4 py-3 text-right text-foreground">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'returns'))) ?>
+                    </td>
+                    <td class="px-4 py-3 text-right text-foreground">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'gross_profit'))) ?>
+                    </td>
+                    <td class="px-4 py-3 text-right text-foreground">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'expenses'))) ?>
+                    </td>
+                    <td class="px-4 py-3 text-right text-foreground">
+                        <?= format_currency(array_sum(array_column($monthlyData, 'net_profit'))) ?>
+                    </td>
+                    <td class="px-4 py-3 text-center text-foreground">
+                        <?= array_sum(array_column($monthlyData, 'sales_count')) ?>
+                    </td>
+                    <td class="px-4 py-3 text-center text-foreground">
+                        <?= array_sum(array_column($monthlyData, 'purchase_count')) ?>
+                    </td>
+                    <td class="px-4 py-3 text-right text-foreground">
+                        <?php
+                        $totalRevenue = array_sum(array_column($monthlyData, 'revenue'));
+                        $totalNetProfit = array_sum(array_column($monthlyData, 'net_profit'));
+                        echo $totalRevenue > 0 ? round($totalNetProfit/$totalRevenue*100, 2) : 0;
+                        ?>%
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="grid gap-6 lg:grid-cols-2">
+    <!-- Revenue & Profit Trend Chart -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border/50 bg-muted/30">
+            <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+                <?= icon('LineChart', 'h-5 w-5 text-primary') ?>
+                Tren Revenue & Profit
+            </h2>
+        </div>
+        <div class="p-6">
+            <canvas id="revenueChart" height="80"></canvas>
         </div>
     </div>
-    
-    <!-- Year Summary Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-primary">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">Total Revenue</h5>
-                    <h3><?= format_currency(array_sum(array_column($monthlyData, 'revenue'))) ?></h3>
-                </div>
-            </div>
+
+    <!-- Transaction Count Chart -->
+    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border/50 bg-muted/30">
+            <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
+                <?= icon('BarChart3', 'h-5 w-5 text-primary') ?>
+                Jumlah Transaksi
+            </h2>
         </div>
-        <div class="col-md-3">
-            <div class="card border-danger">
-                <div class="card-body">
-                    <h5 class="card-title text-danger">Total COGS</h5>
-                    <h3><?= format_currency(array_sum(array_column($monthlyData, 'cogs'))) ?></h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-warning">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">Total Returns</h5>
-                    <h3><?= format_currency(array_sum(array_column($monthlyData, 'returns'))) ?></h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-success">
-                <div class="card-body">
-                    <h5 class="card-title text-success">Total Net Profit</h5>
-                    <h3><?= format_currency(array_sum(array_column($monthlyData, 'net_profit'))) ?></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Monthly Data Table -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title">Monthly Breakdown</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th class="text-right">Revenue</th>
-                            <th class="text-right">COGS</th>
-                            <th class="text-right">Returns</th>
-                            <th class="text-right">Gross Profit</th>
-                            <th class="text-right">Expenses</th>
-                            <th class="text-right">Net Profit</th>
-                            <th class="text-center">Sales</th>
-                            <th class="text-center">Purchases</th>
-                            <th class="text-right">Profit Margin</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($monthlyData as $month): ?>
-                            <tr>
-                                <td><?= $month['month_name'] ?></td>
-                                <td class="text-right"><?= format_currency($month['revenue']) ?></td>
-                                <td class="text-right"><?= format_currency($month['cogs']) ?></td>
-                                <td class="text-right"><?= format_currency($month['returns']) ?></td>
-                                <td class="text-right <?= $month['gross_profit'] >= 0 ? 'text-success' : 'text-danger' ?>">
-                                    <?= format_currency($month['gross_profit']) ?>
-                                </td>
-                                <td class="text-right"><?= format_currency($month['expenses']) ?></td>
-                                <td class="text-right <?= $month['net_profit'] >= 0 ? 'text-success' : 'text-danger' ?>">
-                                    <?= format_currency($month['net_profit']) ?>
-                                </td>
-                                <td class="text-center"><?= $month['sales_count'] ?></td>
-                                <td class="text-center"><?= $month['purchase_count'] ?></td>
-                                <td class="text-right <?= $month['revenue'] > 0 && ($month['net_profit']/$month['revenue']*100) >= 0 ? 'text-success' : 'text-danger' ?>">
-                                    <?= $month['revenue'] > 0 ? round($month['net_profit']/$month['revenue']*100, 2) : 0 ?>%
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                    <tfoot>
-                        <tr class="fw-bold">
-                            <td>Total</td>
-                            <td class="text-right"><?= format_currency(array_sum(array_column($monthlyData, 'revenue'))) ?></td>
-                            <td class="text-right"><?= format_currency(array_sum(array_column($monthlyData, 'cogs'))) ?></td>
-                            <td class="text-right"><?= format_currency(array_sum(array_column($monthlyData, 'returns'))) ?></td>
-                            <td class="text-right"><?= format_currency(array_sum(array_column($monthlyData, 'gross_profit'))) ?></td>
-                            <td class="text-right"><?= format_currency(array_sum(array_column($monthlyData, 'expenses'))) ?></td>
-                            <td class="text-right"><?= format_currency(array_sum(array_column($monthlyData, 'net_profit'))) ?></td>
-                            <td class="text-center"><?= array_sum(array_column($monthlyData, 'sales_count')) ?></td>
-                            <td class="text-center"><?= array_sum(array_column($monthlyData, 'purchase_count')) ?></td>
-                            <td class="text-right">
-                                <?php
-                                $totalRevenue = array_sum(array_column($monthlyData, 'revenue'));
-                                $totalNetProfit = array_sum(array_column($monthlyData, 'net_profit'));
-                                echo $totalRevenue > 0 ? round($totalNetProfit/$totalRevenue*100, 2) : 0;
-                                ?>%
-                            </td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Charts -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Revenue & Profit Trend</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="revenueChart" height="200"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Transaction Count</h5>
-                </div>
-                <div class="card-body">
-                    <canvas id="transactionChart" height="200"></canvas>
-                </div>
-            </div>
+        <div class="p-6">
+            <canvas id="transactionChart" height="80"></canvas>
         </div>
     </div>
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
