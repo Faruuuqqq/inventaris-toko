@@ -49,12 +49,11 @@ $dataJson = !empty($data) ? htmlspecialchars(json_encode($data), ENT_QUOTES, 'UT
     <?php endif; ?>
 
     <?php if ($showDelete && $deleteUrl): ?>
-    <form action="<?= $deleteUrl ?>" method="post" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-        <?= csrf_field() ?>
-        <input type="hidden" name="_method" value="DELETE">
-        <button type="submit" class="btn btn-ghost btn-icon btn-sm text-destructive" title="Hapus">
-            <?= icon('Trash2', 'h-4 w-4') ?>
-        </button>
-    </form>
+    <button type="button" 
+            class="btn btn-ghost btn-icon btn-sm text-destructive" 
+            title="Hapus"
+            onclick="ModalManager.submitDelete('<?= $deleteUrl ?>', '<?= addslashes($data['name'] ?? $data['item_name'] ?? 'item ini') ?>', () => { location.reload(); })">
+        <?= icon('Trash2', 'h-4 w-4') ?>
+    </button>
     <?php endif; ?>
 </div>

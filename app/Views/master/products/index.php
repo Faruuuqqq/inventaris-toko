@@ -431,9 +431,15 @@ function productManager() {
         },
 
         deleteProduct(productId) {
-            if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
-                window.location.href = `<?= base_url('master/products/delete') ?>/${productId}`;
-            }
+            const product = this.products.find(p => p.id === productId);
+            const productName = product ? product.name : 'produk ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/products/delete') ?>/${productId}`,
+                productName,
+                () => {
+                    this.products = this.products.filter(p => p.id !== productId);
+                }
+            );
         },
 
         formatRupiah(value) {

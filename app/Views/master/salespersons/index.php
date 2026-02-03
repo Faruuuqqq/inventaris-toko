@@ -328,9 +328,15 @@ function salespersonManager() {
         },
 
         deleteSalesperson(salespersonId) {
-            if (confirm('Apakah Anda yakin ingin menghapus salesperson ini?')) {
-                window.location.href = `<?= base_url('master/salespersons/delete') ?>/${salespersonId}`;
-            }
+            const salesperson = this.salespersons.find(s => s.id === salespersonId);
+            const salespersonName = salesperson ? salesperson.name : 'salesperson ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/salespersons/delete') ?>/${salespersonId}`,
+                salespersonName,
+                () => {
+                    this.salespersons = this.salespersons.filter(s => s.id !== salespersonId);
+                }
+            );
         }
     }
 }

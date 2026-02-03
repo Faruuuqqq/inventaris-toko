@@ -257,9 +257,15 @@ function purchaseReturnManager() {
         },
 
         deleteReturn(returId) {
-            if (confirm('Apakah Anda yakin ingin menghapus retur ini?')) {
-                window.location.href = `<?= base_url('transactions/purchase-returns/delete') ?>/${returId}`;
-            }
+            const retur = this.returns.find(r => r.id_retur_pembelian === returId);
+            const returNumber = retur ? retur.nomor_retur : 'retur ini';
+            ModalManager.submitDelete(
+                `<?= base_url('transactions/purchase-returns/delete') ?>/${returId}`,
+                returNumber,
+                () => {
+                    this.returns = this.returns.filter(r => r.id_retur_pembelian !== returId);
+                }
+            );
         },
 
         formatNumber(value) {

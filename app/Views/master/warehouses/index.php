@@ -318,9 +318,15 @@ function warehouseManager() {
         },
 
         deleteWarehouse(warehouseId) {
-            if (confirm('Apakah Anda yakin ingin menghapus gudang ini?')) {
-                window.location.href = `<?= base_url('master/warehouses/delete') ?>/${warehouseId}`;
-            }
+            const warehouse = this.warehouses.find(w => w.id === warehouseId);
+            const warehouseName = warehouse ? warehouse.name : 'gudang ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/warehouses/delete') ?>/${warehouseId}`,
+                warehouseName,
+                () => {
+                    this.warehouses = this.warehouses.filter(w => w.id !== warehouseId);
+                }
+            );
         }
     }
 }

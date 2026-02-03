@@ -160,11 +160,18 @@ function processApprove() {
 }
 
 function processReject() {
-    if (!confirm('Apakah Anda yakin ingin menolak retur ini?')) return;
-    document.getElementById('actionValue').value = 'reject';
-    document.getElementById('hiddenTanggalProses').value = document.getElementById('tanggal_proses').value;
-    document.getElementById('hiddenApprovalNotes').value = document.getElementById('approval_notes').value;
-    document.getElementById('approvalForm').submit();
+    const returNumber = document.querySelector('[x-text="retur.nomor_retur"]')?.textContent || 'retur ini';
+    ModalManager.warning(
+        'Tolak Retur Pembelian',
+        `Apakah Anda yakin ingin menolak retur ${returNumber}? Tindakan ini akan menandai retur sebagai ditolak.`,
+        () => {
+            document.getElementById('actionValue').value = 'reject';
+            document.getElementById('hiddenTanggalProses').value = document.getElementById('tanggal_proses').value;
+            document.getElementById('hiddenApprovalNotes').value = document.getElementById('approval_notes').value;
+            document.getElementById('approvalForm').submit();
+        },
+        'Tolak Retur'
+    );
 }
 
 function calculateTotalRefund() {

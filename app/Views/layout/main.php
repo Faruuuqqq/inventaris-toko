@@ -342,5 +342,14 @@
         </main>
     </div>
 
+    <!-- Modal Management JavaScript -->
+    <script src="<?= base_url('assets/js/modal.js') ?>"></script>
+
+    <!-- Global Modal Instances -->
+    <?= view('partials/delete-confirm-modal') ?>
+    <?= view('partials/success-modal') ?>
+    <?= view('partials/error-modal') ?>
+    <?= view('partials/warning-modal') ?>
+
 </body>
 </html>

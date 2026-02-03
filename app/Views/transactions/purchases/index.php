@@ -297,9 +297,15 @@ function purchaseManager() {
         },
 
         deletePO(poId) {
-            if (confirm('Apakah Anda yakin ingin menghapus PO ini?')) {
-                window.location.href = `<?= base_url('transactions/purchases/delete') ?>/${poId}`;
-            }
+            const po = this.purchaseOrders.find(p => p.id === poId);
+            const poNumber = po ? po.po_number : 'PO ini';
+            ModalManager.submitDelete(
+                `<?= base_url('transactions/purchases/delete') ?>/${poId}`,
+                poNumber,
+                () => {
+                    this.purchaseOrders = this.purchaseOrders.filter(p => p.id !== poId);
+                }
+            );
         },
 
         formatNumber(value) {

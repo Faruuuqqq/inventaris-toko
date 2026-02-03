@@ -459,9 +459,15 @@ function userManager() {
         },
 
         deleteUser(userId) {
-            if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
-                window.location.href = `<?= base_url('master/users/delete') ?>/${userId}`;
-            }
+            const user = this.users.find(u => u.id === userId);
+            const userName = user ? user.fullname : 'pengguna ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/users/delete') ?>/${userId}`,
+                userName,
+                () => {
+                    this.users = this.users.filter(u => u.id !== userId);
+                }
+            );
         },
 
         submitForm(e) {

@@ -321,9 +321,15 @@ function supplierManager() {
         },
 
         deleteSupplier(supplierId) {
-            if (confirm('Apakah Anda yakin ingin menghapus supplier ini?')) {
-                window.location.href = `<?= base_url('master/suppliers/delete') ?>/${supplierId}`;
-            }
+            const supplier = this.suppliers.find(s => s.id === supplierId);
+            const supplierName = supplier ? supplier.name : 'supplier ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/suppliers/delete') ?>/${supplierId}`,
+                supplierName,
+                () => {
+                    this.suppliers = this.suppliers.filter(s => s.id !== supplierId);
+                }
+            );
         }
     }
 }

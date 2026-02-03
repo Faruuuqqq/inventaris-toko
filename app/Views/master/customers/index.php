@@ -370,9 +370,15 @@ function customerManager() {
         },
 
         deleteCustomer(customerId) {
-            if (confirm('Apakah Anda yakin ingin menghapus customer ini?')) {
-                window.location.href = `<?= base_url('master/customers/delete') ?>/${customerId}`;
-            }
+            const customer = this.customers.find(c => c.id === customerId);
+            const customerName = customer ? customer.name : 'customer ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/customers/delete') ?>/${customerId}`,
+                customerName,
+                () => {
+                    this.customers = this.customers.filter(c => c.id !== customerId);
+                }
+            );
         },
 
         formatRupiah(value) {
