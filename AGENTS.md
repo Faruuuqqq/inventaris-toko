@@ -1,5 +1,95 @@
 # AGENTS.md - AI Agent Guidelines for Inventaris Toko
 
+# AGENTS.md - Protocol for Store Inventory System
+
+> **CORE PHILOSOPHY:** "Pragmatic Monolith". Keep it Simple. Keep it Snappy.
+> This is a Local Area Network (LAN) application. Do NOT suggest Microservices, Docker containers, or complex Event Sourcing unless explicitly asked.
+
+## 1. TECHNICAL STACK (STRICT)
+* **Framework**: CodeIgniter 4.x (PHP 8.1+)
+* **Database**: MySQL / MariaDB (5.7+)
+* **Frontend**: Tailwind CSS (Utility-first) + Alpine.js (Lightweight interactivity)
+* **Environment**: Laragon (Windows/Apache) compatibility is required.
+* **Testing**: PHPUnit 10.x
+
+---
+
+## 2. CRITICAL BUSINESS RULES (DO NOT VIOLATE) 🚨
+
+### 💰 Financial Integrity (Zero Tolerance)
+1.  **NO FLOATS**: Never use `FLOAT` or `DOUBLE` for money or stock quantities.
+    * **Database**: Use `DECIMAL(15, 2)` or `INT`.
+    * **PHP**: Handle calculations carefully. Format currency only at the View layer.
+2.  **Transactional Writes**: ALL write operations involving Money, Stock, or Journal Entries MUST be wrapped in:
+    ```php
+    $db->transStart();
+    // ... logic ...
+    $db->transComplete();
+    ```
+
+### 📦 Inventory Logic
+1.  **No Negative Stock**: Always validate `$currentStock >= $qty` *before* deducting.
+2.  **Atomic Updates**: Prevent race conditions in LAN environments.
+3.  **Validation**: Validate input in the **Model** or **Service**, not just the Controller.
+
+---
+
+## 3. CODING STANDARDS & BEST PRACTICES
+
+### Backend (The Logic)
+* **Slim Controllers**: Controllers only handle Input -> Service/Model -> Response.
+* **Fat Services**: Complex logic (e.g., `CheckoutService`, `StockAdjustmentService`) belongs in `app/Services/`.
+* **Naming Conventions**:
+    * **Tables**: `snake_case` (e.g., `transaction_details`)
+    * **Classes/Files**: `PascalCase` (e.g., `ProductController`)
+    * **Methods/Variables**: `camelCase` (e.g., `calculateTotal`)
+    * **Routes/URLs**: `kebab-case` (e.g., `/master-data/products`)
+
+### Frontend (The View & UX)
+* **Component Reuse**: Use existing components in `app/Views/components/` (Cards, Badges, Buttons). Do not write raw HTML if a component exists.
+* **Alpine.js usage**: Use `x-data` for UI toggles (modals, dropdowns). Avoid inline `onclick="..."`.
+* **Cashier UX (POS)**:
+    * **Keyboard First**: Inputs must have `autofocus`. Forms should submit on `Enter`.
+    * **Feedback**: Always show Toast/Alert on success or failure. Never fail silently.
+
+---
+
+## 4. ROUTING & ARCHITECTURE
+1.  **Explicit Routing**: Do NOT use Auto-Routing. Define every route in `app/Config/Routes.php`.
+2.  **Route Integrity**: Before creating a `<a href="...">` in a View, VERIFY the route exists.
+3.  **Paths**: Use `base_url()` for all internal links and assets. Use `DIRECTORY_SEPARATOR` for file paths (Windows compatibility).
+
+---
+
+## 5. DEVELOPMENT COMMANDS
+
+### Setup & Migration
+```bash
+# Install Dependencies
+composer install
+
+# Database Migration (ALWAYS use this, never manual SQL)
+php spark migrate
+
+# Create New Migration
+php spark make:migration AddColumnToTable
+
+# Run Local Server (if not using Laragon)
+php spark serve
+
+6. GIT COMMIT CONVENTION
+feat: New features (e.g., "feat: add barcode scanner support")
+
+fix: Bug fixes (e.g., "fix: decimal precision in total calculation")
+
+refactor: Code cleanup without logic change
+
+style: UI/CSS adjustments
+
+docs: Documentation updates
+
+Generated for Store Inventory Project - Keep it working, keep it clean.
+
 This document provides guidelines for AI agents (Claude, Cursor, Copilot) operating on this CodeIgniter 4 inventory management system.
 
 ## Quick Links
@@ -61,12 +151,6 @@ php spark db:seed DatabaseSeeder
 ```bash
 php spark serve --host localhost --port 8080
 ```
-
-### Code Quality
-
-**There are no linters configured** - follow the style guidelines below manually.
-
----
 
 ## 2. CODE STYLE GUIDELINES
 

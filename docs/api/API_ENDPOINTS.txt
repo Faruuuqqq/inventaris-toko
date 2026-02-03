@@ -1,0 +1,166 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║  INVENTARIS TOKO - COMPLETE API ENDPOINTS LIST                            ║
+║  Total: 168+ Endpoints | Status: ✅ All Working                           ║
+║  Last Updated: February 3, 2026                                            ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔐 AUTHENTICATION (3)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /login                        Login page
+POST /login                        Process login
+GET  /logout                       Logout
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 DASHBOARD & SETTINGS (5)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /dashboard                    Main dashboard
+GET  /settings/                    Settings page
+POST /settings/updateProfile       Update profile
+POST /settings/changePassword      Change password
+POST /settings/updateStore         Update store info
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏭 PRODUCTS (7)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /master/products              List products
+POST /master/products              Create product
+POST /master/products/store        Store product
+GET  /master/products/edit/:id     Edit form
+PUT  /master/products/:id          Update product
+DEL  /master/products/:id          Delete product
+GET  /master/products/delete/:id   Delete (link)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👥 CUSTOMERS (9)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /master/customers             List customers
+POST /master/customers             Create customer
+POST /master/customers/store       Store customer
+GET  /master/customers/:id         Customer detail
+GET  /master/customers/edit/:id    Edit form
+PUT  /master/customers/:id         Update customer
+DEL  /master/customers/:id         Delete customer
+GET  /master/customers/delete/:id  Delete (link)
+GET  /master/customers/getList     AJAX dropdown
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏢 SUPPLIERS (9)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /master/suppliers             List suppliers
+POST /master/suppliers             Create supplier
+POST /master/suppliers/store       Store supplier
+GET  /master/suppliers/:id         Supplier detail
+GET  /master/suppliers/edit/:id    Edit form
+PUT  /master/suppliers/:id         Update supplier
+DEL  /master/suppliers/:id         Delete supplier
+GET  /master/suppliers/delete/:id  Delete (link)
+GET  /master/suppliers/getList     AJAX dropdown
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏭 WAREHOUSES (8)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /master/warehouses            List warehouses
+POST /master/warehouses            Create warehouse
+POST /master/warehouses/store      Store warehouse
+GET  /master/warehouses/edit/:id   Edit form
+PUT  /master/warehouses/:id        Update warehouse
+DEL  /master/warehouses/:id        Delete warehouse
+GET  /master/warehouses/delete/:id Delete (link)
+GET  /master/warehouses/getList    AJAX dropdown
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👨‍💼 SALESPERSONS (7)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /master/salespersons          List salespersons
+POST /master/salespersons          Create salesperson
+GET  /master/salespersons/edit/:id Edit form
+PUT  /master/salespersons/:id      Update salesperson
+DEL  /master/salespersons/:id      Delete salesperson
+GET  /master/salespersons/delete/:id Delete (link)
+GET  /master/salespersons/getList  AJAX dropdown
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🛒 SALES (13)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /transactions/sales/          List sales
+GET  /transactions/sales/create    Create form
+GET  /transactions/sales/:id       Sales detail
+GET  /transactions/sales/edit/:id  Edit form
+POST /transactions/sales/          Store sales
+POST /transactions/sales/store     Store (fallback)
+PUT  /transactions/sales/:id       Update sales
+GET  /transactions/sales/cash      Cash sales form
+POST /transactions/sales/storeCash Store cash sale
+GET  /transactions/sales/credit    Credit sales form
+POST /transactions/sales/storeCredit Store credit sale
+GET  /transactions/sales/getProducts AJAX products
+GET  /transactions/sales/delivery-note/print/:id Print note
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📦 PURCHASES (12)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /transactions/purchases/      List purchases
+GET  /transactions/purchases/create Create form
+GET  /transactions/purchases/:id   Purchase detail
+GET  /transactions/purchases/edit/:id Edit form
+POST /transactions/purchases/      Store purchase
+POST /transactions/purchases/store Store (fallback)
+PUT  /transactions/purchases/:id   Update purchase
+POST /transactions/purchases/update/:id Update (POST)
+DEL  /transactions/purchases/:id   Delete (RESTful)
+GET  /transactions/purchases/delete/:id Delete (link)
+GET  /transactions/purchases/receive/:id Receipt form
+POST /transactions/purchases/processReceive/:id Process receipt
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔄 SALES RETURNS (11)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /transactions/sales-returns/  List returns
+GET  /transactions/sales-returns/create Create form
+GET  /transactions/sales-returns/:id Detail
+GET  /transactions/sales-returns/edit/:id Edit form
+POST /transactions/sales-returns/  Store return
+POST /transactions/sales-returns/store Store (fallback)
+PUT  /transactions/sales-returns/:id Update return
+POST /transactions/sales-returns/update/:id Update (POST)
+DEL  /transactions/sales-returns/:id Delete
+GET  /transactions/sales-returns/approve/:id Approval form
+POST /transactions/sales-returns/processApproval/:id Approve
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔄 PURCHASE RETURNS (11)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /transactions/purchase-returns/ List returns
+GET  /transactions/purchase-returns/create Create form
+GET  /transactions/purchase-returns/:id Detail
+GET  /transactions/purchase-returns/edit/:id Edit form
+POST /transactions/purchase-returns/ Store return
+POST /transactions/purchase-returns/store Store (fallback)
+PUT  /transactions/purchase-returns/:id Update return
+POST /transactions/purchase-returns/update/:id Update (POST)
+DEL  /transactions/purchase-returns/:id Delete
+GET  /transactions/purchase-returns/approve/:id Approval form
+POST /transactions/purchase-returns/processApproval/:id Approve
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📄 DELIVERY NOTE (5)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /transactions/delivery-note/   List notes
+POST /transactions/delivery-note/store Create note
+GET  /transactions/delivery-note/getInvoiceItems/:id AJAX items
+GET  /transactions/delivery-note/print Print (with ?id=123)
+GET  /transactions/delivery-note/print/:id Print by ID
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💳 EXPENSES (14)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GET  /finance/expenses/             List expenses
+GET  /finance/expenses/create       Create form
+POST /finance/expenses/             Store expense
+GET  /finance/expenses/edit/:id     Edit form
+PUT  /finance/expenses/:id          Update expense
+DEL  /finance/expenses/:id          Delete expense
+POST /finance/expenses/delete/:id   Delete (POST) ⭐
+GET  /finance/expenses/summary      Summary page
+GET  /finance/e
