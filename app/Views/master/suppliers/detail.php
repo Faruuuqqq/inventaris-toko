@@ -17,7 +17,7 @@
             Kembali
         </a>
         <?php if (is_admin()): ?>
-        <a href="<?= base_url('master/suppliers/' . $supplier['id'] . '/edit') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
+        <a href="<?= base_url('master/suppliers/edit/' . $supplier['id']) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
             <?= icon('Edit', 'h-5 w-5') ?>
             Edit
         </a>
