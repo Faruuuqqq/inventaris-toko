@@ -284,6 +284,7 @@ class Reports extends BaseController
             ->where('DATE(sales.created_at)', $date)
             ->where('sales.payment_status', 'PAID')
             ->orderBy('sales.created_at', 'DESC')
+            ->asArray()
             ->findAll();
     }
     
@@ -292,9 +293,10 @@ class Reports extends BaseController
         return $this->purchaseOrderModel
             ->select('purchase_orders.*, suppliers.name as supplier_name')
             ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id')
-            ->where('purchase_orders.date', $date)
+            ->where('DATE(purchase_orders.created_at)', $date)
             ->where('purchase_orders.status', 'RECEIVED')
-            ->orderBy('purchase_orders.date', 'DESC')
+            ->orderBy('purchase_orders.created_at', 'DESC')
+            ->asArray()
             ->findAll();
     }
     
@@ -303,15 +305,17 @@ class Reports extends BaseController
         $salesReturns = $this->salesReturnModel
             ->select('sales_returns.*, customers.name as customer_name')
             ->join('customers', 'customers.id = sales_returns.customer_id')
-            ->where('sales_returns.date', $date)
+            ->where('DATE(sales_returns.created_at)', $date)
             ->where('sales_returns.status', 'APPROVED')
+            ->asArray()
             ->findAll();
             
         $purchaseReturns = $this->purchaseReturnModel
             ->select('purchase_returns.*, suppliers.name as supplier_name')
             ->join('suppliers', 'suppliers.id = purchase_returns.supplier_id')
-            ->where('purchase_returns.date', $date)
+            ->where('DATE(purchase_returns.created_at)', $date)
             ->where('purchase_returns.status', 'APPROVED')
+            ->asArray()
             ->findAll();
             
         return [

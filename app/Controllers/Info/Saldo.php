@@ -34,21 +34,24 @@ class Saldo extends BaseController
         foreach ($customers as $customer) {
             // Get latest unpaid sale for aging calculation
             $latestSale = $this->saleModel
-                ->where('customer_id', $customer['id'])
+                ->where('customer_id', $customer->id)
                 ->where('payment_status !=', 'PAID')
                 ->orderBy('created_at', 'DESC')
                 ->first();
             
             if ($latestSale) {
-                $daysOverdue = $this->calculateDaysOverdue($latestSale['created_at'], $latestSale['due_date']);
+                $daysOverdue = $this->calculateDaysOverdue($latestSale->created_at, $latestSale->due_date);
                 $agingCategory = $this->getAgingCategory($daysOverdue);
                 
                 $agingData[$agingCategory]['customers'][] = $customer;
-                $agingData[$agingCategory]['total'] += $customer['receivable_balance'];
+                $agingData[$agingCategory]['total'] += $customer->receivable_balance;
             }
         }
         
-        $totalReceivable = array_sum(array_column($customers, 'receivable_balance'));
+        $totalReceivable = 0;
+        foreach ($customers as $customer) {
+            $totalReceivable += $customer->receivable_balance;
+        }
         
         $data = [
             'title' => 'Saldo Piutang',
@@ -70,7 +73,10 @@ class Saldo extends BaseController
             ->where('debt_balance >', 0)
             ->findAll();
         
-        $totalPayable = array_sum(array_column($suppliers, 'debt_balance'));
+        $totalPayable = 0;
+        foreach ($suppliers as $supplier) {
+            $totalPayable += $supplier->debt_balance;
+        }
         
         $data = [
             'title' => 'Saldo Utang',

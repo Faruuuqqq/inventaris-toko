@@ -37,7 +37,7 @@
             <select id="categoryFilter" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                 <option value="">Semua Kategori</option>
                 <?php foreach ($categories ?? [] as $category): ?>
-                <option value="<?= esc($category['id']) ?>"><?= esc($category['name']) ?></option>
+                <option value="<?= esc($category->id) ?>"><?= esc($category->name) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -46,7 +46,7 @@
             <select id="warehouseFilter" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                 <option value="">Semua Gudang</option>
                 <?php foreach ($warehouses ?? [] as $warehouse): ?>
-                <option value="<?= esc($warehouse['id']) ?>"><?= esc($warehouse['name']) ?></option>
+                <option value="<?= esc($warehouse->id) ?>"><?= esc($warehouse->name) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
