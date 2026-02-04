@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SalespersonModel;
+use App\Helpers\PaginationHelper;
 
 class SalespersonDataService
 {
@@ -54,6 +55,26 @@ class SalespersonDataService
 
         return [
             'sales' => $sales,
+        ];
+    }
+
+    /**
+     * Get paginated data for INDEX page
+     */
+    public function getPaginatedData(?int $page = null, ?int $perPage = null): array
+    {
+        // Get safe pagination params
+        $params = PaginationHelper::getSafeParams($page, $perPage);
+        $page = $params['page'];
+        $perPage = $params['perPage'];
+
+        // Get paginated results
+        $salespersons = $this->salespersonModel->asArray()->paginate($perPage, 'default', $page);
+        $pager = $this->salespersonModel->pager;
+
+        return [
+            'salespersons' => $salespersons,
+            'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
 }

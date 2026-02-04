@@ -50,14 +50,17 @@ class Customers extends BaseCRUDController
     }
 
     /**
-     * Override index to use CustomerDataService
+     * Override index to use CustomerDataService with pagination
      */
     public function index()
     {
         try {
+            $page = (int)($this->request->getGet('page') ?? 1);
+            $perPage = (int)($this->request->getGet('per_page') ?? 20);
+
             $data = array_merge(
                 ['title' => 'Daftar Customer'],
-                $this->dataService->getIndexData()
+                $this->dataService->getPaginatedData($page, $perPage)
             );
 
             return view($this->viewPath . '/index', $data);

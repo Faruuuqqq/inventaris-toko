@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\UserModel;
+use App\Helpers\PaginationHelper;
 
 class UserDataService
 {
@@ -55,6 +56,30 @@ class UserDataService
 
         return [
             'pengguna' => $pengguna,
+        ];
+    }
+
+    /**
+     * Get paginated data for INDEX page
+     */
+    public function getPaginatedData(?int $page = null, ?int $perPage = null): array
+    {
+        // Get safe pagination params
+        $params = PaginationHelper::getSafeParams($page, $perPage);
+        $page = $params['page'];
+        $perPage = $params['perPage'];
+
+        // Get paginated results (ordered by created_at DESC)
+        $users = $this->userModel
+            ->asArray()
+            ->orderBy('created_at', 'DESC')
+            ->paginate($perPage, 'default', $page);
+        $pager = $this->userModel->pager;
+
+        return [
+            'users' => $users,
+            'subtitle' => 'Kelola pengguna sistem (Owner only)',
+            'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
 }

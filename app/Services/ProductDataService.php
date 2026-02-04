@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\ProductModel;
 use App\Models\CategoryModel;
 use App\Models\ProductStockModel;
+use App\Helpers\PaginationHelper;
 
 class ProductDataService
 {
@@ -106,6 +107,78 @@ class ProductDataService
         return [
             'product' => $product,
             'totalStock' => (int)($result->quantity ?? 0),
+        ];
+    }
+
+    /**
+     * Get paginated data for INDEX page
+     * Returns: [
+     *   'products' => [...], (paginated)
+     *   'categories' => [...],
+     *   'totalProducts' => int,
+     *   'totalCategories' => int,
+     *   'totalStock' => int (all warehouses),
+     *   'totalValue' => decimal (all warehouses),
+     *   'lowStockCount' => int,
+     *   'pagination' => [
+     *     'currentPage' => int,
+     *     'totalPages' => int,
+     *     'perPage' => int,
+     *     'total' => int,
+     *     'from' => int,
+     *     'to' => int,
+     *     ...
+     *   ]
+     * ]
+     */
+    public function getPaginatedData(?int $page = null, ?int $perPage = null): array
+    {
+        // Get safe pagination params
+        $params = PaginationHelper::getSafeParams($page, $perPage);
+        $page = $params['page'];
+        $perPage = $params['perPage'];
+
+        // Build query with joins for category and stock
+        $query = $this->productModel
+            ->select('products.*, categories.name as category_name, COALESCE(SUM(ps.quantity), 0) as stock')
+            ->join('categories', 'categories.id = products.category_id', 'left')
+            ->join('product_stocks ps', 'ps.product_id = products.id', 'left')
+            ->groupBy('products.id');
+
+        // Get paginated results
+        $products = $query->paginate($perPage, 'default', $page);
+        $pager = $this->productModel->pager;
+
+        // Get categories for create/edit forms (not paginated)
+        $categories = $this->categoryModel->asArray()->findAll();
+
+        // Calculate statistics from ALL products (not just paginated)
+        $allProducts = $this->productModel
+            ->select('products.*, categories.name as category_name, COALESCE(SUM(ps.quantity), 0) as stock')
+            ->join('categories', 'categories.id = products.category_id', 'left')
+            ->join('product_stocks ps', 'ps.product_id = products.id', 'left')
+            ->groupBy('products.id')
+            ->findAll();
+
+        $totalStock = 0;
+        $totalValue = 0;
+
+        foreach ($allProducts as $product) {
+            $stock = (int)($product->stock ?? 0);
+            $totalStock += $stock;
+            $buyPrice = (float)($product->price_buy ?? 0);
+            $totalValue += ($stock * $buyPrice);
+        }
+
+        return [
+            'products' => $products,
+            'categories' => $categories,
+            'totalProducts' => count($allProducts),
+            'totalCategories' => count($categories),
+            'totalStock' => $totalStock,
+            'totalValue' => $totalValue,
+            'lowStockCount' => 0, // TODO: Implement low stock count
+            'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
 }

@@ -241,13 +241,8 @@
             </table>
         </div>
 
-        <!-- Table Footer -->
-        <div class="border-t border-border/50 bg-muted/20 px-6 py-3 flex items-center justify-between text-xs text-muted-foreground">
-            <span x-text="`Menampilkan ${filteredProducts.length} dari ${products.length} produk`"></span>
-            <a href="<?= base_url('master/products') ?>" class="text-primary hover:text-primary-light font-semibold transition">
-                Refresh
-            </a>
-        </div>
+        <!-- Pagination -->
+        <?= view('components/pagination', ['pagination' => $pagination ?? []]) ?>
     </div>
 
     <!-- Modal (Dialog) - Enhanced -->

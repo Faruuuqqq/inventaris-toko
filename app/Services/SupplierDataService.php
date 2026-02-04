@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SupplierModel;
+use App\Helpers\PaginationHelper;
 use CodeIgniter\Database\BaseConnection;
 
 class SupplierDataService
@@ -88,6 +89,26 @@ class SupplierDataService
             'totalDebt' => (int)$totalDebt,
             'pendingCount' => (int)$pendingCount,
             'stats' => $stats,
+        ];
+    }
+
+    /**
+     * Get paginated data for INDEX page
+     */
+    public function getPaginatedData(?int $page = null, ?int $perPage = null): array
+    {
+        // Get safe pagination params
+        $params = PaginationHelper::getSafeParams($page, $perPage);
+        $page = $params['page'];
+        $perPage = $params['perPage'];
+
+        // Get paginated results
+        $suppliers = $this->supplierModel->asArray()->paginate($perPage, 'default', $page);
+        $pager = $this->supplierModel->pager;
+
+        return [
+            'suppliers' => $suppliers,
+            'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
 }

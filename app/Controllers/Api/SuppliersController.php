@@ -22,7 +22,10 @@ class SuppliersController extends ResourceController
     
     public function index()
     {
-        $data = $this->dataService->getIndexData();
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $perPage = (int)($this->request->getGet('per_page') ?? 20);
+
+        $data = $this->dataService->getPaginatedData($page, $perPage);
         return $this->respond($data);
     }
     

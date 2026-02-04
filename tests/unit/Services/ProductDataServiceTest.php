@@ -54,4 +54,74 @@ class ProductDataServiceTest extends CIUnitTestCase
     {
         $this->assertTrue(method_exists($this->service, 'getDetailData'));
     }
+
+    /**
+     * Test that getPaginatedData method exists and is callable
+     */
+    public function testGetPaginatedDataMethodExists(): void
+    {
+        $this->assertTrue(method_exists($this->service, 'getPaginatedData'));
+    }
+
+    /**
+     * Test getPaginatedData returns array with pagination key
+     */
+    public function testGetPaginatedDataReturnsArrayWithPaginationKey(): void
+    {
+        $data = $this->service->getPaginatedData(1, 20);
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('pagination', $data);
+        $this->assertArrayHasKey('products', $data);
+    }
+
+    /**
+     * Test getPaginatedData with default parameters
+     */
+    public function testGetPaginatedDataWithDefaultParameters(): void
+    {
+        $data = $this->service->getPaginatedData();
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('pagination', $data);
+        $pagination = $data['pagination'];
+        $this->assertEquals(1, $pagination['currentPage']);
+        $this->assertEquals(20, $pagination['perPage']);
+    }
+
+    /**
+     * Test getPaginatedData with custom page and perPage
+     */
+    public function testGetPaginatedDataWithCustomParameters(): void
+    {
+        $data = $this->service->getPaginatedData(2, 10);
+        $pagination = $data['pagination'];
+        $this->assertEquals(2, $pagination['currentPage']);
+        $this->assertEquals(10, $pagination['perPage']);
+    }
+
+    /**
+     * Test getPaginatedData pagination structure
+     */
+    public function testGetPaginatedDataPaginationStructure(): void
+    {
+        $data = $this->service->getPaginatedData(1, 20);
+        $pagination = $data['pagination'];
+        
+        // Check all required pagination keys exist
+        $requiredKeys = [
+            'currentPage',
+            'totalPages',
+            'perPage',
+            'total',
+            'hasNextPage',
+            'hasPreviousPage',
+            'pages',
+            'from',
+            'to',
+            'showPagination'
+        ];
+        
+        foreach ($requiredKeys as $key) {
+            $this->assertArrayHasKey($key, $pagination, "Missing key: $key");
+        }
+    }
 }

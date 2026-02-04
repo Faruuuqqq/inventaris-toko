@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CustomerModel;
+use App\Helpers\PaginationHelper;
 use CodeIgniter\Database\BaseConnection;
 
 class CustomerDataService
@@ -92,6 +93,26 @@ class CustomerDataService
             'creditAvailable' => (int)$creditAvailable,
             'creditPercentage' => min($creditPercentage, 100),
             'stats' => $stats,
+        ];
+    }
+
+    /**
+     * Get paginated data for INDEX page
+     */
+    public function getPaginatedData(?int $page = null, ?int $perPage = null): array
+    {
+        // Get safe pagination params
+        $params = PaginationHelper::getSafeParams($page, $perPage);
+        $page = $params['page'];
+        $perPage = $params['perPage'];
+
+        // Get paginated results
+        $customers = $this->customerModel->asArray()->paginate($perPage, 'default', $page);
+        $pager = $this->customerModel->pager;
+
+        return [
+            'customers' => $customers,
+            'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
 }

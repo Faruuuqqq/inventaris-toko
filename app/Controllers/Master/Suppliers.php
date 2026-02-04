@@ -53,9 +53,12 @@ class Suppliers extends BaseCRUDController
     public function index()
     {
         try {
+            $page = (int)($this->request->getGet('page') ?? 1);
+            $perPage = (int)($this->request->getGet('per_page') ?? 20);
+
             $data = array_merge(
                 ['title' => 'Daftar Supplier'],
-                $this->dataService->getIndexData()
+                $this->dataService->getPaginatedData($page, $perPage)
             );
 
             return view($this->viewPath . '/index', $data);

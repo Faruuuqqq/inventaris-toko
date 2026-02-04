@@ -39,4 +39,28 @@ class UserDataServiceTest extends CIUnitTestCase
     {
         $this->assertTrue(method_exists($this->service, 'getDetailData'));
     }
+
+    public function testGetPaginatedDataMethodExists(): void
+    {
+        $this->assertTrue(method_exists($this->service, 'getPaginatedData'));
+    }
+
+    public function testGetPaginatedDataReturnsArrayWithPagination(): void
+    {
+        $data = $this->service->getPaginatedData(1, 20);
+        $this->assertIsArray($data);
+        $this->assertArrayHasKey('pagination', $data);
+        $this->assertArrayHasKey('users', $data);
+    }
+
+    public function testGetPaginatedDataPaginationStructure(): void
+    {
+        $data = $this->service->getPaginatedData(1, 20);
+        $pagination = $data['pagination'];
+        
+        $requiredKeys = ['currentPage', 'totalPages', 'perPage', 'total', 'pages', 'showPagination'];
+        foreach ($requiredKeys as $key) {
+            $this->assertArrayHasKey($key, $pagination, "Missing key: $key");
+        }
+    }
 }
