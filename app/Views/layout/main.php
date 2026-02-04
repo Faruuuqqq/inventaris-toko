@@ -9,8 +9,10 @@
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.js"></script>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Precompiled CSS (Local - Fast) -->
+    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/animations.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/toast.css') ?>">
     
     <!-- Plus Jakarta Sans + Inter Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
