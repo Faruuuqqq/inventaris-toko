@@ -71,13 +71,15 @@ class Products extends BaseCRUDController
 
     protected function getIndexData(): array
     {
-        // Use JOIN to get stock in a single query instead of N+1
         $products = $this->model
-            ->select('products.*, categories.name as category_name, COALESCE(SUM(ps.quantity), 0) as stock')
+            ->select('products.*, categories.name as category_name')
             ->join('categories', 'categories.id = products.category_id', 'left')
-            ->join('product_stocks ps', 'ps.product_id = products.id', 'left')
-            ->groupBy('products.id')
             ->findAll();
+
+        // Add stock data to each product
+        foreach ($products as $product) {
+            $product->stock = $this->getProductTotalStock($product->id);
+        }
 
         return $products;
     }
@@ -143,20 +145,22 @@ class Products extends BaseCRUDController
             return redirect()->to($this->routePath)->with('error', 'Produk tidak ditemukan');
         }
 
-        // Get total stock with a single efficient query
-        $stockResult = $this->productStockModel
-            ->selectSum('quantity')
-            ->where('product_id', $id)
-            ->first();
-        $totalStock = (int)($stockResult->quantity ?? 0);
-
         $data = [
             'title' => 'Detail Produk',
             'subtitle' => $product->name,
             'product' => $product,
-            'totalStock' => $totalStock,
+            'totalStock' => $this->getProductTotalStock($id),
         ];
 
         return view($this->viewPath . '/detail', $data);
+    }
+
+    private function getProductTotalStock($productId): int
+    {
+        $result = $this->productStockModel
+            ->where('product_id', $productId)
+            ->selectSum('quantity')
+            ->first();
+        return (int)($result->quantity ?? 0);
     }
 }
