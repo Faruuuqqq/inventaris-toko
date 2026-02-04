@@ -3,79 +3,90 @@ namespace App\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
 use App\Models\WarehouseModel;
+use App\Services\WarehouseDataService;
 
 class WarehousesController extends ResourceController
 {
-    protected $modelName = 'App\Models\WarehouseModel';
-    protected $format = 'json';
+    protected WarehouseModel $modelName = 'App\Models\WarehouseModel';
+    protected string $format = 'json';
+
+    protected WarehouseDataService $dataService;
+
+    public function __construct()
+    {
+        $this->dataService = new WarehouseDataService();
+    }
 
     public function index()
     {
-        $warehouses = $this->model->findAll();
+        $data = $this->dataService->getIndexData();
         return $this->respond([
             'status' => 'success',
-            'data' => $warehouses
+            'data' => $data
         ]);
     }
 
     public function show($id = null)
     {
-        $warehouse = $this->model->find($id);
-        if (!$warehouse) {
-            return $this->failNotFound('Warehouse not found');
+        $detailData = $this->dataService->getDetailData($id);
+        if (empty($detailData)) {
+            return $this->failNotFound('Gudang tidak ditemukan');
         }
         return $this->respond([
             'status' => 'success',
-            'data' => $warehouse
+            'data' => $detailData
         ]);
     }
 
     public function create()
     {
+        $model = new WarehouseModel();
         $data = $this->request->getJSON(true) ?? $this->request->getPost();
 
-        if (!$this->model->insert($data)) {
-            return $this->failValidationErrors($this->model->errors());
+        if (!$model->insert($data)) {
+            return $this->failValidationErrors($model->errors());
         }
 
         return $this->respondCreated([
             'status' => 'success',
-            'message' => 'Warehouse created successfully',
-            'id' => $this->model->getInsertID()
+            'message' => 'Gudang berhasil dibuat',
+            'id' => $model->getInsertID()
         ]);
     }
 
     public function update($id = null)
     {
-        $warehouse = $this->model->find($id);
+        $model = new WarehouseModel();
+        $warehouse = $model->find($id);
         if (!$warehouse) {
-            return $this->failNotFound('Warehouse not found');
+            return $this->failNotFound('Gudang tidak ditemukan');
         }
 
         $data = $this->request->getJSON(true) ?? $this->request->getPost();
 
-        if (!$this->model->update($id, $data)) {
-            return $this->failValidationErrors($this->model->errors());
+        if (!$model->update($id, $data)) {
+            return $this->failValidationErrors($model->errors());
         }
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Warehouse updated successfully'
+            'message' => 'Gudang berhasil diperbarui'
         ]);
     }
 
     public function delete($id = null)
     {
-        $warehouse = $this->model->find($id);
+        $model = new WarehouseModel();
+        $warehouse = $model->find($id);
         if (!$warehouse) {
-            return $this->failNotFound('Warehouse not found');
+            return $this->failNotFound('Gudang tidak ditemukan');
         }
 
-        $this->model->delete($id);
+        $model->delete($id);
 
         return $this->respondDeleted([
             'status' => 'success',
-            'message' => 'Warehouse deleted successfully'
+            'message' => 'Gudang berhasil dihapus'
         ]);
     }
 }

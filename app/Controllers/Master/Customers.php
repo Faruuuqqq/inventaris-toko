@@ -4,7 +4,7 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\CustomerModel;
-use App\Models\SaleModel;
+use App\Services\CustomerDataService;
 use App\Traits\ApiResponseTrait;
 
 class Customers extends BaseCRUDController
@@ -14,6 +14,14 @@ class Customers extends BaseCRUDController
     protected string $routePath = '/master/customers';
     protected string $entityName = 'Customer';
     protected string $entityNamePlural = 'Customers';
+
+    protected CustomerDataService $dataService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->dataService = new CustomerDataService();
+    }
 
     protected function getModel(): CustomerModel
     {
@@ -41,9 +49,91 @@ class Customers extends BaseCRUDController
         ];
     }
 
-    protected function getIndexData(): array
+    /**
+     * Override index to use CustomerDataService
+     */
+    public function index()
     {
-        return $this->model->asArray()->findAll();
+        try {
+            $data = array_merge(
+                ['title' => 'Daftar Customer'],
+                $this->dataService->getIndexData()
+            );
+
+            return view($this->viewPath . '/index', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Customers index error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data customer');
+        }
+    }
+
+    /**
+     * Override create to use CustomerDataService
+     */
+    public function create()
+    {
+        if (!$this->checkStoreAccess()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Tambah Customer',
+                'subtitle' => 'Tambahkan customer baru',
+            ],
+            $this->dataService->getCreateData()
+        );
+
+        return view($this->viewPath . '/create', $data);
+    }
+
+    /**
+     * Override edit to use CustomerDataService and pass 'customer' variable
+     */
+    public function edit($id)
+    {
+        if (!$this->checkUpdateAccess($id)) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $record = $this->model->find($id);
+
+        if (!$record) {
+            return redirect()->back()->with('error', 'Customer tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Edit Customer',
+                'subtitle' => 'Ubah data customer',
+                'customer' => $record,
+            ],
+            $this->dataService->getEditData()
+        );
+
+        return view($this->viewPath . '/edit', $data);
+    }
+
+    /**
+     * Override detail to use CustomerDataService
+     */
+    public function detail($id)
+    {
+        $detailData = $this->dataService->getDetailData($id);
+
+        if (empty($detailData)) {
+            return redirect()->to($this->routePath)->with('error', 'Customer tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Detail Customer',
+                'subtitle' => $detailData['customer']->name,
+            ],
+            $detailData
+        );
+
+        return view($this->viewPath . '/detail', $data);
     }
 
     /**
@@ -58,62 +148,5 @@ class Customers extends BaseCRUDController
             ->findAll();
         
         return $this->respondData($customers);
-    }
-
-    /**
-     * Show customer detail page
-     */
-    public function detail($id)
-    {
-        $customer = $this->model->find($id);
-        
-        if (!$customer) {
-            return redirect()->to($this->routePath)->with('error', 'Customer tidak ditemukan');
-        }
-
-        $db = \Config\Database::connect();
-        
-        // Get recent sales transactions
-        $recentSales = $db->table('sales')
-            ->select('id_sale, nomor_faktur, tanggal_penjualan, total_penjualan, status_pembayaran')
-            ->where('id_customer', $id)
-            ->orderBy('tanggal_penjualan', 'DESC')
-            ->limit(10)
-            ->get()
-            ->getResultArray();
-
-        // Get credit usage
-        $totalCredit = $db->table('sales')
-            ->selectSum('sisa_pembayaran')
-            ->where('id_customer', $id)
-            ->where('status_pembayaran !=', 'PAID')
-            ->get()
-            ->getRow();
-
-        $creditUsed = $totalCredit->sisa_pembayaran ?? 0;
-        $creditLimit = $customer->credit_limit ?? 0;
-        $creditAvailable = $creditLimit - $creditUsed;
-        $creditPercentage = $creditLimit > 0 ? ($creditUsed / $creditLimit) * 100 : 0;
-
-        // Get statistics
-        $stats = $db->table('sales')
-            ->select('COUNT(*) as total_transactions, SUM(total_penjualan) as total_sales, AVG(total_penjualan) as avg_sale')
-            ->where('id_customer', $id)
-            ->get()
-            ->getRow();
-
-        $data = [
-            'title' => 'Detail Customer',
-            'subtitle' => $customer->name,
-            'customer' => $customer,
-            'recentSales' => $recentSales,
-            'creditUsed' => $creditUsed,
-            'creditLimit' => $creditLimit,
-            'creditAvailable' => $creditAvailable,
-            'creditPercentage' => min($creditPercentage, 100),
-            'stats' => $stats,
-        ];
-
-        return view($this->viewPath . '/detail', $data);
     }
 }

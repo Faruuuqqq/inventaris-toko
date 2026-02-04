@@ -4,6 +4,7 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\SalespersonModel;
+use App\Services\SalespersonDataService;
 use App\Traits\ApiResponseTrait;
 use CodeIgniter\Model;
 
@@ -15,6 +16,14 @@ class Salespersons extends BaseCRUDController
     protected string $routePath = '/master/salespersons';
     protected string $entityName = 'Sales';
     protected string $entityNamePlural = 'Salespersons';
+
+    protected SalespersonDataService $dataService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->dataService = new SalespersonDataService();
+    }
 
     protected function getModel(): SalespersonModel
     {
@@ -37,9 +46,91 @@ class Salespersons extends BaseCRUDController
         ];
     }
 
-    protected function getIndexData(): array
+    /**
+     * Override index to use SalespersonDataService
+     */
+    public function index()
     {
-        return $this->model->asArray()->findAll();
+        try {
+            $data = array_merge(
+                ['title' => 'Daftar Sales'],
+                $this->dataService->getIndexData()
+            );
+
+            return view($this->viewPath . '/index', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Salespersons index error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data sales');
+        }
+    }
+
+    /**
+     * Override create to use SalespersonDataService
+     */
+    public function create()
+    {
+        if (!$this->checkStoreAccess()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Tambah Sales',
+                'subtitle' => 'Tambahkan sales baru',
+            ],
+            $this->dataService->getCreateData()
+        );
+
+        return view($this->viewPath . '/create', $data);
+    }
+
+    /**
+     * Override edit to use SalespersonDataService and pass 'salesperson' variable
+     */
+    public function edit($id)
+    {
+        if (!$this->checkUpdateAccess($id)) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $record = $this->model->find($id);
+
+        if (!$record) {
+            return redirect()->back()->with('error', 'Sales tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Edit Sales',
+                'subtitle' => 'Ubah data sales',
+                'salesperson' => $record,
+            ],
+            $this->dataService->getEditData()
+        );
+
+        return view($this->viewPath . '/edit', $data);
+    }
+
+    /**
+     * Override detail to use SalespersonDataService
+     */
+    public function detail($id)
+    {
+        $detailData = $this->dataService->getDetailData($id);
+
+        if (empty($detailData)) {
+            return redirect()->to($this->routePath)->with('error', 'Sales tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Detail Sales',
+                'subtitle' => $detailData['sales']->name,
+            ],
+            $detailData
+        );
+
+        return view($this->viewPath . '/detail', $data);
     }
 
     protected function beforeStore(array $data): array
@@ -61,25 +152,5 @@ class Salespersons extends BaseCRUDController
             ->findAll();
         
         return $this->respondData($salespersons);
-    }
-
-    /**
-     * Show salesperson detail page
-     */
-    public function detail($id)
-    {
-        $sales = $this->model->find($id);
-        
-        if (!$sales) {
-            return redirect()->to($this->routePath)->with('error', 'Sales tidak ditemukan');
-        }
-
-        $data = [
-            'title' => 'Detail Sales',
-            'subtitle' => $sales->name,
-            'sales' => $sales,
-        ];
-
-        return view($this->viewPath . '/detail', $data);
     }
 }

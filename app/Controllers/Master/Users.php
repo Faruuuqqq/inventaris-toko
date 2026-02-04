@@ -4,6 +4,7 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\UserModel;
+use App\Services\UserDataService;
 use CodeIgniter\Model;
 
 class Users extends BaseCRUDController
@@ -12,6 +13,14 @@ class Users extends BaseCRUDController
     protected string $routePath = '/master/users';
     protected string $entityName = 'Pengguna';
     protected string $entityNamePlural = 'Users';
+
+    protected UserDataService $dataService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->dataService = new UserDataService();
+    }
 
     protected function getModel(): UserModel
     {
@@ -49,16 +58,91 @@ class Users extends BaseCRUDController
         ];
     }
 
-    protected function getIndexData(): array
+    /**
+     * Override index to use UserDataService
+     */
+    public function index()
     {
-        return $this->model->asArray()->orderBy('created_at', 'DESC')->findAll();
+        try {
+            $data = array_merge(
+                ['title' => 'Daftar Pengguna'],
+                $this->dataService->getIndexData()
+            );
+
+            return view($this->viewPath . '/index', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Users index error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data pengguna');
+        }
     }
 
-    protected function getAdditionalViewData(): array
+    /**
+     * Override create to use UserDataService
+     */
+    public function create()
     {
-        return [
-            'subtitle' => 'Kelola pengguna sistem (Owner only)',
-        ];
+        if (!$this->checkStoreAccess()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Tambah Pengguna',
+                'subtitle' => 'Tambahkan pengguna baru',
+            ],
+            $this->dataService->getCreateData()
+        );
+
+        return view($this->viewPath . '/create', $data);
+    }
+
+    /**
+     * Override edit to use UserDataService and pass 'user' variable
+     */
+    public function edit($id)
+    {
+        if (!$this->checkUpdateAccess($id)) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $record = $this->model->find($id);
+
+        if (!$record) {
+            return redirect()->back()->with('error', 'Pengguna tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Edit Pengguna',
+                'subtitle' => 'Ubah data pengguna',
+                'user' => $record,
+            ],
+            $this->dataService->getEditData()
+        );
+
+        return view($this->viewPath . '/edit', $data);
+    }
+
+    /**
+     * Override detail to use UserDataService
+     */
+    public function detail($id)
+    {
+        $detailData = $this->dataService->getDetailData($id);
+
+        if (empty($detailData)) {
+            return redirect()->to($this->routePath)->with('error', 'Pengguna tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Detail Pengguna',
+                'subtitle' => $detailData['pengguna']->fullname,
+            ],
+            $detailData
+        );
+
+        return view($this->viewPath . '/detail', $data);
     }
 
     // Access control - only OWNER can manage users
@@ -99,25 +183,5 @@ class Users extends BaseCRUDController
             $data['password_hash'] = password_hash($password, PASSWORD_DEFAULT);
         }
         return $data;
-    }
-
-    /**
-     * Show user detail page
-     */
-    public function detail($id)
-    {
-        $pengguna = $this->model->find($id);
-        
-        if (!$pengguna) {
-            return redirect()->to($this->routePath)->with('error', 'Pengguna tidak ditemukan');
-        }
-
-        $data = [
-            'title' => 'Detail Pengguna',
-            'subtitle' => $pengguna->fullname,
-            'pengguna' => $pengguna,
-        ];
-
-        return view($this->viewPath . '/detail', $data);
     }
 }

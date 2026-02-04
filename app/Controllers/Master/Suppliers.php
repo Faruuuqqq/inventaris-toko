@@ -4,6 +4,7 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\SupplierModel;
+use App\Services\SupplierDataService;
 use App\Traits\ApiResponseTrait;
 use CodeIgniter\Model;
 
@@ -16,10 +17,137 @@ class Suppliers extends BaseCRUDController
     protected string $entityName = 'Supplier';
     protected string $entityNamePlural = 'Suppliers';
 
+    protected SupplierDataService $dataService;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->dataService = new SupplierDataService();
+    }
+
     protected function getModel(): SupplierModel
     {
         return new SupplierModel();
     }
+
+    protected function getStoreValidationRules(): array
+    {
+        return [
+            'name' => 'required',
+            'phone' => 'permit_empty',
+        ];
+    }
+
+    protected function getDataFromRequest(): array
+    {
+        return [
+            'code' => $this->request->getPost('code'),
+            'name' => $this->request->getPost('name'),
+            'phone' => $this->request->getPost('phone'),
+        ];
+    }
+
+    /**
+     * Override index to use SupplierDataService
+     */
+    public function index()
+    {
+        try {
+            $data = array_merge(
+                ['title' => 'Daftar Supplier'],
+                $this->dataService->getIndexData()
+            );
+
+            return view($this->viewPath . '/index', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Suppliers index error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data supplier');
+        }
+    }
+
+    /**
+     * Override create to use SupplierDataService
+     */
+    public function create()
+    {
+        if (!$this->checkStoreAccess()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Tambah Supplier',
+                'subtitle' => 'Tambahkan supplier baru',
+            ],
+            $this->dataService->getCreateData()
+        );
+
+        return view($this->viewPath . '/create', $data);
+    }
+
+    /**
+     * Override edit to use SupplierDataService and pass 'supplier' variable
+     */
+    public function edit($id)
+    {
+        if (!$this->checkUpdateAccess($id)) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $record = $this->model->find($id);
+
+        if (!$record) {
+            return redirect()->back()->with('error', 'Supplier tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Edit Supplier',
+                'subtitle' => 'Ubah data supplier',
+                'supplier' => $record,
+            ],
+            $this->dataService->getEditData()
+        );
+
+        return view($this->viewPath . '/edit', $data);
+    }
+
+    /**
+     * Override detail to use SupplierDataService
+     */
+    public function detail($id)
+    {
+        $detailData = $this->dataService->getDetailData($id);
+
+        if (empty($detailData)) {
+            return redirect()->to($this->routePath)->with('error', 'Supplier tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Detail Supplier',
+                'subtitle' => $detailData['supplier']->name,
+            ],
+            $detailData
+        );
+
+        return view($this->viewPath . '/detail', $data);
+    }
+
+    /**
+     * AJAX: Get supplier list for dropdown/select2
+     * Returns simplified supplier data for forms
+     */
+    public function getList()
+    {
+        $suppliers = $this->model
+            ->select('id, code, name, phone')
+            ->orderBy('name', 'ASC')
+            ->findAll();
+        
+        return $this->respondData($suppliers);
+    }
+}
 
     protected function getStoreValidationRules(): array
     {
