@@ -48,6 +48,11 @@ class Warehouses extends BaseCRUDController
         ];
     }
 
+    protected function getIndexData(): array
+    {
+        return $this->model->asArray()->findAll();
+    }
+
     protected function beforeStore(array $data): array
     {
         $data['is_active'] = 1;

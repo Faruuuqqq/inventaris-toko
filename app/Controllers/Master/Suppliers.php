@@ -38,6 +38,11 @@ class Suppliers extends BaseCRUDController
         ];
     }
 
+    protected function getIndexData(): array
+    {
+        return $this->model->asArray()->findAll();
+    }
+
     /**
      * AJAX: Get supplier list for dropdown/select2
      * Returns simplified supplier data for forms
@@ -94,7 +99,7 @@ class Suppliers extends BaseCRUDController
 
         $data = [
             'title' => 'Detail Supplier',
-            'subtitle' => $supplier['name'],
+            'subtitle' => $supplier->name,
             'supplier' => $supplier,
             'recentPOs' => $recentPOs,
             'totalDebt' => $totalDebt,

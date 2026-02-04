@@ -2,12 +2,12 @@
 
 namespace App\Controllers\Master;
 
-use App\Controllers\BaseController;
+use App\Controllers\BaseCRUDController;
 use App\Models\CustomerModel;
 use App\Models\SaleModel;
 use App\Traits\ApiResponseTrait;
 
-class Customers extends BaseController
+class Customers extends BaseCRUDController
 {
     use ApiResponseTrait;
     protected string $viewPath = 'master/customers';
@@ -91,7 +91,7 @@ class Customers extends BaseController
             ->getRow();
 
         $creditUsed = $totalCredit->sisa_pembayaran ?? 0;
-        $creditLimit = $customer['credit_limit'] ?? 0;
+        $creditLimit = $customer->credit_limit ?? 0;
         $creditAvailable = $creditLimit - $creditUsed;
         $creditPercentage = $creditLimit > 0 ? ($creditUsed / $creditLimit) * 100 : 0;
 
@@ -104,7 +104,7 @@ class Customers extends BaseController
 
         $data = [
             'title' => 'Detail Customer',
-            'subtitle' => $customer['name'],
+            'subtitle' => $customer->name,
             'customer' => $customer,
             'recentSales' => $recentSales,
             'creditUsed' => $creditUsed,

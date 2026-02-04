@@ -172,6 +172,7 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
         $routes->get('/', 'Expenses::index');
         $routes->get('create', 'Expenses::create');
         $routes->post('/', 'Expenses::store');
+        $routes->post('store', 'Expenses::store');  // Alternative POST endpoint
         $routes->get('edit/(:num)', 'Expenses::edit/$1');  // Standard pattern
         $routes->get('(:num)/edit', 'Expenses::edit/$1');  // Legacy compatibility
         $routes->put('(:num)', 'Expenses::update/$1');
