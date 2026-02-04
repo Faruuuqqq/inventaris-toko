@@ -17,7 +17,7 @@
             Kembali
         </a>
         <?php if (is_admin()): ?>
-        <a href="<?= base_url('master/customers/edit/' . $customer['id']) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
+        <a href="<?= base_url('master/customers/edit/' . $customer->id) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
             <?= icon('Edit', 'h-5 w-5') ?>
             Edit
         </a>
@@ -44,14 +44,14 @@
                 <div class="grid gap-4 md:grid-cols-2">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Nama Pelanggan</p>
-                        <p class="text-2xl font-bold text-foreground mt-2"><?= $customer['name'] ?></p>
+                        <p class="text-2xl font-bold text-foreground mt-2"><?= $customer->name ?></p>
                     </div>
 
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Tipe Pelanggan</p>
                         <div class="mt-2">
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">
-                                <?= $customer['type'] === 'B2B' ? 'Bisnis' : 'Konsumen' ?>
+                                <?= $customer->type === 'B2B' ? 'Bisnis' : 'Konsumen' ?>
                             </span>
                         </div>
                     </div>
@@ -61,17 +61,17 @@
                 <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Nomor Telepon</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $customer['phone'] ?? '-' ?></p>
+                        <p class="text-sm font-medium text-foreground mt-1"><?= $customer->phone ?? '-' ?></p>
                     </div>
 
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Email</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $customer['email'] ?? '-' ?></p>
+                        <p class="text-sm font-medium text-foreground mt-1"><?= $customer->email ?? '-' ?></p>
                     </div>
 
                     <div class="md:col-span-2">
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Alamat</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $customer['address'] ?? '-' ?></p>
+                        <p class="text-sm font-medium text-foreground mt-1"><?= $customer->address ?? '-' ?></p>
                     </div>
                 </div>
 
@@ -182,17 +182,17 @@
             </div>
 
             <div class="p-6 space-y-3">
-                <a href="<?= base_url('transactions/sales/credit?customer_id=' . $customer['id']) ?>" class="w-full h-10 rounded-lg bg-primary text-white font-medium flex items-center justify-center hover:bg-primary/90 transition">
+                <a href="<?= base_url('transactions/sales/credit?customer_id=' . $customer->id) ?>" class="w-full h-10 rounded-lg bg-primary text-white font-medium flex items-center justify-center hover:bg-primary/90 transition">
                     <?= icon('Plus', 'h-5 w-5 mr-2') ?>
                     Penjualan Kredit
                 </a>
 
-                <a href="<?= base_url('finance/payments/receivable?customer_id=' . $customer['id']) ?>" class="w-full h-10 rounded-lg border border-primary/50 text-primary font-medium flex items-center justify-center hover:bg-primary/5 transition">
+                <a href="<?= base_url('finance/payments/receivable?customer_id=' . $customer->id) ?>" class="w-full h-10 rounded-lg border border-primary/50 text-primary font-medium flex items-center justify-center hover:bg-primary/5 transition">
                     <?= icon('CreditCard', 'h-5 w-5 mr-2') ?>
                     Terima Pembayaran
                 </a>
 
-                <a href="<?= base_url('info/history/sales?customer_id=' . $customer['id']) ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
+                <a href="<?= base_url('info/history/sales?customer_id=' . $customer->id) ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
                     <?= icon('History', 'h-5 w-5 mr-2') ?>
                     Lihat Riwayat
                 </a>

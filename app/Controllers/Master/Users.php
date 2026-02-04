@@ -100,4 +100,24 @@ class Users extends BaseCRUDController
         }
         return $data;
     }
+
+    /**
+     * Show user detail page
+     */
+    public function detail($id)
+    {
+        $pengguna = $this->model->find($id);
+        
+        if (!$pengguna) {
+            return redirect()->to($this->routePath)->with('error', 'Pengguna tidak ditemukan');
+        }
+
+        $data = [
+            'title' => 'Detail Pengguna',
+            'subtitle' => $pengguna->fullname,
+            'pengguna' => $pengguna,
+        ];
+
+        return view($this->viewPath . '/detail', $data);
+    }
 }

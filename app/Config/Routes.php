@@ -65,6 +65,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Warehouses
     $routes->group('warehouses', function($routes) {
         $routes->get('/', 'Warehouses::index');
+        $routes->get('(:num)', 'Warehouses::detail/$1');
         $routes->get('edit/(:num)', 'Warehouses::edit/$1');
         $routes->get('delete/(:num)', 'Warehouses::delete/$1');
         $routes->get('getList', 'Warehouses::getList');  // AJAX endpoint
@@ -77,12 +78,25 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Salespersons
     $routes->group('salespersons', function($routes) {
         $routes->get('/', 'Salespersons::index');
+        $routes->get('(:num)', 'Salespersons::detail/$1');
         $routes->get('edit/(:num)', 'Salespersons::edit/$1');
         $routes->get('delete/(:num)', 'Salespersons::delete/$1');
         $routes->get('getList', 'Salespersons::getList');  // AJAX endpoint
         $routes->post('/', 'Salespersons::store');
         $routes->put('(:num)', 'Salespersons::update/$1');
         $routes->delete('(:num)', 'Salespersons::delete/$1');
+    });
+
+    // Users
+    $routes->group('users', function($routes) {
+        $routes->get('/', 'Users::index');
+        $routes->get('(:num)', 'Users::detail/$1');
+        $routes->get('edit/(:num)', 'Users::edit/$1');
+        $routes->get('delete/(:num)', 'Users::delete/$1');
+        $routes->post('/', 'Users::store');
+        $routes->post('store', 'Users::store');
+        $routes->put('(:num)', 'Users::update/$1');
+        $routes->delete('(:num)', 'Users::delete/$1');
     });
 });
 

@@ -73,4 +73,24 @@ class Warehouses extends BaseCRUDController
         
         return $this->respondData($warehouses);
     }
+
+    /**
+     * Show warehouse detail page
+     */
+    public function detail($id)
+    {
+        $gudang = $this->model->find($id);
+        
+        if (!$gudang) {
+            return redirect()->to($this->routePath)->with('error', 'Gudang tidak ditemukan');
+        }
+
+        $data = [
+            'title' => 'Detail Gudang',
+            'subtitle' => $gudang->name,
+            'gudang' => $gudang,
+        ];
+
+        return view($this->viewPath . '/detail', $data);
+    }
 }

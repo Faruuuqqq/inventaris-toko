@@ -17,7 +17,7 @@
             Kembali
         </a>
         <?php if (is_admin()): ?>
-        <a href="<?= base_url('master/suppliers/edit/' . $supplier['id']) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
+        <a href="<?= base_url('master/suppliers/edit/' . $supplier->id) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
             <?= icon('Edit', 'h-5 w-5') ?>
             Edit
         </a>
@@ -43,19 +43,19 @@
                 <!-- Supplier Name -->
                 <div>
                     <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Nama Supplier</p>
-                    <p class="text-2xl font-bold text-foreground mt-2"><?= $supplier['name'] ?></p>
+                    <p class="text-2xl font-bold text-foreground mt-2"><?= $supplier->name ?></p>
                 </div>
 
                 <!-- Contact Information -->
                 <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Nomor Telepon</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier['phone'] ?? '-' ?></p>
+                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier->phone ?? '-' ?></p>
                     </div>
 
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Email</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier['email'] ?? '-' ?></p>
+                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier->email ?? '-' ?></p>
                     </div>
 
                     <div class="md:col-span-2">
@@ -161,17 +161,17 @@
             </div>
 
             <div class="p-6 space-y-3">
-                <a href="<?= base_url('transactions/purchases/create?supplier_id=' . $supplier['id']) ?>" class="w-full h-10 rounded-lg bg-primary text-white font-medium flex items-center justify-center hover:bg-primary/90 transition">
+                <a href="<?= base_url('transactions/purchases/create?supplier_id=' . $supplier->id) ?>" class="w-full h-10 rounded-lg bg-primary text-white font-medium flex items-center justify-center hover:bg-primary/90 transition">
                     <?= icon('Plus', 'h-5 w-5 mr-2') ?>
-                    Buat Purchase Order
+                    Pembelian Baru
                 </a>
 
-                <a href="<?= base_url('finance/payments/payable?supplier_id=' . $supplier['id']) ?>" class="w-full h-10 rounded-lg border border-primary/50 text-primary font-medium flex items-center justify-center hover:bg-primary/5 transition">
+                <a href="<?= base_url('finance/payments/payable?supplier_id=' . $supplier->id) ?>" class="w-full h-10 rounded-lg border border-primary/50 text-primary font-medium flex items-center justify-center hover:bg-primary/5 transition">
                     <?= icon('CreditCard', 'h-5 w-5 mr-2') ?>
-                    Bayar Hutang
+                    Bayar Tagihan
                 </a>
 
-                <a href="<?= base_url('info/history/purchases?supplier_id=' . $supplier['id']) ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
+                <a href="<?= base_url('info/history/purchases?supplier_id=' . $supplier->id) ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
                     <?= icon('History', 'h-5 w-5 mr-2') ?>
                     Lihat Riwayat
                 </a>

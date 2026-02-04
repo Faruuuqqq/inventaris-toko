@@ -62,4 +62,24 @@ class Salespersons extends BaseCRUDController
         
         return $this->respondData($salespersons);
     }
+
+    /**
+     * Show salesperson detail page
+     */
+    public function detail($id)
+    {
+        $sales = $this->model->find($id);
+        
+        if (!$sales) {
+            return redirect()->to($this->routePath)->with('error', 'Sales tidak ditemukan');
+        }
+
+        $data = [
+            'title' => 'Detail Sales',
+            'subtitle' => $sales->name,
+            'sales' => $sales,
+        ];
+
+        return view($this->viewPath . '/detail', $data);
+    }
 }
