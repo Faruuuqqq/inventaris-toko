@@ -81,37 +81,55 @@ class Products extends BaseCRUDController
         return $products;
     }
 
-    protected function getAdditionalViewData(): array
-    {
-        // Get all categories as array (not Entity objects)
-        $categories = $this->categoryModel->asArray()->findAll();
-        
-        return [
-            'categories' => $categories,
-            'totalProducts' => $this->model->countAllResults(),
-            'totalCategories' => count($categories),
-            'lowStockCount' => 0, // TODO: Implement low stock count calculation from product_stocks table
-        ];
-    }
+     protected function getAdditionalViewData(): array
+     {
+         // Get all categories as array (not Entity objects)
+         $categories = $this->categoryModel->asArray()->findAll();
+         
+         // Get products with stock data
+         $products = $this->getIndexData();
+         
+         // Calculate total stock and inventory value
+         $totalStock = 0;
+         $totalValue = 0;
+         
+         foreach ($products as $product) {
+             $stock = (int)($product->stock ?? 0);
+             $totalStock += $stock;
+             
+             // Value = quantity * buy price
+             $buyPrice = (float)($product->price_buy ?? 0);
+             $totalValue += ($stock * $buyPrice);
+         }
+         
+         return [
+             'categories' => $categories,
+             'totalProducts' => count($products),
+             'totalCategories' => count($categories),
+             'totalStock' => $totalStock,
+             'totalValue' => $totalValue,
+             'lowStockCount' => 0, // TODO: Implement low stock count calculation from product_stocks table
+         ];
+     }
 
-    // Override index to use custom logic
-    public function index()
-    {
-        try {
-            $products = $this->getIndexData();
-            $additionalData = $this->getAdditionalViewData();
+     // Override index to use custom logic
+     public function index()
+     {
+         try {
+             $products = $this->getIndexData();
+             $additionalData = $this->getAdditionalViewData();
 
-            $data = array_merge([
-                'title' => $this->entityName,
-                'products' => $products,
-            ], $additionalData);
+             $data = array_merge([
+                 'title' => $this->entityName,
+                 'products' => $products,
+             ], $additionalData);
 
-            return view($this->viewPath . '/index', $data);
-        } catch (\Exception $e) {
-            log_message('error', 'Products index error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data produk: ' . $e->getMessage());
-        }
-    }
+             return view($this->viewPath . '/index', $data);
+         } catch (\Exception $e) {
+             log_message('error', 'Products index error: ' . $e->getMessage());
+             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data produk: ' . $e->getMessage());
+         }
+     }
 
     protected function afterStore($insertId): void
     {
