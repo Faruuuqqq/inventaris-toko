@@ -179,6 +179,25 @@ abstract class BaseCRUDController extends BaseController
     }
 
     /**
+     * Show create form
+     */
+    public function create()
+    {
+        // Check access
+        if (!$this->checkStoreAccess()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+        
+        // Prepare data - no existing record for create
+        $data = array_merge([
+            'title' => 'Tambah ' . $this->entityName,
+            'subtitle' => 'Tambahkan data ' . strtolower($this->entityName) . ' baru',
+        ], $this->getAdditionalViewData());
+        
+        return view($this->viewPath . '/create', $data);
+    }
+
+    /**
      * Show edit form
      */
     public function edit($id)

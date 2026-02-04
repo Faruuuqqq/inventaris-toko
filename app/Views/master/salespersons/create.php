@@ -5,15 +5,14 @@
 <div class="max-w-2xl">
     <!-- Page Header -->
     <div class="mb-6">
-        <h2 class="text-2xl font-bold text-foreground">Edit Sales</h2>
-        <p class="mt-1 text-muted-foreground">Perbarui data salesperson</p>
+        <h2 class="text-2xl font-bold text-foreground">Tambah Sales</h2>
+        <p class="mt-1 text-muted-foreground">Tambahkan data salesperson baru</p>
     </div>
 
     <!-- Form Card -->
     <div class="rounded-xl border border-border/50 bg-surface p-6">
-        <form action="<?= base_url('master/salespersons/' . $sales->id) ?>" method="POST" class="space-y-5">
+        <form action="<?= base_url('master/salespersons') ?>" method="POST" class="space-y-5">
             <?= csrf_field() ?>
-            <input type="hidden" name="_method" value="PUT">
             
             <!-- Name & Phone -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -24,7 +23,7 @@
                         name="name" 
                         id="name" 
                         required 
-                        value="<?= esc($sales->name) ?>"
+                        value="<?= old('name') ?>"
                         placeholder="Contoh: Budi Santoso"
                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
@@ -35,7 +34,7 @@
                         type="text" 
                         name="phone" 
                         id="phone" 
-                        value="<?= esc($sales->phone ?? '') ?>"
+                        value="<?= old('phone') ?>"
                         placeholder="Contoh: 081234567890"
                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
@@ -54,9 +53,9 @@
                     type="submit" 
                     class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-6 gap-2 text-sm font-semibold">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Simpan Perubahan
+                    Simpan
                 </button>
             </div>
         </form>

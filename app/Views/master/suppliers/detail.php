@@ -54,39 +54,21 @@
                     </div>
 
                     <div>
-                        <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Email</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier->email ?? '-' ?></p>
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Alamat</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier['address'] ?? '-' ?></p>
+                        <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Kode Supplier</p>
+                        <p class="text-sm font-mono font-medium text-foreground mt-1"><?= $supplier->code ?? '-' ?></p>
                     </div>
                 </div>
 
-                <!-- Payment Information -->
+                <!-- Purchase Statistics -->
                 <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
-                    <div>
-                        <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Syarat Pembayaran</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier['payment_terms'] ?? '-' ?></p>
-                    </div>
-
-                    <div>
-                        <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">PIC</p>
-                        <p class="text-sm font-medium text-foreground mt-1"><?= $supplier['pic_name'] ?? '-' ?></p>
-                    </div>
-                </div>
-
-                <!-- Debt Information -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
-                    <div>
-                        <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Total Hutang</p>
-                        <p class="text-lg font-bold text-destructive mt-1"><?= format_currency($supplier['debt_balance']) ?></p>
-                    </div>
-
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Total Pembelian</p>
-                        <p class="text-lg font-bold text-foreground mt-1"><?= format_currency($supplier['total_purchases'] ?? 0) ?></p>
+                        <p class="text-lg font-bold text-foreground mt-1"><?= format_currency($stats->total_purchases ?? 0) ?></p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Rata-rata PO</p>
+                        <p class="text-lg font-bold text-foreground mt-1"><?= format_currency($stats->avg_po ?? 0) ?></p>
                     </div>
                 </div>
             </div>
@@ -112,29 +94,31 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border/50">
-                        <?php if (empty($recent_pos)): ?>
+                        <?php if (empty($recentPOs)): ?>
                         <tr>
                             <td colspan="4" class="px-6 py-8 text-center text-muted-foreground">
                                 Belum ada purchase order
                             </td>
                         </tr>
                         <?php else: ?>
-                            <?php foreach ($recent_pos as $po): ?>
+                            <?php foreach ($recentPOs as $po): ?>
                             <tr class="hover:bg-muted/50 transition">
-                                <td class="px-6 py-4 font-mono font-semibold text-foreground"><?= $po['po_number'] ?></td>
-                                <td class="px-6 py-4"><?= format_date($po['created_at']) ?></td>
+                                <td class="px-6 py-4 font-mono font-semibold text-foreground"><?= $po['nomor_po'] ?></td>
+                                <td class="px-6 py-4"><?= format_date($po['tanggal_po']) ?></td>
                                 <td class="px-6 py-4 text-right font-semibold"><?= format_currency($po['total_amount']) ?></td>
                                 <td class="px-6 py-4 text-center">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold" :class="'<?= match($po['status']) {
-                                        'RECEIVED' => 'bg-success/10 text-success',
-                                        'PENDING' => 'bg-warning/10 text-warning',
-                                        'CANCELLED' => 'bg-destructive/10 text-destructive',
+                                        'Diterima Semua' => 'bg-success/10 text-success',
+                                        'Sebagian' => 'bg-warning/10 text-warning',
+                                        'Dibatalkan' => 'bg-destructive/10 text-destructive',
+                                        'Dipesan' => 'bg-info/10 text-info',
                                         default => 'bg-muted/10 text-muted'
                                     } ?>'">
                                         <?= match($po['status']) {
-                                            'RECEIVED' => 'Terima',
-                                            'PENDING' => 'Pending',
-                                            'CANCELLED' => 'Batal',
+                                            'Diterima Semua' => 'Diterima',
+                                            'Sebagian' => 'Sebagian',
+                                            'Dibatalkan' => 'Batal',
+                                            'Dipesan' => 'Dipesan',
                                             default => 'Unknown'
                                         } ?>
                                     </span>
@@ -190,49 +174,20 @@
             <div class="p-6 space-y-4">
                 <div class="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
                     <p class="text-xs text-destructive font-semibold uppercase">Total Hutang</p>
-                    <p class="text-2xl font-bold text-destructive mt-2"><?= format_currency($supplier['debt_balance']) ?></p>
+                    <p class="text-2xl font-bold text-destructive mt-2"><?= format_currency($totalDebt) ?></p>
                 </div>
 
                 <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
                     <p class="text-xs text-muted-foreground font-semibold uppercase">Jumlah PO Belum Bayar</p>
-                    <p class="text-2xl font-bold text-foreground mt-2"><?= $supplier['pending_po_count'] ?? 0 ?></p>
+                    <p class="text-2xl font-bold text-foreground mt-2"><?= $pendingCount ?? 0 ?></p>
                 </div>
 
                 <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
-                    <p class="text-xs text-muted-foreground font-semibold uppercase">Rata-rata PO</p>
-                    <p class="text-2xl font-bold text-foreground mt-2"><?= format_currency($supplier['average_po'] ?? 0) ?></p>
+                    <p class="text-xs text-muted-foreground font-semibold uppercase">Total PO</p>
+                    <p class="text-2xl font-bold text-foreground mt-2"><?= $stats->total_pos ?? 0 ?></p>
                 </div>
             </div>
         </div>
-
-        <!-- Bank Information (if available) -->
-        <?php if ($supplier['bank_name'] ?? null): ?>
-        <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
-                <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <?= icon('Banknote', 'h-5 w-5 text-primary') ?>
-                    Rekening Bank
-                </h2>
-            </div>
-
-            <div class="p-6 space-y-3">
-                <div>
-                    <p class="text-xs text-muted-foreground font-semibold uppercase mb-1">Bank</p>
-                    <p class="text-sm font-semibold text-foreground"><?= $supplier['bank_name'] ?></p>
-                </div>
-
-                <div>
-                    <p class="text-xs text-muted-foreground font-semibold uppercase mb-1">Nomor Rekening</p>
-                    <p class="text-sm font-mono font-semibold text-foreground"><?= $supplier['bank_account'] ?></p>
-                </div>
-
-                <div>
-                    <p class="text-xs text-muted-foreground font-semibold uppercase mb-1">Atas Nama</p>
-                    <p class="text-sm font-semibold text-foreground"><?= $supplier['bank_account_name'] ?></p>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
     </div>
 </div>
 

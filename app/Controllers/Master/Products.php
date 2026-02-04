@@ -134,6 +134,27 @@ class Products extends BaseCRUDController
         }
     }
 
+    /**
+     * Show product detail page
+     */
+    public function detail($id)
+    {
+        $product = $this->model->find($id);
+        
+        if (!$product) {
+            return redirect()->to($this->routePath)->with('error', 'Produk tidak ditemukan');
+        }
+
+        $data = [
+            'title' => 'Detail Produk',
+            'subtitle' => $product->name,
+            'product' => $product,
+            'totalStock' => $this->getProductTotalStock($id),
+        ];
+
+        return view($this->viewPath . '/detail', $data);
+    }
+
     private function getProductTotalStock($productId): int
     {
         $result = $this->productStockModel

@@ -72,8 +72,8 @@ class Suppliers extends BaseCRUDController
         
         // Get recent purchase orders
         $recentPOs = $db->table('purchase_orders')
-            ->select('id_po, nomor_po, tanggal_po, total_bayar, status')
-            ->where('id_supplier', $id)
+            ->select('id_po, nomor_po, tanggal_po, total_amount, status')
+            ->where('supplier_id', $id)
             ->orderBy('tanggal_po', 'DESC')
             ->limit(10)
             ->get()
@@ -81,8 +81,8 @@ class Suppliers extends BaseCRUDController
 
         // Get debt/unpaid balance
         $debtStatus = $db->table('purchase_orders')
-            ->select('SUM(total_bayar - jumlah_dibayar) as total_debt, COUNT(*) as pending_count')
-            ->where('id_supplier', $id)
+            ->select('SUM(total_amount - received_amount) as total_debt, COUNT(*) as pending_count')
+            ->where('supplier_id', $id)
             ->where('status !=', 'Dibatalkan')
             ->get()
             ->getRow();
@@ -92,8 +92,8 @@ class Suppliers extends BaseCRUDController
 
         // Get statistics
         $stats = $db->table('purchase_orders')
-            ->select('COUNT(*) as total_pos, SUM(total_bayar) as total_purchases, AVG(total_bayar) as avg_po')
-            ->where('id_supplier', $id)
+            ->select('COUNT(*) as total_pos, SUM(total_amount) as total_purchases, AVG(total_amount) as avg_po')
+            ->where('supplier_id', $id)
             ->get()
             ->getRow();
 

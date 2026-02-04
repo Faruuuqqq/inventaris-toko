@@ -13,7 +13,7 @@
     <div class="rounded-xl border border-border/50 bg-surface p-6">
         <form action="<?= base_url('master/suppliers/' . $supplier->id) ?>" method="POST" class="space-y-5">
             <?= csrf_field() ?>
-            <?= method_field('PUT') ?>
+            <input type="hidden" name="_method" value="PUT">
             
             <!-- Row 1: Code & Name -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

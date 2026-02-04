@@ -28,6 +28,8 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Products
     $routes->group('products', function($routes) {
         $routes->get('/', 'Products::index');
+        $routes->get('create', 'Products::create');
+        $routes->get('(:num)', 'Products::detail/$1');
         $routes->get('edit/(:num)', 'Products::edit/$1');
         $routes->get('delete/(:num)', 'Products::delete/$1');  // GET for simple delete links
         $routes->post('/', 'Products::store');
@@ -39,6 +41,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Customers
     $routes->group('customers', function($routes) {
         $routes->get('/', 'Customers::index');
+        $routes->get('create', 'Customers::create');
         $routes->get('(:num)', 'Customers::detail/$1');
         $routes->get('edit/(:num)', 'Customers::edit/$1');  // Standard pattern
         $routes->get('delete/(:num)', 'Customers::delete/$1');
@@ -52,6 +55,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Suppliers
     $routes->group('suppliers', function($routes) {
         $routes->get('/', 'Suppliers::index');
+        $routes->get('create', 'Suppliers::create');
         $routes->get('(:num)', 'Suppliers::detail/$1');
         $routes->get('edit/(:num)', 'Suppliers::edit/$1');  // Standard pattern
         $routes->get('delete/(:num)', 'Suppliers::delete/$1');
@@ -65,6 +69,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Warehouses
     $routes->group('warehouses', function($routes) {
         $routes->get('/', 'Warehouses::index');
+        $routes->get('create', 'Warehouses::create');
         $routes->get('(:num)', 'Warehouses::detail/$1');
         $routes->get('edit/(:num)', 'Warehouses::edit/$1');
         $routes->get('delete/(:num)', 'Warehouses::delete/$1');
@@ -78,6 +83,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Salespersons
     $routes->group('salespersons', function($routes) {
         $routes->get('/', 'Salespersons::index');
+        $routes->get('create', 'Salespersons::create');
         $routes->get('(:num)', 'Salespersons::detail/$1');
         $routes->get('edit/(:num)', 'Salespersons::edit/$1');
         $routes->get('delete/(:num)', 'Salespersons::delete/$1');
@@ -90,6 +96,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     // Users
     $routes->group('users', function($routes) {
         $routes->get('/', 'Users::index');
+        $routes->get('create', 'Users::create');
         $routes->get('(:num)', 'Users::detail/$1');
         $routes->get('edit/(:num)', 'Users::edit/$1');
         $routes->get('delete/(:num)', 'Users::delete/$1');
