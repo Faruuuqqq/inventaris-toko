@@ -272,8 +272,8 @@ class PurchaseReturns extends BaseController
         $purchaseReturn['warehouse'] = $this->warehouseModel->find($purchaseReturn['id_warehouse_asal']);
         $purchaseReturn['originalPO'] = $this->purchaseOrderModel->find($purchaseReturn['id_po']);
         $purchaseReturn['details'] = $this->purchaseReturnDetailModel
-            ->select('purchase_return_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = purchase_return_details.id_produk')
+            ->select('purchase_return_details.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_return_details.product_id')
             ->where('id_retur_pembelian', $id)
             ->findAll();
         
@@ -303,8 +303,8 @@ class PurchaseReturns extends BaseController
         $purchaseReturn['supplier'] = $this->supplierModel->find($purchaseReturn['id_supplier']);
         $purchaseReturn['warehouse'] = $this->warehouseModel->find($purchaseReturn['id_warehouse_asal']);
         $purchaseReturn['details'] = $this->purchaseReturnDetailModel
-            ->select('purchase_return_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = purchase_return_details.id_produk')
+            ->select('purchase_return_details.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_return_details.product_id')
             ->where('id_retur_pembelian', $id)
             ->findAll();
         
@@ -565,8 +565,8 @@ class PurchaseReturns extends BaseController
         $purchaseReturn['supplier'] = $this->supplierModel->find($purchaseReturn['id_supplier']);
         $purchaseReturn['warehouse'] = $this->warehouseModel->find($purchaseReturn['id_warehouse_asal']);
         $purchaseReturn['details'] = $this->purchaseReturnDetailModel
-            ->select('purchase_return_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = purchase_return_details.id_produk')
+            ->select('purchase_return_details.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_return_details.product_id')
             ->where('id_retur_pembelian', $id)
             ->findAll();
         
@@ -699,8 +699,8 @@ class PurchaseReturns extends BaseController
         }
         
         $details = $this->purchaseOrderDetailModel
-            ->select('purchase_order_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = purchase_order_details.id_produk')
+            ->select('purchase_order_details.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_order_details.product_id')
             ->where('id_po', $poId)
             ->findAll();
         

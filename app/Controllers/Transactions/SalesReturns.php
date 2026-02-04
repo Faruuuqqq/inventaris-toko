@@ -273,8 +273,8 @@ class SalesReturns extends BaseController
         $salesReturn['warehouse'] = $this->warehouseModel->find($salesReturn['id_warehouse_asal']);
         $salesReturn['originalSale'] = $this->saleModel->find($salesReturn['id_penjualan']);
         $salesReturn['details'] = $this->salesReturnDetailModel
-            ->select('sales_return_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = sales_return_details.id_produk')
+            ->select('sales_return_details.*, products.name, products.sku')
+            ->join('products', 'products.id = sales_return_details.product_id')
             ->where('id_retur_penjualan', $id)
             ->findAll();
         
@@ -304,8 +304,8 @@ class SalesReturns extends BaseController
         $salesReturn['customer'] = $this->customerModel->find($salesReturn['id_customer']);
         $salesReturn['warehouse'] = $this->warehouseModel->find($salesReturn['id_warehouse_asal']);
         $salesReturn['details'] = $this->salesReturnDetailModel
-            ->select('sales_return_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = sales_return_details.id_produk')
+            ->select('sales_return_details.*, products.name, products.sku')
+            ->join('products', 'products.id = sales_return_details.product_id')
             ->where('id_retur_penjualan', $id)
             ->findAll();
         
@@ -566,8 +566,8 @@ class SalesReturns extends BaseController
         $salesReturn['customer'] = $this->customerModel->find($salesReturn['id_customer']);
         $salesReturn['warehouse'] = $this->warehouseModel->find($salesReturn['id_warehouse_asal']);
         $salesReturn['details'] = $this->salesReturnDetailModel
-            ->select('sales_return_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = sales_return_details.id_produk')
+            ->select('sales_return_details.*, products.name, products.sku')
+            ->join('products', 'products.id = sales_return_details.product_id')
             ->where('id_retur_penjualan', $id)
             ->findAll();
         
@@ -697,8 +697,8 @@ class SalesReturns extends BaseController
         }
         
         $details = $this->saleItemModel
-            ->select('sale_items.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = sale_items.product_id')
+            ->select('sale_items.*, products.name, products.sku')
+            ->join('products', 'products.id = sale_items.product_id')
             ->where('sale_id', $saleId)
             ->findAll();
         

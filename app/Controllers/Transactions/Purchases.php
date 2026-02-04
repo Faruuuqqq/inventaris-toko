@@ -238,15 +238,15 @@ class Purchases extends BaseController
         }
         
         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
-        $purchaseOrder['warehouse'] = $this->warehouseModel->find($purchaseOrder['id_warehouse']);
-        $purchaseOrder['details'] = $this->purchaseOrderDetailModel
-            ->select('purchase_order_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = purchase_order_details.id_produk')
-            ->where('id_po', $id)
-            ->findAll();
-        
-        $data = [
-            'title' => 'Ubah Pesanan Pembelian',
+         $purchaseOrder['warehouse'] = $this->warehouseModel->find($purchaseOrder['id_warehouse']);
+         $purchaseOrder['details'] = $this->purchaseOrderDetailModel
+             ->select('purchase_order_details.*, products.name, products.sku')
+             ->join('products', 'products.id = purchase_order_details.product_id')
+             ->where('purchase_order_details.po_id', $id)
+             ->findAll();
+         
+         $data = [
+             'title' => 'Ubah Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder,
             'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
             'products' => $this->productModel->where('status', 'Aktif')->findAll(),
@@ -489,16 +489,16 @@ class Purchases extends BaseController
             return redirect()->back()->with('error', 'Pesanan pembelian sudah diterima penuh');
         }
         
-        $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
-        $purchaseOrder['warehouse'] = $this->warehouseModel->find($purchaseOrder['id_warehouse']);
-        $purchaseOrder['details'] = $this->purchaseOrderDetailModel
-            ->select('purchase_order_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = purchase_order_details.id_produk')
-            ->where('id_po', $id)
-            ->findAll();
-        
-        $data = [
-            'title' => 'Terima Pesanan Pembelian',
+         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
+         $purchaseOrder['warehouse'] = $this->warehouseModel->find($purchaseOrder['id_warehouse']);
+         $purchaseOrder['details'] = $this->purchaseOrderDetailModel
+             ->select('purchase_order_details.*, products.name, products.sku')
+             ->join('products', 'products.id = purchase_order_details.product_id')
+             ->where('purchase_order_details.po_id', $id)
+             ->findAll();
+         
+         $data = [
+             'title' => 'Terima Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder,
             'warehouses_good' => $this->warehouseModel->where('jenis', 'Baik')->findAll(),
             'warehouses_damaged' => $this->warehouseModel->where('jenis', 'Rusak')->findAll()
@@ -646,16 +646,16 @@ class Purchases extends BaseController
             return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
         }
         
-        $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
-        $purchaseOrder['warehouse'] = $this->warehouseModel->find($purchaseOrder['id_warehouse']);
-        $purchaseOrder['details'] = $this->purchaseOrderDetailModel
-            ->select('purchase_order_details.*, products.nama_produk, products.kode_produk')
-            ->join('products', 'products.id_produk = purchase_order_details.id_produk')
-            ->where('id_po', $id)
-            ->findAll();
-        
-        $data = [
-            'title' => 'Detail Pesanan Pembelian',
+         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['id_supplier']);
+         $purchaseOrder['warehouse'] = $this->warehouseModel->find($purchaseOrder['id_warehouse']);
+         $purchaseOrder['details'] = $this->purchaseOrderDetailModel
+             ->select('purchase_order_details.*, products.name, products.sku')
+             ->join('products', 'products.id = purchase_order_details.product_id')
+             ->where('purchase_order_details.po_id', $id)
+             ->findAll();
+         
+         $data = [
+             'title' => 'Detail Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder
         ];
         

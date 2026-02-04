@@ -108,105 +108,97 @@ class ProductsController extends ResourceController
      * @return mixed
      */
     public function create()
-    {
-        $rules = [
-            'nama_produk' => 'required|min_length[3]|max_length[255]',
-            'kode_produk' => 'required|min_length[2]|max_length[50]|is_unique[products.kode_produk]',
-            'deskripsi' => 'max_length[1000]',
-            'harga_jual' => 'required|numeric|greater_than[0]',
-            'harga_beli_terakhir' => 'required|numeric|greater_than[0]',
-            'stok' => 'required|integer|greater_than_equal_to[0]',
-            'minimal_stok' => 'required|integer|greater_than[0]',
-            'satuan' => 'required|max_length[20]',
-            'status' => 'required|in_list[Aktif,Tidak Aktif]'
-        ];
-        
-        if (!$this->validate($rules)) {
-            return $this->fail($this->validator->getErrors());
-        }
-        
-        $data = [
-            'nama_produk' => $this->request->getPost('nama_produk'),
-            'kode_produk' => $this->request->getPost('kode_produk'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'harga_jual' => $this->request->getPost('harga_jual'),
-            'harga_beli_terakhir' => $this->request->getPost('harga_beli_terakhir'),
-            'stok' => $this->request->getPost('stok'),
-            'minimal_stok' => $this->request->getPost('minimal_stok'),
-            'satuan' => $this->request->getPost('satuan'),
-            'status' => $this->request->getPost('status'),
-            'created_by' => $this->request->getPost('created_by') ?? session()->get('id_user')
-        ];
-        
-        $id = $this->productModel->insert($data);
-        
-        if ($id) {
-            $product = $this->productModel->find($id);
-            return $this->respondCreated([
-                'status' => 'success',
-                'message' => 'Product created successfully',
-                'data' => $product
-            ]);
-        } else {
-            return $this->failServerError('Failed to create product');
-        }
-    }
+     {
+         $rules = [
+             'name' => 'required|min_length[3]|max_length[255]',
+             'sku' => 'required|min_length[2]|max_length[50]|is_unique[products.sku]',
+             'description' => 'max_length[1000]',
+             'price_sell' => 'required|numeric|greater_than[0]',
+             'price_buy' => 'required|numeric|greater_than[0]',
+             'unit' => 'required|max_length[20]',
+             'min_stock_alert' => 'required|integer|greater_than[0]',
+             'category_id' => 'required|integer'
+         ];
+         
+         if (!$this->validate($rules)) {
+             return $this->fail($this->validator->getErrors());
+         }
+         
+         $data = [
+             'name' => $this->request->getPost('name'),
+             'sku' => $this->request->getPost('sku'),
+             'category_id' => $this->request->getPost('category_id'),
+             'price_sell' => $this->request->getPost('price_sell'),
+             'price_buy' => $this->request->getPost('price_buy'),
+             'unit' => $this->request->getPost('unit'),
+             'min_stock_alert' => $this->request->getPost('min_stock_alert'),
+         ];
+         
+         $id = $this->productModel->insert($data);
+         
+         if ($id) {
+             $product = $this->productModel->find($id);
+             return $this->respondCreated([
+                 'status' => 'success',
+                 'message' => 'Product created successfully',
+                 'data' => $product
+             ]);
+         } else {
+             return $this->failServerError('Failed to create product');
+         }
+     }
     
     /**
      * Add or update a model resource, from "posted" properties
      *
      * @return mixed
      */
-    public function update($id = null)
-    {
-        $product = $this->productModel->find($id);
-        
-        if (!$product) {
-            return $this->failNotFound('Product not found');
-        }
-        
-        $rules = [
-            'nama_produk' => 'required|min_length[3]|max_length[255]',
-            'kode_produk' => "required|min_length[2]|max_length[50]|is_unique[products.kode_produk,id_produk,{$id}]",
-            'deskripsi' => 'max_length[1000]',
-            'harga_jual' => 'required|numeric|greater_than[0]',
-            'harga_beli_terakhir' => 'required|numeric|greater_than[0]',
-            'stok' => 'required|integer|greater_than_equal_to[0]',
-            'minimal_stok' => 'required|integer|greater_than[0]',
-            'satuan' => 'required|max_length[20]',
-            'status' => 'required|in_list[Aktif,Tidak Aktif]'
-        ];
-        
-        if (!$this->validate($rules)) {
-            return $this->fail($this->validator->getErrors());
-        }
-        
-        $data = [
-            'nama_produk' => $this->request->getPost('nama_produk'),
-            'kode_produk' => $this->request->getPost('kode_produk'),
-            'deskripsi' => $this->request->getPost('deskripsi'),
-            'harga_jual' => $this->request->getPost('harga_jual'),
-            'harga_beli_terakhir' => $this->request->getPost('harga_beli_terakhir'),
-            'stok' => $this->request->getPost('stok'),
-            'minimal_stok' => $this->request->getPost('minimal_stok'),
-            'satuan' => $this->request->getPost('satuan'),
-            'status' => $this->request->getPost('status'),
-            'updated_by' => $this->request->getPost('updated_by') ?? session()->get('id_user')
-        ];
-        
-        $updated = $this->productModel->update($id, $data);
-        
-        if ($updated) {
-            $product = $this->productModel->find($id);
-            return $this->respond([
-                'status' => 'success',
-                'message' => 'Product updated successfully',
-                'data' => $product
-            ]);
-        } else {
-            return $this->failServerError('Failed to update product');
-        }
-    }
+     public function update($id = null)
+     {
+         $product = $this->productModel->find($id);
+         
+         if (!$product) {
+             return $this->failNotFound('Product not found');
+         }
+         
+         $rules = [
+             'name' => 'required|min_length[3]|max_length[255]',
+             'sku' => "required|min_length[2]|max_length[50]|is_unique[products.sku,id,{$id}]",
+             'description' => 'max_length[1000]',
+             'price_sell' => 'required|numeric|greater_than[0]',
+             'price_buy' => 'required|numeric|greater_than[0]',
+             'unit' => 'required|max_length[20]',
+             'min_stock_alert' => 'required|integer|greater_than[0]',
+             'category_id' => 'required|integer'
+         ];
+         
+         if (!$this->validate($rules)) {
+             return $this->fail($this->validator->getErrors());
+         }
+         
+         $data = [
+             'name' => $this->request->getPost('name'),
+             'sku' => $this->request->getPost('sku'),
+             'category_id' => $this->request->getPost('category_id'),
+             'price_sell' => $this->request->getPost('price_sell'),
+             'price_buy' => $this->request->getPost('price_buy'),
+             'unit' => $this->request->getPost('unit'),
+             'min_stock_alert' => $this->request->getPost('min_stock_alert'),
+         ];
+         
+         $updated = $this->productModel->update($id, $data);
+         
+         if ($updated) {
+             $product = $this->productModel->find($id);
+             return $this->respond([
+                 'status' => 'success',
+                 'message' => 'Product updated successfully',
+                 'data' => $product
+             ]);
+         } else {
+             return $this->failServerError('Failed to update product');
+         }
+     }
     
     /**
      * Delete the designated resource object from the model
@@ -306,30 +298,30 @@ class ProductsController extends ResourceController
     {
         $barcode = $this->request->getGet('barcode');
         
-        if (empty($barcode)) {
-            return $this->failValidationError('Barcode is required');
-        }
+         if (empty($barcode)) {
+             return $this->failValidationError('Barcode is required');
+         }
+         
+         $product = $this->productModel
+             ->where('sku', $barcode)
+             ->orWhere('barcode', $barcode)
+             ->first();
+         
+         if (!$product) {
+             return $this->failNotFound('Product not found for this barcode');
+         }
+         
+         $warehouse = $this->request->getGet('warehouse') ?? null;
         
-        $product = $this->productModel
-            ->where('kode_produk', $barcode)
-            ->orWhere('barcode', $barcode)
-            ->first();
-        
-        if (!$product) {
-            return $this->failNotFound('Product not found for this barcode');
-        }
-        
-        $warehouse = $this->request->getGet('warehouse') ?? null;
-        
-        // Add stock information
-        if ($warehouse) {
-            $stockMutationModel = new \App\Models\StockMutationModel();
-            $product['stock'] = $stockMutationModel->getProductStock($product['id_produk'], $warehouse);
-        }
-        
-        return $this->respond([
-            'status' => 'success',
-            'data' => $product
-        ]);
+         // Add stock information
+         if ($warehouse) {
+             $stockMutationModel = new \App\Models\StockMutationModel();
+             $product['stock'] = $stockMutationModel->getProductStock($product['id'], $warehouse);
+         }
+         
+         return $this->respond([
+             'status' => 'success',
+             'data' => $product
+         ]);
     }
 }
