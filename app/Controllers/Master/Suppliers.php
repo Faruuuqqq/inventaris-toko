@@ -82,8 +82,8 @@ class Suppliers extends BaseCRUDController
         // Get debt/unpaid balance
         $debtStatus = $db->table('purchase_orders')
             ->select('SUM(total_amount - received_amount) as total_debt, COUNT(*) as pending_count')
-            ->where('supplier_id', $id)
-            ->where('status !=', 'Dibatalkan')
+            ->where('purchase_orders.supplier_id', $id)
+            ->where('purchase_orders.status !=', 'Dibatalkan')
             ->get()
             ->getRow();
 
