@@ -4,8 +4,7 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\ProductModel;
-use App\Models\CategoryModel;
-use App\Models\ProductStockModel;
+use App\Services\ProductDataService;
 use CodeIgniter\Model;
 
 class Products extends BaseCRUDController
@@ -15,14 +14,12 @@ class Products extends BaseCRUDController
     protected string $entityName = 'Produk';
     protected string $entityNamePlural = 'Products';
 
-    protected CategoryModel $categoryModel;
-    protected ProductStockModel $productStockModel;
+    protected ProductDataService $dataService;
 
     public function __construct()
     {
         parent::__construct();
-        $this->categoryModel = new CategoryModel();
-        $this->productStockModel = new ProductStockModel();
+        $this->dataService = new ProductDataService();
     }
 
     protected function getModel(): ProductModel
@@ -69,67 +66,92 @@ class Products extends BaseCRUDController
         ];
     }
 
-    protected function getIndexData(): array
+    /**
+     * Override index to use ProductDataService
+     */
+    public function index()
     {
-        $products = $this->model
-            ->select('products.*, categories.name as category_name, COALESCE(SUM(ps.quantity), 0) as stock')
-            ->join('categories', 'categories.id = products.category_id', 'left')
-            ->join('product_stocks ps', 'ps.product_id = products.id', 'left')
-            ->groupBy('products.id')
-            ->findAll();
+        try {
+            $data = array_merge(
+                ['title' => 'Katalog Produk'],
+                $this->dataService->getIndexData()
+            );
 
-        return $products;
+            return view($this->viewPath . '/index', $data);
+        } catch (\Exception $e) {
+            log_message('error', 'Products index error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data produk');
+        }
     }
 
-     protected function getAdditionalViewData(): array
-     {
-         // Get all categories as array (not Entity objects)
-         $categories = $this->categoryModel->asArray()->findAll();
-         
-         // Get products with stock data
-         $products = $this->getIndexData();
-         
-         // Calculate total stock and inventory value
-         $totalStock = 0;
-         $totalValue = 0;
-         
-         foreach ($products as $product) {
-             $stock = (int)($product->stock ?? 0);
-             $totalStock += $stock;
-             
-             // Value = quantity * buy price
-             $buyPrice = (float)($product->price_buy ?? 0);
-             $totalValue += ($stock * $buyPrice);
-         }
-         
-         return [
-             'categories' => $categories,
-             'totalProducts' => count($products),
-             'totalCategories' => count($categories),
-             'totalStock' => $totalStock,
-             'totalValue' => $totalValue,
-             'lowStockCount' => 0, // TODO: Implement low stock count calculation from product_stocks table
-         ];
-     }
+    /**
+     * Override create to use ProductDataService
+     */
+    public function create()
+    {
+        if (!$this->checkStoreAccess()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
 
-     // Override index to use custom logic
-     public function index()
-     {
-         try {
-             $products = $this->getIndexData();
-             $additionalData = $this->getAdditionalViewData();
+        $data = array_merge(
+            [
+                'title' => 'Tambah Produk',
+                'subtitle' => 'Tambahkan produk baru ke katalog',
+            ],
+            $this->dataService->getCreateData()
+        );
 
-             $data = array_merge([
-                 'title' => $this->entityName,
-                 'products' => $products,
-             ], $additionalData);
+        return view($this->viewPath . '/create', $data);
+    }
 
-             return view($this->viewPath . '/index', $data);
-         } catch (\Exception $e) {
-             log_message('error', 'Products index error: ' . $e->getMessage());
-             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data produk: ' . $e->getMessage());
-         }
-     }
+    /**
+     * Override edit to use ProductDataService and pass 'product' variable
+     */
+    public function edit($id)
+    {
+        if (!$this->checkUpdateAccess($id)) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+        }
+
+        $record = $this->model->find($id);
+
+        if (!$record) {
+            return redirect()->back()->with('error', 'Produk tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Edit Produk',
+                'subtitle' => 'Ubah data produk',
+                'product' => $record, // ← Using English variable name
+            ],
+            $this->dataService->getEditData()
+        );
+
+        return view($this->viewPath . '/edit', $data);
+    }
+
+    /**
+     * Override detail to use ProductDataService
+     */
+    public function detail($id)
+    {
+        $detailData = $this->dataService->getDetailData($id);
+
+        if (empty($detailData)) {
+            return redirect()->to($this->routePath)->with('error', 'Produk tidak ditemukan');
+        }
+
+        $data = array_merge(
+            [
+                'title' => 'Detail Produk',
+                'subtitle' => $detailData['product']->name,
+            ],
+            $detailData
+        );
+
+        return view($this->viewPath . '/detail', $data);
+    }
 
     protected function afterStore($insertId): void
     {
@@ -147,35 +169,5 @@ class Products extends BaseCRUDController
         if ($product) {
             log_message('info', "Product deleted: ID {$id}, SKU: {$product->sku}");
         }
-    }
-
-    /**
-     * Show product detail page
-     */
-    public function detail($id)
-    {
-        $product = $this->model->find($id);
-        
-        if (!$product) {
-            return redirect()->to($this->routePath)->with('error', 'Produk tidak ditemukan');
-        }
-
-        $data = [
-            'title' => 'Detail Produk',
-            'subtitle' => $product->name,
-            'product' => $product,
-            'totalStock' => $this->getProductTotalStock($id),
-        ];
-
-        return view($this->viewPath . '/detail', $data);
-    }
-
-    private function getProductTotalStock($productId): int
-    {
-        $result = $this->productStockModel
-            ->where('product_id', $productId)
-            ->selectSum('quantity')
-            ->first();
-        return (int)($result->quantity ?? 0);
     }
 }
