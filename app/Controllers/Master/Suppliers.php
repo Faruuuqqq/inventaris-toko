@@ -5,6 +5,7 @@ namespace App\Controllers\Master;
 use App\Controllers\BaseCRUDController;
 use App\Models\SupplierModel;
 use App\Services\SupplierDataService;
+use App\Services\ExportService;
 use App\Traits\ApiResponseTrait;
 use CodeIgniter\Model;
 
@@ -138,106 +139,74 @@ class Suppliers extends BaseCRUDController
     }
 
     /**
-     * AJAX: Get supplier list for dropdown/select2
-     * Returns simplified supplier data for forms
+     * Export suppliers to PDF
+     * GET /master/suppliers/export-pdf
+     *
+     * Query parameters:
+     * - status: Filter by status (active/inactive)
+     *
+     * @return \CodeIgniter\HTTP\Response PDF file download
      */
-    public function getList()
+    public function export()
     {
-        $suppliers = $this->model
-            ->select('id, code, name, phone')
-            ->orderBy('name', 'ASC')
-            ->findAll();
-        
-        return $this->respondData($suppliers);
-    }
-}
+        try {
+            // Get filters from query string
+            $filters = [
+                'status' => $this->request->getGet('status'),
+            ];
 
-    protected function getStoreValidationRules(): array
-    {
-        return [
-            'name' => 'required',
-            'phone' => 'permit_empty',
-        ];
-    }
+            // Get export data from service
+            $suppliers = $this->dataService->getExportData($filters);
 
-    protected function getDataFromRequest(): array
-    {
-        return [
-            'code' => $this->request->getPost('code'),
-            'name' => $this->request->getPost('name'),
-            'phone' => $this->request->getPost('phone'),
-        ];
-    }
+            // Initialize export service
+            $exportService = new ExportService();
 
-    protected function getIndexData(): array
-    {
-        return $this->model->asArray()->findAll();
+            // Generate PDF
+            $filename = $exportService->generateFilename('suppliers');
+            $pdfContent = $exportService->generatePDF(
+                $suppliers,
+                'suppliers',
+                'Daftar Supplier',
+                $this->prepareFilterLabels($filters)
+            );
+
+            // Return download response
+            return $exportService->getDownloadResponse($pdfContent, $filename);
+        } catch (\Exception $e) {
+            log_message('error', 'Suppliers export error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengekspor supplier: ' . $e->getMessage());
+        }
     }
 
     /**
-     * AJAX: Get supplier list for dropdown/select2
-     * Returns simplified supplier data for forms
+     * Prepare human-readable filter labels for PDF header
+     *
+     * @param array $filters Raw filter values
+     * @return array Filter labels for display
      */
-    public function getList()
+    protected function prepareFilterLabels(array $filters): array
     {
-        $suppliers = $this->model
-            ->select('id, code, name, phone')
-            ->orderBy('name', 'ASC')
-            ->findAll();
-        
-        return $this->respondData($suppliers);
-    }
+        $labels = [];
 
-    /**
-     * Show supplier detail page
-     */
-    public function detail($id)
-    {
-        $supplier = $this->model->find($id);
-        
-        if (!$supplier) {
-            return redirect()->to($this->routePath)->with('error', 'Supplier tidak ditemukan');
+        if (!empty($filters['status'])) {
+            $labels['status'] = $filters['status'] === 'active' ? 'Aktif' : 'Tidak Aktif';
         }
 
-        $db = \Config\Database::connect();
+        return $labels;
+    }
+
+    /**
+     * AJAX: Get supplier list for dropdown/select2
+     * Returns simplified supplier data for forms
+     */
+    public function getList()
+    {
+        $suppliers = $this->model
+            ->select('id, code, name, phone')
+            ->orderBy('name', 'ASC')
+            ->findAll();
         
-        // Get recent purchase orders
-        $recentPOs = $db->table('purchase_orders')
-            ->select('id_po, nomor_po, tanggal_po, total_amount, status')
-            ->where('supplier_id', $id)
-            ->orderBy('tanggal_po', 'DESC')
-            ->limit(10)
-            ->get()
-            ->getResultArray();
-
-        // Get debt/unpaid balance
-        $debtStatus = $db->table('purchase_orders')
-            ->select('SUM(total_amount - received_amount) as total_debt, COUNT(*) as pending_count')
-            ->where('purchase_orders.supplier_id', $id)
-            ->where('purchase_orders.status !=', 'Dibatalkan')
-            ->get()
-            ->getRow();
-
-        $totalDebt = $debtStatus->total_debt ?? 0;
-        $pendingCount = $debtStatus->pending_count ?? 0;
-
-        // Get statistics
-        $stats = $db->table('purchase_orders')
-            ->select('COUNT(*) as total_pos, SUM(total_amount) as total_purchases, AVG(total_amount) as avg_po')
-            ->where('supplier_id', $id)
-            ->get()
-            ->getRow();
-
-        $data = [
-            'title' => 'Detail Supplier',
-            'subtitle' => $supplier->name,
-            'supplier' => $supplier,
-            'recentPOs' => $recentPOs,
-            'totalDebt' => $totalDebt,
-            'pendingCount' => $pendingCount,
-            'stats' => $stats,
-        ];
-
-        return view($this->viewPath . '/detail', $data);
+        return $this->respondData($suppliers);
     }
 }
+

@@ -5,6 +5,7 @@ namespace App\Controllers\Master;
 use App\Controllers\BaseCRUDController;
 use App\Models\CustomerModel;
 use App\Services\CustomerDataService;
+use App\Services\ExportService;
 use App\Traits\ApiResponseTrait;
 
 class Customers extends BaseCRUDController
@@ -137,6 +138,63 @@ class Customers extends BaseCRUDController
         );
 
         return view($this->viewPath . '/detail', $data);
+    }
+
+    /**
+     * Export customers to PDF
+     * GET /master/customers/export-pdf
+     *
+     * Query parameters:
+     * - status: Filter by status (active/inactive)
+     *
+     * @return \CodeIgniter\HTTP\Response PDF file download
+     */
+    public function export()
+    {
+        try {
+            // Get filters from query string
+            $filters = [
+                'status' => $this->request->getGet('status'),
+            ];
+
+            // Get export data from service
+            $customers = $this->dataService->getExportData($filters);
+
+            // Initialize export service
+            $exportService = new ExportService();
+
+            // Generate PDF
+            $filename = $exportService->generateFilename('customers');
+            $pdfContent = $exportService->generatePDF(
+                $customers,
+                'customers',
+                'Daftar Pelanggan',
+                $this->prepareFilterLabels($filters)
+            );
+
+            // Return download response
+            return $exportService->getDownloadResponse($pdfContent, $filename);
+        } catch (\Exception $e) {
+            log_message('error', 'Customers export error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengekspor customer: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Prepare human-readable filter labels for PDF header
+     *
+     * @param array $filters Raw filter values
+     * @return array Filter labels for display
+     */
+    protected function prepareFilterLabels(array $filters): array
+    {
+        $labels = [];
+
+        if (!empty($filters['status'])) {
+            $labels['status'] = $filters['status'] === 'active' ? 'Aktif' : 'Tidak Aktif';
+        }
+
+        return $labels;
     }
 
     /**

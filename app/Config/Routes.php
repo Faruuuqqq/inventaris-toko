@@ -43,6 +43,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     $routes->group('customers', function($routes) {
         $routes->get('/', 'Customers::index');
         $routes->get('create', 'Customers::create');
+        $routes->get('export-pdf', 'Customers::export');  // GET /master/customers/export-pdf
         $routes->get('(:num)', 'Customers::detail/$1');
         $routes->get('edit/(:num)', 'Customers::edit/$1');  // Standard pattern
         $routes->get('delete/(:num)', 'Customers::delete/$1');
@@ -57,6 +58,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     $routes->group('suppliers', function($routes) {
         $routes->get('/', 'Suppliers::index');
         $routes->get('create', 'Suppliers::create');
+        $routes->get('export-pdf', 'Suppliers::export');  // GET /master/suppliers/export-pdf
         $routes->get('(:num)', 'Suppliers::detail/$1');
         $routes->get('edit/(:num)', 'Suppliers::edit/$1');  // Standard pattern
         $routes->get('delete/(:num)', 'Suppliers::delete/$1');
@@ -365,8 +367,28 @@ $routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($route
              $routes->delete('(:num)', 'ProductsController::delete/$1'); // DELETE /api/v1/products/1
              $routes->get('search', 'ProductsController::search');     // GET /api/v1/products/search?q=...
          });
+
+          // Customers API
+          $routes->group('customers', function($routes) {
+              $routes->get('/', 'CustomersController::index');          // GET /api/v1/customers
+              $routes->get('export', 'CustomersController::export');    // GET /api/v1/customers/export?format=pdf
+              $routes->get('(:num)', 'CustomersController::show/$1');   // GET /api/v1/customers/1
+              $routes->post('/', 'CustomersController::create');        // POST /api/v1/customers
+              $routes->put('(:num)', 'CustomersController::update/$1'); // PUT /api/v1/customers/1
+              $routes->delete('(:num)', 'CustomersController::delete/$1'); // DELETE /api/v1/customers/1
+          });
+
+          // Suppliers API
+          $routes->group('suppliers', function($routes) {
+              $routes->get('/', 'SuppliersController::index');          // GET /api/v1/suppliers
+              $routes->get('export', 'SuppliersController::export');    // GET /api/v1/suppliers/export?format=pdf
+              $routes->get('(:num)', 'SuppliersController::show/$1');   // GET /api/v1/suppliers/1
+              $routes->post('/', 'SuppliersController::create');        // POST /api/v1/suppliers
+              $routes->put('(:num)', 'SuppliersController::update/$1'); // PUT /api/v1/suppliers/1
+              $routes->delete('(:num)', 'SuppliersController::delete/$1'); // DELETE /api/v1/suppliers/1
+          });
         
-        // Sales API
+         // Sales API
         $routes->group('sales', function($routes) {
             $routes->get('/', 'SalesController::index');              // GET /api/v1/sales
             $routes->get('(:num)', 'SalesController::show/$1');       // GET /api/v1/sales/1

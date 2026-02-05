@@ -111,4 +111,25 @@ class SupplierDataService
             'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
+
+    /**
+     * Get data for PDF EXPORT
+     * Returns array of suppliers with all necessary fields for export
+     * Supports optional filters
+     *
+     * @param array $filters Optional filters (status, etc.)
+     * @return array Array of suppliers formatted for export
+     */
+    public function getExportData(array $filters = []): array
+    {
+        $query = $this->supplierModel->asArray();
+
+        // Apply filters if provided
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        // Return all matching suppliers (no pagination)
+        return $query->findAll();
+    }
 }
