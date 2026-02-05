@@ -198,7 +198,7 @@ const Pengaturan = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Build</span>
-                <span>2024.01.20</span>
+                <span>2026.01.20</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Lisensi</span>
