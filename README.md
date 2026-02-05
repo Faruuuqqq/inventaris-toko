@@ -83,163 +83,123 @@ Dashboard                    ┌── Data Utama
 
 ---
 
-## 🚀 Memulai Aplikasi
+## 🚀 Quick Start (Setup Cepat)
 
-### 1. **Setup Database**
+### Untuk Pengguna Baru - Baca Panduan Setup Lengkap:
+
+👉 **[BACA `docs/SETUP.md` UNTUK PANDUAN LENGKAP](docs/SETUP.md)**
+
+Panduan di atas mencakup:
+- ✅ Prerequisites & installation
+- ✅ Database setup (2 metode: Migrations atau SQL Import)
+- ✅ Configuration (.env setup)
+- ✅ Running the application
+- ✅ Troubleshooting
+
+### Quick Command (untuk yang sudah experienced):
+
 ```bash
-# 1. Buat database
-mysql -u root -p
-CREATE DATABASE IF NOT EXISTS toko_distributor CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+# 1. Install dependencies
+composer install
 
-# 2. Import schema
-mysql -u root -p toko_distributor < D:\laragon\www\inventaris-toko\plan\database.sql
-```
+# 2. Setup .env
+cp .env.example .env
+# Edit .env dengan konfigurasi Anda
 
-### 2. **Konfigurasi CodeIgniter 4**
-- Edit file `.env`:
-  ```ini
-  app.baseURL = 'http://localhost/inventaris-toko/public/'
-  database.default.hostname = localhost
-  database.default.database = toko_distributor
-  database.default.username = root
-  database.default.password = 
-  ```
+# 3. Setup database (pilih salah satu):
+# Metode A: Migrations (recommended)
+php spark migrate
 
-### 3. **Jalankan Server**
-```bash
-# XAMPP/Laragon
+# Metode B: SQL Import
+mysql -u root -p toko_distributor < plan/database.sql
+
+# 4. Jalankan aplikasi
 php spark serve
 
-# Atau gunakan Web server favorit Anda
-# URL Development: http://localhost/inventaris-toko/public/
+# 5. Akses
+# http://localhost:8080
 ```
 
 ---
 
-## 🎮 Panduan Penggunaan
+## 📚 Dokumentasi
 
-### ✅ **Data Master - Tambah Produk**
+Aplikasi memiliki dokumentasi lengkap di folder `docs/`:
 
-1. Menu: **Data Utama → Produk**
-2. Klik tombol **"Tambah Produk"**
-3. Isi form:
-   - **SKU**: Kode produk (barcode)
-   - **Nama**: Nama produk
-   - **Kategori**: Pilih dari dropdown
-   - **Satuan**: Pcs, Kg, Dus, dll
-   - **Harga Beli**: HPP/harga dasar
-   - **Harga Jual**: Harga jual ke customer
-   - **Stok Minimum**: Minimal stock untuk alert
-4. Klik **"Simpan"**
+### 🎯 Dokumentasi Utama (WAJIB BACA)
 
-### ✅ **Transaksi - Penjualan Tunai**
+| Dokumen | Deskripsi | Untuk Siapa |
+|---------|-----------|-----------|
+| **[SETUP.md](docs/SETUP.md)** | Panduan installation & konfigurasi lengkap | Developer baru |
+| **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Struktur project, database schema, code standards | Backend developer |
+| **[API.md](docs/API.md)** | Reference semua API endpoints & contoh | API consumer |
 
-1. Menu: **Transaksi → Penjualan Tunai**
-2. Pilih **Customer** (Walk-in atau existing)
-3. **Tambah Produk**:
-   - Pilih produk dari dropdown
-   - Input quantity
-   - Akan otomatis menghitung subtotal
-   - Bisa menambah beberapa produk
-4. **Lihat Ringkasan**:
-   - Total item, subtotal, diskon
-   - Kembalian (jika tunai)
-5. **Simpan** → Generate invoice otomatis
-6. **Cetak Struk** (opsional)
+### 📖 Dokumentasi Tambahan
 
-### ✅ **Stock Management - Kartu Stok**
-
-1. Menu: **Info Tambahan → Kartu Stok**
-2. **Filter**:
-   - Pilih produk
-   - Pilih gudang
-   - Range tanggal
-3. **Lihat History Mutasi**:
-   - Semua pergerakan stock (IN, OUT, ADJUSTMENT)
-   - Dengan referensi invoice/nomor transaksi
-4. **Real-time stock tracking** di semua transaksi
-
-### ✅ **Finance - Kontra Bon**
-
-1. Menu: **Keuangan → Kontra Bon**
-2. **Buat Kontra Bon**:
-   - Pilih customer
-   - Pilih beberapa invoice unpaid
-   - Sistem otomatis menggabung
-   - Generate dokumen baru
-3. **Track Status**:
-   - UNPAID → PARTIAL → PAID
-4. **Pembayaran**:
-   - Bisa bayar parsial atau lunas
-   - Update status invoice otomatis
-
-### ✅ **Dashboard**
-
-1. **Statistik Real-time**:
-   - Total penjualan hari ini
-   - Total pembelian hari ini
-   - Total stock produk
-   - Customer aktif
-2. **Visualisasi**:
-   - Grafik penjualan
-   - Alert stok menipis
-   - Transaksi terbaru
-
-### ✅ **Fitur B2B Spesial**
-
-- **Credit Limit Validation**: Sistem memvalidasi limit kredit customer
-- **Multi-Warehouse**: Stock tracking per lokasi
-- **Hidden Sales**: Owner bisa menyembunyikan transaksi dari Admin
-- **Aging Schedule**: Analisis umur piutang (0-30, 31-60, dll)
+| Dokumen | Deskripsi |
+|---------|-----------|
+| **[MODAL_SYSTEM_GUIDE.md](docs/MODAL_SYSTEM_GUIDE.md)** | Panduan modal dialog system |
+| **[SEEDING_GUIDE.md](docs/SEEDING_GUIDE.md)** | Panduan database seeding & sample data |
+| **[Postman Collection](docs/api/Inventaris_Toko_API.postman_collection.json)** | Import ke Postman untuk test API |
 
 ---
 
-## 🔧 Struktur Project
+## 🔧 Struktur Project & Folder
 
 ```
 inventaris-toko/
-├── README.md                  ← Dokumentasi utama (file ini)
-├── LICENSE                    ← MIT License
-├── .env                       ← Konfigurasi environment
-├── composer.json              ← PHP dependencies
-├── phpunit.xml                ← Testing configuration
-├── 
-├── app/                       ← Source code aplikasi
-│   ├── Config/                ← Konfigurasi (Routes, Database, etc)
-│   ├── Controllers/           ← Business logic (16 controllers)
-│   ├── Models/                ← Database models (15+ models)
-│   ├── Views/                 ← HTML templates (104 views)
-│   ├── Traits/                ← Reusable code traits
-│   └── Entities/              ← Data entities
+├── 📄 README.md                  ← Dokumentasi utama (file ini)
+├── 📄 AGENTS.md                  ← Development guidelines untuk AI agents
+├── 📄 .env                       ← Konfigurasi environment
+├── 📄 composer.json              ← PHP dependencies
+├── 📄 phpunit.xml                ← Testing configuration
 │
-├── public/                    ← Web root (akses dari browser)
-│   ├── index.php              ← Entry point aplikasi
+├── 📁 app/                       ← SOURCE CODE APLIKASI
+│   ├── Config/                   ← Konfigurasi
+│   │   ├── Routes.php            ← Semua routes (222 total)
+│   │   └── Database.php
+│   ├── Controllers/              ← Business logic (16 controllers)
+│   │   ├── Master/               ← CRUD untuk master data
+│   │   ├── Transactions/         ← Sales, purchase, returns
+│   │   ├── Finance/              ← Payments & reports
+│   │   ├── Info/                 ← Reporting & analytics
+│   │   └── Api/                  ← API endpoints
+│   ├── Models/                   ← Database models (15+ models)
+│   ├── Views/                    ← HTML templates (104 views)
+│   ├── Entities/                 ← Data classes
+│   ├── Services/                 ← Business logic services
+│   ├── Traits/                   ← Reusable code
+│   └── Database/                 ← Migrations & seeds
+│
+├── 📁 public/                    ← Web root
+│   ├── index.php                 ← Entry point
 │   └── assets/
-│       ├── css/               ← Style (Tailwind CSS)
-│       ├── js/                ← JavaScript
-│       └── images/            ← Images
+│       ├── css/                  ← Tailwind CSS
+│       ├── js/                   ← JavaScript
+│       └── images/               ← Images
 │
-├── database/                  ← Database files
-│   ├── migrations/            ← Schema migrations
-│   └── seeds/                 ← Demo data seeds
+├── 📁 tests/                     ← Unit & integration tests
+├── 📁 docs/                      ← 📚 DOKUMENTASI LENGKAP
+│   ├── SETUP.md                  ← **Setup & installation guide**
+│   ├── ARCHITECTURE.md           ← **Tech stack & code standards**
+│   ├── API.md                    ← **API endpoints reference**
+│   ├── MODAL_SYSTEM_GUIDE.md     ← Modal dialog system
+│   ├── SEEDING_GUIDE.md          ← Database seeding
+│   └── api/                      ← API documentation
+│       ├── Inventaris_Toko_API.postman_collection.json
+│       └── API_ENDPOINT_LIST.md
 │
-├── docs/                      ← 📚 DOKUMENTASI LENGKAP
-│   ├── FINAL_ENDPOINT_VERIFICATION_REPORT.md
-│   ├── COMPREHENSIVE_API_DOCUMENTATION.md
-│   ├── DEVELOPER_ONBOARDING_GUIDE.md
-│   ├── ROUTES_VIEWS_COMPLETE_INTEGRATION_CHECK.md
-│   ├── PROJECT_COMPLETION_SUMMARY.md
-│   ├── AUTOMATED_TEST_SUITE_TEMPLATE.md
-│   ├── api/                   ← API documentation & Postman collection
-│   ├── phase-reports/         ← Detail report per fase development
-│   └── archive/               ← File-file lama & backup
+├── 📁 database/                  ← Database files
+│   ├── migrations/               ← Schema migrations
+│   └── seeds/                    ← Data seeders
 │
-├── tests/                     ← Unit tests
-├── vendor/                    ← PHP libraries (Composer)
-├── writable/                  ← Writable files (logs, cache)
-└── builds/                    ← Build files
+├── 📁 plan/                      ← Planning files
+│   └── database.sql              ← Main database schema (181 lines)
+│
+├── 📁 vendor/                    ← Composer packages (git-ignored)
+├── 📁 writable/                  ← Writable files (logs, cache)
+└── 📁 builds/                    ← Build files
 ```
-
 
 ---
 
@@ -268,38 +228,62 @@ Semua dokumentasi telah diorganisir rapi di folder `docs/`:
 
 ## 📊 Statistik Aplikasi
 
-| Aspek | Jumlah |
+| Aspek | Detail |
 |-------|--------|
-| **Routes** | 222 (semua verified ✅) |
-| **Endpoints API** | 95+ |
-| **Views** | 104 |
-| **Controllers** | 16 |
-| **Database Tables** | 13 |
-| **Integration Score** | 100% ✅ |
-| **Test Pass Rate** | 98%+ ✅ |
+| **Framework** | CodeIgniter 4.0+ |
+| **Language** | PHP 8.1+ |
+| **Database** | MySQL 5.7+ (Database: `toko_distributor`, 13 tables) |
+| **Frontend** | Tailwind CSS 3.x + Alpine.js 3.x |
+| **Routes** | 222 routes (semua verified ✅) |
+| **Controllers** | 16 controllers |
+| **Models** | 15+ models |
+| **Views** | 104 views |
+| **Tests** | PHPUnit 10.x |
+| **Status** | ✅ Production Ready |
 
 ---
 
-## 🔍 Quick Reference Endpoints
+## 🔍 API Quick Reference
 
-### Lihat Semua Endpoints?
-Buka file dokumentasi API:
-- **Ringkas**: `docs/api/API_SIMPLE_LIST.txt` (50 endpoints utama)
-- **Lengkap**: `docs/COMPREHENSIVE_API_DOCUMENTATION.md` (95+ endpoints)
-- **Postman**: `docs/api/Inventaris_Toko_API.postman_collection.json` (import ke Postman)
+### Lihat Dokumentasi API Lengkap?
 
-### Contoh Endpoints Popular:
+👉 **[Baca `docs/API.md` untuk referensi API lengkap](docs/API.md)**
+
+### Master Data Endpoints
+
 ```
-GET     /                                    → Dashboard
-GET     /master/products                     → List produk
-POST    /master/products/store               → Tambah produk
-GET     /sales/cash                          → Form penjualan tunai
-POST    /sales/cash/store                    → Simpan penjualan
-GET     /info/saldo/stock-data               → Data stok (AJAX)
-GET     /master/suppliers/getList            → List supplier (AJAX)
+GET/POST   /master/products              → Produk
+GET/POST   /master/customers             → Pelanggan
+GET/POST   /master/suppliers             → Supplier
+GET/POST   /master/warehouses            → Gudang
+GET/POST   /master/salespersons          → Salesman
 ```
 
-Lihat `docs/COMPREHENSIVE_API_DOCUMENTATION.md` untuk dokumentasi lengkap semua endpoints!
+### Transaction Endpoints
+
+```
+GET/POST   /sales/cash                   → Penjualan Tunai
+GET/POST   /sales/credit                 → Penjualan Kredit
+GET/POST   /purchase                     → Pembelian
+GET/POST   /payments/receivables         → Pembayaran Piutang
+```
+
+### Report Endpoints
+
+```
+GET        /info/saldo/stock-data        → Data Stok
+GET        /info/reports/stock-card      → Kartu Stok
+GET        /info/reports/daily           → Laporan Harian
+```
+
+### Testing dengan Postman
+
+Import Postman collection:
+```
+docs/api/Inventaris_Toko_API.postman_collection.json
+```
+
+Lihat `docs/API.md` untuk dokumentasi lengkap semua endpoints!
 
 ---
 
