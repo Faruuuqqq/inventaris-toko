@@ -84,14 +84,30 @@ abstract class BaseCRUDController extends BaseController
      */
     public function store()
     {
+        // Check if AJAX request
+        $isAjax = $this->request->isAJAX() || $this->request->getHeader('X-Requested-With')?->getValue() === 'XMLHttpRequest';
+
         // Check access if required
         if (!$this->checkStoreAccess()) {
+            if ($isAjax) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses'
+                ]);
+            }
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
 
         // Validate
         $rules = $this->getStoreValidationRules();
         if (!$this->validate($rules)) {
+            if ($isAjax) {
+                return $this->response->setStatusCode(422)->setJSON([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -101,14 +117,29 @@ abstract class BaseCRUDController extends BaseController
             $data = $this->beforeStore($data);
 
             $this->model->insert($data);
+            $insertId = $this->model->getInsertID();
 
-            $this->afterStore($this->model->getInsertID());
+            $this->afterStore($insertId);
+
+            if ($isAjax) {
+                return $this->response->setStatusCode(201)->setJSON([
+                    'success' => true,
+                    'message' => $this->entityName . ' berhasil ditambahkan',
+                    'id' => $insertId
+                ]);
+            }
 
             return redirect()
                 ->to($this->routePath)
                 ->with('success', $this->entityName . ' berhasil ditambahkan');
         } catch (\Exception $e) {
             log_message('error', $e->getMessage());
+            if ($isAjax) {
+                return $this->response->setStatusCode(500)->setJSON([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -118,14 +149,30 @@ abstract class BaseCRUDController extends BaseController
      */
     public function update($id)
     {
+        // Check if AJAX request
+        $isAjax = $this->request->isAJAX() || $this->request->getHeader('X-Requested-With')?->getValue() === 'XMLHttpRequest';
+
         // Check access if required
         if (!$this->checkUpdateAccess($id)) {
+            if ($isAjax) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses'
+                ]);
+            }
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
 
         // Validate
         $rules = $this->getUpdateValidationRules($id);
         if (!$this->validate($rules)) {
+            if ($isAjax) {
+                return $this->response->setStatusCode(422)->setJSON([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -138,11 +185,24 @@ abstract class BaseCRUDController extends BaseController
 
             $this->afterUpdate($id);
 
+            if ($isAjax) {
+                return $this->response->setStatusCode(200)->setJSON([
+                    'success' => true,
+                    'message' => $this->entityName . ' berhasil diperbarui'
+                ]);
+            }
+
             return redirect()
                 ->to($this->routePath)
                 ->with('success', $this->entityName . ' berhasil diperbarui');
         } catch (\Exception $e) {
             log_message('error', $e->getMessage());
+            if ($isAjax) {
+                return $this->response->setStatusCode(500)->setJSON([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ]);
+            }
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -152,14 +212,30 @@ abstract class BaseCRUDController extends BaseController
      */
     public function delete($id)
     {
+        // Check if AJAX request
+        $isAjax = $this->request->isAJAX() || $this->request->getHeader('X-Requested-With')?->getValue() === 'XMLHttpRequest';
+
         // Check access if required
         if (!$this->checkDeleteAccess($id)) {
+            if ($isAjax) {
+                return $this->response->setStatusCode(403)->setJSON([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki akses'
+                ]);
+            }
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
 
         // Check if can be deleted
         if (!$this->canDelete($id)) {
-            return redirect()->back()->with('error', $this->entityName . ' tidak dapat dihapus karena masih memiliki data terkait');
+            $message = $this->entityName . ' tidak dapat dihapus karena masih memiliki data terkait';
+            if ($isAjax) {
+                return $this->response->setStatusCode(409)->setJSON([
+                    'success' => false,
+                    'message' => $message
+                ]);
+            }
+            return redirect()->back()->with('error', $message);
         }
 
         try {
@@ -169,11 +245,24 @@ abstract class BaseCRUDController extends BaseController
 
             $this->afterDelete($id);
 
+            if ($isAjax) {
+                return $this->response->setStatusCode(200)->setJSON([
+                    'success' => true,
+                    'message' => $this->entityName . ' berhasil dihapus'
+                ]);
+            }
+
             return redirect()
                 ->to($this->routePath)
                 ->with('success', $this->entityName . ' berhasil dihapus');
         } catch (\Exception $e) {
             log_message('error', $e->getMessage());
+            if ($isAjax) {
+                return $this->response->setStatusCode(500)->setJSON([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ]);
+            }
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
