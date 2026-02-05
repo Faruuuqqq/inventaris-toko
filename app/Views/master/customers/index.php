@@ -97,16 +97,30 @@
         </div>
 
         <!-- Right Side: Add Button -->
-        <button 
-            @click="isDialogOpen = true"
-            class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
-        >
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-            </svg>
-            <span class="hidden sm:inline">Tambah Customer</span>
-            <span class="sm:hidden">Tambah</span>
-        </button>
+        <div class="flex gap-2">
+            <!-- Export Button -->
+            <button 
+                @click="exportData()"
+                class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-10 px-3 gap-2 text-sm font-medium"
+                title="Export data ke PDF"
+            >
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                <span class="hidden sm:inline">Export</span>
+            </button>
+
+            <button 
+                @click="isDialogOpen = true"
+                class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
+            >
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="hidden sm:inline">Tambah Customer</span>
+                <span class="sm:hidden">Tambah</span>
+            </button>
+        </div>
     </div>
 
     <!-- Customer Cards Grid - Enhanced -->
@@ -387,6 +401,15 @@ function customerManager() {
                 currency: 'IDR',
                 minimumFractionDigits: 0
             }).format(value);
+        },
+
+        exportData() {
+            try {
+                window.location.href = `<?= base_url('master/customers/export-pdf') ?>`;
+            } catch (error) {
+                console.error('Export failed:', error);
+                alert('Gagal mengekspor data. Silakan coba lagi.');
+            }
         }
     }
 }
