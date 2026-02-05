@@ -4,10 +4,11 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddSoftDeleteColumnsToTransactionTables extends Migration
+class AddSoftDeleteColumns extends Migration
 {
     public function up()
     {
+        // Adds: deleted_at column with index to: sales, purchase_orders, sales_returns, purchase_returns
         // Add deleted_at to sales table
         if (!$this->db->fieldExists('deleted_at', 'sales')) {
             $this->forge->addColumn('sales', [

@@ -8,7 +8,7 @@ class AddPerformanceIndexes extends Migration
 {
     public function up()
     {
-        // Add missing indexes for commonly filtered/sorted columns
+        // Adds optimized indexes on high-query columns for performance: users, products, customers, suppliers, sales, warehouse_id, etc. missing indexes for commonly filtered/sorted columns
         $db = \Config\Database::connect();
 
         // Stock Mutations - frequently queried by product_id and created_at

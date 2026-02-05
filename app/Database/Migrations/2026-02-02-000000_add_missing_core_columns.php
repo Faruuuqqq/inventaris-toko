@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddPhase4RequiredColumns extends Migration
+class AddMissingCoreColumns extends Migration
 {
     public function up()
     {

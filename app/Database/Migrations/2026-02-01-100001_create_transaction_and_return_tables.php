@@ -4,10 +4,11 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateAdditionalTables extends Migration
+class CreateTransactionAndReturnTables extends Migration
 {
     public function up()
     {
+        // Creates: sales_returns, sales_return_items, purchase_returns, purchase_return_items, expenses, api_tokens, audit_logs
         // 16. Sales Returns table
         if (!$this->db->tableExists('sales_returns')) {
             $this->forge->addField([

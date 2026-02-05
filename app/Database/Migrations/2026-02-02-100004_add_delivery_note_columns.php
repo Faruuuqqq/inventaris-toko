@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class AddDeliveryNoteColumnsToSales extends Migration
+class AddDeliveryNoteColumns extends Migration
 {
     public function up()
     {

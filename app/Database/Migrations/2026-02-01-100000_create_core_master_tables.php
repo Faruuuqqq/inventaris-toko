@@ -4,10 +4,11 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateInitialTables extends Migration
+class CreateCoreMasterTables extends Migration
 {
     public function up()
     {
+        // Creates: users, warehouses, categories, products, product_stocks, customers, suppliers, salespersons, contra_bons, sales, sale_items, purchase_orders, purchase_order_items, stock_mutations, payments
         // 1. Users table
         $this->forge->addField([
             'id' => ['type' => 'BIGINT', 'unsigned' => true, 'auto_increment' => true],
