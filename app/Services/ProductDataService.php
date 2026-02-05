@@ -181,4 +181,44 @@ class ProductDataService
             'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
+
+    /**
+     * Get data for PDF EXPORT
+     * Returns array of products with all necessary fields for export
+     * Supports optional filters
+     *
+     * @param array $filters Optional filters (category_id, status, etc.)
+     * @return array Array of products formatted for export
+     */
+    public function getExportData(array $filters = []): array
+    {
+        $query = $this->productModel
+            ->select('products.sku, products.name, categories.name as category_name, products.unit, products.price_buy as purchase_price, products.price_sell as selling_price, COALESCE(SUM(ps.quantity), 0) as stock')
+            ->join('categories', 'categories.id = products.category_id', 'left')
+            ->join('product_stocks ps', 'ps.product_id = products.id', 'left')
+            ->groupBy('products.id');
+
+        // Apply filters if provided
+        if (!empty($filters['category_id'])) {
+            $query->where('products.category_id', $filters['category_id']);
+        }
+
+        if (isset($filters['status'])) {
+            $query->where('products.status', $filters['status']);
+        }
+
+        // Return all matching products (no pagination)
+        return $query->findAll();
+    }
+
+    /**
+     * Get category by ID
+     *
+     * @param int $categoryId Category ID
+     * @return object|null Category object or null if not found
+     */
+    public function getCategoryById(int $categoryId)
+    {
+        return $this->categoryModel->find($categoryId);
+    }
 }

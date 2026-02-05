@@ -29,6 +29,7 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     $routes->group('products', function($routes) {
         $routes->get('/', 'Products::index');
         $routes->get('create', 'Products::create');
+        $routes->get('export-pdf', 'Products::export');  // GET /master/products/export-pdf
         $routes->get('(:num)', 'Products::detail/$1');
         $routes->get('edit/(:num)', 'Products::edit/$1');
         $routes->get('delete/(:num)', 'Products::delete/$1');  // GET for simple delete links
@@ -354,15 +355,16 @@ $routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($route
         $routes->get('auth/profile', 'AuthController::profile');
         $routes->put('auth/profile', 'AuthController::updateProfile');
         
-        // Products API
-        $routes->group('products', function($routes) {
-            $routes->get('/', 'ProductsController::index');           // GET /api/v1/products
-            $routes->get('(:num)', 'ProductsController::show/$1');    // GET /api/v1/products/1
-            $routes->post('/', 'ProductsController::create');         // POST /api/v1/products
-            $routes->put('(:num)', 'ProductsController::update/$1');  // PUT /api/v1/products/1
-            $routes->delete('(:num)', 'ProductsController::delete/$1'); // DELETE /api/v1/products/1
-            $routes->get('search', 'ProductsController::search');     // GET /api/v1/products/search?q=...
-        });
+         // Products API
+         $routes->group('products', function($routes) {
+             $routes->get('/', 'ProductsController::index');           // GET /api/v1/products
+             $routes->get('export', 'ProductsController::export');     // GET /api/v1/products/export?format=pdf
+             $routes->get('(:num)', 'ProductsController::show/$1');    // GET /api/v1/products/1
+             $routes->post('/', 'ProductsController::create');         // POST /api/v1/products
+             $routes->put('(:num)', 'ProductsController::update/$1');  // PUT /api/v1/products/1
+             $routes->delete('(:num)', 'ProductsController::delete/$1'); // DELETE /api/v1/products/1
+             $routes->get('search', 'ProductsController::search');     // GET /api/v1/products/search?q=...
+         });
         
         // Sales API
         $routes->group('sales', function($routes) {

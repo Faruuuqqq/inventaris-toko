@@ -4,16 +4,20 @@ namespace App\Controllers\Api;
 
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\RESTful\ResourceController;
+use App\Services\ProductDataService;
+use App\Services\ExportService;
 
 class ProductsController extends ResourceController
 {
     use ResponseTrait;
     
     protected $productModel;
+    protected ProductDataService $dataService;
     
     public function __construct()
     {
         $this->productModel = new \App\Models\ProductModel();
+        $this->dataService = new ProductDataService();
     }
     
     /**
@@ -289,39 +293,115 @@ class ProductsController extends ResourceController
         ]);
     }
     
-    /**
-     * Search products by barcode
-     *
-     * @return mixed
-     */
-    public function barcode()
-    {
-        $barcode = $this->request->getGet('barcode');
-        
-         if (empty($barcode)) {
-             return $this->failValidationError('Barcode is required');
+     /**
+      * Search products by barcode
+      *
+      * @return mixed
+      */
+     public function barcode()
+     {
+         $barcode = $this->request->getGet('barcode');
+         
+          if (empty($barcode)) {
+              return $this->failValidationError('Barcode is required');
+          }
+          
+          $product = $this->productModel
+              ->where('sku', $barcode)
+              ->orWhere('barcode', $barcode)
+              ->first();
+          
+          if (!$product) {
+              return $this->failNotFound('Product not found for this barcode');
+          }
+          
+          $warehouse = $this->request->getGet('warehouse') ?? null;
+         
+          // Add stock information
+          if ($warehouse) {
+              $stockMutationModel = new \App\Models\StockMutationModel();
+              $product['stock'] = $stockMutationModel->getProductStock($product['id'], $warehouse);
+          }
+          
+          return $this->respond([
+              'status' => 'success',
+              'data' => $product
+          ]);
+     }
+
+     /**
+      * Export products to PDF
+      * GET /api/v1/products/export
+      *
+      * Query parameters:
+      * - format: Export format (pdf only for now)
+      * - category_id: Filter by category
+      * - status: Filter by status
+      *
+      * @return mixed PDF file or error response
+      */
+     public function export()
+     {
+         try {
+             $format = $this->request->getGet('format') ?? 'pdf';
+
+             // Only PDF supported for now
+             if ($format !== 'pdf') {
+                 return $this->fail('Only PDF format is supported', 400);
+             }
+
+             // Get filters
+             $filters = [
+                 'category_id' => $this->request->getGet('category_id'),
+                 'status' => $this->request->getGet('status'),
+             ];
+
+             // Get export data
+             $products = $this->dataService->getExportData($filters);
+
+             // Generate PDF
+             $exportService = new ExportService();
+             $filename = $exportService->generateFilename('products');
+             $pdfContent = $exportService->generatePDF(
+                 $products,
+                 'products',
+                 'Daftar Produk',
+                 $this->prepareFilterLabels($filters)
+             );
+
+             // For API, we can either:
+             // 1. Return download response (most common)
+             // 2. Save to storage and return URL
+             // Using option 1 for simplicity
+
+             return $exportService->getDownloadResponse($pdfContent, $filename);
+         } catch (\Exception $e) {
+             log_message('error', 'API Products export error: ' . $e->getMessage());
+             return $this->fail('Export failed: ' . $e->getMessage(), 500);
          }
-         
-         $product = $this->productModel
-             ->where('sku', $barcode)
-             ->orWhere('barcode', $barcode)
-             ->first();
-         
-         if (!$product) {
-             return $this->failNotFound('Product not found for this barcode');
+     }
+
+     /**
+      * Prepare human-readable filter labels for PDF header
+      *
+      * @param array $filters Raw filter values
+      * @return array Filter labels for display
+      */
+     protected function prepareFilterLabels(array $filters): array
+     {
+         $labels = [];
+
+         if (!empty($filters['category_id'])) {
+             $category = $this->dataService->getCategoryById($filters['category_id']);
+             if ($category) {
+                 $labels['category'] = $category->name;
+             }
          }
-         
-         $warehouse = $this->request->getGet('warehouse') ?? null;
-        
-         // Add stock information
-         if ($warehouse) {
-             $stockMutationModel = new \App\Models\StockMutationModel();
-             $product['stock'] = $stockMutationModel->getProductStock($product['id'], $warehouse);
+
+         if (!empty($filters['status'])) {
+             $labels['status'] = $filters['status'] === 'active' ? 'Aktif' : 'Tidak Aktif';
          }
-         
-         return $this->respond([
-             'status' => 'success',
-             'data' => $product
-         ]);
-    }
+
+         return $labels;
+     }
 }

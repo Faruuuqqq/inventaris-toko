@@ -124,4 +124,79 @@ class ProductDataServiceTest extends CIUnitTestCase
             $this->assertArrayHasKey($key, $pagination, "Missing key: $key");
         }
     }
+
+    /**
+     * Test that getExportData method exists
+     */
+    public function testGetExportDataMethodExists(): void
+    {
+        $this->assertTrue(method_exists($this->service, 'getExportData'));
+    }
+
+    /**
+     * Test getExportData returns array
+     */
+    public function testGetExportDataReturnsArray(): void
+    {
+        $data = $this->service->getExportData();
+        $this->assertIsArray($data);
+    }
+
+    /**
+     * Test getExportData with empty filters
+     */
+    public function testGetExportDataWithEmptyFilters(): void
+    {
+        $data = $this->service->getExportData([]);
+        $this->assertIsArray($data);
+    }
+
+    /**
+     * Test getExportData returns proper structure
+     * Each item should have export-required fields
+     */
+    public function testGetExportDataReturnsProperStructure(): void
+    {
+        $data = $this->service->getExportData();
+        
+        // If there are products, check structure
+        if (!empty($data)) {
+            $firstProduct = $data[0];
+            
+            // Check expected fields for export
+            $expectedFields = [
+                'sku',
+                'name',
+                'category_name',
+                'unit',
+                'purchase_price',
+                'selling_price',
+                'stock'
+            ];
+            
+            foreach ($expectedFields as $field) {
+                $this->assertTrue(
+                    isset($firstProduct->$field) || property_exists($firstProduct, $field),
+                    "Missing field: $field in export data"
+                );
+            }
+        }
+    }
+
+    /**
+     * Test getCategoryById method exists
+     */
+    public function testGetCategoryByIdMethodExists(): void
+    {
+        $this->assertTrue(method_exists($this->service, 'getCategoryById'));
+    }
+
+    /**
+     * Test getCategoryById returns null for non-existent category
+     */
+    public function testGetCategoryByIdReturnsNullForNonExistent(): void
+    {
+        $category = $this->service->getCategoryById(99999);
+        $this->assertNull($category);
+    }
 }

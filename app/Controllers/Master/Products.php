@@ -5,6 +5,7 @@ namespace App\Controllers\Master;
 use App\Controllers\BaseCRUDController;
 use App\Models\ProductModel;
 use App\Services\ProductDataService;
+use App\Services\ExportService;
 use CodeIgniter\Model;
 
 class Products extends BaseCRUDController
@@ -164,6 +165,72 @@ class Products extends BaseCRUDController
     protected function afterUpdate($id): void
     {
         log_message('info', "Product updated: ID {$id}, SKU: {$this->request->getPost('sku')}");
+    }
+
+    /**
+     * Export products to PDF
+     * GET /master/products/export-pdf
+     *
+     * Query parameters:
+     * - category_id: Filter by category
+     * - status: Filter by status (active/inactive)
+     *
+     * @return \CodeIgniter\HTTP\Response PDF file download
+     */
+    public function export()
+    {
+        try {
+            // Get filters from query string
+            $filters = [
+                'category_id' => $this->request->getGet('category_id'),
+                'status' => $this->request->getGet('status'),
+            ];
+
+            // Get export data from service
+            $products = $this->dataService->getExportData($filters);
+
+            // Initialize export service
+            $exportService = new ExportService();
+
+            // Generate PDF
+            $filename = $exportService->generateFilename('products');
+            $pdfContent = $exportService->generatePDF(
+                $products,
+                'products',
+                'Daftar Produk',
+                $this->prepareFilterLabels($filters)
+            );
+
+            // Return download response
+            return $exportService->getDownloadResponse($pdfContent, $filename);
+        } catch (\Exception $e) {
+            log_message('error', 'Products export error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengekspor produk: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Prepare human-readable filter labels for PDF header
+     *
+     * @param array $filters Raw filter values
+     * @return array Filter labels for display
+     */
+    protected function prepareFilterLabels(array $filters): array
+    {
+        $labels = [];
+
+        if (!empty($filters['category_id'])) {
+            $category = $this->dataService->getCategoryById($filters['category_id']);
+            if ($category) {
+                $labels['category'] = $category->name;
+            }
+        }
+
+        if (!empty($filters['status'])) {
+            $labels['status'] = $filters['status'] === 'active' ? 'Aktif' : 'Tidak Aktif';
+        }
+
+        return $labels;
     }
 
     protected function beforeDelete($id): void
