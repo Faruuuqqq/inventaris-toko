@@ -274,7 +274,7 @@
             </div>
             
             <!-- Modal Body -->
-            <form action="<?= base_url('master/products/store') ?>" method="POST" class="p-6 space-y-5">
+            <form @submit.prevent="submitForm" action="<?= base_url('master/products/store') ?>" method="POST" class="p-6 space-y-5">
                 <?= csrf_field() ?>
                 
                 <!-- Row 1: Name & SKU -->
@@ -287,8 +287,10 @@
                             id="name" 
                             required 
                             placeholder="Contoh: Laptop Dell XPS 13"
+                            :class="{'border-destructive': errors.name}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                         >
+                        <span x-show="errors.name" class="text-destructive text-xs mt-1" x-text="errors.name"></span>
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-foreground" for="sku">Kode Produk (SKU) *</label>
@@ -298,8 +300,10 @@
                             id="sku" 
                             required 
                             placeholder="Contoh: DLL-XPS-001"
+                            :class="{'border-destructive': errors.sku}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                         >
+                        <span x-show="errors.sku" class="text-destructive text-xs mt-1" x-text="errors.sku"></span>
                     </div>
                 </div>
 
@@ -311,6 +315,7 @@
                             name="category_id" 
                             id="category" 
                             required 
+                            :class="{'border-destructive': errors.category_id}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                         >
                             <option value="">Pilih Kategori</option>
@@ -318,6 +323,7 @@
                                 <option value="<?= $cat['id'] ?>"><?= $cat['name'] ?></option>
                             <?php endforeach; ?>
                         </select>
+                        <span x-show="errors.category_id" class="text-destructive text-xs mt-1" x-text="errors.category_id"></span>
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-foreground" for="unit">Satuan *</label>
@@ -327,8 +333,10 @@
                             id="unit" 
                             placeholder="Contoh: Pcs, Kg, Box"
                             required 
+                            :class="{'border-destructive': errors.unit}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                         >
+                        <span x-show="errors.unit" class="text-destructive text-xs mt-1" x-text="errors.unit"></span>
                     </div>
                 </div>
 
@@ -342,8 +350,10 @@
                             id="price_buy" 
                             required 
                             placeholder="0"
+                            :class="{'border-destructive': errors.price_buy}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                         >
+                        <span x-show="errors.price_buy" class="text-destructive text-xs mt-1" x-text="errors.price_buy"></span>
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-foreground" for="price_sell">Harga Jual (Rp) *</label>
@@ -353,8 +363,10 @@
                             id="price_sell" 
                             required 
                             placeholder="0"
+                            :class="{'border-destructive': errors.price_sell}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                         >
+                        <span x-show="errors.price_sell" class="text-destructive text-xs mt-1" x-text="errors.price_sell"></span>
                     </div>
                 </div>
 
@@ -367,9 +379,11 @@
                         id="min_stock_alert" 
                         value="10" 
                         required 
+                        :class="{'border-destructive': errors.min_stock_alert}"
                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
                     <p class="text-xs text-muted-foreground mt-1">Sistem akan memberikan peringatan jika stok di bawah nilai ini</p>
+                    <span x-show="errors.min_stock_alert" class="text-destructive text-xs mt-1" x-text="errors.min_stock_alert"></span>
                 </div>
 
                 <!-- Modal Footer -->
@@ -383,12 +397,16 @@
                     </button>
                     <button 
                         type="submit" 
-                        class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md"
+                        :disabled="isSubmitting"
+                        class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!isSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
-                        Simpan Produk
+                        <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
+                            <span class="animate-spin">⚙️</span>
+                        </span>
+                        <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Produk'"></span>
                     </button>
                 </div>
             </form>
@@ -403,6 +421,8 @@ function productManager() {
         search: '',
         categoryFilter: 'all',
         isDialogOpen: false,
+        isSubmitting: false,
+        errors: {},
 
         get filteredProducts() {
             return this.products.filter(product => {
@@ -419,6 +439,54 @@ function productManager() {
 
         openModal() {
             this.isDialogOpen = true;
+        },
+
+        async submitForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            
+            // Clear previous errors
+            this.errors = {};
+            this.isSubmitting = true;
+
+            try {
+                const formData = new FormData(form);
+                
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok || response.status === 201) {
+                    // Success
+                    ModalManager.success('Data produk berhasil ditambahkan', () => {
+                        this.isDialogOpen = false;
+                        form.reset();
+                        this.errors = {};
+                        // Reload page to refresh product list
+                        window.location.reload();
+                    });
+                } else if (response.status === 422) {
+                    // Validation error
+                    const data = await response.json();
+                    if (data.errors) {
+                        this.errors = data.errors;
+                    }
+                    ModalManager.error(data.message || 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.');
+                } else {
+                    // Other error
+                    const data = await response.json();
+                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isSubmitting = false;
+            }
         },
 
         editProduct(productId) {
@@ -454,6 +522,8 @@ function productManager() {
                 alert('Gagal mengekspor data. Silakan coba lagi.');
             }
         }
+    }
+}
 </script>
 
 <?= $this->endSection() ?>

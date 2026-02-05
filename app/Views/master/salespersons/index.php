@@ -232,7 +232,7 @@
             </div>
             
             <!-- Modal Body -->
-            <form action="<?= base_url('master/salespersons') ?>" method="POST" class="p-6 space-y-5">
+            <form @submit.prevent="submitForm" action="<?= base_url('master/salespersons') ?>" method="POST" class="p-6 space-y-5">
                 <?= csrf_field() ?>
                 
                 <!-- Row 1: Name & Phone -->
@@ -245,8 +245,10 @@
                             id="name" 
                             required 
                             placeholder="Contoh: Budi Santoso"
+                            :class="{'border-destructive': errors.name}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                         >
+                        <span x-show="errors.name" class="text-destructive text-xs mt-1" x-text="errors.name"></span>
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-foreground" for="phone">No. Telepon</label>
@@ -255,8 +257,10 @@
                             name="phone" 
                             id="phone" 
                             placeholder="Contoh: 081234567890"
+                            :class="{'border-destructive': errors.phone}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                         >
+                        <span x-show="errors.phone" class="text-destructive text-xs mt-1" x-text="errors.phone"></span>
                     </div>
                 </div>
 
@@ -268,8 +272,10 @@
                         name="email" 
                         id="email" 
                         placeholder="Contoh: budi@company.com"
+                        :class="{'border-destructive': errors.email}"
                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                     >
+                    <span x-show="errors.email" class="text-destructive text-xs mt-1" x-text="errors.email"></span>
                 </div>
 
                 <!-- Row 3: Address -->
@@ -280,8 +286,10 @@
                         id="address" 
                         placeholder="Contoh: Jl. Jendral Sudirman No. 456, Jakarta Pusat"
                         rows="3"
+                        :class="{'border-destructive': errors.address}"
                         class="flex w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all resize-none"
                     ></textarea>
+                    <span x-show="errors.address" class="text-destructive text-xs mt-1" x-text="errors.address"></span>
                 </div>
 
                 <!-- Modal Footer -->
@@ -295,12 +303,16 @@
                     </button>
                     <button 
                         type="submit" 
-                        class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md"
+                        :disabled="isSubmitting"
+                        class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!isSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
-                        Simpan Salesperson
+                        <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
+                            <span class="animate-spin">⚙️</span>
+                        </span>
+                        <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Salesperson'"></span>
                     </button>
                 </div>
             </form>
@@ -314,6 +326,8 @@ function salespersonManager() {
         salespersons: <?= json_encode($salespersons ?? []) ?>,
         search: '',
         isDialogOpen: false,
+        isSubmitting: false,
+        errors: {},
 
         get filteredSalespersons() {
             return this.salespersons.filter(s => {
@@ -321,6 +335,54 @@ function salespersonManager() {
                 return (s.name && s.name.toLowerCase().includes(searchLower)) ||
                        (s.phone && s.phone.toLowerCase().includes(searchLower));
             });
+        },
+
+        async submitForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            
+            // Clear previous errors
+            this.errors = {};
+            this.isSubmitting = true;
+
+            try {
+                const formData = new FormData(form);
+                
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok || response.status === 201) {
+                    // Success
+                    ModalManager.success('Data salesperson berhasil ditambahkan', () => {
+                        this.isDialogOpen = false;
+                        form.reset();
+                        this.errors = {};
+                        // Reload page to refresh salesperson list
+                        window.location.reload();
+                    });
+                } else if (response.status === 422) {
+                    // Validation error
+                    const data = await response.json();
+                    if (data.errors) {
+                        this.errors = data.errors;
+                    }
+                    ModalManager.error(data.message || 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.');
+                } else {
+                    // Other error
+                    const data = await response.json();
+                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isSubmitting = false;
+            }
         },
 
         editSalesperson(salespersonId) {

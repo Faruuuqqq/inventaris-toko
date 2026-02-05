@@ -233,7 +233,7 @@
             </div>
             
             <!-- Modal Body -->
-            <form action="<?= base_url('master/warehouses/store') ?>" method="POST" class="p-6 space-y-5">
+            <form @submit.prevent="submitForm" action="<?= base_url('master/warehouses/store') ?>" method="POST" class="p-6 space-y-5">
                 <?= csrf_field() ?>
                 
                 <!-- Row 1: Name & Code -->
@@ -246,8 +246,10 @@
                             id="name" 
                             required 
                             placeholder="Contoh: Gudang Pusat Jakarta"
+                            :class="{'border-destructive': errors.name}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/50 transition-all"
                         >
+                        <span x-show="errors.name" class="text-destructive text-xs mt-1" x-text="errors.name"></span>
                     </div>
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-foreground" for="code">Kode Gudang *</label>
@@ -257,8 +259,10 @@
                             id="code" 
                             required 
                             placeholder="Contoh: GDG-001"
+                            :class="{'border-destructive': errors.code}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/50 transition-all"
                         >
+                        <span x-show="errors.code" class="text-destructive text-xs mt-1" x-text="errors.code"></span>
                     </div>
                 </div>
 
@@ -270,8 +274,10 @@
                         id="address" 
                         placeholder="Contoh: Jl. Merpati No. 456, Jakarta Utara 14450"
                         rows="3"
+                        :class="{'border-destructive': errors.address}"
                         class="flex w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/50 transition-all resize-none"
                     ></textarea>
+                    <span x-show="errors.address" class="text-destructive text-xs mt-1" x-text="errors.address"></span>
                 </div>
 
                 <!-- Modal Footer -->
@@ -285,12 +291,16 @@
                     </button>
                     <button 
                         type="submit" 
-                        class="inline-flex items-center justify-center rounded-lg bg-warning text-white hover:bg-warning-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md"
+                        :disabled="isSubmitting"
+                        class="inline-flex items-center justify-center rounded-lg bg-warning text-white hover:bg-warning-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg x-show="!isSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
-                        Simpan Gudang
+                        <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
+                            <span class="animate-spin">⚙️</span>
+                        </span>
+                        <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Gudang'"></span>
                     </button>
                 </div>
             </form>
@@ -304,6 +314,8 @@ function warehouseManager() {
         warehouses: <?= json_encode($warehouses ?? []) ?>,
         search: '',
         isDialogOpen: false,
+        isSubmitting: false,
+        errors: {},
 
         get filteredWarehouses() {
             return this.warehouses.filter(w => {
@@ -311,6 +323,54 @@ function warehouseManager() {
                 return (w.name && w.name.toLowerCase().includes(searchLower)) ||
                        (w.code && w.code.toLowerCase().includes(searchLower));
             });
+        },
+
+        async submitForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            
+            // Clear previous errors
+            this.errors = {};
+            this.isSubmitting = true;
+
+            try {
+                const formData = new FormData(form);
+                
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok || response.status === 201) {
+                    // Success
+                    ModalManager.success('Data gudang berhasil ditambahkan', () => {
+                        this.isDialogOpen = false;
+                        form.reset();
+                        this.errors = {};
+                        // Reload page to refresh warehouse list
+                        window.location.reload();
+                    });
+                } else if (response.status === 422) {
+                    // Validation error
+                    const data = await response.json();
+                    if (data.errors) {
+                        this.errors = data.errors;
+                    }
+                    ModalManager.error(data.message || 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.');
+                } else {
+                    // Other error
+                    const data = await response.json();
+                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isSubmitting = false;
+            }
         },
 
         editWarehouse(warehouseId) {
