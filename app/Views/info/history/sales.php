@@ -295,29 +295,68 @@
         return badges[type] || `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-muted text-muted-foreground border-border">${type}</span>`;
     }
 
-    function toggleHide(saleId) {
-        if (!confirm('Yakin ingin mengubah status visibilitas penjualan ini?')) return;
+     /**
+      * AJAX Function: Toggle sale visibility (hide/unhide from transaction history)
+      *
+      * Client-Side Security:
+      * - This function is only available for OWNER users (see renderSalesTable() isOwner check)
+      * - The hide button in the UI is only rendered if isOwner === true
+      * - This prevents even seeing the function in non-owner clients
+      *
+      * User Flow:
+      * 1. OWNER clicks eye/eye-slash icon next to a sale
+      * 2. This function is triggered with the sale ID
+      * 3. JavaScript confirmation dialog appears
+      * 4. If confirmed, sends AJAX POST to /info/history/toggleSaleHide/{id}
+      * 5. Server-side checks permission again (defense in depth)
+      * 6. If successful, reloads the sales table
+      * 7. Shows toast message to user
+      *
+      * Security Layers (Defense in Depth):
+      * Layer 1: UI - Button only shows for OWNER (CSS/JS conditionals)
+      * Layer 2: Client - Confirm dialog prevents accidental action
+      * Layer 3: Request - AJAX headers validate browser request
+      * Layer 4: Server - Controller checks OWNER role again
+      * Layer 5: Database - Only updates if sale exists
+      *
+      * API Endpoint:
+      * POST /info/history/toggleSaleHide/{saleId}
+      * Response: JSON { success: bool, message: string }
+      *
+      * @param {number} saleId The sale ID to toggle visibility
+      * @returns {void}
+      *
+      * @see renderSalesTable() - Controls button visibility based on isOwner
+      * @see \App\Controllers\Info\History::toggleSaleHide() - Server-side endpoint
+      */
+     function toggleHide(saleId) {
+         // Confirm action before proceeding (prevents accidental toggles)
+         if (!confirm('Yakin ingin mengubah status visibilitas penjualan ini?')) return;
 
-        fetch('/info/history/toggleSaleHide/' + saleId, {
-            method: 'POST',
-            headers: { 
-                'X-Requested-With': 'XMLHttpRequest', 
-                'Content-Type': 'application/json' 
-            }
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success) {
-                loadSales();
-            } else {
-                alert(result.message || 'Gagal mengubah status');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Gagal mengubah status');
-        });
-    }
+         // Call server endpoint via AJAX
+         fetch('/info/history/toggleSaleHide/' + saleId, {
+             method: 'POST',
+             headers: { 
+                 'X-Requested-With': 'XMLHttpRequest',  // Prevent CSRF
+                 'Content-Type': 'application/json' 
+             }
+         })
+         .then(response => response.json())
+         .then(result => {
+             if (result.success) {
+                 // Success: Reload sales table to show/hide the row
+                 loadSales();
+             } else {
+                 // Failure: Show error message to user
+                 alert(result.message || 'Gagal mengubah status');
+             }
+         })
+         .catch(error => {
+             // Network or parse error
+             console.error('Error:', error);
+             alert('Gagal mengubah status');
+         });
+     }
 
     function viewDetail(id) {
         window.location.href = `/transactions/sales/${id}`;
