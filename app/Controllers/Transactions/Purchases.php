@@ -66,7 +66,7 @@ class Purchases extends BaseController
         $data = [
             'title' => 'Pembelian',
             'purchaseOrders' => $query->orderBy('purchase_orders.tanggal_po', 'DESC')->findAll(),
-            'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
+            'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
             'filters' => $filters
         ];
         
@@ -80,9 +80,9 @@ class Purchases extends BaseController
     {
         $data = [
             'title' => 'Buat Pesanan Pembelian',
-            'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
-            'products' => $this->productModel->where('status', 'Aktif')->findAll(),
-            'warehouses' => $this->warehouseModel->where('status', 'Aktif')->findAll(),
+            'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
+            'products' => $this->productModel->where('is_active', 1)->findAll(),
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'nomor_po' => $this->generateNomorPO()
         ];
         
@@ -248,9 +248,9 @@ class Purchases extends BaseController
          $data = [
              'title' => 'Ubah Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder,
-            'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
-            'products' => $this->productModel->where('status', 'Aktif')->findAll(),
-            'warehouses' => $this->warehouseModel->where('status', 'Aktif')->findAll()
+            'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
+            'products' => $this->productModel->where('is_active', 1)->findAll(),
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll()
         ];
         
         return view('transactions/purchases/edit', $data);

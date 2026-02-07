@@ -69,7 +69,7 @@ class PurchaseReturns extends BaseController
         $data = [
             'title' => 'Retur Pembelian',
             'purchaseReturns' => $query->orderBy('purchase_returns.tanggal_retur', 'DESC')->findAll(),
-            'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
+            'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
             'filters' => $filters
         ];
         
@@ -83,9 +83,9 @@ class PurchaseReturns extends BaseController
     {
         $data = [
             'title' => 'Buat Retur Pembelian',
-            'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
-            'products' => $this->productModel->where('status', 'Aktif')->findAll(),
-            'warehouses' => $this->warehouseModel->where('status', 'Aktif')->findAll(),
+            'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
+            'products' => $this->productModel->where('is_active', 1)->findAll(),
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'purchaseOrdersList' => $this->getPurchaseOrdersList(),
             'nomor_retur' => $this->generateNomorRetur()
         ];
@@ -311,9 +311,9 @@ class PurchaseReturns extends BaseController
         $data = [
             'title' => 'Ubah Retur Pembelian',
             'purchaseReturn' => $purchaseReturn,
-            'suppliers' => $this->supplierModel->where('status', 'Aktif')->findAll(),
-            'products' => $this->productModel->where('status', 'Aktif')->findAll(),
-            'warehouses' => $this->warehouseModel->where('status', 'Aktif')->findAll(),
+            'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
+            'products' => $this->productModel->where('is_active', 1)->findAll(),
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'purchaseOrdersList' => $this->getPurchaseOrdersList()
         ];
         

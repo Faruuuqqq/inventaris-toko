@@ -9,51 +9,75 @@ class AddDeliveryNoteColumns extends Migration
     public function up()
     {
         // Add delivery note columns to sales table
-        $fields = [
-            'delivery_number' => [
+        $fieldsToAdd = [];
+        
+        if (!$this->db->fieldExists('delivery_number', 'sales')) {
+            $fieldsToAdd['delivery_number'] = [
                 'type'       => 'VARCHAR',
                 'constraint' => 50,
                 'null'       => true,
                 'comment'    => 'Nomor Surat Jalan (SJ-YYYYMMDD-XXXX format)',
-            ],
-            'delivery_date' => [
+            ];
+        }
+        
+        if (!$this->db->fieldExists('delivery_date', 'sales')) {
+            $fieldsToAdd['delivery_date'] = [
                 'type'    => 'DATE',
                 'null'    => true,
                 'comment' => 'Tanggal pengiriman barang',
-            ],
-            'delivery_address' => [
+            ];
+        }
+        
+        if (!$this->db->fieldExists('delivery_address', 'sales')) {
+            $fieldsToAdd['delivery_address'] = [
                 'type'    => 'TEXT',
                 'null'    => true,
                 'comment' => 'Alamat tujuan pengiriman',
-            ],
-            'delivery_notes' => [
+            ];
+        }
+        
+        if (!$this->db->fieldExists('delivery_notes', 'sales')) {
+            $fieldsToAdd['delivery_notes'] = [
                 'type'    => 'TEXT',
                 'null'    => true,
                 'comment' => 'Catatan pengiriman',
-            ],
-            'delivery_driver_id' => [
+            ];
+        }
+        
+        if (!$this->db->fieldExists('delivery_driver_id', 'sales')) {
+            $fieldsToAdd['delivery_driver_id'] = [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => true,
                 'comment'    => 'ID supir/pengantar dari tabel salespersons',
-            ],
-        ];
+            ];
+        }
 
-        $this->forge->addColumn('sales', $fields);
+        if (!empty($fieldsToAdd)) {
+            $this->forge->addColumn('sales', $fieldsToAdd);
+        }
 
         // Add index for delivery_number for faster lookup
-        $this->forge->addKey('delivery_number', false, false, 'idx_sales_delivery_number');
+        if (!$this->db->fieldExists('delivery_number', 'sales')) {
+            $this->forge->addKey('delivery_number', false, false, 'idx_sales_delivery_number');
+        }
         
-        // Add foreign key for driver
-        $this->forge->addForeignKey(
-            'delivery_driver_id',
-            'salespersons',
-            'id',
-            'SET NULL',
-            'CASCADE',
-            'fk_sales_delivery_driver'
-        );
+        // Add foreign key for driver - only if field exists
+        if ($this->db->fieldExists('delivery_driver_id', 'sales')) {
+            try {
+                $this->forge->addForeignKey(
+                    'delivery_driver_id',
+                    'salespersons',
+                    'id',
+                    'SET NULL',
+                    'CASCADE',
+                    'fk_sales_delivery_driver'
+                );
+            } catch (\Exception $e) {
+                // Foreign key might already exist, skip
+            }
+        }
     }
 
     public function down()

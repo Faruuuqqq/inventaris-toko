@@ -69,7 +69,7 @@ class SalesReturns extends BaseController
         $data = [
             'title' => 'Retur Penjualan',
             'salesReturns' => $query->orderBy('sales_returns.tanggal_retur', 'DESC')->findAll(),
-            'customers' => $this->customerModel->where('status', 'Aktif')->findAll(),
+            'customers' => $this->customerModel->where('is_active', 1)->findAll(),
             'filters' => $filters
         ];
         
@@ -83,9 +83,9 @@ class SalesReturns extends BaseController
     {
         $data = [
             'title' => 'Buat Retur Penjualan',
-            'customers' => $this->customerModel->where('status', 'Aktif')->findAll(),
-            'products' => $this->productModel->where('status', 'Aktif')->findAll(),
-            'warehouses' => $this->warehouseModel->where('status', 'Aktif')->findAll(),
+            'customers' => $this->customerModel->where('is_active', 1)->findAll(),
+            'products' => $this->productModel->where('is_active', 1)->findAll(),
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'salesList' => $this->getSalesList(),
             'nomor_retur' => $this->generateNomorRetur()
         ];
@@ -312,9 +312,9 @@ class SalesReturns extends BaseController
         $data = [
             'title' => 'Ubah Retur Penjualan',
             'salesReturn' => $salesReturn,
-            'customers' => $this->customerModel->where('status', 'Aktif')->findAll(),
-            'products' => $this->productModel->where('status', 'Aktif')->findAll(),
-            'warehouses' => $this->warehouseModel->where('status', 'Aktif')->findAll(),
+            'customers' => $this->customerModel->where('is_active', 1)->findAll(),
+            'products' => $this->productModel->where('is_active', 1)->findAll(),
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'salesList' => $this->getSalesList()
         ];
         
