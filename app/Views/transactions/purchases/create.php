@@ -125,4 +125,8 @@
                                         <option value="">Pilih Produk</option>
                                         <?php foreach ($products as $product_option): ?>
                                             <option value="<?= $product_option->id ?>" data-price="<?= $product_option->price_buy ?>">
-                                                <?= esc($product_option->name) ?> (<?= esc($product_option->sku) ?>
+                                                <?= esc($product_option->name) ?> (<?= esc($product_option->sku) ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>

@@ -11,14 +11,14 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Ubah detail pesanan pembelian ke supplier</p>
     </div>
-    <a href="<?= base_url('transactions/purchases/detail/' . ->id_po) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('transactions/purchases/detail/' . $purchaseOrder->id_po) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
 </div>
 
 <!-- Edit Form -->
-<form method="post" action="<?= base_url('transactions/purchases/update/' . ->id_po) ?>" x-data="purchaseOrderForm()" class="space-y-6">
+<form method="post" action="<?= base_url('transactions/purchases/update/' . $purchaseOrder->id_po) ?>" x-data="purchaseOrderForm()" class="space-y-6">
     <?= csrf_field() ?>
 
     <!-- Header Information Section -->
@@ -198,7 +198,7 @@
 
     <!-- Action Buttons -->
     <div class="flex items-center justify-between gap-3">
-        <a href="<?= base_url('transactions/purchases/detail/' . ->id_po) ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+        <a href="<?= base_url('transactions/purchases/detail/' . $purchaseOrder->id_po) ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
             Batal
         </a>
         <button type="submit" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">

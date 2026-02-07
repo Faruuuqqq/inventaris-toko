@@ -50,7 +50,7 @@ class SalesReturns extends BaseController
 
         $query = $this->salesReturnModel
             ->select('sales_returns.*, customers.name as nama_customer')
-            ->join('customers', 'customers.id_customer = sales_returns.id_customer');
+            ->join('customers', 'customers.id = sales_returns.customer_id');
 
         // Apply filters
         if ($filters['start_date']) {
@@ -673,10 +673,10 @@ class SalesReturns extends BaseController
     public function getSalesList()
     {
         return $this->saleModel
-            ->select('penjualan.id_penjualan, penjualan.nomor_penjualan, penjualan.tanggal_penjualan, customers.name as nama_customer')
-            ->join('customers', 'customers.id_customer = penjualan.id_customer')
-            ->where('penjualan.payment_status', 'PAID')
-            ->orderBy('penjualan.tanggal_penjualan', 'DESC')
+            ->select('sales.id, sales.invoice_number, sales.created_at, customers.name as customer_name')
+            ->join('customers', 'customers.id = sales.customer_id')
+            ->where('sales.payment_status', 'PAID')
+            ->orderBy('sales.created_at', 'DESC')
             ->findAll();
     }
     
