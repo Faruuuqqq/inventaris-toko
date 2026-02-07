@@ -122,6 +122,54 @@ php spark serve
 
 ---
 
+## 🛠️ Development Commands
+
+Like `npm run` in modern development workflows, use `composer run` for common tasks:
+
+### Server & Development
+```bash
+composer run dev              # Start development server (localhost:8080)
+```
+
+### Testing
+```bash
+composer run test             # Run PHPUnit tests
+composer run test:coverage    # Generate coverage report (build/logs/html)
+```
+
+### Database
+```bash
+composer run db:migrate       # Apply pending migrations
+composer run db:refresh       # Rollback & re-run all migrations + seed
+composer run db:seed          # Run database seeders
+composer run fresh            # Full reset: db:refresh + cache:clear
+```
+
+### Code Quality
+```bash
+composer run lint             # Auto-fix code formatting (PSR-12 standard)
+composer run lint:check       # Check formatting without changes
+composer run prepare          # Run lint + test before committing
+```
+
+### Utilities
+```bash
+composer run cache:clear      # Clear application cache
+composer run route:list       # Display all routes
+```
+
+### Installation (First Time)
+```bash
+# 1. Install php-cs-fixer for linting
+composer require --dev friendsofphp/php-cs-fixer:^3.59
+
+# 2. Then use composer run commands
+```
+
+**Code Standards:** All commands enforce PSR-12 standard. See `.php-cs-fixer.dist.php` for configuration.
+
+---
+
 ## 📚 Dokumentasi
 
 Aplikasi memiliki dokumentasi lengkap di folder `docs/`:
