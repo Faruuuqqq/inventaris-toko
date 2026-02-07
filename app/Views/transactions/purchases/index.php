@@ -102,7 +102,7 @@
             >
                 <option value="all">Semua Supplier</option>
                 <?php foreach ($suppliers as $supplier): ?>
-                    <option value="<?= $supplier['id_supplier'] ?>"><?= $supplier['name'] ?></option>
+                    <option value="<?= $supplier->id ?>"><?= esc($supplier->name) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
