@@ -35,7 +35,7 @@
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
-                         <p class="mt-2 text-2xl font-bold text-foreground" x-text="warehouses.filter(w => parseInt(w.is_active) === 1).length"></p>
+                          <p class="mt-2 text-2xl font-bold text-foreground" x-text="activeCount"></p>
                          <p class="mt-1 text-xs text-muted-foreground">gudang aktif</p>
                      </div>
                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10 flex-shrink-0">
@@ -51,7 +51,7 @@
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Nilai Stok</p>
-                         <p class="mt-2 text-2xl font-bold text-foreground">Rp 0</p>
+                          <p class="mt-2 text-2xl font-bold text-foreground" x-text="formatRupiah(totalStorageValue)"></p>
                          <p class="mt-1 text-xs text-muted-foreground">total nilai stok</p>
                      </div>
                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10 flex-shrink-0">
@@ -391,13 +391,21 @@ function warehouseManager() {
          editErrors: {},
          editingWarehouse: {},
 
-         get filteredWarehouses() {
-             return this.warehouses.filter(w => {
-                 const searchLower = this.search.toLowerCase();
-                 return (w.name && w.name.toLowerCase().includes(searchLower)) ||
-                        (w.code && w.code.toLowerCase().includes(searchLower));
-             });
-         },
+          get filteredWarehouses() {
+              return this.warehouses.filter(w => {
+                  const searchLower = this.search.toLowerCase();
+                  return (w.name && w.name.toLowerCase().includes(searchLower)) ||
+                         (w.code && w.code.toLowerCase().includes(searchLower));
+              });
+          },
+
+          get activeCount() {
+              return this.warehouses.filter(w => parseInt(w.is_active) === 1).length;
+          },
+
+          get totalStorageValue() {
+              return 0; // Placeholder - actual total value would come from inventory calculation
+          },
 
          openEditModal(warehouse) {
              this.editingWarehouse = JSON.parse(JSON.stringify(warehouse));
@@ -496,17 +504,25 @@ function warehouseManager() {
               }
           },
 
-          deleteWarehouse(warehouseId) {
-              const warehouse = this.warehouses.find(w => w.id === warehouseId);
-              const warehouseName = warehouse ? warehouse.name : 'gudang ini';
-              ModalManager.submitDelete(
-                  `<?= base_url('master/warehouses/delete') ?>/${warehouseId}`,
-                  warehouseName,
-                  () => {
-                      this.warehouses = this.warehouses.filter(w => w.id !== warehouseId);
-                  }
-              );
-          }
+           deleteWarehouse(warehouseId) {
+               const warehouse = this.warehouses.find(w => w.id === warehouseId);
+               const warehouseName = warehouse ? warehouse.name : 'gudang ini';
+               ModalManager.submitDelete(
+                   `<?= base_url('master/warehouses/delete') ?>/${warehouseId}`,
+                   warehouseName,
+                   () => {
+                       this.warehouses = this.warehouses.filter(w => w.id !== warehouseId);
+                   }
+               );
+           },
+
+           formatRupiah(number) {
+               return new Intl.NumberFormat('id-ID', {
+                   style: 'currency',
+                   currency: 'IDR',
+                   minimumFractionDigits: 0
+               }).format(number || 0);
+           }
     }
 }
 </script>

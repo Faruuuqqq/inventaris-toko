@@ -34,7 +34,7 @@
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
-                         <p class="mt-2 text-2xl font-bold text-foreground" x-text="salespersons.filter(s => s.is_active).length"></p>
+                          <p class="mt-2 text-2xl font-bold text-foreground" x-text="activeCount"></p>
                          <p class="mt-1 text-xs text-muted-foreground">salesperson aktif</p>
                      </div>
                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green/10 flex-shrink-0">
@@ -50,7 +50,7 @@
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Total Penjualan</p>
-                         <p class="mt-2 text-2xl font-bold text-foreground">Rp 0</p>
+                          <p class="mt-2 text-2xl font-bold text-foreground" x-text="formatRupiah(totalSales)"></p>
                          <p class="mt-1 text-xs text-muted-foreground">total penjualan</p>
                      </div>
                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10 flex-shrink-0">
@@ -416,13 +416,21 @@ function salespersonManager() {
          editErrors: {},
          editingSalesperson: {},
 
-         get filteredSalespersons() {
-             return this.salespersons.filter(s => {
-                 const searchLower = this.search.toLowerCase();
-                 return (s.name && s.name.toLowerCase().includes(searchLower)) ||
-                        (s.phone && s.phone.toLowerCase().includes(searchLower));
-             });
-         },
+          get filteredSalespersons() {
+              return this.salespersons.filter(s => {
+                  const searchLower = this.search.toLowerCase();
+                  return (s.name && s.name.toLowerCase().includes(searchLower)) ||
+                         (s.phone && s.phone.toLowerCase().includes(searchLower));
+              });
+          },
+
+          get activeCount() {
+              return this.salespersons.filter(s => s.is_active).length;
+          },
+
+          get totalSales() {
+              return 0; // Placeholder - actual total sales would come from separate data/calculation
+          },
 
          openEditModal(salesperson) {
              this.editingSalesperson = JSON.parse(JSON.stringify(salesperson));
@@ -520,17 +528,25 @@ function salespersonManager() {
                  this.isEditSubmitting = false;
           },
 
-          deleteSalesperson(salespersonId) {
-              const salesperson = this.salespersons.find(s => s.id === salespersonId);
-              const salespersonName = salesperson ? salesperson.name : 'salesperson ini';
-              ModalManager.submitDelete(
-                  `<?= base_url('master/salespersons/delete') ?>/${salespersonId}`,
-                  salespersonName,
-                  () => {
-                      this.salespersons = this.salespersons.filter(s => s.id !== salespersonId);
-                  }
-              );
-          }
+           deleteSalesperson(salespersonId) {
+               const salesperson = this.salespersons.find(s => s.id === salespersonId);
+               const salespersonName = salesperson ? salesperson.name : 'salesperson ini';
+               ModalManager.submitDelete(
+                   `<?= base_url('master/salespersons/delete') ?>/${salespersonId}`,
+                   salespersonName,
+                   () => {
+                       this.salespersons = this.salespersons.filter(s => s.id !== salespersonId);
+                   }
+               );
+           },
+
+           formatRupiah(number) {
+               return new Intl.NumberFormat('id-ID', {
+                   style: 'currency',
+                   currency: 'IDR',
+                   minimumFractionDigits: 0
+               }).format(number || 0);
+           }
     }
 }
 </script>
