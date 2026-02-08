@@ -21,7 +21,7 @@
                     <p class="mt-2 text-2xl font-bold text-foreground" x-text="customers.length"></p>
                     <p class="mt-1 text-xs text-muted-foreground">aktif</p>
                 </div>
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
                     <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20h12a6 6 0 00-6-6 6 6 0 00-6 6z"/>
                     </svg>
@@ -37,7 +37,7 @@
                     <p class="mt-2 text-2xl font-bold text-foreground" x-text="customersWithPiutang"></p>
                     <p class="mt-1 text-xs text-muted-foreground">menunggak</p>
                 </div>
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10 flex-shrink-0">
                     <svg class="h-5 w-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -53,7 +53,7 @@
                     <p class="mt-2 text-2xl font-bold text-foreground" x-text="formatRupiah(totalPiutang)"></p>
                     <p class="mt-1 text-xs text-muted-foreground">belum dibayar</p>
                 </div>
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10 flex-shrink-0">
                     <svg class="h-5 w-5 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
