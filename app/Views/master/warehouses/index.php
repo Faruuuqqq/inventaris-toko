@@ -94,114 +94,80 @@
         </button>
     </div>
 
-    <!-- Warehouse Cards Grid - Enhanced -->
-    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        <template x-for="warehouse in filteredWarehouses" :key="warehouse.id">
-            <!-- Warehouse Card -->
-            <div class="rounded-xl border border-border/50 bg-surface shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group">
-                <!-- Card Header with Badge -->
-                <div class="border-b border-border/50 bg-gradient-to-r from-warning/3 to-transparent px-6 py-4">
-                    <div class="flex items-start justify-between">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wider" x-text="`Gudang #${warehouse.code || warehouse.id}`"></p>
-                            <h3 class="mt-2 text-lg font-bold text-foreground truncate group-hover:text-warning transition" x-text="warehouse.name"></h3>
-                        </div>
-                        <div class="flex gap-1 flex-shrink-0 ml-3">
-                            <!-- Edit Button -->
-                            <button 
-                                @click="editWarehouse(warehouse.id)"
-                                class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
-                                title="Edit gudang"
-                            >
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </button>
-                            <!-- Delete Button -->
-                            <button 
-                                @click="deleteWarehouse(warehouse.id)"
-                                class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
-                                title="Hapus gudang"
-                            >
-                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Status Badge -->
-                    <div class="mt-3">
-                        <span 
-                            class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold"
-                            :class="parseInt(warehouse.is_active) === 1 
-                                ? 'border-success/30 bg-success/15 text-success' 
-                                : 'border-muted-foreground/30 bg-muted/15 text-muted-foreground'">
-                            <span class="inline-block h-2 w-2 rounded-full" :class="parseInt(warehouse.is_active) === 1 ? 'bg-success' : 'bg-muted-foreground'"></span>
-                            <span x-text="parseInt(warehouse.is_active) === 1 ? 'Aktif' : 'Nonaktif'"></span>
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Card Body -->
-                <div class="p-6 space-y-4">
-                    <!-- Location Info -->
-                    <div class="space-y-2.5">
-                        <!-- Address -->
-                        <div class="flex items-start gap-3 text-sm">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-muted/50 flex-shrink-0 mt-0.5">
-                                <svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                            </div>
-                            <span class="text-foreground font-medium line-clamp-2" x-text="warehouse.address || '(tidak ada)'"></span>
-                        </div>
-                    </div>
-
-                    <!-- Storage Info -->
-                    <div class="border-t border-border/50 pt-4 grid grid-cols-2 gap-3">
-                        <!-- Item Count -->
-                        <div class="rounded-lg bg-warning/5 p-3">
-                            <p class="text-xs text-muted-foreground font-semibold uppercase">Total Produk</p>
-                            <p class="mt-1 font-bold text-warning text-sm">0</p>
-                        </div>
-                        <!-- Stock Value -->
-                        <div class="rounded-lg bg-blue/5 p-3">
-                            <p class="text-xs text-muted-foreground font-semibold uppercase">Nilai Stok</p>
-                            <p class="mt-1 font-bold text-blue text-sm">Rp 0</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card Footer with Link -->
-                <div class="border-t border-border/50 bg-muted/20 px-6 py-3">
-                    <a :href="`<?= base_url('master/warehouses/') ?>${warehouse.id}`" class="text-sm font-semibold text-warning hover:text-warning-light transition flex items-center gap-1">
-                        Lihat detail
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </template>
+    <!-- Data Table -->
+    <div class="rounded-xl border border-border/50 bg-surface overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border/50 bg-muted/30">
+                        <th class="px-6 py-3 text-left font-semibold text-foreground">Nama</th>
+                        <th class="px-6 py-3 text-left font-semibold text-foreground">Kode</th>
+                        <th class="px-6 py-3 text-left font-semibold text-foreground">Alamat</th>
+                        <th class="px-6 py-3 text-center font-semibold text-foreground">Status</th>
+                        <th class="px-6 py-3 text-right font-semibold text-foreground">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="warehouse in filteredWarehouses" :key="warehouse.id">
+                        <tr class="border-b border-border/50 hover:bg-muted/20 transition">
+                            <td class="px-6 py-4 font-semibold text-foreground" x-text="warehouse.name"></td>
+                            <td class="px-6 py-4 text-muted-foreground" x-text="warehouse.code || '-'"></td>
+                            <td class="px-6 py-4 text-muted-foreground max-w-xs truncate" :title="warehouse.address" x-text="warehouse.address || '-'"></td>
+                            <td class="px-6 py-4 text-center">
+                                <span 
+                                    class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold"
+                                    :class="parseInt(warehouse.is_active) === 1 
+                                        ? 'border-success/30 bg-success/15 text-success' 
+                                        : 'border-muted-foreground/30 bg-muted/15 text-muted-foreground'">
+                                    <span class="inline-block h-2 w-2 rounded-full" :class="parseInt(warehouse.is_active) === 1 ? 'bg-success' : 'bg-muted-foreground'"></span>
+                                    <span x-text="parseInt(warehouse.is_active) === 1 ? 'Aktif' : 'Nonaktif'"></span>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex gap-2 justify-end">
+                                    <!-- Edit Button -->
+                                    <a 
+                                        :href="`<?= base_url('master/warehouses/edit') ?>/${warehouse.id}`"
+                                        class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
+                                        title="Edit gudang"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                    </a>
+                                    <!-- Delete Button -->
+                                    <button 
+                                        @click="deleteWarehouse(warehouse.id)"
+                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                        title="Hapus gudang"
+                                    >
+                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
 
         <!-- Empty State -->
-        <div x-show="filteredWarehouses.length === 0" class="col-span-full">
-            <div class="rounded-xl border-2 border-dashed border-border/50 bg-muted/20 p-12 text-center">
-                <svg class="h-16 w-16 mx-auto text-muted-foreground opacity-30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+        <div x-show="filteredWarehouses.length === 0" class="p-12 text-center">
+            <svg class="h-16 w-16 mx-auto text-muted-foreground opacity-30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+            </svg>
+            <p class="text-lg font-semibold text-foreground mt-2">Tidak ada gudang ditemukan</p>
+            <p class="text-sm text-muted-foreground mt-1">Coba ubah filter atau cari dengan kata kunci lain</p>
+            <button 
+                @click="isDialogOpen = true"
+                class="mt-6 inline-flex items-center justify-center rounded-lg bg-warning text-white hover:bg-warning-light transition h-10 px-6 gap-2 text-sm font-semibold">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                 </svg>
-                <p class="text-lg font-semibold text-foreground mt-2">Tidak ada gudang ditemukan</p>
-                <p class="text-sm text-muted-foreground mt-1">Coba ubah filter atau cari dengan kata kunci lain</p>
-                <button 
-                    @click="isDialogOpen = true"
-                    class="mt-6 inline-flex items-center justify-center rounded-lg bg-warning text-white hover:bg-warning-light transition h-10 px-6 gap-2 text-sm font-semibold">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    Tambah Gudang Pertama
-                </button>
-            </div>
+                Tambah Gudang Pertama
+            </button>
         </div>
     </div>
 
@@ -371,10 +337,6 @@ function warehouseManager() {
             } finally {
                 this.isSubmitting = false;
             }
-        },
-
-        editWarehouse(warehouseId) {
-            window.location.href = `<?= base_url('master/warehouses/edit') ?>/${warehouseId}`;
         },
 
         deleteWarehouse(warehouseId) {
