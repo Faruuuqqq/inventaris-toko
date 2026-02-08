@@ -541,7 +541,7 @@ function customerManager() {
             const customer = this.customers.find(c => c.id === customerId);
             const customerName = customer ? customer.name : 'pelanggan ini';
             ModalManager.submitDelete(
-                `<?= base_url('master/customers/delete') ?>/${customerId}`,
+                `<?= base_url('master/customers') ?>/${customerId}`,
                 customerName,
                 () => {
                     this.customers = this.customers.filter(c => c.id !== customerId);

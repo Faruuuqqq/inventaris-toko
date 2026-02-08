@@ -546,7 +546,7 @@ function supplierManager() {
             const supplier = this.suppliers.find(s => s.id === supplierId);
             const supplierName = supplier ? supplier.name : 'supplier ini';
             ModalManager.submitDelete(
-                `<?= base_url('master/suppliers/delete') ?>/${supplierId}`,
+                `<?= base_url('master/suppliers') ?>/${supplierId}`,
                 supplierName,
                 () => {
                     this.suppliers = this.suppliers.filter(s => s.id !== supplierId);

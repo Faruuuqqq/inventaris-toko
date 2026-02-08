@@ -531,9 +531,9 @@ function salespersonManager() {
            deleteSalesperson(salespersonId) {
                const salesperson = this.salespersons.find(s => s.id === salespersonId);
                const salespersonName = salesperson ? salesperson.name : 'salesperson ini';
-               ModalManager.submitDelete(
-                   `<?= base_url('master/salespersons/delete') ?>/${salespersonId}`,
-                   salespersonName,
+              ModalManager.submitDelete(
+                  `<?= base_url('master/salespersons') ?>/${salespersonId}`,
+                  salespersonName,
                    () => {
                        this.salespersons = this.salespersons.filter(s => s.id !== salespersonId);
                    }

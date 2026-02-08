@@ -498,7 +498,7 @@ function productManager() {
             const product = this.products.find(p => p.id === productId);
             const productName = product ? product.name : 'produk ini';
             ModalManager.submitDelete(
-                `<?= base_url('master/products/delete') ?>/${productId}`,
+                `<?= base_url('master/products') ?>/${productId}`,
                 productName,
                 () => {
                     this.products = this.products.filter(p => p.id !== productId);
