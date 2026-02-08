@@ -125,6 +125,7 @@
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Kode</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Telepon</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Alamat</th>
+                        <th class="h-12 px-6 py-3 text-right font-semibold text-foreground uppercase text-xs tracking-wide">Total Transaksi</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Status</th>
                         <th class="h-12 px-6 py-3 text-right font-semibold text-foreground uppercase text-xs tracking-wide">Aksi</th>
                     </tr>
@@ -162,6 +163,11 @@
                                 </div>
                             </td>
 
+                            <!-- Total Transaksi -->
+                            <td class="px-6 py-4 text-right">
+                                <p class="font-semibold text-foreground" x-text="formatRupiah(supplier.total_transaction || 0)"></p>
+                            </td>
+
                             <!-- Status -->
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
@@ -197,7 +203,7 @@
 
                     <!-- Empty State -->
                     <tr x-show="filteredSuppliers.length === 0">
-                        <td colspan="5" class="py-12 px-6 text-center">
+                        <td colspan="7" class="py-12 px-6 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <svg class="h-12 w-12 text-muted-foreground opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5.581m0 0H9m5.581 0a2 2 0 100-4 2 2 0 000 4zM9 7h1.5a1 1 0 001-1V5a1 1 0 00-1-1H9a1 1 0 00-1 1v1a1 1 0 001 1z"/>
