@@ -349,7 +349,9 @@
                             name="price_buy" 
                             id="price_buy" 
                             required 
-                            placeholder="0"
+                            placeholder="Contoh: 50000"
+                            step="0.01"
+                            min="0.01"
                             :class="{'border-destructive': errors.price_buy}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                         >
@@ -362,7 +364,9 @@
                             name="price_sell" 
                             id="price_sell" 
                             required 
-                            placeholder="0"
+                            placeholder="Contoh: 75000"
+                            step="0.01"
+                            min="0.01"
                             :class="{'border-destructive': errors.price_sell}"
                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                         >
@@ -438,6 +442,10 @@ function productManager() {
         },
 
         openModal() {
+            // Reset form and errors
+            this.errors = {};
+            const form = document.querySelector('form[action*="master/products"]');
+            if (form) form.reset();
             this.isDialogOpen = true;
         },
 

@@ -19,6 +19,9 @@
     
     <!-- Design System CSS (Extracted from inline styles) -->
     <link rel="stylesheet" href="<?= base_url('assets/css/design-system.css') ?>">
+    
+    <!-- CSRF Token for AJAX requests -->
+    <meta name="csrf-token" content="<?= csrf_hash() ?>">>
 </head>
 <body class="h-full min-h-screen bg-background text-foreground" x-data="{ sidebarOpen: false }">
     
