@@ -3,66 +3,58 @@
 <?= $this->section('content') ?>
 
 <div x-data="supplierManager()">
-    <!-- Page Header -->
-    <div class="mb-8 flex items-start justify-between">
-        <div>
+    <!-- Page Header with Inline Summary Cards -->
+    <div class="mb-8 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+        <!-- Title & Description -->
+        <div class="flex-shrink-0">
             <h2 class="text-2xl font-bold text-foreground">Manajemen Supplier</h2>
             <p class="mt-1 text-muted-foreground">Kelola daftar pemasok dan hubungan dagang Anda</p>
         </div>
-    </div>
 
-    <!-- Summary Cards - Compact Horizontal -->
-    <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-3">
-        <!-- Total Suppliers -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-secondary/5 to-transparent p-4 hover:border-secondary/30 transition-colors">
-            <div class="flex items-center gap-4">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/10 flex-shrink-0">
-                    <svg class="h-4 w-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5.581m0 0H9m5.581 0a2 2 0 100-4 2 2 0 000 4zM9 7h1.5a1 1 0 001-1V5a1 1 0 00-1-1H9a1 1 0 00-1 1v1a1 1 0 001 1z"/>
-                    </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-muted-foreground">Total Supplier</p>
-                    <p class="text-xs text-muted-foreground">aktif</p>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <p class="text-2xl font-bold text-foreground" x-text="suppliers.length"></p>
+        <!-- Summary Cards - Horizontal Inline -->
+        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:flex-shrink-0">
+            <!-- Total Suppliers -->
+            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-secondary/5 to-transparent p-3 hover:border-secondary/30 transition-colors">
+                <div class="flex items-center gap-3 min-w-max">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary/10 flex-shrink-0">
+                        <svg class="h-4 w-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5.581m0 0H9m5.581 0a2 2 0 100-4 2 2 0 000 4zM9 7h1.5a1 1 0 001-1V5a1 1 0 00-1-1H9a1 1 0 00-1 1v1a1 1 0 001 1z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-muted-foreground">Total</p>
+                        <p class="text-lg font-bold text-foreground" x-text="suppliers.length"></p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Active Suppliers -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-4 hover:border-success/30 transition-colors">
-            <div class="flex items-center gap-4">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success/10 flex-shrink-0">
-                    <svg class="h-4 w-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
-                    <p class="text-xs text-muted-foreground">tersedia</p>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <p class="text-2xl font-bold text-foreground" x-text="activeCount"></p>
+            <!-- Active Suppliers -->
+            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-3 hover:border-success/30 transition-colors">
+                <div class="flex items-center gap-3 min-w-max">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-success/10 flex-shrink-0">
+                        <svg class="h-4 w-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-muted-foreground">Aktif</p>
+                        <p class="text-lg font-bold text-foreground" x-text="activeCount"></p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Total Debt -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-4 hover:border-warning/30 transition-colors">
-            <div class="flex items-center gap-4">
-                <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10 flex-shrink-0">
-                    <svg class="h-4 w-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-muted-foreground">Total Utang</p>
-                    <p class="text-xs text-muted-foreground">hutang dagang</p>
-                </div>
-                <div class="text-right flex-shrink-0">
-                    <p class="text-2xl font-bold text-foreground" x-text="formatRupiah(totalDebt)"></p>
+            <!-- Total Debt -->
+            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-3 hover:border-warning/30 transition-colors">
+                <div class="flex items-center gap-3 min-w-max">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10 flex-shrink-0">
+                        <svg class="h-4 w-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-muted-foreground">Utang</p>
+                        <p class="text-lg font-bold text-foreground" x-text="formatRupiah(totalDebt)"></p>
+                    </div>
                 </div>
             </div>
         </div>
