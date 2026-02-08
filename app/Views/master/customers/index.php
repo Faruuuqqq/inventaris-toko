@@ -3,58 +3,60 @@
 <?= $this->section('content') ?>
 
 <div x-data="customerManager()">
-    <!-- Page Header with Inline Summary Cards -->
-    <div class="mb-8 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-        <!-- Title & Description -->
-        <div class="flex-shrink-0">
+    <!-- Page Header -->
+    <div class="mb-8 flex items-start justify-between">
+        <div>
             <h2 class="text-2xl font-bold text-foreground">Manajemen Pelanggan</h2>
             <p class="mt-1 text-muted-foreground">Kelola daftar pelanggan dan kredit mereka</p>
         </div>
+    </div>
 
-        <!-- Summary Cards - Horizontal Inline -->
-        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:flex-shrink-0">
-            <!-- Total Customers -->
-            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-primary/5 to-transparent p-3 hover:border-primary/30 transition-colors">
-                <div class="flex items-center gap-3 min-w-max">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 flex-shrink-0">
-                        <svg class="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20h12a6 6 0 00-6-6 6 6 0 00-6 6z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-medium text-muted-foreground">Total</p>
-                        <p class="text-lg font-bold text-foreground" x-text="customers.length"></p>
-                    </div>
+    <!-- Summary Cards - Compact Grid (Product Style) -->
+    <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-3">
+        <!-- Total Customers -->
+        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/30 transition-colors">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Pelanggan</p>
+                    <p class="mt-2 text-2xl font-bold text-foreground" x-text="customers.length"></p>
+                    <p class="mt-1 text-xs text-muted-foreground">aktif</p>
+                </div>
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20h12a6 6 0 00-6-6 6 6 0 00-6 6z"/>
+                    </svg>
                 </div>
             </div>
+        </div>
 
-            <!-- Customers with Debt -->
-            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-3 hover:border-warning/30 transition-colors">
-                <div class="flex items-center gap-3 min-w-max">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-warning/10 flex-shrink-0">
-                        <svg class="h-4 w-4 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-medium text-muted-foreground">Piutang</p>
-                        <p class="text-lg font-bold text-foreground" x-text="customersWithPiutang"></p>
-                    </div>
+        <!-- Customers with Piutang -->
+        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/30 transition-colors">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Dengan Piutang</p>
+                    <p class="mt-2 text-2xl font-bold text-foreground" x-text="customersWithPiutang"></p>
+                    <p class="mt-1 text-xs text-muted-foreground">menunggak</p>
+                </div>
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
+                    <svg class="h-5 w-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                 </div>
             </div>
+        </div>
 
-            <!-- Total Piutang -->
-            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-destructive/5 to-transparent p-3 hover:border-destructive/30 transition-colors">
-                <div class="flex items-center gap-3 min-w-max">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-destructive/10 flex-shrink-0">
-                        <svg class="h-4 w-4 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-medium text-muted-foreground">Total</p>
-                        <p class="text-lg font-bold text-foreground" x-text="formatRupiah(totalPiutang)"></p>
-                    </div>
+        <!-- Total Piutang -->
+        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-destructive/5 to-transparent p-5 hover:border-destructive/30 transition-colors">
+            <div class="flex items-start justify-between">
+                <div>
+                    <p class="text-sm font-medium text-muted-foreground">Total Piutang</p>
+                    <p class="mt-2 text-2xl font-bold text-foreground" x-text="formatRupiah(totalPiutang)"></p>
+                    <p class="mt-1 text-xs text-muted-foreground">belum dibayar</p>
+                </div>
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+                    <svg class="h-5 w-5 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                 </div>
             </div>
         </div>

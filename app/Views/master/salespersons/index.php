@@ -3,60 +3,63 @@
 <?= $this->section('content') ?>
 
 <div x-data="salespersonManager()">
-    <!-- Page Header with Inline Summary Cards -->
-    <div class="mb-8 flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+    <!-- Page Header with Expanded Summary Cards -->
+    <div class="mb-8 flex flex-col gap-6">
         <!-- Title & Description -->
-        <div class="flex-shrink-0">
+        <div>
             <h2 class="text-2xl font-bold text-foreground">Manajemen Salesperson</h2>
             <p class="mt-1 text-muted-foreground">Kelola data tim penjual dan performa mereka</p>
         </div>
 
-        <!-- Summary Cards - Horizontal Inline -->
-        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto lg:flex-shrink-0">
-            <!-- Total Salespersons -->
-            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-purple/5 to-transparent p-3 hover:border-purple/30 transition-colors">
-                <div class="flex items-center gap-3 min-w-max">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-purple/10 flex-shrink-0">
-                        <svg class="h-4 w-4 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-medium text-muted-foreground">Total</p>
-                        <p class="text-lg font-bold text-foreground" x-text="salespersons.length"></p>
-                    </div>
-                </div>
-            </div>
+        <!-- Summary Cards - Expanded Horizontal Layout -->
+        <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
+             <!-- Total Salespersons -->
+             <div class="rounded-xl border border-border/50 bg-gradient-to-br from-purple/5 to-transparent p-5 hover:border-purple/30 transition-colors">
+                 <div class="flex items-start justify-between">
+                     <div>
+                         <p class="text-sm font-medium text-muted-foreground">Total Salesperson</p>
+                         <p class="mt-2 text-2xl font-bold text-foreground" x-text="salespersons.length"></p>
+                         <p class="mt-1 text-xs text-muted-foreground">salesperson terdaftar</p>
+                     </div>
+                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple/10 flex-shrink-0">
+                         <svg class="h-5 w-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                         </svg>
+                     </div>
+                 </div>
+             </div>
 
-            <!-- Active Salespersons -->
-            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-green/5 to-transparent p-3 hover:border-green/30 transition-colors">
-                <div class="flex items-center gap-3 min-w-max">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-green/10 flex-shrink-0">
-                        <svg class="h-4 w-4 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-medium text-muted-foreground">Aktif</p>
-                        <p class="text-lg font-bold text-foreground" x-text="salespersons.filter(s => s.is_active).length"></p>
-                    </div>
-                </div>
-            </div>
+             <!-- Active Salespersons -->
+             <div class="rounded-xl border border-border/50 bg-gradient-to-br from-green/5 to-transparent p-5 hover:border-green/30 transition-colors">
+                 <div class="flex items-start justify-between">
+                     <div>
+                         <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
+                         <p class="mt-2 text-2xl font-bold text-foreground" x-text="salespersons.filter(s => s.is_active).length"></p>
+                         <p class="mt-1 text-xs text-muted-foreground">salesperson aktif</p>
+                     </div>
+                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green/10 flex-shrink-0">
+                         <svg class="h-5 w-5 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                         </svg>
+                     </div>
+                 </div>
+             </div>
 
-            <!-- Total Sales -->
-            <div class="rounded-lg border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-3 hover:border-blue/30 transition-colors">
-                <div class="flex items-center gap-3 min-w-max">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue/10 flex-shrink-0">
-                        <svg class="h-4 w-4 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs font-medium text-muted-foreground">Penjualan</p>
-                        <p class="text-lg font-bold text-foreground">Rp 0</p>
-                    </div>
-                </div>
-            </div>
+             <!-- Total Sales -->
+             <div class="rounded-xl border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-5 hover:border-blue/30 transition-colors">
+                 <div class="flex items-start justify-between">
+                     <div>
+                         <p class="text-sm font-medium text-muted-foreground">Total Penjualan</p>
+                         <p class="mt-2 text-2xl font-bold text-foreground">Rp 0</p>
+                         <p class="mt-1 text-xs text-muted-foreground">total penjualan</p>
+                     </div>
+                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10 flex-shrink-0">
+                         <svg class="h-5 w-5 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                         </svg>
+                     </div>
+                 </div>
+             </div>
         </div>
     </div>
 
@@ -515,18 +518,19 @@ function salespersonManager() {
                  ModalManager.error('Terjadi kesalahan: ' + error.message);
              } finally {
                  this.isEditSubmitting = false;
-             }
-         },
-            const salesperson = this.salespersons.find(s => s.id === salespersonId);
-            const salespersonName = salesperson ? salesperson.name : 'salesperson ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/salespersons/delete') ?>/${salespersonId}`,
-                salespersonName,
-                () => {
-                    this.salespersons = this.salespersons.filter(s => s.id !== salespersonId);
-                }
-            );
-        }
+          },
+
+          deleteSalesperson(salespersonId) {
+              const salesperson = this.salespersons.find(s => s.id === salespersonId);
+              const salespersonName = salesperson ? salesperson.name : 'salesperson ini';
+              ModalManager.submitDelete(
+                  `<?= base_url('master/salespersons/delete') ?>/${salespersonId}`,
+                  salespersonName,
+                  () => {
+                      this.salespersons = this.salespersons.filter(s => s.id !== salespersonId);
+                  }
+              );
+          }
     }
 }
 </script>
