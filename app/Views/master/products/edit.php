@@ -198,7 +198,8 @@ function editManager() {
                     if (data.errors) {
                         this.errors = data.errors;
                     }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.');
+                    // Show generic message, field errors will be displayed inline
+                    ModalManager.error('Silakan periksa kembali data yang Anda masukkan. Lihat pesan kesalahan di setiap field.');
                 } else {
                     // Other error
                     const data = await response.json();
