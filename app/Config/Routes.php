@@ -40,61 +40,61 @@ $routes->group('master', ['namespace' => 'App\Controllers\Master'], function($ro
     });
 
     // Customers
-    $routes->group('customers', function($routes) {
-        $routes->get('/', 'Customers::index');
-        $routes->get('create', 'Customers::create');
-        $routes->get('export-pdf', 'Customers::export');  // GET /master/customers/export-pdf
-        $routes->get('(:num)', 'Customers::detail/$1');
-        $routes->get('edit/(:num)', 'Customers::edit/$1');  // Standard pattern
-        $routes->get('delete/(:num)', 'Customers::delete/$1');
-        $routes->get('getList', 'Customers::getList');  // AJAX endpoint
-        $routes->post('/', 'Customers::store');
-        $routes->post('store', 'Customers::store');
-        $routes->put('(:num)', 'Customers::update/$1');
-        $routes->delete('(:num)', 'Customers::delete/$1');
-    });
+     $routes->group('customers', function($routes) {
+         $routes->get('/', 'Customers::index');
+         $routes->get('create', 'Customers::create');
+         $routes->get('export-pdf', 'Customers::export');  // GET /master/customers/export-pdf
+         $routes->get('(:num)', 'Customers::detail/$1');
+         $routes->get('delete/(:num)', 'Customers::delete/$1');
+         $routes->get('getList', 'Customers::getList');  // AJAX endpoint
+         $routes->post('/', 'Customers::store');
+         $routes->post('store', 'Customers::store');
+         $routes->post('(:num)', 'Customers::update/$1');  // Modal form POST update
+         $routes->put('(:num)', 'Customers::update/$1');
+         $routes->delete('(:num)', 'Customers::delete/$1');
+     });
 
     // Suppliers
-    $routes->group('suppliers', function($routes) {
-        $routes->get('/', 'Suppliers::index');
-        $routes->get('create', 'Suppliers::create');
-        $routes->get('export-pdf', 'Suppliers::export');  // GET /master/suppliers/export-pdf
-        $routes->get('(:num)', 'Suppliers::detail/$1');
-        $routes->get('edit/(:num)', 'Suppliers::edit/$1');  // Standard pattern
-        $routes->get('delete/(:num)', 'Suppliers::delete/$1');
-        $routes->get('getList', 'Suppliers::getList');  // AJAX endpoint
-        $routes->post('/', 'Suppliers::store');
-        $routes->post('store', 'Suppliers::store');
-        $routes->put('(:num)', 'Suppliers::update/$1');
-        $routes->delete('(:num)', 'Suppliers::delete/$1');
-    });
+     $routes->group('suppliers', function($routes) {
+         $routes->get('/', 'Suppliers::index');
+         $routes->get('create', 'Suppliers::create');
+         $routes->get('export-pdf', 'Suppliers::export');  // GET /master/suppliers/export-pdf
+         $routes->get('(:num)', 'Suppliers::detail/$1');
+         $routes->get('delete/(:num)', 'Suppliers::delete/$1');
+         $routes->get('getList', 'Suppliers::getList');  // AJAX endpoint
+         $routes->post('/', 'Suppliers::store');
+         $routes->post('store', 'Suppliers::store');
+         $routes->post('(:num)', 'Suppliers::update/$1');  // Modal form POST update
+         $routes->put('(:num)', 'Suppliers::update/$1');
+         $routes->delete('(:num)', 'Suppliers::delete/$1');
+     });
 
     // Warehouses
-    $routes->group('warehouses', function($routes) {
-        $routes->get('/', 'Warehouses::index');
-        $routes->get('create', 'Warehouses::create');
-        $routes->get('(:num)', 'Warehouses::detail/$1');
-        $routes->get('edit/(:num)', 'Warehouses::edit/$1');
-        $routes->get('delete/(:num)', 'Warehouses::delete/$1');
-        $routes->get('getList', 'Warehouses::getList');  // AJAX endpoint
-        $routes->post('/', 'Warehouses::store');
-        $routes->post('store', 'Warehouses::store');
-        $routes->put('(:num)', 'Warehouses::update/$1');
-        $routes->delete('(:num)', 'Warehouses::delete/$1');
-    });
+     $routes->group('warehouses', function($routes) {
+         $routes->get('/', 'Warehouses::index');
+         $routes->get('create', 'Warehouses::create');
+         $routes->get('(:num)', 'Warehouses::detail/$1');
+         $routes->get('delete/(:num)', 'Warehouses::delete/$1');
+         $routes->get('getList', 'Warehouses::getList');  // AJAX endpoint
+         $routes->post('/', 'Warehouses::store');
+         $routes->post('store', 'Warehouses::store');
+         $routes->post('(:num)', 'Warehouses::update/$1');  // Modal form POST update
+         $routes->put('(:num)', 'Warehouses::update/$1');
+         $routes->delete('(:num)', 'Warehouses::delete/$1');
+     });
 
     // Salespersons
-    $routes->group('salespersons', function($routes) {
-        $routes->get('/', 'Salespersons::index');
-        $routes->get('create', 'Salespersons::create');
-        $routes->get('(:num)', 'Salespersons::detail/$1');
-        $routes->get('edit/(:num)', 'Salespersons::edit/$1');
-        $routes->get('delete/(:num)', 'Salespersons::delete/$1');
-        $routes->get('getList', 'Salespersons::getList');  // AJAX endpoint
-        $routes->post('/', 'Salespersons::store');
-        $routes->put('(:num)', 'Salespersons::update/$1');
-        $routes->delete('(:num)', 'Salespersons::delete/$1');
-    });
+     $routes->group('salespersons', function($routes) {
+         $routes->get('/', 'Salespersons::index');
+         $routes->get('create', 'Salespersons::create');
+         $routes->get('(:num)', 'Salespersons::detail/$1');
+         $routes->get('delete/(:num)', 'Salespersons::delete/$1');
+         $routes->get('getList', 'Salespersons::getList');  // AJAX endpoint
+         $routes->post('/', 'Salespersons::store');
+         $routes->post('(:num)', 'Salespersons::update/$1');  // Modal form POST update
+         $routes->put('(:num)', 'Salespersons::update/$1');
+         $routes->delete('(:num)', 'Salespersons::delete/$1');
+     });
 
     // Users
     $routes->group('users', function($routes) {
