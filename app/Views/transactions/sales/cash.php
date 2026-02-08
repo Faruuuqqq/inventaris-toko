@@ -323,8 +323,6 @@
     }
 </script>
 
-<?= $this->endSection() ?>
-
 <script>
     function salesForm() {
         return {

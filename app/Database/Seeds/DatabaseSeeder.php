@@ -40,6 +40,31 @@ class DatabaseSeeder extends Seeder
             $this->call('SalesDataSeeder');
             echo "✅ Step 3 complete!\n\n";
 
+            // 4. Stock Mutations
+            echo "▶️  Step 4: Loading stock mutations...\n";
+            $this->call('StockMutationsSeeder');
+            echo "✅ Step 4 complete!\n\n";
+
+            // 5. Sales Returns
+            echo "▶️  Step 5: Loading sales returns...\n";
+            $this->call('SalesReturnsSeeder');
+            echo "✅ Step 5 complete!\n\n";
+
+            // 6. Purchase Returns
+            echo "▶️  Step 6: Loading purchase returns...\n";
+            $this->call('PurchaseReturnsSeeder');
+            echo "✅ Step 6 complete!\n\n";
+
+            // 7. Payments
+            echo "▶️  Step 7: Loading payments...\n";
+            $this->call('PaymentsSeeder');
+            echo "✅ Step 7 complete!\n\n";
+
+            // 8. Expenses
+            echo "▶️  Step 8: Loading expenses...\n";
+            $this->call('ExpensesSeeder');
+            echo "✅ Step 8 complete!\n\n";
+
             // Print Summary
             $this->printSummary();
 
@@ -66,11 +91,13 @@ class DatabaseSeeder extends Seeder
             'products' => 'Products',
             'customers' => 'Customers',
             'suppliers' => 'Suppliers',
-            'sales_transactions' => 'Sales (Tunai)',
-            'credit_transactions' => 'Sales (Kredit)',
-            'purchases' => 'Purchases',
-            'sale_returns' => 'Sale Returns',
+            'sales' => 'Sales Transactions',
+            'purchase_orders' => 'Purchase Orders',
+            'stock_mutations' => 'Stock Mutations',
+            'sales_returns' => 'Sales Returns',
             'purchase_returns' => 'Purchase Returns',
+            'payments' => 'Payments',
+            'expenses' => 'Expenses',
         ];
 
         echo "📊 DATA SUMMARY:\n";

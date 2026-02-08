@@ -293,9 +293,9 @@ class Reports extends BaseController
         return $this->purchaseOrderModel
             ->select('purchase_orders.*, suppliers.name as supplier_name')
             ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id')
-            ->where('DATE(purchase_orders.created_at)', $date)
+            ->where('purchase_orders.tanggal_po', $date)
             ->where('purchase_orders.status', 'RECEIVED')
-            ->orderBy('purchase_orders.created_at', 'DESC')
+            ->orderBy('purchase_orders.tanggal_po', 'DESC')
             ->asArray()
             ->findAll();
     }
@@ -305,16 +305,16 @@ class Reports extends BaseController
         $salesReturns = $this->salesReturnModel
             ->select('sales_returns.*, customers.name as customer_name')
             ->join('customers', 'customers.id = sales_returns.customer_id')
-            ->where('DATE(sales_returns.created_at)', $date)
-            ->where('sales_returns.status', 'APPROVED')
+            ->where('sales_returns.tanggal_retur', $date)
+            ->where('sales_returns.status', 'Disetujui')
             ->asArray()
             ->findAll();
             
         $purchaseReturns = $this->purchaseReturnModel
             ->select('purchase_returns.*, suppliers.name as supplier_name')
             ->join('suppliers', 'suppliers.id = purchase_returns.supplier_id')
-            ->where('DATE(purchase_returns.created_at)', $date)
-            ->where('purchase_returns.status', 'APPROVED')
+            ->where('purchase_returns.tanggal_retur', $date)
+            ->where('purchase_returns.status', 'Disetujui')
             ->asArray()
             ->findAll();
             

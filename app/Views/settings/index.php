@@ -244,6 +244,3 @@
     </div>
 </div>
 <?= $this->endSection() ?>
-
-
-<?php $this->endSection() ?>

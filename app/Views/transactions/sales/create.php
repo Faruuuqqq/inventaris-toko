@@ -132,4 +132,127 @@
 
             <div x-show="form.products.length > 0" class="relative w-full overflow-auto">
                 <table class="w-full text-sm">
-                    <th
+                    <thead class="bg-muted/50 border-b border-border/50">
+                        <tr>
+                            <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Qty</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-32">Harga Jual</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Diskon</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-32">Subtotal</th>
+                            <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground w-12"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border/50">
+                        <template x-for="(product, index) in form.products" :key="index">
+                            <tr class="hover:bg-muted/50 transition">
+                                <!-- Product Selection -->
+                                <td class="px-4 py-3">
+                                    <select x-model="product.id_produk" @change="updateProductPrice(index)" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                        <option value="">Pilih Produk</option>
+                                        <?php foreach ($products as $product_option): ?>
+                                            <option value="<?= $product_option->id ?>" data-price="<?= $product_option->price_sell ?>">
+                                                <?= esc($product_option->name) ?> (<?= esc($product_option->sku) ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </td>
+                                <!-- Quantity -->
+                                <td class="px-4 py-3">
+                                    <input type="number" x-model.number="product.qty" @change="updateProductPrice(index)" min="1" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                </td>
+                                <!-- Sell Price -->
+                                <td class="px-4 py-3 text-right">
+                                    <input type="number" x-model.number="product.harga_jual" @change="updateProductPrice(index)" step="0.01" min="0" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono">
+                                </td>
+                                <!-- Discount -->
+                                <td class="px-4 py-3 text-right">
+                                    <input type="number" x-model.number="product.diskon" @change="updateProductPrice(index)" step="0.01" min="0" class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono" placeholder="0">
+                                </td>
+                                <!-- Subtotal -->
+                                <td class="px-4 py-3 text-right font-semibold text-foreground">
+                                    <span x-text="'Rp ' + ((product.qty * product.harga_jual) - (product.diskon || 0)).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                                </td>
+                                <!-- Remove Button -->
+                                <td class="px-4 py-3 text-center">
+                                    <button type="button" @click="removeProduct(index)" class="text-destructive hover:text-destructive/80 transition">
+                                        <?= icon('Trash2', 'h-4 w-4') ?>
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="p-6 border-t border-border/50 bg-muted/20 space-y-4">
+            <div class="grid gap-4 text-right">
+                <div class="grid gap-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-muted-foreground">Total Qty:</span>
+                        <span class="font-semibold text-foreground" x-text="form.products.reduce((s, p) => s + (p.qty || 0), 0)"></span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-muted-foreground">Subtotal:</span>
+                        <span class="font-semibold text-foreground" x-text="'Rp ' + form.products.reduce((s, p) => s + ((p.qty || 0) * (p.harga_jual || 0)), 0).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                    </div>
+                    <div class="flex justify-between text-sm text-destructive">
+                        <span class="font-semibold">Total Diskon:</span>
+                        <span class="font-semibold" x-text="'- Rp ' + form.products.reduce((s, p) => s + (p.diskon || 0), 0).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                    </div>
+                    <hr class="border-border/50 my-2">
+                    <div class="flex justify-between text-lg">
+                        <span class="font-bold text-foreground">Total Bayar:</span>
+                        <span class="font-bold text-primary" x-text="'Rp ' + (form.products.reduce((s, p) => s + ((p.qty || 0) * (p.harga_jual || 0)) - (p.diskon || 0), 0)).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button type="reset" class="flex-1 h-11 border border-border/50 rounded-lg text-foreground font-semibold hover:bg-muted transition">
+                    Reset
+                </button>
+                <button type="submit" class="flex-1 h-11 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2">
+                    <?= icon('Save', 'h-5 w-5') ?>
+                    Simpan Penjualan
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function salesForm() {
+        return {
+            form: {
+                tipe_pembayaran: '<?= old('tipe_pembayaran') ?>',
+                id_customer: '<?= old('id_customer') ?>',
+                products: <?= json_encode(old('products') ?? [['id_produk' => '', 'qty' => 1, 'harga_jual' => 0, 'diskon' => 0]]) ?>
+            },
+
+            addProduct() {
+                this.form.products.push({
+                    id_produk: '',
+                    qty: 1,
+                    harga_jual: 0,
+                    diskon: 0
+                });
+            },
+
+            removeProduct(index) {
+                this.form.products.splice(index, 1);
+            },
+
+            updateProductPrice(index) {
+                // Update price based on product selection
+            },
+
+            updatePaymentType() {
+                // Handle payment type change
+            }
+        };
+    }
+</script>
+
+<?= $this->endSection() ?>

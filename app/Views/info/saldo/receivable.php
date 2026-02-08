@@ -96,10 +96,10 @@
                 <?php else: ?>
                     <?php foreach ($customers as $customer): ?>
                     <tr class="hover:bg-muted/50 transition-colors">
-                        <td class="px-6 py-4 font-medium text-foreground"><?= esc($customer['name'] ?? '') ?></td>
-                        <td class="px-6 py-4 text-right font-medium text-success"><?= format_currency($customer['receivable_balance'] ?? 0) ?></td>
+                        <td class="px-6 py-4 font-medium text-foreground"><?= esc($customer->name ?? '') ?></td>
+                        <td class="px-6 py-4 text-right font-medium text-success"><?= format_currency($customer->receivable_balance ?? 0) ?></td>
                         <td class="px-6 py-4 text-center">
-                            <a href="<?= base_url('/finance/payments/receivable?customer_id=' . esc($customer['id'] ?? '')) ?>" class="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition">
+                            <a href="<?= base_url('/finance/payments/receivable?customer_id=' . esc($customer->id ?? '')) ?>" class="inline-flex items-center justify-center gap-2 h-9 px-4 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition">
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                                 </svg>

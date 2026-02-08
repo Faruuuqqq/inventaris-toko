@@ -129,4 +129,96 @@
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
+                                 </td>
+                                <!-- Quantity -->
+                                <td class="px-4 py-3">
+                                    <input type="number" x-model.number="product.qty" @change="updateProductPrice(index)" min="1" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                                 </td>
+                                <!-- Purchase Price -->
+                                <td class="px-4 py-3 text-right">
+                                    <input type="number" x-model.number="product.harga_beli" @change="updateProductPrice(index)" step="0.01" min="0" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono">
+                                </td>
+                                <!-- Subtotal -->
+                                <td class="px-4 py-3 text-right font-semibold text-foreground">
+                                    <span x-text="'Rp ' + (product.qty * product.harga_beli).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                                </td>
+                                <!-- Notes -->
+                                <td class="px-4 py-3">
+                                    <input type="text" x-model="product.keterangan" placeholder="Catatan..." class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                </td>
+                                <!-- Remove Button -->
+                                <td class="px-4 py-3 text-center">
+                                    <button type="button" @click="removeProduct(index)" class="text-destructive hover:text-destructive/80 transition">
+                                        <?= icon('Trash2', 'h-4 w-4') ?>
+                                    </button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <template x-if="form.products.length === 0">
+                <div class="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                    <?= icon('Package', 'h-12 w-12 mb-3 opacity-50') ?>
+                    <p class="text-sm">Belum ada produk. Klik "Tambah Produk" untuk memulai</p>
+                </div>
+            </template>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="p-6 border-t border-border/50 bg-muted/20">
+            <div class="grid gap-4 md:grid-cols-3 text-right">
+                <div>
+                    <p class="text-sm text-muted-foreground mb-1">Total Qty</p>
+                    <p class="text-2xl font-bold text-foreground" x-text="form.products.reduce((s, p) => s + (p.qty || 0), 0)"></p>
+                </div>
+                <div>
+                    <p class="text-sm text-muted-foreground mb-1">Total Beli</p>
+                    <p class="text-2xl font-bold text-primary" x-text="'Rp ' + form.products.reduce((s, p) => s + ((p.qty || 0) * (p.harga_beli || 0)), 0).toLocaleString('id-ID', {minimumFractionDigits: 0})"></p>
+                </div>
+                <div class="text-right">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition">
+                        <?= icon('Save', 'h-5 w-5') ?>
+                        Simpan PO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function purchaseOrderForm() {
+        return {
+            form: {
+                id_supplier: '<?= old('id_supplier') ?>',
+                products: <?= json_encode(old('products') ?? [['id_produk' => '', 'qty' => 1, 'harga_beli' => 0, 'keterangan' => '']]) ?>
+            },
+
+            addProduct() {
+                this.form.products.push({
+                    id_produk: '',
+                    qty: 1,
+                    harga_beli: 0,
+                    keterangan: ''
+                });
+            },
+
+            removeProduct(index) {
+                this.form.products.splice(index, 1);
+            },
+
+            updateProductPrice(index) {
+                // Price update logic here
+            },
+
+            updatePrices() {
+                // Update supplier prices
+            }
+        };
+    }
+</script>
+
+<?= $this->endSection() ?>
