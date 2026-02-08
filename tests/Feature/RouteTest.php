@@ -170,12 +170,10 @@ class RouteTest extends CIUnitTestCase
      */
     public function testEditRoutesStandardization()
     {
+        // NOTE: Master data (customers, suppliers, warehouses, salespersons) edit routes 
+        // have been removed in favor of modal-based CRUD
         $editRoutes = [
             'master/products/edit/1',
-            'master/customers/edit/1',
-            'master/suppliers/edit/1',
-            'master/warehouses/edit/1',
-            'master/salespersons/edit/1',
             'transactions/sales/edit/1',
             'transactions/purchases/edit/1',
             'transactions/sales-returns/edit/1',
