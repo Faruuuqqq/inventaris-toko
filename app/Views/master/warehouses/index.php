@@ -65,9 +65,111 @@
                 <div class="text-right flex-shrink-0">
                     <p class="text-2xl font-bold text-foreground">Rp 0</p>
                 </div>
-            </div>
         </div>
-    </div>
+     </div>
+
+     <!-- Edit Warehouse Modal -->
+     <div 
+         x-show="isEditDialogOpen" 
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+         x-transition.opacity
+         style="display: none;"
+     >
+         <div 
+             class="w-full max-w-2xl rounded-xl border border-border/50 bg-surface shadow-xl"
+             @click.away="isEditDialogOpen = false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+         >
+             <!-- Modal Header -->
+             <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+                 <h2 class="text-xl font-bold text-foreground">Edit Gudang</h2>
+                 <button 
+                     @click="isEditDialogOpen = false"
+                     class="text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-muted p-1"
+                 >
+                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                     </svg>
+                 </button>
+             </div>
+             
+             <!-- Modal Body -->
+             <form @submit.prevent="submitEditForm" :action="`<?= base_url('master/warehouses') ?>/${editingWarehouse.id}`" method="POST" class="p-6 space-y-5">
+                 <?= csrf_field() ?>
+                 
+                 <!-- Row 1: Name & Code -->
+                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                     <div class="space-y-2">
+                         <label class="text-sm font-semibold text-foreground" for="edit_name">Nama Gudang *</label>
+                         <input 
+                             type="text" 
+                             name="name" 
+                             id="edit_name" 
+                             required 
+                             x-model="editingWarehouse.name"
+                             :class="{'border-destructive': editErrors.name}"
+                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/50 transition-all"
+                         >
+                         <span x-show="editErrors.name" class="text-destructive text-xs mt-1" x-text="editErrors.name"></span>
+                     </div>
+                     <div class="space-y-2">
+                         <label class="text-sm font-semibold text-foreground" for="edit_code">Kode Gudang *</label>
+                         <input 
+                             type="text" 
+                             name="code" 
+                             id="edit_code" 
+                             required 
+                             x-model="editingWarehouse.code"
+                             :class="{'border-destructive': editErrors.code}"
+                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/50 transition-all"
+                         >
+                         <span x-show="editErrors.code" class="text-destructive text-xs mt-1" x-text="editErrors.code"></span>
+                     </div>
+                 </div>
+
+                 <!-- Row 2: Address -->
+                 <div class="space-y-2">
+                     <label class="text-sm font-semibold text-foreground" for="edit_address">Alamat Lengkap</label>
+                     <textarea 
+                         name="address" 
+                         id="edit_address" 
+                         rows="3"
+                         x-model="editingWarehouse.address"
+                         :class="{'border-destructive': editErrors.address}"
+                         class="flex w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/50 transition-all resize-none"
+                     ></textarea>
+                     <span x-show="editErrors.address" class="text-destructive text-xs mt-1" x-text="editErrors.address"></span>
+                 </div>
+
+                 <!-- Modal Footer -->
+                 <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                     <button 
+                         type="button" 
+                         @click="isEditDialogOpen = false" 
+                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-10 px-6 text-sm font-semibold"
+                     >
+                         Batal
+                     </button>
+                     <button 
+                         type="submit" 
+                         :disabled="isEditSubmitting"
+                         class="inline-flex items-center justify-center rounded-lg bg-warning text-white hover:bg-warning-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                     >
+                         <svg x-show="!isEditSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                         </svg>
+                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
+                             <span class="animate-spin">⚙️</span>
+                         </span>
+                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Gudang'"></span>
+                     </button>
+                 </div>
+             </form>
+         </div>
+     </div>
+ </div>
 
     <!-- Control Bar -->
     <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
@@ -129,18 +231,18 @@
                                     <span x-text="parseInt(warehouse.is_active) === 1 ? 'Aktif' : 'Nonaktif'"></span>
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex gap-2 justify-end">
-                                    <!-- Edit Button -->
-                                    <a 
-                                        :href="`<?= base_url('master/warehouses/edit') ?>/${warehouse.id}`"
-                                        class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
-                                        title="Edit gudang"
-                                    >
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                    </a>
+                             <td class="px-6 py-4 text-right">
+                                 <div class="flex gap-2 justify-end">
+                                     <!-- Edit Button -->
+                                     <button 
+                                         @click="openEditModal(warehouse)"
+                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
+                                         title="Edit gudang"
+                                     >
+                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                         </svg>
+                                     </button>
                                     <!-- Delete Button -->
                                     <button 
                                         @click="deleteWarehouse(warehouse.id)"
@@ -282,20 +384,30 @@
 
 <script>
 function warehouseManager() {
-    return {
-        warehouses: <?= json_encode($warehouses ?? []) ?>,
-        search: '',
-        isDialogOpen: false,
-        isSubmitting: false,
-        errors: {},
+     return {
+         warehouses: <?= json_encode($warehouses ?? []) ?>,
+         search: '',
+         isDialogOpen: false,
+         isEditDialogOpen: false,
+         isSubmitting: false,
+         isEditSubmitting: false,
+         errors: {},
+         editErrors: {},
+         editingWarehouse: {},
 
-        get filteredWarehouses() {
-            return this.warehouses.filter(w => {
-                const searchLower = this.search.toLowerCase();
-                return (w.name && w.name.toLowerCase().includes(searchLower)) ||
-                       (w.code && w.code.toLowerCase().includes(searchLower));
-            });
-        },
+         get filteredWarehouses() {
+             return this.warehouses.filter(w => {
+                 const searchLower = this.search.toLowerCase();
+                 return (w.name && w.name.toLowerCase().includes(searchLower)) ||
+                        (w.code && w.code.toLowerCase().includes(searchLower));
+             });
+         },
+
+         openEditModal(warehouse) {
+             this.editingWarehouse = JSON.parse(JSON.stringify(warehouse));
+             this.editErrors = {};
+             this.isEditDialogOpen = true;
+         },
 
         async submitForm(event) {
             event.preventDefault();
@@ -340,12 +452,53 @@ function warehouseManager() {
             } catch (error) {
                 console.error('Form submission error:', error);
                 ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
+             } finally {
+                 this.isSubmitting = false;
+             }
+         },
 
-        deleteWarehouse(warehouseId) {
+         async submitEditForm(event) {
+             event.preventDefault();
+             const form = event.target;
+             
+             this.editErrors = {};
+             this.isEditSubmitting = true;
+
+             try {
+                 const formData = new FormData(form);
+                 
+                 const response = await fetch(form.action, {
+                     method: 'POST',
+                     body: formData,
+                     headers: {
+                         'X-Requested-With': 'XMLHttpRequest'
+                     }
+                 });
+
+                 if (response.ok || response.status === 200) {
+                     ModalManager.success('Data gudang berhasil diperbarui', () => {
+                         this.isEditDialogOpen = false;
+                         this.editErrors = {};
+                         this.editingWarehouse = {};
+                         window.location.reload();
+                     });
+                 } else if (response.status === 422) {
+                     const data = await response.json();
+                     if (data.errors) {
+                         this.editErrors = data.errors;
+                     }
+                     ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
+                 } else {
+                     const data = await response.json();
+                     ModalManager.error(data.message || 'Gagal memperbarui data.');
+                 }
+             } catch (error) {
+                 console.error('Form submission error:', error);
+                 ModalManager.error('Terjadi kesalahan: ' + error.message);
+             } finally {
+                 this.isEditSubmitting = false;
+             }
+         },
             const warehouse = this.warehouses.find(w => w.id === warehouseId);
             const warehouseName = warehouse ? warehouse.name : 'gudang ini';
             ModalManager.submitDelete(

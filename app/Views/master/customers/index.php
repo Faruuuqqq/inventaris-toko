@@ -64,9 +64,112 @@
                 <div class="text-right flex-shrink-0">
                     <p class="text-2xl font-bold text-foreground" x-text="formatRupiah(totalPiutang)"></p>
                 </div>
-            </div>
         </div>
-    </div>
+     </div>
+
+     <!-- Edit Customer Modal -->
+     <div 
+         x-show="isEditDialogOpen" 
+         class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+         x-transition.opacity
+         style="display: none;"
+     >
+         <div 
+             class="w-full max-w-md rounded-xl border border-border/50 bg-surface shadow-xl"
+             @click.away="isEditDialogOpen = false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+         >
+             <!-- Modal Header -->
+             <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+                 <h2 class="text-xl font-bold text-foreground">Edit Pelanggan</h2>
+                 <button 
+                     @click="isEditDialogOpen = false"
+                     class="text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-muted p-1"
+                 >
+                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                     </svg>
+                 </button>
+             </div>
+             
+             <!-- Modal Body -->
+             <form @submit.prevent="submitEditForm" :action="`<?= base_url('master/customers') ?>/${editingCustomer.id}`" method="POST" class="p-6 space-y-4">
+                 <?= csrf_field() ?>
+                 
+                 <!-- Nama Pelanggan -->
+                 <div class="space-y-2">
+                     <label class="text-sm font-semibold text-foreground" for="edit_name">Nama Pelanggan *</label>
+                     <input 
+                         type="text" 
+                         name="name" 
+                         id="edit_name" 
+                         required 
+                         x-model="editingCustomer.name"
+                         :class="{'border-destructive': editErrors.name}"
+                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                     >
+                     <span x-show="editErrors.name" class="text-destructive text-xs mt-1" x-text="editErrors.name"></span>
+                 </div>
+
+                 <!-- Telepon -->
+                 <div class="space-y-2">
+                     <label class="text-sm font-semibold text-foreground" for="edit_phone">No. Telepon</label>
+                     <input 
+                         type="text" 
+                         name="phone" 
+                         id="edit_phone" 
+                         x-model="editingCustomer.phone"
+                         :class="{'border-destructive': editErrors.phone}"
+                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                     >
+                     <span x-show="editErrors.phone" class="text-destructive text-xs mt-1" x-text="editErrors.phone"></span>
+                 </div>
+
+                 <!-- Batas Kredit -->
+                 <div class="space-y-2">
+                     <label class="text-sm font-semibold text-foreground" for="edit_credit_limit">Batas Kredit (Rp)</label>
+                     <input 
+                         type="number" 
+                         name="credit_limit" 
+                         id="edit_credit_limit" 
+                         step="1"
+                         min="0"
+                         x-model.number="editingCustomer.credit_limit"
+                         :class="{'border-destructive': editErrors.credit_limit}"
+                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                     >
+                     <span x-show="editErrors.credit_limit" class="text-destructive text-xs mt-1" x-text="editErrors.credit_limit"></span>
+                 </div>
+
+                 <!-- Modal Footer -->
+                 <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                     <button 
+                         type="button" 
+                         @click="isEditDialogOpen = false" 
+                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-10 px-6 text-sm font-semibold"
+                     >
+                         Batal
+                     </button>
+                     <button 
+                         type="submit" 
+                         :disabled="isEditSubmitting"
+                         class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                     >
+                         <svg x-show="!isEditSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                         </svg>
+                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
+                             <span class="animate-spin">⚙️</span>
+                         </span>
+                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Pelanggan'"></span>
+                     </button>
+                 </div>
+             </form>
+         </div>
+     </div>
+ </div>
 
     <!-- Control Bar -->
     <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
@@ -174,17 +277,17 @@
                             </td>
 
                             <!-- Action -->
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex justify-end gap-1.5">
-                                    <a 
-                                        :href="`<?= base_url('master/customers/edit') ?>/${customer.id}`"
-                                        class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
-                                        title="Edit pelanggan"
-                                    >
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                        </svg>
-                                    </a>
+                             <td class="px-6 py-4 text-right">
+                                 <div class="flex justify-end gap-1.5">
+                                     <button 
+                                         @click="openEditModal(customer)"
+                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
+                                         title="Edit pelanggan"
+                                     >
+                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                         </svg>
+                                     </button>
                                     <button 
                                         @click="deleteCustomer(customer.id)"
                                         class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
@@ -322,12 +425,16 @@
 
 <script>
 function customerManager() {
-    return {
-        customers: <?= json_encode($customers ?? []) ?>,
-        search: '',
-        isDialogOpen: false,
-        isSubmitting: false,
-        errors: {},
+     return {
+         customers: <?= json_encode($customers ?? []) ?>,
+         search: '',
+         isDialogOpen: false,
+         isEditDialogOpen: false,
+         isSubmitting: false,
+         isEditSubmitting: false,
+         errors: {},
+         editErrors: {},
+         editingCustomer: {},
 
         get filteredCustomers() {
             return this.customers.filter(cust => {
@@ -341,9 +448,15 @@ function customerManager() {
             return this.customers.filter(c => parseFloat(c.receivable_balance || 0) > 0).length;
         },
 
-        get totalPiutang() {
-            return this.customers.reduce((sum, c) => sum + (parseFloat(c.receivable_balance) || 0), 0);
-        },
+         get totalPiutang() {
+             return this.customers.reduce((sum, c) => sum + (parseFloat(c.receivable_balance) || 0), 0);
+         },
+
+         openEditModal(customer) {
+             this.editingCustomer = JSON.parse(JSON.stringify(customer));
+             this.editErrors = {};
+             this.isEditDialogOpen = true;
+         },
 
         async submitForm(event) {
             event.preventDefault();
@@ -383,12 +496,53 @@ function customerManager() {
             } catch (error) {
                 console.error('Form submission error:', error);
                 ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
+             } finally {
+                 this.isSubmitting = false;
+             }
+         },
 
-        deleteCustomer(customerId) {
+         async submitEditForm(event) {
+             event.preventDefault();
+             const form = event.target;
+             
+             this.editErrors = {};
+             this.isEditSubmitting = true;
+
+             try {
+                 const formData = new FormData(form);
+                 
+                 const response = await fetch(form.action, {
+                     method: 'POST',
+                     body: formData,
+                     headers: {
+                         'X-Requested-With': 'XMLHttpRequest'
+                     }
+                 });
+
+                 if (response.ok || response.status === 200) {
+                     ModalManager.success('Pelanggan berhasil diperbarui', () => {
+                         this.isEditDialogOpen = false;
+                         this.editErrors = {};
+                         this.editingCustomer = {};
+                         window.location.reload();
+                     });
+                 } else if (response.status === 422) {
+                     const data = await response.json();
+                     if (data.errors) {
+                         this.editErrors = data.errors;
+                     }
+                     ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
+                 } else {
+                     const data = await response.json();
+                     ModalManager.error(data.message || 'Gagal memperbarui data.');
+                 }
+             } catch (error) {
+                 console.error('Form submission error:', error);
+                 ModalManager.error('Terjadi kesalahan: ' + error.message);
+             } finally {
+                 this.isEditSubmitting = false;
+             }
+         },
             const customer = this.customers.find(c => c.id === customerId);
             const customerName = customer ? customer.name : 'pelanggan ini';
             ModalManager.submitDelete(
