@@ -539,7 +539,7 @@ function customerManager() {
             }
          },
 
-          deleteCustomer(customerId) {
+         deleteCustomer(customerId) {
              const customer = this.customers.find(c => c.id === customerId);
              const customerName = customer ? customer.name : 'pelanggan ini';
              ModalManager.submitDelete(

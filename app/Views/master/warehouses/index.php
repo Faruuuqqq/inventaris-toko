@@ -504,17 +504,17 @@ function warehouseManager() {
              }
          },
 
-           deleteWarehouse(warehouseId) {
-               const warehouse = this.warehouses.find(w => w.id === warehouseId);
-               const warehouseName = warehouse ? warehouse.name : 'gudang ini';
-              ModalManager.submitDelete(
-                  `<?= base_url('master/warehouses') ?>/${warehouseId}`,
-                  warehouseName,
-                   () => {
-                       this.warehouses = this.warehouses.filter(w => w.id !== warehouseId);
-                   }
-               );
-           },
+         deleteWarehouse(warehouseId) {
+             const warehouse = this.warehouses.find(w => w.id === warehouseId);
+             const warehouseName = warehouse ? warehouse.name : 'gudang ini';
+             ModalManager.submitDelete(
+                 `<?= base_url('master/warehouses') ?>/${warehouseId}`,
+                 warehouseName,
+                 () => {
+                     this.warehouses = this.warehouses.filter(w => w.id !== warehouseId);
+                 }
+             );
+         },
 
            formatRupiah(number) {
                return new Intl.NumberFormat('id-ID', {
