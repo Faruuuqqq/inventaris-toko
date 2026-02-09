@@ -2,6 +2,159 @@
 
 <?= $this->section('content') ?>
 
+<script>
+function customerManager() {
+     return {
+         customers: <?= json_encode($customers ?? []) ?>,
+         search: '',
+         isDialogOpen: false,
+         isEditDialogOpen: false,
+         isSubmitting: false,
+         isEditSubmitting: false,
+         errors: {},
+         editErrors: {},
+         editingCustomer: {},
+
+        get filteredCustomers() {
+            return this.customers.filter(cust => {
+                const searchLower = this.search.toLowerCase();
+                return (cust.name && cust.name.toLowerCase().includes(searchLower)) ||
+                       (cust.code && cust.code.toLowerCase().includes(searchLower));
+            });
+        },
+
+        get customersWithPiutang() {
+            return this.customers.filter(c => parseFloat(c.receivable_balance || 0) > 0).length;
+        },
+
+         get totalPiutang() {
+             return this.customers.reduce((sum, c) => sum + (parseFloat(c.receivable_balance) || 0), 0);
+         },
+
+         openEditModal(customer) {
+             this.editingCustomer = JSON.parse(JSON.stringify(customer));
+             this.editErrors = {};
+             this.isEditDialogOpen = true;
+         },
+
+        async submitForm(event) {
+            event.preventDefault();
+            const form = event.target;
+            
+            this.errors = {};
+            this.isSubmitting = true;
+
+            try {
+                const formData = new FormData(form);
+                
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok || response.status === 201) {
+                    ModalManager.success('Pelanggan berhasil ditambahkan', () => {
+                        this.isDialogOpen = false;
+                        form.reset();
+                        this.errors = {};
+                        window.location.reload();
+                    });
+                } else if (response.status === 422) {
+                    const data = await response.json();
+                    if (data.errors) {
+                        this.errors = data.errors;
+                    }
+                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
+                } else {
+                    const data = await response.json();
+                    ModalManager.error(data.message || 'Gagal menyimpan data.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isSubmitting = false;
+            }
+         },
+
+         async submitEditForm(event) {
+             event.preventDefault();
+             const form = event.target;
+             
+             this.editErrors = {};
+             this.isEditSubmitting = true;
+
+             try {
+                 const formData = new FormData(form);
+                 
+                 const response = await fetch(form.action, {
+                     method: 'POST',
+                     body: formData,
+                     headers: {
+                         'X-Requested-With': 'XMLHttpRequest'
+                     }
+                 });
+
+                 if (response.ok || response.status === 200) {
+                     ModalManager.success('Pelanggan berhasil diperbarui', () => {
+                         this.isEditDialogOpen = false;
+                         this.editErrors = {};
+                         this.editingCustomer = {};
+                         window.location.reload();
+                     });
+                 } else if (response.status === 422) {
+                     const data = await response.json();
+                     if (data.errors) {
+                         this.editErrors = data.errors;
+                     }
+                     ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
+                 } else {
+                     const data = await response.json();
+                     ModalManager.error(data.message || 'Gagal memperbarui data.');
+                 }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isEditSubmitting = false;
+            }
+         },
+
+         deleteCustomer(customerId) {
+             const customer = this.customers.find(c => c.id === customerId);
+             const customerName = customer ? customer.name : 'pelanggan ini';
+             ModalManager.submitDelete(
+                 `<?= base_url('master/customers') ?>/${customerId}`,
+                 customerName,
+                 () => {
+                     this.customers = this.customers.filter(c => c.id !== customerId);
+                 }
+             );
+         },
+
+        exportData() {
+            try {
+                window.location.href = `<?= base_url('master/customers/export-pdf') ?>`;
+            } catch (error) {
+                console.error('Export failed:', error);
+                alert('Gagal mengekspor data.');
+            }
+        },
+
+        formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number || 0);
+        }
+    }
+}
+</script>
+
 <div x-data="customerManager()">
     <!-- Page Header -->
     <div class="mb-8 flex items-start justify-between">
@@ -417,158 +570,5 @@
         </div>
     </div>
 </div>
-
-<script>
-function customerManager() {
-     return {
-         customers: <?= json_encode($customers ?? []) ?>,
-         search: '',
-         isDialogOpen: false,
-         isEditDialogOpen: false,
-         isSubmitting: false,
-         isEditSubmitting: false,
-         errors: {},
-         editErrors: {},
-         editingCustomer: {},
-
-        get filteredCustomers() {
-            return this.customers.filter(cust => {
-                const searchLower = this.search.toLowerCase();
-                return (cust.name && cust.name.toLowerCase().includes(searchLower)) ||
-                       (cust.code && cust.code.toLowerCase().includes(searchLower));
-            });
-        },
-
-        get customersWithPiutang() {
-            return this.customers.filter(c => parseFloat(c.receivable_balance || 0) > 0).length;
-        },
-
-         get totalPiutang() {
-             return this.customers.reduce((sum, c) => sum + (parseFloat(c.receivable_balance) || 0), 0);
-         },
-
-         openEditModal(customer) {
-             this.editingCustomer = JSON.parse(JSON.stringify(customer));
-             this.editErrors = {};
-             this.isEditDialogOpen = true;
-         },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-                
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    ModalManager.success('Pelanggan berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                } else {
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-         },
-
-         async submitEditForm(event) {
-             event.preventDefault();
-             const form = event.target;
-             
-             this.editErrors = {};
-             this.isEditSubmitting = true;
-
-             try {
-                 const formData = new FormData(form);
-                 
-                 const response = await fetch(form.action, {
-                     method: 'POST',
-                     body: formData,
-                     headers: {
-                         'X-Requested-With': 'XMLHttpRequest'
-                     }
-                 });
-
-                 if (response.ok || response.status === 200) {
-                     ModalManager.success('Pelanggan berhasil diperbarui', () => {
-                         this.isEditDialogOpen = false;
-                         this.editErrors = {};
-                         this.editingCustomer = {};
-                         window.location.reload();
-                     });
-                 } else if (response.status === 422) {
-                     const data = await response.json();
-                     if (data.errors) {
-                         this.editErrors = data.errors;
-                     }
-                     ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                 } else {
-                     const data = await response.json();
-                     ModalManager.error(data.message || 'Gagal memperbarui data.');
-                 }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isEditSubmitting = false;
-            }
-         },
-
-         deleteCustomer(customerId) {
-             const customer = this.customers.find(c => c.id === customerId);
-             const customerName = customer ? customer.name : 'pelanggan ini';
-             ModalManager.submitDelete(
-                 `<?= base_url('master/customers') ?>/${customerId}`,
-                 customerName,
-                 () => {
-                     this.customers = this.customers.filter(c => c.id !== customerId);
-                 }
-             );
-         },
-
-        exportData() {
-            try {
-                window.location.href = `<?= base_url('master/customers/export-pdf') ?>`;
-            } catch (error) {
-                console.error('Export failed:', error);
-                alert('Gagal mengekspor data.');
-            }
-        },
-
-        formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(number || 0);
-        }
-    }
-}
-</script>
 
 <?= $this->endSection() ?>
