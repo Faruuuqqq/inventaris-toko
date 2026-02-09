@@ -2,6 +2,159 @@
 
 <?= $this->section('content') ?>
 
+<script>
+function supplierManager() {
+    return {
+        suppliers: <?= json_encode($suppliers ?? []) ?>,
+        search: '',
+        isDialogOpen: false,
+        isEditDialogOpen: false,
+        isSubmitting: false,
+        isEditSubmitting: false,
+        errors: {},
+        editErrors: {},
+        editingSupplier: {},
+
+        get filteredSuppliers() {
+            return this.suppliers.filter(sup => {
+                const searchLower = this.search.toLowerCase();
+                return (sup.name && sup.name.toLowerCase().includes(searchLower)) ||
+                       (sup.code && sup.code.toLowerCase().includes(searchLower));
+            });
+        },
+
+        get activeCount() {
+            return this.suppliers.filter(s => s.status === 'active' || s.is_active === 1).length;
+        },
+
+        get totalDebt() {
+            return this.suppliers.reduce((sum, s) => sum + (parseFloat(s.debt_balance) || 0), 0);
+        },
+
+        openEditModal(supplier) {
+            this.editingSupplier = JSON.parse(JSON.stringify(supplier));
+            this.editErrors = {};
+            this.isEditDialogOpen = true;
+        },
+
+        async submitForm(event) {
+            event.preventDefault();
+            const form = event.target;
+
+            this.errors = {};
+            this.isSubmitting = true;
+
+            try {
+                const formData = new FormData(form);
+
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok || response.status === 201) {
+                    ModalManager.success('Supplier berhasil ditambahkan', () => {
+                        this.isDialogOpen = false;
+                        form.reset();
+                        this.errors = {};
+                        window.location.reload();
+                    });
+                } else if (response.status === 422) {
+                    const data = await response.json();
+                    if (data.errors) {
+                        this.errors = data.errors;
+                    }
+                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
+                } else {
+                    const data = await response.json();
+                    ModalManager.error(data.message || 'Gagal menyimpan data.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isSubmitting = false;
+            }
+        },
+
+        async submitEditForm(event) {
+            event.preventDefault();
+            const form = event.target;
+
+            this.editErrors = {};
+            this.isEditSubmitting = true;
+
+            try {
+                const formData = new FormData(form);
+
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok || response.status === 200) {
+                    ModalManager.success('Supplier berhasil diperbarui', () => {
+                        this.isEditDialogOpen = false;
+                        this.editErrors = {};
+                        this.editingSupplier = {};
+                        window.location.reload();
+                    });
+                } else if (response.status === 422) {
+                    const data = await response.json();
+                    if (data.errors) {
+                        this.editErrors = data.errors;
+                    }
+                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
+                } else {
+                    const data = await response.json();
+                    ModalManager.error(data.message || 'Gagal memperbarui data.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isEditSubmitting = false;
+            }
+        },
+
+        deleteSupplier(supplierId) {
+            const supplier = this.suppliers.find(s => s.id === supplierId);
+            const supplierName = supplier ? supplier.name : 'supplier ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/suppliers') ?>/${supplierId}`,
+                supplierName,
+                () => {
+                    this.suppliers = this.suppliers.filter(s => s.id !== supplierId);
+                }
+            );
+        },
+
+        exportData() {
+            try {
+                window.location.href = `<?= base_url('master/suppliers/export-pdf') ?>`;
+            } catch (error) {
+                console.error('Export failed:', error);
+                alert('Gagal mengekspor data.');
+            }
+        },
+
+        formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number || 0);
+        }
+    }
+}
+</script>
+
 <div x-data="supplierManager()">
     <!-- Page Header -->
     <div class="mb-8 flex items-start justify-between">
@@ -420,158 +573,5 @@
         </div>
     </div>
 </div>
-
-<script>
-function supplierManager() {
-    return {
-        suppliers: <?= json_encode($suppliers ?? []) ?>,
-        search: '',
-        isDialogOpen: false,
-        isEditDialogOpen: false,
-        isSubmitting: false,
-        isEditSubmitting: false,
-        errors: {},
-        editErrors: {},
-        editingSupplier: {},
-
-        get filteredSuppliers() {
-            return this.suppliers.filter(sup => {
-                const searchLower = this.search.toLowerCase();
-                return (sup.name && sup.name.toLowerCase().includes(searchLower)) ||
-                       (sup.code && sup.code.toLowerCase().includes(searchLower));
-            });
-        },
-
-        get activeCount() {
-            return this.suppliers.filter(s => s.status === 'active' || s.is_active === 1).length;
-        },
-
-        get totalDebt() {
-            return this.suppliers.reduce((sum, s) => sum + (parseFloat(s.debt_balance) || 0), 0);
-        },
-
-        openEditModal(supplier) {
-            this.editingSupplier = JSON.parse(JSON.stringify(supplier));
-            this.editErrors = {};
-            this.isEditDialogOpen = true;
-        },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-                
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    ModalManager.success('Supplier berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                } else {
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
-
-        async submitEditForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            
-            this.editErrors = {};
-            this.isEditSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-                
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 200) {
-                    ModalManager.success('Supplier berhasil diperbarui', () => {
-                        this.isEditDialogOpen = false;
-                        this.editErrors = {};
-                        this.editingSupplier = {};
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.editErrors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                } else {
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal memperbarui data.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isEditSubmitting = false;
-            }
-        },
-
-        deleteSupplier(supplierId) {
-            const supplier = this.suppliers.find(s => s.id === supplierId);
-            const supplierName = supplier ? supplier.name : 'supplier ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/suppliers') ?>/${supplierId}`,
-                supplierName,
-                () => {
-                    this.suppliers = this.suppliers.filter(s => s.id !== supplierId);
-                }
-            );
-        },
-
-        exportData() {
-            try {
-                window.location.href = `<?= base_url('master/suppliers/export-pdf') ?>`;
-            } catch (error) {
-                console.error('Export failed:', error);
-                alert('Gagal mengekspor data.');
-            }
-        },
-
-        formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(number || 0);
-        }
-    }
-}
-</script>
 
 <?= $this->endSection() ?>

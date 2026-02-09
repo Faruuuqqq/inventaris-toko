@@ -2,6 +2,96 @@
 
 <?= $this->section('content') ?>
 
+<script>
+function userManager() {
+    return {
+        users: <?= json_encode($users) ?>,
+        sessionRole: '<?= session()->get("role") ?>',
+        sessionUserId: <?= session()->get('user_id') ?>,
+        search: '',
+        roleFilter: 'all',
+        isDialogOpen: false,
+        editingUser: {
+            id: null,
+            username: '',
+            email: '',
+            fullname: '',
+            role: '',
+            password: ''
+        },
+
+        get filteredUsers() {
+            return this.users.filter(user => {
+                const searchLower = this.search.toLowerCase();
+                const matchesSearch = user.username.toLowerCase().includes(searchLower) ||
+                                    user.fullname.toLowerCase().includes(searchLower) ||
+                                    (user.email && user.email.toLowerCase().includes(searchLower));
+
+                const matchesRole = this.roleFilter === 'all' ||
+                                   user.role === this.roleFilter;
+
+                return matchesSearch && matchesRole;
+            });
+        },
+
+        openModal(userId = null) {
+            if (userId) {
+                const user = this.users.find(u => u.id === userId);
+                if (user) {
+                    this.editingUser = {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email || '',
+                        fullname: user.fullname,
+                        role: user.role,
+                        password: ''
+                    };
+                }
+            } else {
+                this.editingUser = {
+                    id: null,
+                    username: '',
+                    email: '',
+                    fullname: '',
+                    role: '',
+                    password: ''
+                };
+            }
+            this.isDialogOpen = true;
+        },
+
+        editUser(userId) {
+            this.openModal(userId);
+        },
+
+        deleteUser(userId) {
+            const user = this.users.find(u => u.id === userId);
+            const userName = user ? user.fullname : 'pengguna ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/users/delete') ?>/${userId}`,
+                userName,
+                () => {
+                    this.users = this.users.filter(u => u.id !== userId);
+                }
+            );
+        },
+
+        submitForm(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            const action = this.editingUser.id
+                ? `<?= base_url('master/users/update') ?>/${this.editingUser.id}`
+                : '<?= base_url('master/users/store') ?>';
+
+            form.action = action;
+            form.submit();
+        }
+    }
+}
+</script>
+
 <div x-data="userManager()">
     <!-- Page Header -->
     <div class="mb-8 flex items-start justify-between">
@@ -395,95 +485,5 @@
         </div>
     </div>
 </div>
-
-<script>
-function userManager() {
-    return {
-        users: <?= json_encode($users) ?>,
-        sessionRole: '<?= session()->get("role") ?>',
-        sessionUserId: <?= session()->get('user_id') ?>,
-        search: '',
-        roleFilter: 'all',
-        isDialogOpen: false,
-        editingUser: {
-            id: null,
-            username: '',
-            email: '',
-            fullname: '',
-            role: '',
-            password: ''
-        },
-
-        get filteredUsers() {
-            return this.users.filter(user => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = user.username.toLowerCase().includes(searchLower) ||
-                                    user.fullname.toLowerCase().includes(searchLower) ||
-                                    (user.email && user.email.toLowerCase().includes(searchLower));
-                
-                const matchesRole = this.roleFilter === 'all' || 
-                                   user.role === this.roleFilter;
-                                      
-                return matchesSearch && matchesRole;
-            });
-        },
-
-        openModal(userId = null) {
-            if (userId) {
-                const user = this.users.find(u => u.id === userId);
-                if (user) {
-                    this.editingUser = {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email || '',
-                        fullname: user.fullname,
-                        role: user.role,
-                        password: ''
-                    };
-                }
-            } else {
-                this.editingUser = {
-                    id: null,
-                    username: '',
-                    email: '',
-                    fullname: '',
-                    role: '',
-                    password: ''
-                };
-            }
-            this.isDialogOpen = true;
-        },
-
-        editUser(userId) {
-            this.openModal(userId);
-        },
-
-        deleteUser(userId) {
-            const user = this.users.find(u => u.id === userId);
-            const userName = user ? user.fullname : 'pengguna ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/users/delete') ?>/${userId}`,
-                userName,
-                () => {
-                    this.users = this.users.filter(u => u.id !== userId);
-                }
-            );
-        },
-
-        submitForm(e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-            
-            const action = this.editingUser.id 
-                ? `<?= base_url('master/users/update') ?>/${this.editingUser.id}`
-                : '<?= base_url('master/users/store') ?>';
-            
-            form.action = action;
-            form.submit();
-        }
-    }
-}
-</script>
 
 <?= $this->endSection() ?>

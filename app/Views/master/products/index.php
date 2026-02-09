@@ -2,6 +2,123 @@
 
 <?= $this->section('content') ?>
 
+<script>
+function productManager() {
+    return {
+        products: <?= json_encode($products) ?>,
+        search: '',
+        categoryFilter: 'all',
+        isDialogOpen: false,
+        isSubmitting: false,
+        errors: {},
+
+        get filteredProducts() {
+            return this.products.filter(product => {
+                const searchLower = this.search.toLowerCase();
+                const matchesSearch = product.name.toLowerCase().includes(searchLower) ||
+                                    product.sku.toLowerCase().includes(searchLower);
+
+                const matchesCategory = this.categoryFilter === 'all' ||
+                                      product.category_name === this.categoryFilter;
+
+                return matchesSearch && matchesCategory;
+            });
+        },
+
+        openModal() {
+            // Reset form and errors
+            this.errors = {};
+            const form = document.querySelector('form[action*="master/products"]');
+            if (form) form.reset();
+            this.isDialogOpen = true;
+        },
+
+        async submitForm(event) {
+            event.preventDefault();
+            const form = event.target;
+
+            // Clear previous errors
+            this.errors = {};
+            this.isSubmitting = true;
+
+            try {
+                const formData = new FormData(form);
+
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (response.ok || response.status === 201) {
+                    // Success
+                    ModalManager.success('Data produk berhasil ditambahkan', () => {
+                        this.isDialogOpen = false;
+                        form.reset();
+                        this.errors = {};
+                        // Reload page to refresh product list
+                        window.location.reload();
+                    });
+                } else if (response.status === 422) {
+                    // Validation error
+                    const data = await response.json();
+                    if (data.errors) {
+                        this.errors = data.errors;
+                    }
+                    // Show generic message, field errors will be displayed inline
+                    ModalManager.error('Silakan periksa kembali data yang Anda masukkan. Lihat pesan kesalahan di setiap field.');
+                } else {
+                    // Other error
+                    const data = await response.json();
+                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
+                }
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isSubmitting = false;
+            }
+        },
+
+        editProduct(productId) {
+            // TODO: Implement edit functionality
+            window.location.href = `<?= base_url('master/products/edit') ?>/${productId}`;
+        },
+
+        deleteProduct(productId) {
+            const product = this.products.find(p => p.id === productId);
+            const productName = product ? product.name : 'produk ini';
+            ModalManager.submitDelete(
+                `<?= base_url('master/products') ?>/${productId}`,
+                productName,
+                () => {
+                    this.products = this.products.filter(p => p.id !== productId);
+                }
+            );
+        },
+
+        formatRupiah(value) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(value);
+        },
+
+        exportData() {
+            try {
+                window.location.href = `<?= base_url('master/products/export-pdf') ?>`;
+            } catch (error) {
+                console.error('Export failed:', error);
+                alert('Gagal mengekspor data. Silakan coba lagi.');
+            }
+        }
+    }
+}
+</script>
+
 <div x-data="productManager()">
     <!-- Page Header -->
     <div class="mb-8 flex items-start justify-between">
@@ -417,122 +534,5 @@
         </div>
     </div>
 </div>
-
-<script>
-function productManager() {
-    return {
-        products: <?= json_encode($products) ?>,
-        search: '',
-        categoryFilter: 'all',
-        isDialogOpen: false,
-        isSubmitting: false,
-        errors: {},
-
-        get filteredProducts() {
-            return this.products.filter(product => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = product.name.toLowerCase().includes(searchLower) ||
-                                    product.sku.toLowerCase().includes(searchLower);
-                
-                const matchesCategory = this.categoryFilter === 'all' || 
-                                      product.category_name === this.categoryFilter;
-                                      
-                return matchesSearch && matchesCategory;
-            });
-        },
-
-        openModal() {
-            // Reset form and errors
-            this.errors = {};
-            const form = document.querySelector('form[action*="master/products"]');
-            if (form) form.reset();
-            this.isDialogOpen = true;
-        },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            
-            // Clear previous errors
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-                
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    // Success
-                    ModalManager.success('Data produk berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        // Reload page to refresh product list
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    // Validation error
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    // Show generic message, field errors will be displayed inline
-                    ModalManager.error('Silakan periksa kembali data yang Anda masukkan. Lihat pesan kesalahan di setiap field.');
-                } else {
-                    // Other error
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
-
-        editProduct(productId) {
-            // TODO: Implement edit functionality
-            window.location.href = `<?= base_url('master/products/edit') ?>/${productId}`;
-        },
-
-        deleteProduct(productId) {
-            const product = this.products.find(p => p.id === productId);
-            const productName = product ? product.name : 'produk ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/products') ?>/${productId}`,
-                productName,
-                () => {
-                    this.products = this.products.filter(p => p.id !== productId);
-                }
-            );
-        },
-
-        formatRupiah(value) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(value);
-        },
-
-        exportData() {
-            try {
-                window.location.href = `<?= base_url('master/products/export-pdf') ?>`;
-            } catch (error) {
-                console.error('Export failed:', error);
-                alert('Gagal mengekspor data. Silakan coba lagi.');
-            }
-        }
-    }
-}
-</script>
 
 <?= $this->endSection() ?>

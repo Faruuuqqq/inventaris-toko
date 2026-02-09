@@ -327,7 +327,6 @@ function salespersonManager() {
              </form>
          </div>
      </div>
- </div>
 
     <!-- Control Bar -->
     <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
