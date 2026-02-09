@@ -526,9 +526,10 @@ function salespersonManager() {
                  ModalManager.error('Terjadi kesalahan: ' + error.message);
              } finally {
                  this.isEditSubmitting = false;
-          },
+             }
+         },
 
-           deleteSalesperson(salespersonId) {
+         deleteSalesperson(salespersonId) {
                const salesperson = this.salespersons.find(s => s.id === salespersonId);
                const salespersonName = salesperson ? salesperson.name : 'salesperson ini';
               ModalManager.submitDelete(

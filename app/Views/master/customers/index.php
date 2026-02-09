@@ -534,20 +534,22 @@ function customerManager() {
              } catch (error) {
                  console.error('Form submission error:', error);
                  ModalManager.error('Terjadi kesalahan: ' + error.message);
-             } finally {
-                 this.isEditSubmitting = false;
-             }
+          } finally {
+                  this.isEditSubmitting = false;
+              }
+          },
+
+          deleteCustomer(customerId) {
+             const customer = this.customers.find(c => c.id === customerId);
+             const customerName = customer ? customer.name : 'pelanggan ini';
+             ModalManager.submitDelete(
+                 `<?= base_url('master/customers') ?>/${customerId}`,
+                 customerName,
+                 () => {
+                     this.customers = this.customers.filter(c => c.id !== customerId);
+                 }
+             );
          },
-            const customer = this.customers.find(c => c.id === customerId);
-            const customerName = customer ? customer.name : 'pelanggan ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/customers') ?>/${customerId}`,
-                customerName,
-                () => {
-                    this.customers = this.customers.filter(c => c.id !== customerId);
-                }
-            );
-        },
 
         exportData() {
             try {

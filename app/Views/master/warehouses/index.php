@@ -499,8 +499,8 @@ function warehouseManager() {
              } catch (error) {
                  console.error('Form submission error:', error);
                  ModalManager.error('Terjadi kesalahan: ' + error.message);
-             } finally {
-                 this.isEditSubmitting = false;
+              } finally {
+                  this.isEditSubmitting = false;
               }
           },
 
