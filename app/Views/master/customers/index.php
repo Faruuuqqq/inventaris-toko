@@ -491,9 +491,9 @@ function customerManager() {
             } catch (error) {
                 console.error('Form submission error:', error);
                 ModalManager.error('Terjadi kesalahan: ' + error.message);
-             } finally {
-                 this.isSubmitting = false;
-             }
+            } finally {
+                this.isSubmitting = false;
+            }
          },
 
          async submitEditForm(event) {
@@ -531,13 +531,13 @@ function customerManager() {
                      const data = await response.json();
                      ModalManager.error(data.message || 'Gagal memperbarui data.');
                  }
-             } catch (error) {
-                 console.error('Form submission error:', error);
-                 ModalManager.error('Terjadi kesalahan: ' + error.message);
-          } finally {
-                  this.isEditSubmitting = false;
-              }
-          },
+            } catch (error) {
+                console.error('Form submission error:', error);
+                ModalManager.error('Terjadi kesalahan: ' + error.message);
+            } finally {
+                this.isEditSubmitting = false;
+            }
+         },
 
           deleteCustomer(customerId) {
              const customer = this.customers.find(c => c.id === customerId);

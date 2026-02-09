@@ -481,9 +481,9 @@ function salespersonManager() {
             } catch (error) {
                 console.error('Form submission error:', error);
                 ModalManager.error('Terjadi kesalahan: ' + error.message);
-             } finally {
-                 this.isSubmitting = false;
-             }
+            } finally {
+                this.isSubmitting = false;
+            }
          },
 
          async submitEditForm(event) {
