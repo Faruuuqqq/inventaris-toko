@@ -61,14 +61,23 @@ class Reports extends BaseController
         }
         
         $date = $this->request->getGet('date') ?? date('Y-m-d');
-        
+
+        $sales = $this->getDailySales($date);
+        $purchases = $this->getDailyPurchases($date);
+        $returns = $this->getDailyReturns($date);
+
         $data = [
             'title' => 'Daily Report - ' . $date,
             'date' => $date,
-            'sales' => $this->getDailySales($date),
-            'purchases' => $this->getDailyPurchases($date),
-            'returns' => $this->getDailyReturns($date),
-            'summary' => $this->getDailySummary($date)
+            'sales' => $sales,
+            'purchases' => $purchases,
+            'returns' => $returns,
+            'summary' => [
+                'total_sales' => array_sum(array_column($sales, 'final_amount')),
+                'total_purchases' => array_sum(array_column($purchases, 'total_amount')),
+                'total_returns' => array_sum(array_column($returns['sales_returns'], 'final_amount')) + array_sum(array_column($returns['purchase_returns'], 'final_amount')),
+                'transaction_count' => count($sales) + count($purchases) + count($returns['sales_returns']) + count($returns['purchase_returns']),
+            ]
         ];
         
         return view('info/reports/daily', $data);
@@ -147,13 +156,13 @@ class Reports extends BaseController
     public function productPerformance()
     {
         // Check if user is Owner, Admin, or Warehouse staff
-        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN', 'GUDANG'])) {
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
             return redirect()->to('/dashboard')->with('error', 'Access denied');
         }
-        
+
         $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
         $endDate = $this->request->getGet('end_date') ?? date('Y-m-t');
-        
+
         $data = [
             'title' => 'Product Performance Report',
             'startDate' => $startDate,
@@ -167,13 +176,13 @@ class Reports extends BaseController
     public function customerAnalysis()
     {
         // Check if user is Owner, Admin, or Sales staff
-        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN', 'SALES'])) {
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
             return redirect()->to('/dashboard')->with('error', 'Access denied');
         }
-        
+
         $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
         $endDate = $this->request->getGet('end_date') ?? date('Y-m-t');
-        
+
         $data = [
             'title' => 'Customer Analysis Report',
             'startDate' => $startDate,
@@ -321,20 +330,6 @@ class Reports extends BaseController
         return [
             'sales_returns' => $salesReturns,
             'purchase_returns' => $purchaseReturns
-        ];
-    }
-    
-    private function getDailySummary($date)
-    {
-        $sales = $this->getDailySales($date);
-        $purchases = $this->getDailyPurchases($date);
-        $returns = $this->getDailyReturns($date);
-        
-        return [
-            'total_sales' => array_sum(array_column($sales, 'final_amount')),
-            'total_purchases' => array_sum(array_column($purchases, 'total_amount')),
-            'total_returns' => array_sum(array_column($returns['sales_returns'], 'final_amount')) + array_sum(array_column($returns['purchase_returns'], 'final_amount')),
-            'transaction_count' => count($sales) + count($purchases) + count($returns['sales_returns']) + count($returns['purchase_returns'])
         ];
     }
     
@@ -567,7 +562,7 @@ class Reports extends BaseController
     public function stockCard()
     {
         // Check if user is Owner, Admin, or Warehouse staff
-        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN', 'GUDANG'])) {
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
             return redirect()->to('/dashboard')->with('error', 'Access denied');
         }
 

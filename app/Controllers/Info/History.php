@@ -3,11 +3,9 @@ namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
 use App\Models\SaleModel;
-use App\Models\SaleItemModel;
 use App\Models\CustomerModel;
 use App\Models\SalespersonModel;
 use App\Models\SupplierModel;
-use App\Models\StockMutationModel;
 use App\Models\ProductModel;
 use App\Traits\ApiResponseTrait;
 
@@ -15,21 +13,17 @@ class History extends BaseController
 {
     use ApiResponseTrait;
     protected $saleModel;
-    protected $saleItemModel;
     protected $customerModel;
     protected $salespersonModel;
     protected $supplierModel;
-    protected $stockMutationModel;
     protected $productModel;
 
     public function __construct()
     {
         $this->saleModel = new SaleModel();
-        $this->saleItemModel = new SaleItemModel();
         $this->customerModel = new CustomerModel();
         $this->salespersonModel = new SalespersonModel();
         $this->supplierModel = new SupplierModel();
-        $this->stockMutationModel = new StockMutationModel();
         $this->productModel = new ProductModel();
     }
 
@@ -52,7 +46,6 @@ class History extends BaseController
         $endDate = $this->request->getGet('end_date');
         $paymentStatus = $this->request->getGet('payment_status');
 
-        // Use the model method that handles hidden sales properly
         $sales = $this->saleModel->getAllSalesWithHidden(
             $customerId,
             $paymentType,
@@ -61,87 +54,26 @@ class History extends BaseController
             $paymentStatus
         );
 
-        // Add isOwner flag to response for UI
-        $isOwner = session()->get('role') === 'OWNER';
-
-        return $this->respondSuccess([
-            'data' => $sales,
-            'isOwner' => $isOwner
-        ]);
+        return $this->respondData($sales);
     }
 
-     /**
-      * AJAX Endpoint: Toggle sale visibility (hide/unhide from transaction history)
-      *
-      * ⚠️ CRITICAL SECURITY: OWNER ROLE ONLY
-      *
-      * Route: POST /info/history/toggleSaleHide/{id}
-      * Method: AJAX (called from JavaScript in sales history view)
-      * Response: JSON API response
-      *
-      * Permission Requirements:
-      * - Only OWNER role users can call this endpoint
-      * - All other roles (ADMIN, GUDANG, SALES) receive 403 Forbidden response
-      *
-      * Why OWNER Only?
-      * ─────────────────
-      * 1. Compliance: Hiding sales is a sensitive financial operation
-      * 2. Accountability: Owner bears responsibility for financial records visibility
-      * 3. Data Integrity: Prevents staff from accidentally hiding transactions
-      * 4. Audit Trail: Clear authorization - only owner can make visibility changes
-      * 5. Regulatory: Business/tax authorities expect owner control of visible records
-      *
-      * Security Layers:
-      * 1. UI Layer: Hide button only shows for OWNER users (JavaScript check)
-      * 2. Route Layer: This method checks role BEFORE processing
-      * 3. Model Layer: SaleModel::toggleHide() does the actual update
-      * 4. Database Layer: is_hidden column tracks visibility state
-      *
-      * Response Format:
-      * Success (200):
-      * {
-      *   "status": true,
-      *   "message": "Status visibilitas berhasil diubah",
-      *   "data": null
-      * }
-      *
-      * Forbidden (403):
-      * {
-      *   "status": false,
-      *   "message": "Akses ditolak. Hanya Owner yang dapat melakukan ini.",
-      *   "errors": []
-      * }
-      *
-      * Error (500):
-      * {
-      *   "status": false,
-      *   "message": "Error message from exception",
-      *   "errors": []
-      * }
-      *
-      * @param int $saleId The sale ID to toggle visibility
-      * @return ResponseInterface JSON API response
-      *
-      * @see \App\Controllers\Transactions\Sales::toggleHide() - HTTP version
-      * @see \App\Models\SaleModel::toggleHide() - Core business logic
-      * @see app/Views/info/history/sales.php - JavaScript caller
-      */
-     public function toggleSaleHide($saleId)
-     {
-         // CRITICAL: Only OWNER can hide sales for compliance and accountability
-         if (session()->get('role') !== 'OWNER') {
-             return $this->respondForbidden('Akses ditolak. Hanya Owner yang dapat melakukan ini.');
-         }
+    /**
+     * AJAX: Toggle sale visibility (hide/unhide). OWNER only.
+     * POST /info/history/toggleSaleHide/{id}
+     */
+    public function toggleSaleHide($saleId)
+    {
+        if (session()->get('role') !== 'OWNER') {
+            return $this->respondForbidden('Akses ditolak. Hanya Owner yang dapat melakukan ini.');
+        }
 
-         try {
-             // Toggle the visibility in database
-             $this->saleModel->toggleHide($saleId);
-
-             return $this->respondSuccess(null, 'Status visibilitas berhasil diubah');
-         } catch (\Exception $e) {
-             return $this->respondError($e->getMessage());
-         }
-     }
+        try {
+            $this->saleModel->toggleHide($saleId);
+            return $this->respondSuccess(null, 'Status visibilitas berhasil diubah');
+        } catch (\Exception $e) {
+            return $this->respondError($e->getMessage());
+        }
+    }
 
     public function purchases()
     {
@@ -417,7 +349,7 @@ class History extends BaseController
      public function stockMovements()
      {
          // Check if user has warehouse access
-         if (!in_array(session()->get('role'), ['OWNER', 'ADMIN', 'GUDANG'])) {
+         if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
              return redirect()->to('/dashboard')->with('error', 'Access denied');
          }
 
