@@ -60,6 +60,64 @@ class PaymentModel extends Model
     ];
 
     /**
+     * Get receivable payment history (JOIN sales → customers)
+     */
+    public function getReceivableHistory($customerId = null, $startDate = null, $endDate = null, $method = null)
+    {
+        $query = $this->select('payments.*, customers.name as customer_name, sales.invoice_number')
+            ->join('sales', 'sales.id = payments.reference_id')
+            ->join('customers', 'customers.id = sales.customer_id', 'left')
+            ->where('payments.type', 'RECEIVABLE');
+
+        if ($customerId) {
+            $query->where('sales.customer_id', $customerId);
+        }
+
+        if ($startDate) {
+            $query->where('payments.payment_date >=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('payments.payment_date <=', $endDate);
+        }
+
+        if ($method) {
+            $query->where('payments.method', $method);
+        }
+
+        return $query->orderBy('payments.payment_date', 'DESC')->asArray()->findAll();
+    }
+
+    /**
+     * Get payable payment history (JOIN purchase_orders → suppliers)
+     */
+    public function getPayableHistory($supplierId = null, $startDate = null, $endDate = null, $method = null)
+    {
+        $query = $this->select('payments.*, suppliers.name as supplier_name, purchase_orders.nomor_po as po_number')
+            ->join('purchase_orders', 'purchase_orders.id_po = payments.reference_id')
+            ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id', 'left')
+            ->where('payments.type', 'PAYABLE');
+
+        if ($supplierId) {
+            $query->where('purchase_orders.supplier_id', $supplierId);
+        }
+
+        if ($startDate) {
+            $query->where('payments.payment_date >=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('payments.payment_date <=', $endDate);
+        }
+
+        if ($method) {
+            $query->where('payments.method', $method);
+        }
+
+        return $query->orderBy('payments.payment_date', 'DESC')->asArray()->findAll();
+    }
+
+    /**
      * Get receivable payments
      */
     public function getReceivablePayments($referenceId = null)
