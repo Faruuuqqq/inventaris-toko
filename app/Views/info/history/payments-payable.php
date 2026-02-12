@@ -182,7 +182,7 @@
 
         showTableLoading('paymentsTable', 7);
 
-        fetch(buildUrl('/info/history/payments-payable-data', params))
+        fetch(buildUrl('<?= base_url('info/history/payments-payable-data') ?>', params))
             .then(response => response.json())
             .then(data => {
                 renderPayments(data);

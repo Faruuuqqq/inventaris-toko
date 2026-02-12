@@ -178,7 +178,7 @@
 
         showTableLoading('purchasesTable', 7);
 
-        fetch(buildUrl('/info/history/purchases-data', params))
+        fetch(buildUrl('<?= base_url('info/history/purchases-data') ?>', params))
             .then(response => response.json())
             .then(data => {
                 renderPurchases(data);

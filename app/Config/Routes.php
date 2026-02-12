@@ -346,7 +346,6 @@ $routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($route
     
     // Public Auth Routes (No Authentication Required)
     $routes->post('auth/login', 'AuthController::login');
-    $routes->post('auth/register', 'AuthController::register');
     
     // Protected Routes (Requires API Authentication)
     $routes->group('', ['filter' => 'api-auth'], function($routes) {

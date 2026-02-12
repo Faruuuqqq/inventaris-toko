@@ -88,7 +88,7 @@
             end_date: endDate
         });
 
-        fetch('/info/stock/getMutations?' + params.toString())
+        fetch('<?= base_url('info/stock/getMutations') ?>?' + params.toString())
             .then(response => response.json())
             .then(data => {
                 renderMutations(data);

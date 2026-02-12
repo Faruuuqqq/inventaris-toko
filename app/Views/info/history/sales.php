@@ -182,7 +182,7 @@
 </div>
 
 <script>
-    let isOwner = <?= session()->get('role') === 'owner' ? 'true' : 'false' ?>;
+    let isOwner = <?= session()->get('role') === 'OWNER' ? 'true' : 'false' ?>;
 
     function loadSales() {
         const params = {
@@ -195,7 +195,7 @@
 
         showTableLoading('salesTable', 9);
 
-        fetch(buildUrl('/info/history/sales-data', params))
+        fetch(buildUrl('<?= base_url('info/history/sales-data') ?>', params))
             .then(response => response.json())
             .then(result => {
                 const sales = result.data || result;
@@ -334,7 +334,7 @@
          if (!confirm('Yakin ingin mengubah status visibilitas penjualan ini?')) return;
 
          // Call server endpoint via AJAX
-         fetch('/info/history/toggleSaleHide/' + saleId, {
+         fetch('<?= base_url('info/history/toggleSaleHide') ?>/' + saleId, {
              method: 'POST',
              headers: { 
                  'X-Requested-With': 'XMLHttpRequest',  // Prevent CSRF
