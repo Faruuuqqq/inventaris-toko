@@ -194,26 +194,6 @@ if (!function_exists('getSvgIcon')) {
         <?php endforeach; ?>
     </nav>
 
-    <!-- User Profile + Logout -->
-    <div class="border-t border-sidebar-border p-4">
-        <div class="mb-3 flex items-center gap-3">
-            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-sidebar-accent flex-shrink-0">
-                <span class="text-sm font-medium text-sidebar-fg">
-                    <?= strtoupper(substr(session()->get('fullname') ?? session()->get('username') ?? 'U', 0, 1)) ?>
-                </span>
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-sidebar-fg truncate"><?= esc(session()->get('fullname') ?? session()->get('username') ?? 'User') ?></p>
-                <p class="text-xs text-sidebar-fg/60 capitalize"><?= esc(session()->get('role') ?? 'guest') ?></p>
-            </div>
-        </div>
-        <a href="<?= base_url('logout') ?>"
-           class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-fg/75 hover:bg-sidebar-accent hover:text-sidebar-fg transition-all duration-200">
-            <?= icon('LogOut', 'h-4 w-4') ?>
-            Keluar
-        </a>
-    </div>
-
 </aside>
 
 <style>
