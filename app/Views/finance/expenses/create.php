@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Catat biaya pengeluaran operasional' ?></p>
     </div>
-    <a href="<?= base_url('finance/expenses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('finance/expenses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -38,7 +38,7 @@
 
     <!-- Form Card -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('FileText', 'h-5 w-5 text-primary') ?>
                 Detail Biaya
@@ -110,7 +110,7 @@
 
     <!-- Action Buttons -->
     <div class="flex gap-3 justify-end">
-        <a href="<?= base_url('finance/expenses') ?>" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
+        <a href="<?= base_url('finance/expenses') ?>" class="h-10 px-6 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition">
             Batal
         </a>
         <button type="submit" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">

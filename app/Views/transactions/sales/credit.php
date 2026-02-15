@@ -18,7 +18,7 @@
         
         <!-- Header Card -->
         <div class="rounded-lg border bg-surface text-foreground shadow-sm">
-            <div class="p-6 border-b border-border/50">
+            <div class="p-6 border-b border-border">
                 <h2 class="text-2xl font-bold flex items-center gap-2">
                     <?= icon('CreditCard', 'h-6 w-6 text-primary') ?>
                     Penjualan Kredit (PK)
@@ -92,15 +92,15 @@
                 Informasi Kredit Customer
             </h4>
             <div class="grid grid-cols-3 gap-3 text-sm">
-                <div class="rounded-lg bg-surface border border-border/50 p-3">
+                <div class="rounded-lg bg-surface border border-border p-3">
                     <p class="text-xs text-muted-foreground mb-1">Limit Kredit</p>
                     <p class="text-lg font-bold text-primary" x-text="'Rp ' + formatNumber(customerCreditLimit)"></p>
                 </div>
-                <div class="rounded-lg bg-surface border border-border/50 p-3">
+                <div class="rounded-lg bg-surface border border-border p-3">
                     <p class="text-xs text-muted-foreground mb-1">Piutang Saat Ini</p>
                     <p class="text-lg font-bold text-warning" x-text="'Rp ' + formatNumber(customerReceivable)"></p>
                 </div>
-                <div class="rounded-lg bg-surface border border-border/50 p-3">
+                <div class="rounded-lg bg-surface border border-border p-3">
                     <p class="text-xs text-muted-foreground mb-1">Sisa Limit</p>
                     <p class="text-lg font-bold" :class="customerRemainingLimit >= 0 ? 'text-success' : 'text-destructive'" x-text="'Rp ' + formatNumber(customerRemainingLimit)"></p>
                 </div>
@@ -132,7 +132,7 @@
         <div class="rounded-lg border bg-surface text-foreground shadow-sm overflow-hidden">
             <div class="relative w-full overflow-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-muted/50 border-b border-border/50">
+                    <thead class="bg-muted/50 border-b border-border">
                         <tr>
                             <th class="h-12 px-4 text-left font-medium text-muted-foreground">No</th>
                             <th class="h-12 px-4 text-left font-medium text-muted-foreground">Produk</th>
@@ -181,7 +181,7 @@
     <!-- RIGHT: Summary Section (1/3) -->
     <div class="space-y-6">
         <div class="rounded-lg border bg-surface text-foreground shadow-sm sticky top-24">
-            <div class="p-6 border-b border-border/50">
+            <div class="p-6 border-b border-border">
                 <h3 class="text-lg font-semibold flex items-center gap-2">
                     <?= icon('Calculator', 'h-5 w-5 text-primary') ?>
                     Ringkasan Kredit
@@ -202,7 +202,7 @@
                 </div>
 
                 <!-- Grand Total -->
-                <div class="border-t border-border/50 pt-4">
+                <div class="border-t border-border pt-4">
                     <div class="flex justify-between items-baseline">
                         <span class="font-semibold text-muted-foreground">Total Piutang</span>
                         <span class="text-2xl font-bold text-warning" x-text="'Rp ' + formatNumber(grandTotal())"></span>
@@ -216,20 +216,20 @@
                 </div>
 
                 <!-- Remaining Debt -->
-                <div class="rounded-lg bg-destructive/10 border border-destructive/30 p-3">
+                <div class="rounded-lg bg-destructive/10 border border-destructive/50 p-3">
                     <p class="text-xs text-muted-foreground mb-1">Sisa Piutang</p>
                     <p class="text-2xl font-bold text-destructive" x-text="'Rp ' + formatNumber(Math.max(0, grandTotal() - downPayment))"></p>
                 </div>
 
                 <!-- Credit Limit Warning -->
-                <div x-show="creditLimitExceeded()" class="rounded-lg bg-destructive/10 border border-destructive/30 p-3 flex items-start gap-2">
+                <div x-show="creditLimitExceeded()" class="rounded-lg bg-destructive/10 border border-destructive/50 p-3 flex items-start gap-2">
                     <?= icon('AlertCircle', 'h-5 w-5 text-destructive flex-shrink-0 mt-0.5') ?>
                     <p class="text-xs font-medium text-destructive">Total melebihi limit kredit customer!</p>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex gap-2 pt-4">
-                    <a href="<?= base_url('transactions/sales') ?>" class="flex-1 h-10 border border-border/50 rounded-lg font-medium text-foreground hover:bg-muted transition flex items-center justify-center">
+                    <a href="<?= base_url('transactions/sales') ?>" class="flex-1 h-10 border border-border rounded-lg font-medium text-foreground hover:bg-muted transition flex items-center justify-center">
                         Batal
                     </a>
                     <button @click="submitForm()" :disabled="!isFormValid()" type="button" class="flex-1 h-10 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition">
@@ -237,7 +237,7 @@
                     </button>
                 </div>
 
-                <button type="button" class="w-full h-10 border border-border/50 rounded-lg font-medium text-foreground hover:bg-muted transition flex items-center justify-center gap-2">
+                <button type="button" class="w-full h-10 border border-border rounded-lg font-medium text-foreground hover:bg-muted transition flex items-center justify-center gap-2">
                     <?= icon('Printer', 'h-4 w-4') ?>
                     Cetak Faktur
                 </button>

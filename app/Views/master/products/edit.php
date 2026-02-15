@@ -10,7 +10,7 @@
     </div>
 
     <!-- Form Card -->
-    <div class="rounded-xl border border-border/50 bg-surface p-6">
+    <div class="rounded-xl border border-border bg-surface p-6">
         <form @submit.prevent="submitForm" action="<?= base_url('master/products/' . $product->id) ?>" method="POST" class="space-y-5">
             <?= csrf_field() ?>
             <input type="hidden" name="_method" value="PUT">
@@ -137,7 +137,7 @@
             </div>
 
             <!-- Form Footer -->
-            <div class="flex gap-3 justify-end pt-4 border-t border-border/50">
+            <div class="flex gap-3 justify-end pt-4 border-t border-border">
             <a href="<?= base_url('master/products') ?>" class="inline-flex items-center justify-center rounded-lg border border-border bg-muted/30 text-foreground hover:bg-muted transition h-11 px-6 gap-2 text-sm font-semibold">
                 <?= icon('X', 'h-5 w-5') ?>
                 Batal
@@ -148,7 +148,7 @@
                 class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-11 px-6 gap-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
                 <span x-show="!isSubmitting"><?= icon('Check', 'h-5 w-5') ?></span>
                 <span x-show="isSubmitting" class="inline-flex items-center gap-2">
-                    <span class="animate-spin">⚙️</span>
+                    <?= icon("Loader2", "h-4 w-4") ?>
                 </span>
                 <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
             </button>

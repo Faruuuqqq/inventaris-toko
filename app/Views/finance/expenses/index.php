@@ -108,7 +108,7 @@
                     <?= icon('Filter', 'h-4 w-4 inline mr-2') ?>
                     Filter
                 </button>
-                <button onclick="resetFilters()" class="h-10 px-4 border border-border/50 bg-background text-foreground font-medium rounded-lg hover:bg-muted transition">
+                <button onclick="resetFilters()" class="h-10 px-4 border border-border bg-background text-foreground font-medium rounded-lg hover:bg-muted transition">
                     <?= icon('RotateCcw', 'h-4 w-4') ?>
                 </button>
             </div>
@@ -120,7 +120,7 @@
 <div class="rounded-lg border bg-surface overflow-hidden">
     <div class="relative w-full overflow-auto">
         <table class="w-full text-sm">
-            <thead class="bg-muted/50 border-b border-border/50">
+            <thead class="bg-muted/50 border-b border-border">
                 <tr>
                     <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">No. Biaya</th>
                     <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">Tanggal</th>
@@ -152,7 +152,7 @@
         <p class="text-sm text-muted-foreground mb-1">Apakah Anda yakin ingin menghapus biaya ini?</p>
         <p class="text-sm text-muted-foreground font-medium mb-6" id="deleteExpenseInfo"></p>
         <div class="flex gap-3 justify-end">
-            <button onclick="closeDeleteModal()" class="h-10 px-4 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
+            <button onclick="closeDeleteModal()" class="h-10 px-4 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition">
                 Batal
             </button>
             <button type="button" id="confirmDelete" onclick="performDelete()" class="h-10 px-4 rounded-lg bg-destructive text-white font-medium hover:bg-destructive/90 transition">
@@ -236,7 +236,7 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <a href="<?= base_url('finance/expenses/edit/') ?>${expense.id}" 
-                               class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/50 transition"
+                               class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition"
                                title="Edit">
                                 <?= icon('Edit', 'h-4 w-4') ?>
                             </a>

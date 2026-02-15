@@ -339,7 +339,7 @@ function productManager() {
                                     </button>
                                     <button 
                                         @click="deleteProduct(product.id)"
-                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                         title="Hapus produk"
                                     >
                                         <?= icon('Trash2', 'h-4 w-4') ?>

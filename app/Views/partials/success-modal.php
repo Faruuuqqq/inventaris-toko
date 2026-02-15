@@ -45,7 +45,7 @@
             
             <!-- Modal Content -->
             <div class="card-content text-center py-8">
-                <div class="text-5xl mb-4 animate-bounce">✅</div>
+                <?= icon("CheckCircle", "h-10 w-10") ?>
                 <p class="text-foreground font-semibold text-lg mb-2" id="successMessage">
                     Data berhasil disimpan
                 </p>

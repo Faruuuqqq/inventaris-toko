@@ -164,7 +164,7 @@ function salespersonManager() {
         <!-- Summary Cards - Expanded Horizontal Layout -->
         <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
              <!-- Total Salespersons -->
-              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-purple/5 to-transparent p-6 hover:border-purple/30 transition-colors">
+              <div class="rounded-xl border border-border bg-gradient-to-br from-purple/5 to-transparent p-6 hover:border-purple/30 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Total Salesperson</p>
@@ -178,7 +178,7 @@ function salespersonManager() {
              </div>
 
              <!-- Active Salespersons -->
-              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-green/5 to-transparent p-6 hover:border-green/30 transition-colors">
+              <div class="rounded-xl border border-border bg-gradient-to-br from-green/5 to-transparent p-6 hover:border-green/30 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
@@ -192,7 +192,7 @@ function salespersonManager() {
              </div>
 
              <!-- Total Sales -->
-              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-6 hover:border-blue/30 transition-colors">
+              <div class="rounded-xl border border-border bg-gradient-to-br from-blue/5 to-transparent p-6 hover:border-blue/30 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Total Penjualan</p>
@@ -215,14 +215,14 @@ function salespersonManager() {
          style="display: none;"
      >
          <div 
-             class="w-full max-w-2xl rounded-xl border border-border/50 bg-surface shadow-xl"
+             class="w-full max-w-2xl rounded-xl border border-border bg-surface shadow-xl"
              @click.away="isEditDialogOpen = false"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 scale-95"
              x-transition:enter-end="opacity-100 scale-100"
          >
              <!-- Modal Header -->
-             <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+             <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                  <h2 class="text-xl font-bold text-foreground">Edit Salesperson</h2>
                  <button 
                      @click="isEditDialogOpen = false"
@@ -294,7 +294,7 @@ function salespersonManager() {
                  </div>
 
                  <!-- Modal Footer -->
-                 <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                 <div class="flex justify-end gap-3 pt-4 border-t border-border">
                      <button 
                          type="button" 
                          @click="isEditDialogOpen = false" 
@@ -309,7 +309,7 @@ function salespersonManager() {
                      >
                          <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                          <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                             <span class="animate-spin">⚙️</span>
+                             <?= icon("Loader2", "h-4 w-4") ?>
                          </span>
                          <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Salesperson'"></span>
                      </button>
@@ -319,7 +319,7 @@ function salespersonManager() {
      </div>
 
     <!-- Control Bar -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border p-4">
         <!-- Left Side: Search -->
         <div class="flex gap-3 flex-wrap items-center flex-1">
             <!-- Search Input -->
@@ -346,11 +346,11 @@ function salespersonManager() {
     </div>
 
     <!-- Data Table -->
-    <div class="rounded-xl border border-border/50 bg-surface overflow-hidden">
+    <div class="rounded-xl border border-border bg-surface overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-border/50 bg-muted/30">
+                    <tr class="border-b border-border bg-muted/30">
                         <th class="px-6 py-3 text-left font-semibold text-foreground">Nama</th>
                         <th class="px-6 py-3 text-left font-semibold text-foreground">Telepon</th>
                         <th class="px-6 py-3 text-left font-semibold text-foreground">Email</th>
@@ -360,7 +360,7 @@ function salespersonManager() {
                 </thead>
                 <tbody>
                     <template x-for="salesperson in filteredSalespersons" :key="salesperson.id">
-                        <tr class="border-b border-border/50 hover:bg-muted/20 transition">
+                        <tr class="border-b border-border hover:bg-muted/20 transition">
                             <td class="px-6 py-4 font-semibold text-foreground" x-text="salesperson.name"></td>
                             <td class="px-6 py-4 text-muted-foreground" x-text="salesperson.phone || '-'"></td>
                             <td class="px-6 py-4 text-muted-foreground" x-text="salesperson.email || '-'"></td>
@@ -387,7 +387,7 @@ function salespersonManager() {
                                     <!-- Delete Button -->
                                     <button 
                                         @click="deleteSalesperson(salesperson.id)"
-                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                         title="Hapus salesperson"
                                     >
                                          <?= icon('Trash2', 'h-4 w-4') ?>
@@ -422,14 +422,14 @@ function salespersonManager() {
         style="display: none;"
     >
         <div 
-            class="w-full max-w-2xl rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-2xl rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Tambah Salesperson Baru</h2>
                 <button 
                     @click="isDialogOpen = false"
@@ -501,7 +501,7 @@ function salespersonManager() {
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isDialogOpen = false" 
@@ -516,7 +516,7 @@ function salespersonManager() {
                     >
                         <span x-show="!isSubmitting" class="mr-2"><?= icon('Plus', 'h-5 w-5') ?></span>
                         <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon("Loader2", "h-4 w-4") ?>
                         </span>
                         <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Salesperson'"></span>
                     </button>

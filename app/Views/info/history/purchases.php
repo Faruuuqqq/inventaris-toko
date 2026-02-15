@@ -123,7 +123,7 @@
 
 <!-- Purchases Table -->
 <div class="rounded-lg border bg-card shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Daftar Pembelian</h2>
     </div>
     <div class="w-full overflow-auto">
@@ -221,9 +221,9 @@
 
     function getStatusBadge(status) {
         const badges = {
-            'Pending': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-warning/10 text-warning border-warning/30">Pending</span>',
+            'Pending': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-warning/10 text-warning border-warning/50">Pending</span>',
             'Diterima Sebagian': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-secondary/10 text-secondary border-secondary/30">Sebagian</span>',
-            'Diterima Semua': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-success/10 text-success border-success/30">Completed</span>'
+            'Diterima Semua': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-success/10 text-success border-success/50">Completed</span>'
         };
         return badges[status] || `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-muted text-muted-foreground border-border">${status}</span>`;
     }

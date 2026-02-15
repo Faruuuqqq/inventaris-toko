@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Laporan pengeluaran berdasarkan kategori' ?></p>
     </div>
-    <a href="<?= base_url('finance/expenses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('finance/expenses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -19,7 +19,7 @@
 
 <!-- Filter Card -->
 <div class="mb-6 rounded-lg border bg-surface shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
             <?= icon('Filter', 'h-5 w-5 text-primary') ?>
             Filter Periode
@@ -43,7 +43,7 @@
                 Filter
             </button>
 
-            <a href="<?= base_url('finance/expenses/summary') ?>" class="h-10 inline-flex items-center justify-center gap-2 border border-border/50 text-foreground font-medium text-sm rounded-lg hover:bg-muted transition">
+            <a href="<?= base_url('finance/expenses/summary') ?>" class="h-10 inline-flex items-center justify-center gap-2 border border-border text-foreground font-medium text-sm rounded-lg hover:bg-muted transition">
                 <?= icon('RotateCcw', 'h-4 w-4') ?>
                 Reset
             </a>
@@ -95,7 +95,7 @@
 
 <!-- Category Breakdown Table -->
 <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
             <?= icon('Layers', 'h-5 w-5 text-primary') ?>
             Biaya per Kategori
@@ -115,7 +115,7 @@
         <?php else: ?>
             <div class="relative w-full overflow-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-muted/50 border-b border-border/50">
+                    <thead class="bg-muted/50 border-b border-border">
                         <tr>
                             <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Kategori</th>
                             <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-20">Transaksi</th>
@@ -147,7 +147,7 @@
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
-                    <tfoot class="bg-muted/30 border-t border-border/50">
+                    <tfoot class="bg-muted/30 border-t border-border">
                         <tr class="font-bold">
                             <td class="px-4 py-3">Total</td>
                             <td class="px-4 py-3 text-right"><?= array_sum(array_column($byCategory, 'count')) ?></td>

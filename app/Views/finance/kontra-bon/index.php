@@ -121,7 +121,7 @@
                 </tr>
                 <?php else: ?>
                     <?php foreach ($kontraBons as $kb): ?>
-                    <tr class="border-b border-border/50 transition-colors hover:bg-muted/30">
+                    <tr class="border-b border-border transition-colors hover:bg-muted/30">
                         <td class="px-6 py-4">
                             <span class="font-semibold text-primary"><?= esc($kb['document_number']) ?></span>
                         </td>
@@ -145,9 +145,9 @@
                         <td class="px-6 py-4 text-center">
                             <?php
                             $statusClass = match($kb['status']) {
-                                'PAID' => 'bg-success/10 text-success border-success/30',
-                                'PENDING' => 'bg-warning/10 text-warning border-warning/30',
-                                'CANCELLED' => 'bg-destructive/10 text-destructive border-destructive/30',
+                                'PAID' => 'bg-success/10 text-success border-success/50',
+                                'PENDING' => 'bg-warning/10 text-warning border-warning/50',
+                                'CANCELLED' => 'bg-destructive/10 text-destructive border-destructive/50',
                                 default => 'bg-muted/10 text-muted-foreground border-border',
                             };
                             ?>

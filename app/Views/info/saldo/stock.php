@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Analisis dan monitoring saldo stok produk' ?></p>
     </div>
-    <a href="<?= base_url('/info') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('/info') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ChevronLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -59,11 +59,11 @@
             <?= icon('Filter', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
-        <button onclick="resetFilters()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border/50 bg-background text-foreground font-medium text-sm hover:bg-muted transition">
+        <button onclick="resetFilters()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border bg-background text-foreground font-medium text-sm hover:bg-muted transition">
             <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset
         </button>
-        <button onclick="exportData()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border/50 bg-background text-foreground font-medium text-sm hover:bg-muted transition ml-auto">
+        <button onclick="exportData()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border bg-background text-foreground font-medium text-sm hover:bg-muted transition ml-auto">
             <?= icon('Download', 'h-4 w-4') ?>
             Export
         </button>
@@ -127,7 +127,7 @@
 
 <!-- Stock Balance Table -->
 <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Saldo Stok Detail</h2>
     </div>
     <div class="w-full overflow-auto">

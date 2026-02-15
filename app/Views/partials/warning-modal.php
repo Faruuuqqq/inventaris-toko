@@ -67,8 +67,8 @@
                 <p class="text-foreground font-medium mb-3" id="warningMessage">
                     Tindakan ini memiliki konsekuensi penting yang perlu Anda pertimbangkan.
                 </p>
-                <p class="text-sm bg-warning/10 text-warning/80 p-3 rounded border border-warning/30">
-                    ⚠️ Pastikan Anda sudah memahami konsekuensi sebelum melanjutkan.
+                <p class="text-sm bg-warning/10 text-warning/80 p-3 rounded border border-warning/50">
+                    <?= icon("AlertTriangle", "h-5 w-5") ?> Pastikan Anda sudah memahami konsekuensi sebelum melanjutkan.
                 </p>
             </div>
             

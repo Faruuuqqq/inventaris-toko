@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Ubah detail pesanan pembelian ke supplier</p>
     </div>
-    <a href="<?= base_url('transactions/purchases/detail/' . $purchaseOrder->id_po) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('transactions/purchases/detail/' . $purchaseOrder->id_po) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -23,7 +23,7 @@
 
     <!-- Header Information Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('FileText', 'h-5 w-5 text-primary') ?>
                 Informasi Pesanan
@@ -95,7 +95,7 @@
 
     <!-- Products Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30 flex items-center justify-between">
+        <div class="p-6 border-b border-border bg-muted/30 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Package', 'h-5 w-5 text-primary') ?>
                 Daftar Produk
@@ -114,7 +114,7 @@
 
             <div x-show="form.products.length > 0" class="relative w-full overflow-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-muted/50 border-b border-border/50">
+                    <thead class="bg-muted/50 border-b border-border">
                         <tr>
                             <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
                             <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-20">Qty</th>
@@ -175,7 +175,7 @@
 
     <!-- Summary Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Calculator', 'h-5 w-5 text-primary') ?>
                 Ringkasan Pesanan
@@ -198,7 +198,7 @@
 
     <!-- Action Buttons -->
     <div class="flex items-center justify-between gap-3">
-        <a href="<?= base_url('transactions/purchases/detail/' . $purchaseOrder->id_po) ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+        <a href="<?= base_url('transactions/purchases/detail/' . $purchaseOrder->id_po) ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
             Batal
         </a>
         <button type="submit" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">

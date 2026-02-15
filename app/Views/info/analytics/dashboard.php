@@ -13,7 +13,7 @@
             <p class="mt-1 text-muted-foreground">Analisis mendalam terhadap penjualan, pendapatan, dan performa bisnis</p>
         </div>
         <div class="flex gap-3">
-            <button @click="exportReport()" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+            <button @click="exportReport()" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                 <?= icon('Download', 'h-5 w-5') ?>
                 Export
             </button>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Date Range Filter -->
-    <div class="mb-8 rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
+    <div class="mb-8 rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
         <div class="p-6">
             <div class="grid gap-4 grid-cols-1 md:grid-cols-4">
                 <div>
@@ -67,7 +67,7 @@
     <!-- Key Metrics Cards -->
     <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <!-- Total Revenue -->
-        <div class="rounded-lg border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/30 transition-colors">
+        <div class="rounded-lg border border-border bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/50 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
                     <?= icon('DollarSign', 'h-6 w-6 text-success') ?>
@@ -87,7 +87,7 @@
         </div>
 
         <!-- Total Profit -->
-        <div class="rounded-lg border border-border/50 bg-gradient-to-br from-primary/5 to-transparent p-6 hover:border-primary/30 transition-colors">
+        <div class="rounded-lg border border-border bg-gradient-to-br from-primary/5 to-transparent p-6 hover:border-primary/50 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                     <?= icon('BarChart', 'h-6 w-6 text-primary') ?>
@@ -107,7 +107,7 @@
         </div>
 
         <!-- Total Transactions -->
-        <div class="rounded-lg border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/30 transition-colors">
+        <div class="rounded-lg border border-border bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/50 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
                     <?= icon('ClipboardList', 'h-6 w-6 text-warning') ?>
@@ -127,7 +127,7 @@
         </div>
 
         <!-- Average Order Value -->
-        <div class="rounded-lg border border-border/50 bg-gradient-to-br from-blue-500/5 to-transparent p-6 hover:border-blue-500/30 transition-colors">
+        <div class="rounded-lg border border-border bg-gradient-to-br from-blue-500/5 to-transparent p-6 hover:border-blue-500/30 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
                     <?= icon('ShoppingCart', 'h-6 w-6 text-blue-500') ?>
@@ -150,8 +150,8 @@
     <!-- Charts Section -->
     <div class="mb-8 grid gap-6 grid-cols-1 lg:grid-cols-2">
         <!-- Revenue Trend Chart -->
-        <div class="rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('TrendingUp', 'h-5 w-5 text-primary') ?>
                     Tren Pendapatan & Profit
@@ -163,8 +163,8 @@
         </div>
 
         <!-- Category Revenue Chart -->
-        <div class="rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('PieChart', 'h-5 w-5 text-primary') ?>
                     Distribusi Pendapatan per Kategori
@@ -199,8 +199,8 @@
     </div>
 
     <!-- Payment Method Breakdown -->
-    <div class="mb-8 rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="mb-8 rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('CreditCard', 'h-5 w-5 text-primary') ?>
                 Breakdown Metode Pembayaran
@@ -209,7 +209,7 @@
         <div class="p-6">
             <div class="grid gap-6 grid-cols-1 md:grid-cols-3">
                 <template x-for="method in paymentMethods" :key="method.type">
-                    <div class="rounded-lg border border-border/50 p-4 hover:border-primary/30 transition-colors">
+                    <div class="rounded-lg border border-border p-4 hover:border-primary/50 transition-colors">
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <div class="h-8 w-8 rounded-lg flex items-center justify-center" :class="method.bgClass">
@@ -235,8 +235,8 @@
     </div>
 
     <!-- Top Products Table -->
-    <div class="rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30 flex items-center justify-between">
+    <div class="rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border bg-muted/30 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Award', 'h-5 w-5 text-primary') ?>
                 Top 10 Produk Terlaris
@@ -246,7 +246,7 @@
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-border/50 bg-muted/20">
+                    <tr class="border-b border-border bg-muted/20">
                         <th class="px-6 py-3 text-left text-sm font-semibold text-foreground">Rank</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-foreground">Produk</th>
                         <th class="px-6 py-3 text-center text-sm font-semibold text-foreground">Qty Terjual</th>
@@ -257,7 +257,7 @@
                 </thead>
                 <tbody>
                     <template x-for="(product, index) in topProducts" :key="product.id">
-                        <tr class="border-b border-border/50 hover:bg-muted/30 transition">
+                        <tr class="border-b border-border hover:bg-muted/30 transition">
                             <td class="px-6 py-4">
                                 <div class="flex items-center justify-center h-8 w-8 rounded-full font-bold text-sm" 
                                      :class="index === 0 ? 'bg-yellow-100 text-yellow-700' : index === 1 ? 'bg-gray-100 text-gray-700' : index === 2 ? 'bg-orange-100 text-orange-700' : 'bg-muted/50 text-muted-foreground'">

@@ -123,7 +123,7 @@
 
 <!-- Returns Table -->
 <div class="rounded-lg border bg-card shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Daftar Retur Penjualan</h2>
     </div>
     <div class="w-full overflow-auto">
@@ -229,9 +229,9 @@
 
     function getStatusBadge(status) {
         const statusConfig = {
-            'PENDING': { label: 'Pending', class: 'bg-warning/10 text-warning border-warning/30' },
-            'APPROVED': { label: 'Disetujui', class: 'bg-success/10 text-success border-success/30' },
-            'REJECTED': { label: 'Ditolak', class: 'bg-destructive/10 text-destructive border-destructive/30' }
+            'PENDING': { label: 'Pending', class: 'bg-warning/10 text-warning border-warning/50' },
+            'APPROVED': { label: 'Disetujui', class: 'bg-success/10 text-success border-success/50' },
+            'REJECTED': { label: 'Ditolak', class: 'bg-destructive/10 text-destructive border-destructive/50' }
         };
 
         const config = statusConfig[status] || { label: status, class: 'bg-muted text-muted-foreground border-border' };

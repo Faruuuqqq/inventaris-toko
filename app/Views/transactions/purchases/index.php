@@ -14,7 +14,7 @@
     <!-- Summary Cards - Compact Grid -->
     <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <!-- Total Purchase Orders -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total PO</p>
@@ -28,7 +28,7 @@
         </div>
 
         <!-- Pending Received -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Menunggu Penerimaan</p>
@@ -42,7 +42,7 @@
         </div>
 
         <!-- Received -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Sudah Diterima</p>
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Total Value -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-5 hover:border-blue/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-blue/5 to-transparent p-5 hover:border-blue/30 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Nilai PO</p>
@@ -71,7 +71,7 @@
     </div>
 
     <!-- Control Bar - Professional Toolbar -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border p-4">
         <!-- Left Side: Search & Filter -->
         <div class="flex gap-3 flex-1 flex-wrap">
             <!-- Search Input -->
@@ -122,9 +122,9 @@
     </div>
 
     <!-- Purchase Orders Table - Professional Data Grid -->
-    <div class="rounded-xl border border-border/50 bg-surface shadow-sm overflow-hidden">
+    <div class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
         <!-- Table Header with Column Info -->
-        <div class="border-b border-border/50 bg-muted/30 px-6 py-3">
+        <div class="border-b border-border bg-muted/30 px-6 py-3">
             <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 <span x-text="`${filteredPurchaseOrders.length} PO ditemukan`"></span>
             </div>
@@ -133,7 +133,7 @@
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-border/50 bg-background/50">
+                    <tr class="border-b border-border bg-background/50">
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">No. PO</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Supplier</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Gudang</th>
@@ -145,7 +145,7 @@
                 </thead>
                 <tbody>
                     <template x-for="po in filteredPurchaseOrders" :key="po.id_po">
-                        <tr class="border-b border-border/30 hover:bg-primary/3 transition-colors duration-150">
+                        <tr class="border-b border-border hover:bg-muted/50 transition-colors duration-150">
                             <!-- PO Number -->
                             <td class="px-6 py-4">
                                 <a href="<?= base_url('transactions/purchases/detail') ?>/:po.id_po" class="font-semibold text-primary hover:text-primary-light transition" x-text="po.nomor_po"></a>
@@ -162,10 +162,10 @@
                                 <span 
                                     class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold"
                                     :class="{
-                                        'border-warning/30 bg-warning/10 text-warning': po.status === 'Dipesan',
+                                        'border-warning/50 bg-warning/10 text-warning': po.status === 'Dipesan',
                                         'border-blue/30 bg-blue/10 text-blue': po.status === 'Sebagian Diterima',
-                                        'border-success/30 bg-success/10 text-success': po.status === 'Diterima Semua',
-                                        'border-destructive/30 bg-destructive/10 text-destructive': po.status === 'Dibatalkan'
+                                        'border-success/50 bg-success/10 text-success': po.status === 'Diterima Semua',
+                                        'border-destructive/50 bg-destructive/10 text-destructive': po.status === 'Dibatalkan'
                                     }"
                                     x-text="po.status">
                                 </span>
@@ -190,7 +190,7 @@
                                     <template x-if="po.status !== 'Diterima Semua' && po.status !== 'Dibatalkan'">
                                         <a 
                                             :href="`<?= base_url('transactions/purchases/receive') ?>/${po.id_po}`"
-                                            class="inline-flex items-center justify-center rounded-lg border border-success/30 bg-success/5 hover:bg-success/15 transition h-9 w-9 text-success"
+                                            class="inline-flex items-center justify-center rounded-lg border border-success/50 bg-success/5 hover:bg-success/15 transition h-9 w-9 text-success"
                                             title="Terima barang"
                                         >
                                             <?= icon('CheckCircle', 'h-4 w-4') ?>
@@ -208,7 +208,7 @@
                                     <template x-if="po.status === 'Dipesan'">
                                         <button 
                                             @click="deletePO(po.id_po)"
-                                            class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                            class="inline-flex items-center justify-center rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                             title="Hapus PO"
                                         >
                                             <?= icon('Trash2', 'h-4 w-4') ?>
@@ -234,7 +234,7 @@
         </div>
 
         <!-- Table Footer -->
-        <div class="border-t border-border/50 bg-muted/20 px-6 py-3 flex items-center justify-between text-xs text-muted-foreground">
+        <div class="border-t border-border bg-muted/20 px-6 py-3 flex items-center justify-between text-xs text-muted-foreground">
             <span x-text="`Menampilkan ${filteredPurchaseOrders.length} dari ${purchaseOrders.length} PO`"></span>
             <a href="<?= base_url('transactions/purchases') ?>" class="text-primary hover:text-primary-light font-semibold transition">
                 Refresh

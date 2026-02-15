@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Lihat detail pesanan pembelian</p>
     </div>
-    <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -22,7 +22,7 @@
     <div class="lg:col-span-2 space-y-6">
         <!-- PO Information Card -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('FileText', 'h-5 w-5 text-primary') ?>
                     Informasi Purchase Order
@@ -79,7 +79,7 @@
 
         <!-- Products Table Card -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('Package', 'h-5 w-5 text-primary') ?>
                     Daftar Produk
@@ -89,7 +89,7 @@
             <div class="p-6">
                 <div class="relative w-full overflow-auto">
                     <table class="w-full text-sm">
-                        <thead class="bg-muted/50 border-b border-border/50">
+                        <thead class="bg-muted/50 border-b border-border">
                             <tr>
                                 <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
                                 <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-20">Qty Order</th>
@@ -124,7 +124,7 @@
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
-                        <tfoot class="bg-muted/30 border-t border-border/50">
+                        <tfoot class="bg-muted/30 border-t border-border">
                             <tr class="font-bold">
                                 <td colspan="3" class="px-4 py-3 text-right">Total:</td>
                                 <td class="px-4 py-3 text-right text-primary text-base">Rp <?= number_format($purchaseOrder['total_bayar'], 0, ',', '.') ?></td>
@@ -141,7 +141,7 @@
     <div class="space-y-6">
         <!-- Summary Card -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden sticky top-24">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground">Ringkasan</h2>
             </div>
 
@@ -172,7 +172,7 @@
                     <p class="text-lg font-bold text-warning">Rp <?= number_format($totalRemaining, 0, ',', '.') ?></p>
                 </div>
 
-                <div class="border-t border-border/50 pt-4">
+                <div class="border-t border-border pt-4">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-muted-foreground">Status Penerimaan</span>
                         <span class="text-xs font-semibold px-2 py-1 rounded-full 
@@ -203,7 +203,7 @@
 
         <!-- Action Buttons -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground">Aksi</h2>
             </div>
 
@@ -222,12 +222,12 @@
                     </a>
                 <?php endif; ?>
 
-                <a href="<?= base_url('info/stockcard?id_produk=all') ?>" class="w-full h-10 inline-flex items-center justify-center gap-2 border border-border/50 text-foreground font-medium text-sm rounded-lg hover:bg-muted transition">
+                <a href="<?= base_url('info/stockcard?id_produk=all') ?>" class="w-full h-10 inline-flex items-center justify-center gap-2 border border-border text-foreground font-medium text-sm rounded-lg hover:bg-muted transition">
                     <?= icon('BarChart3', 'h-4 w-4') ?>
                     Lihat Stock Card
                 </a>
 
-                <a href="#" target="_blank" class="w-full h-10 inline-flex items-center justify-center gap-2 border border-border/50 text-foreground font-medium text-sm rounded-lg hover:bg-muted transition">
+                <a href="#" target="_blank" class="w-full h-10 inline-flex items-center justify-center gap-2 border border-border text-foreground font-medium text-sm rounded-lg hover:bg-muted transition">
                     <?= icon('Printer', 'h-4 w-4') ?>
                     Cetak
                 </a>

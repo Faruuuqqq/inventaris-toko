@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Buat pesanan pembelian baru ke supplier</p>
     </div>
-    <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -23,7 +23,7 @@
 
     <!-- Header Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('FileText', 'h-5 w-5 text-primary') ?>
                 Informasi Purchase Order
@@ -92,7 +92,7 @@
 
     <!-- Products Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30 flex items-center justify-between">
+        <div class="p-6 border-b border-border bg-muted/30 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Package', 'h-5 w-5 text-primary') ?>
                 Daftar Produk
@@ -106,7 +106,7 @@
         <div class="p-6">
             <div class="relative w-full overflow-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-muted/50 border-b border-border/50">
+                    <thead class="bg-muted/50 border-b border-border">
                         <tr>
                             <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
                             <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Qty</th>
@@ -168,7 +168,7 @@
         </div>
 
         <!-- Summary Section -->
-        <div class="p-6 border-t border-border/50 bg-muted/20">
+        <div class="p-6 border-t border-border bg-muted/20">
             <div class="grid gap-4 md:grid-cols-3 text-right">
                 <div>
                     <p class="text-sm text-muted-foreground mb-1">Total Qty</p>

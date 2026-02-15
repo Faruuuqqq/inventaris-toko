@@ -13,7 +13,7 @@
              <p class="text-sm text-muted-foreground mt-1">Informasi lengkap dan riwayat pelanggan</p>
          </div>
          <div class="flex gap-3">
-             <a href="<?= base_url('master/customers') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+             <a href="<?= base_url('master/customers') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                  <?= icon('ArrowLeft', 'h-5 w-5') ?>
                  Kembali
              </a>
@@ -33,7 +33,7 @@
         
         <!-- Customer Information Card -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('User', 'h-5 w-5 text-primary') ?>
                     Informasi Pelanggan
@@ -59,7 +59,7 @@
                 </div>
 
                 <!-- Contact Information -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Nomor Telepon</p>
                         <p class="text-sm font-medium text-foreground mt-1"><?= $customer->phone ?? '-' ?></p>
@@ -77,7 +77,7 @@
                 </div>
 
                 <!-- Credit Information -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Limit Kredit</p>
                         <p class="text-lg font-bold text-foreground mt-1"><?= format_currency($customer['credit_limit']) ?></p>
@@ -96,7 +96,7 @@
                 $used_percent = ($customer['receivable_balance'] / $customer['credit_limit']) * 100;
                 $status_class = $used_percent > 80 ? 'destructive' : ($used_percent > 50 ? 'warning' : 'success');
                 ?>
-                <div class="pt-4 border-t border-border/50">
+                <div class="pt-4 border-t border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide mb-2">Status Kredit</p>
                     <div class="space-y-2">
                         <div class="flex items-center justify-between text-sm">
@@ -116,7 +116,7 @@
 
         <!-- Recent Transactions -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('History', 'h-5 w-5 text-primary') ?>
                     Transaksi Terbaru
@@ -125,7 +125,7 @@
 
             <div class="overflow-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-muted/50 border-b border-border/50">
+                    <thead class="bg-muted/50 border-b border-border">
                         <tr>
                             <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">No. Invoice</th>
                             <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">Tanggal</th>
@@ -175,7 +175,7 @@
         
         <!-- Quick Actions -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('Zap', 'h-5 w-5 text-primary') ?>
                     Aksi Cepat
@@ -193,7 +193,7 @@
                     Terima Pembayaran
                 </a>
 
-                <a href="<?= base_url('info/history/sales?customer_id=' . $customer->id) ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
+                <a href="<?= base_url('info/history/sales?customer_id=' . $customer->id) ?>" class="w-full h-10 rounded-lg border border-border text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
                     <?= icon('History', 'h-5 w-5 mr-2') ?>
                     Lihat Riwayat
                 </a>
@@ -202,7 +202,7 @@
 
         <!-- Statistics -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('BarChart3', 'h-5 w-5 text-primary') ?>
                     Statistik
@@ -210,17 +210,17 @@
             </div>
 
             <div class="p-6 space-y-4">
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div class="p-4 rounded-lg bg-muted/30 border border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase">Total Penjualan</p>
                     <p class="text-2xl font-bold text-foreground mt-2"><?= format_currency($customer['total_sales'] ?? 0) ?></p>
                 </div>
 
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div class="p-4 rounded-lg bg-muted/30 border border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase">Jumlah Transaksi</p>
                     <p class="text-2xl font-bold text-foreground mt-2"><?= $customer['transaction_count'] ?? 0 ?></p>
                 </div>
 
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div class="p-4 rounded-lg bg-muted/30 border border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase">Rata-rata Transaksi</p>
                     <p class="text-2xl font-bold text-foreground mt-2"><?= format_currency($customer['average_transaction'] ?? 0) ?></p>
                 </div>
@@ -237,14 +237,14 @@
         style="display: none;"
     >
         <div 
-            class="w-full max-w-md rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-md rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isEditDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Edit Pelanggan</h2>
                 <button 
                     @click="isEditDialogOpen = false"
@@ -337,7 +337,7 @@
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isEditDialogOpen = false" 
@@ -352,7 +352,7 @@
                     >
                         <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon("Loader2", "h-4 w-4") ?>
                         </span>
                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Pelanggan'"></span>
                     </button>

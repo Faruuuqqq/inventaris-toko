@@ -65,7 +65,7 @@
                     Apakah Anda yakin ingin menghapus <strong id="deleteItemName">item ini</strong>?
                 </p>
                 <p class="text-xs text-destructive/70 mt-3 bg-destructive/10 p-2 rounded">
-                    ⚠️ Tindakan ini tidak dapat dibatalkan!
+                    <?= icon("AlertTriangle", "h-5 w-5") ?> Tindakan ini tidak dapat dibatalkan!
                 </p>
             </div>
             

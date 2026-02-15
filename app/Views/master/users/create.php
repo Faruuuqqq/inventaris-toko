@@ -10,7 +10,7 @@
     </div>
 
     <!-- Form Card -->
-    <div class="rounded-xl border border-border/50 bg-surface p-6">
+    <div class="rounded-xl border border-border bg-surface p-6">
         <form action="<?= base_url('master/users') ?>" method="POST" class="space-y-5">
             <?= csrf_field() ?>
             
@@ -87,7 +87,7 @@
             </div>
 
             <!-- Form Footer -->
-            <div class="flex gap-3 justify-end pt-4 border-t border-border/50">
+            <div class="flex gap-3 justify-end pt-4 border-t border-border">
                 <a href="<?= base_url('master/users') ?>" class="inline-flex items-center justify-center rounded-lg border border-border bg-muted/30 text-foreground hover:bg-muted transition h-11 px-6 gap-2 text-sm font-semibold">
                     <?= icon('X', 'h-5 w-5') ?>
                     Batal

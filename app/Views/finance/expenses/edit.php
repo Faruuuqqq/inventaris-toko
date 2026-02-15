@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Perbarui informasi biaya operasional' ?></p>
     </div>
-    <a href="<?= base_url('/finance/expenses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('/finance/expenses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -19,7 +19,7 @@
 
 <!-- Error Messages -->
 <?php if (session()->getFlashdata('errors')): ?>
-    <div class="mb-6 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+    <div class="mb-6 rounded-lg border border-destructive/50 bg-destructive/5 p-4">
         <div class="flex gap-3">
             <?= icon('AlertTriangle', 'h-5 w-5 text-destructive flex-shrink-0 mt-0.5') ?>
             <div class="flex-1">
@@ -36,7 +36,7 @@
 
 <!-- Form Card -->
 <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
             <?= icon('FileText', 'h-5 w-5 text-primary') ?>
             Form Edit Biaya
@@ -107,11 +107,11 @@
             </div>
 
             <!-- Divider -->
-            <div class="border-t border-border/50"></div>
+            <div class="border-t border-border"></div>
 
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-3 justify-end">
-                <a href="<?= base_url('/finance/expenses') ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+                <a href="<?= base_url('/finance/expenses') ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                     Batal
                 </a>
                 <button type="submit" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
