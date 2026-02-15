@@ -37,7 +37,6 @@ class Filters extends BaseFilters
         'auth'          => \App\Filters\AuthFilter::class,
         'api-auth'      => \App\Filters\ApiAuthFilter::class,
         'role'          => \App\Filters\RoleFilter::class,
-        'security'      => \App\Filters\SecurityFilter::class,
         'requestlog'    => \App\Filters\RequestLogger::class,  // Request/Response logging
     ];
 
@@ -74,10 +73,10 @@ class Filters extends BaseFilters
      *     after: array<string, array{except: list<string>|string}>|list<string>
      * }
      */
-     public array $globals = [
-         'before' => ['security', 'honeypot'],
-         'after' => ['security', 'honeypot'],
-     ];
+    public array $globals = [
+         'before' => ['honeypot'],
+         'after' => ['honeypot'],
+    ];
 
     /**
      * List of filter aliases that works on a
