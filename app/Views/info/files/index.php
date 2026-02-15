@@ -6,24 +6,18 @@
 <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
         <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
-            <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
+            <?= icon('FileText', 'h-8 w-8 text-primary') ?>
             <?= $title ?? 'Manajemen File' ?>
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Kelola dan simpan file dokumen penting</p>
     </div>
     <div class="flex gap-2 flex-wrap sm:flex-nowrap">
         <button type="button" onclick="openUploadModal()" class="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition whitespace-nowrap">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
+            <?= icon('Plus', 'h-5 w-5') ?>
             Upload File
         </button>
         <button type="button" onclick="openBulkUploadModal()" class="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg border border-border/50 text-foreground font-medium hover:bg-muted transition whitespace-nowrap">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m0 0v10l8 4"/>
-            </svg>
+            <?= icon('Package', 'h-5 w-5') ?>
             Bulk Upload
         </button>
     </div>
@@ -56,9 +50,7 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium text-foreground">&nbsp;</label>
                 <button type="submit" class="h-10 w-full rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition flex items-center justify-center gap-2">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
+                    <?= icon('Search', 'h-4 w-4') ?>
                     Cari
                 </button>
             </div>
@@ -89,9 +81,7 @@
                     <tr>
                         <td colspan="7" class="px-6 py-12 text-center">
                             <div class="flex flex-col items-center gap-2">
-                                <svg class="h-12 w-12 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
+                                <?= icon('FileText', 'h-12 w-12 text-muted-foreground/50') ?>
                                 <p class="text-sm font-medium text-muted-foreground">Tidak ada file ditemukan</p>
                                 <p class="text-xs text-muted-foreground">Coba ubah filter pencarian Anda</p>
                             </div>
@@ -105,9 +95,7 @@
                                     <?php if (in_array($file['tipe_file'], ['image/jpeg', 'image/png', 'image/gif'])): ?>
                                         <img src="<?= base_url('uploads/' . esc($file['nama_file_sistem'])) ?>" alt="<?= esc($file['nama_file']) ?>" class="h-8 w-8 rounded object-cover flex-shrink-0">
                                     <?php else: ?>
-                                        <svg class="h-8 w-8 text-muted-foreground flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                        </svg>
+                                        <?= icon('FileText', 'h-8 w-8 text-muted-foreground flex-shrink-0') ?>
                                     <?php endif; ?>
                                     <span class="font-medium text-foreground"><?= esc($file['nama_file']) ?></span>
                                 </div>
@@ -124,20 +112,13 @@
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <button type="button" onclick="viewFile(<?= $file['id_file'] ?>)" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition" title="View">
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
+                                        <?= icon('Eye', 'h-4 w-4') ?>
                                     </button>
                                     <a href="<?= base_url('/info/files/download/' . $file['id_file']) ?>" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-success/10 text-success hover:bg-success/20 transition" title="Download">
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                                        </svg>
+                                        <?= icon('Download', 'h-4 w-4') ?>
                                     </a>
                                     <button type="button" onclick="deleteFile(<?= $file['id_file'] ?>, '<?= esc($file['nama_file']) ?>')" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition" title="Delete">
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
+                                        <?= icon('Trash2', 'h-4 w-4') ?>
                                     </button>
                                 </div>
                             </td>
@@ -164,9 +145,7 @@
         <div class="p-6 border-b border-border/50 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-foreground">Upload File</h2>
             <button type="button" onclick="closeUploadModal()" class="text-muted-foreground hover:text-foreground">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                <?= icon('X', 'h-5 w-5') ?>
             </button>
         </div>
 
@@ -208,9 +187,7 @@
                     Batal
                 </button>
                 <button type="submit" id="uploadSubmit" class="flex-1 h-10 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center justify-center gap-2">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
+                    <?= icon('Plus', 'h-4 w-4') ?>
                     Upload
                 </button>
             </div>
@@ -224,9 +201,7 @@
         <div class="p-6 border-b border-border/50 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-foreground">Bulk Upload File</h2>
             <button type="button" onclick="closeBulkUploadModal()" class="text-muted-foreground hover:text-foreground">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                <?= icon('X', 'h-5 w-5') ?>
             </button>
         </div>
 
@@ -268,9 +243,7 @@
                     Batal
                 </button>
                 <button type="submit" id="bulkUploadSubmit" class="flex-1 h-10 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center justify-center gap-2">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                    </svg>
+                    <?= icon('Plus', 'h-4 w-4') ?>
                     Upload Semua
                 </button>
             </div>

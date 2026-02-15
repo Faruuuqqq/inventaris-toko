@@ -22,9 +22,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">transaksi</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m7-4a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('CheckCircle', 'h-5 w-5 text-primary') ?>
                 </div>
             </div>
         </div>
@@ -38,9 +36,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">retur</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
-                    <svg class="h-5 w-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('Clock', 'h-5 w-5 text-warning') ?>
                 </div>
             </div>
         </div>
@@ -54,9 +50,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">disetujui</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
-                    <svg class="h-5 w-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('DollarSign', 'h-5 w-5 text-success') ?>
                 </div>
             </div>
         </div>
@@ -68,9 +62,7 @@
         <div class="flex gap-3 flex-1 flex-wrap">
             <!-- Search Input -->
             <div class="relative flex-1 min-w-64">
-                <svg class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+                <?= icon('Search', 'absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground') ?>
                 <input 
                     type="text" 
                     x-model="search"
@@ -96,9 +88,7 @@
             href="<?= base_url('transactions/purchase-returns/create') ?>"
             class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md"
         >
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-            </svg>
+            <?= icon('Plus', 'h-5 w-5') ?>
             <span class="hidden sm:inline">Buat Retur</span>
             <span class="sm:hidden">Buat</span>
         </a>
@@ -163,10 +153,7 @@
                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
                                         title="Lihat detail"
                                     >
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
+                                        <?= icon('Eye', 'h-4 w-4') ?>
                                     </a>
                                     <template x-if="retur.status === 'Menunggu Persetujuan'">
                                         <a 
@@ -174,9 +161,7 @@
                                             class="inline-flex items-center justify-center rounded-lg border border-success/30 bg-success/5 hover:bg-success/15 transition h-9 w-9 text-success"
                                             title="Setujui retur"
                                         >
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
+                                            <?= icon('CheckCircle', 'h-4 w-4') ?>
                                         </a>
                                     </template>
                                     <template x-if="retur.status === 'Menunggu Persetujuan'">
@@ -185,9 +170,7 @@
                                             class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
                                             title="Edit retur"
                                         >
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                            </svg>
+                                            <?= icon('Edit', 'h-4 w-4') ?>
                                         </a>
                                     </template>
                                     <template x-if="retur.status === 'Menunggu Persetujuan'">
@@ -196,9 +179,7 @@
                                             class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                             title="Hapus retur"
                                         >
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
+                                            <?= icon('Trash2', 'h-4 w-4') ?>
                                         </button>
                                     </template>
                                 </div>
@@ -210,9 +191,7 @@
                     <tr x-show="filteredReturns.length === 0">
                         <td colspan="6" class="py-12 px-6 text-center">
                             <div class="flex flex-col items-center gap-3">
-                                <svg class="h-12 w-12 text-muted-foreground opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m7-4a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                                <?= icon('CheckCircle', 'h-12 w-12 text-muted-foreground opacity-30') ?>
                                 <p class="text-sm font-medium text-foreground">Tidak ada retur ditemukan</p>
                                 <p class="text-xs text-muted-foreground">Coba ubah filter atau cari dengan kata kunci lain</p>
                             </div>

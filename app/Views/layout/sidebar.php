@@ -127,9 +127,7 @@ if (!function_exists('getSvgIcon')) {
         <button @click="sidebarOpen = false" 
                 class="ml-auto md:hidden text-sidebar-fg/70 hover:text-sidebar-fg rounded-lg p-2 hover:bg-sidebar-accent transition-all duration-200"
                 aria-label="Close sidebar">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+            <?= icon('X', 'h-5 w-5') ?>
         </button>
     </div>
 
@@ -151,9 +149,7 @@ if (!function_exists('getSvgIcon')) {
                         <!-- Chevron Animation -->
                         <span class="transition-transform duration-300 ease-out flex-shrink-0"
                               :class="open ? 'rotate-180' : 'rotate-0'">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7-7m0 0L5 14m7-7v12"/>
-                            </svg>
+                            <?= icon('ChevronDown', 'h-4 w-4') ?>
                         </span>
                     </button>
                     
@@ -213,9 +209,7 @@ if (!function_exists('getSvgIcon')) {
         </div>
         <a href="<?= base_url('logout') ?>"
            class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-fg/75 hover:bg-sidebar-accent hover:text-sidebar-fg transition-all duration-200">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3-3l3-3m0 0l-3-3m3 3H9"/>
-            </svg>
+            <?= icon('LogOut', 'h-4 w-4') ?>
             Keluar
         </a>
     </div>

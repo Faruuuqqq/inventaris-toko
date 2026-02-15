@@ -30,16 +30,12 @@
                         <p class="text-sm font-semibold text-emerald-100">Penjualan Hari Ini</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= format_currency($todaySales) ?></p>
                         <div class="mt-3 flex items-center gap-1">
-                            <svg class="h-4 w-4 text-emerald-200" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h.01a1 1 0 110 2H12zm-3.976 7a1 1 0 110-2h.01a1 1 0 110 2h-.01zM3.064 9.1a1 1 0 100-2h-.01a1 1 0 000 2h.01zm0 3.192a1 1 0 110-2h.01a1 1 0 110 2h-.01z" clip-rule="evenodd"/>
-                            </svg>
+                            <?= icon('TrendingUp', 'h-4 w-4 text-emerald-200') ?>
                             <p class="text-xs text-emerald-100 font-semibold">↑ 12.5% dari kemarin</p>
                         </div>
                     </div>
                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
-                        <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-11 11"/>
-                        </svg>
+                        <?= icon('TrendingUp', 'h-7 w-7 text-white') ?>
                     </div>
                 </div>
             </div>
@@ -63,9 +59,7 @@
                         <p class="mt-3 text-xs text-blue-100 font-medium">5 transaksi</p>
                     </div>
                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
-                        <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                        </svg>
+                        <?= icon('ShoppingCart', 'h-7 w-7 text-white') ?>
                     </div>
                 </div>
             </div>
@@ -89,9 +83,7 @@
                         <p class="mt-3 text-xs text-orange-100 font-medium"><?= $activeCustomers ?? 0 ?> produk aktif</p>
                     </div>
                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
-                        <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
+                        <?= icon('Package', 'h-7 w-7 text-white') ?>
                     </div>
                 </div>
             </div>
@@ -113,16 +105,12 @@
                         <p class="text-sm font-semibold text-purple-100">Customer Aktif</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= number_format($activeCustomers, 0, ',', '.') ?></p>
                         <div class="mt-3 flex items-center gap-1">
-                            <svg class="h-4 w-4 text-purple-200" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M12 7a1 1 0 110-2h.01a1 1 0 110 2H12zm-3.976 7a1 1 0 110-2h.01a1 1 0 110 2h-.01zM3.064 9.1a1 1 0 100-2h-.01a1 1 0 000 2h.01zm0 3.192a1 1 0 110-2h.01a1 1 0 110 2h-.01z" clip-rule="evenodd"/>
-                            </svg>
+                            <?= icon('TrendingUp', 'h-4 w-4 text-purple-200') ?>
                             <p class="text-xs text-purple-100 font-semibold">↑ 3 pelanggan baru minggu ini</p>
                         </div>
                     </div>
                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
-                        <svg class="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM6 20h12a6 6 0 00-6-6 6 6 0 00-6 6z"/>
-                        </svg>
+                        <?= icon('Users', 'h-7 w-7 text-white') ?>
                     </div>
                 </div>
             </div>
@@ -141,9 +129,7 @@
             <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-foreground flex items-center gap-2">
                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                        <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                        </svg>
+                        <?= icon('ShoppingCart', 'h-5 w-5 text-primary') ?>
                     </div>
                     Transaksi Terbaru
                 </h3>
@@ -166,9 +152,7 @@
                             <tr>
                                 <td colspan="5" class="py-8 text-center">
                                     <div class="flex flex-col items-center gap-2">
-                                        <svg class="h-12 w-12 opacity-30 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.5a2.5 2.5 0 00-5 0h-2.5a2.5 2.5 0 00-5 0H2"/>
-                                        </svg>
+                                    <?= icon('Package', 'h-12 w-12 opacity-30 text-muted-foreground') ?>
                                         <p class="font-medium text-muted-foreground">Belum ada transaksi</p>
                                         <p class="text-xs text-muted-foreground/70">Transaksi akan muncul di sini setelah Anda membuat yang pertama</p>
                                     </div>
@@ -216,9 +200,7 @@
             <div class="border-t border-border/50 bg-background/30 px-6 py-4">
                 <a href="<?= base_url('info/history/sales') ?>" class="text-sm font-semibold text-primary hover:text-primary-light transition duration-200 flex items-center gap-1">
                     Lihat semua transaksi
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                    </svg>
+                    <?= icon('ArrowRight', 'h-4 w-4') ?>
                 </a>
             </div>
         </div>
@@ -227,13 +209,11 @@
     <!-- Low Stock Alert - Enhanced -->
     <div class="card overflow-hidden">
         <div class="border-b border-border/50 px-6 py-4">
-            <h3 class="text-lg font-bold text-foreground flex items-center gap-2">
-                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
-                    <svg class="h-5 w-5 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 5v2M7.08 6.24A9 9 0 0120 4.5M3 4.5c0 4.98 3.582 9.128 8.25 9.97M12 21c-4.67 0-8.25-4.15-8.25-9.25"/>
-                    </svg>
-                </div>
-                Stok Menipis
+                <h3 class="text-lg font-bold text-foreground flex items-center gap-2">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
+                        <?= icon('AlertCircle', 'h-5 w-5 text-destructive') ?>
+                    </div>
+                    Stok Menipis
             </h3>
         </div>
         
@@ -241,9 +221,7 @@
             <?php if (empty($lowStockItems)): ?>
                 <div class="text-center py-8">
                     <div class="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 mx-auto mb-3">
-                        <svg class="h-8 w-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                        <?= icon('CheckCircle', 'h-8 w-8 text-success') ?>
                     </div>
                     <p class="text-sm font-semibold text-success">Stok aman!</p>
                     <p class="text-xs text-muted-foreground mt-1">Semua stok dalam kondisi sehat</p>
@@ -266,9 +244,7 @@
         <div class="border-t border-border/50 bg-background/30 px-6 py-4">
             <a href="<?= base_url('info/saldo/stock') ?>" class="text-sm font-semibold text-destructive hover:text-destructive-light transition duration-200 flex items-center gap-1">
                 Kelola stok
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                </svg>
+                <?= icon('ArrowRight', 'h-4 w-4') ?>
             </a>
         </div>
     </div>
@@ -277,9 +253,7 @@
 <!-- Quick Actions Section - Enhanced -->
 <div class="mb-6">
     <h3 class="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-        <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-        </svg>
+        <?= icon('Zap', 'h-6 w-6 text-primary') ?>
         Aksi Cepat
     </h3>
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
@@ -287,11 +261,9 @@
         <a href="<?= base_url('transactions/sales/cash') ?>" 
            class="group relative overflow-hidden rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-all"></div>
-            <div class="relative z-10 flex items-center gap-4">
+                <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 group-hover:bg-primary/25 transition">
-                    <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
+                    <?= icon('Plus', 'h-6 w-6 text-primary') ?>
                 </div>
                 <div>
                     <p class="font-bold text-foreground group-hover:text-primary transition">Buat Penjualan</p>
@@ -304,11 +276,9 @@
         <a href="<?= base_url('finance/payments/receivable') ?>" 
            class="group relative overflow-hidden rounded-xl border-2 border-success/20 bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-success/5 group-hover:bg-success/10 transition-all"></div>
-            <div class="relative z-10 flex items-center gap-4">
+                <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-success/15 group-hover:bg-success/25 transition">
-                    <svg class="h-6 w-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('DollarSign', 'h-6 w-6 text-success') ?>
                 </div>
                 <div>
                     <p class="font-bold text-foreground group-hover:text-success transition">Terima Pembayaran</p>
@@ -321,11 +291,9 @@
         <a href="<?= base_url('master/products') ?>" 
            class="group relative overflow-hidden rounded-xl border-2 border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent p-5 hover:border-secondary/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-secondary/5 group-hover:bg-secondary/10 transition-all"></div>
-            <div class="relative z-10 flex items-center gap-4">
+                <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/15 group-hover:bg-secondary/25 transition">
-                    <svg class="h-6 w-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
+                    <?= icon('Plus', 'h-6 w-6 text-secondary') ?>
                 </div>
                 <div>
                     <p class="font-bold text-foreground group-hover:text-secondary transition">Tambah Produk</p>
@@ -338,11 +306,9 @@
         <a href="<?= base_url('info/reports/daily') ?>" 
            class="group relative overflow-hidden rounded-xl border-2 border-warning/20 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-warning/5 group-hover:bg-warning/10 transition-all"></div>
-            <div class="relative z-10 flex items-center gap-4">
+                <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-warning/15 group-hover:bg-warning/25 transition">
-                    <svg class="h-6 w-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
+                    <?= icon('BarChart', 'h-6 w-6 text-warning') ?>
                 </div>
                 <div>
                     <p class="font-bold text-foreground group-hover:text-warning transition">Lihat Laporan</p>

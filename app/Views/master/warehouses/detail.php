@@ -7,25 +7,19 @@
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
-                <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m0 0v10l8 4"/>
-                </svg>
+                <?= icon('Package', 'h-8 w-8 text-primary') ?>
                 Detail Gudang
             </h1>
             <p class="text-sm text-muted-foreground mt-1">Informasi detail gudang penyimpanan</p>
         </div>
         <div class="flex gap-3">
             <a href="<?= base_url('master/warehouses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
+                <?= icon('ChevronLeft', 'h-5 w-5') ?>
                 Kembali
             </a>
             <?php if (is_admin()): ?>
             <button @click="isEditDialogOpen = true" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
+                <?= icon('Edit', 'h-5 w-5') ?>
                 Edit
             </button>
             <?php endif; ?>
@@ -37,9 +31,7 @@
     <!-- Header Section -->
     <div class="p-6 border-b border-border/50 bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
-            <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5.581m0 0H9m5.581 0a2 2 0 100-4 2 2 0 000 4zM9 7h1.5a1 1 0 001-1V5a1 1 0 00-1-1H9a1 1 0 00-1 1v1a1 1 0 001 1z"/>
-            </svg>
+            <?= icon('Building', 'h-5 w-5 text-primary') ?>
             Informasi Gudang
         </h2>
     </div>
@@ -114,9 +106,7 @@
             <div class="sticky top-0 p-6 border-b border-border/50 bg-muted/30 flex items-center justify-between">
                 <h2 class="text-lg font-bold text-foreground">Edit Gudang</h2>
                 <button @click="isEditDialogOpen = false" class="text-muted-foreground hover:text-foreground transition">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <?= icon('X', 'h-5 w-5') ?>
                 </button>
             </div>
 

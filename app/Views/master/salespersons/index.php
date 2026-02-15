@@ -164,7 +164,7 @@ function salespersonManager() {
         <!-- Summary Cards - Expanded Horizontal Layout -->
         <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
              <!-- Total Salespersons -->
-             <div class="rounded-xl border border-border/50 bg-gradient-to-br from-purple/5 to-transparent p-5 hover:border-purple/30 transition-colors">
+              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-purple/5 to-transparent p-6 hover:border-purple/30 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Total Salesperson</p>
@@ -172,42 +172,36 @@ function salespersonManager() {
                          <p class="mt-1 text-xs text-muted-foreground">salesperson terdaftar</p>
                      </div>
                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple/10 flex-shrink-0">
-                         <svg class="h-5 w-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                         </svg>
+                         <?= icon('Zap', 'h-5 w-5 text-purple') ?>
                      </div>
                  </div>
              </div>
 
              <!-- Active Salespersons -->
-             <div class="rounded-xl border border-border/50 bg-gradient-to-br from-green/5 to-transparent p-5 hover:border-green/30 transition-colors">
+              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-green/5 to-transparent p-6 hover:border-green/30 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
                           <p class="mt-2 text-2xl font-bold text-foreground" x-text="activeCount"></p>
                          <p class="mt-1 text-xs text-muted-foreground">salesperson aktif</p>
                      </div>
-                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green/10 flex-shrink-0">
-                         <svg class="h-5 w-5 text-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-                         </svg>
-                     </div>
+                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green/10 flex-shrink-0">
+                          <?= icon('CheckCircle', 'h-5 w-5 text-green') ?>
+                      </div>
                  </div>
              </div>
 
              <!-- Total Sales -->
-             <div class="rounded-xl border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-5 hover:border-blue/30 transition-colors">
+              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-6 hover:border-blue/30 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Total Penjualan</p>
                           <p class="mt-2 text-2xl font-bold text-foreground" x-text="formatRupiah(totalSales)"></p>
                          <p class="mt-1 text-xs text-muted-foreground">total penjualan</p>
                      </div>
-                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10 flex-shrink-0">
-                         <svg class="h-5 w-5 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                         </svg>
-                     </div>
+                      <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10 flex-shrink-0">
+                          <?= icon('DollarSign', 'h-5 w-5 text-blue') ?>
+                      </div>
                  </div>
              </div>
         </div>
@@ -234,9 +228,7 @@ function salespersonManager() {
                      @click="isEditDialogOpen = false"
                      class="text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-muted p-1"
                  >
-                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                     </svg>
+                      <?= icon('X', 'h-5 w-5') ?>
                  </button>
              </div>
              
@@ -255,7 +247,7 @@ function salespersonManager() {
                              required 
                              x-model="editingSalesperson.name"
                              :class="{'border-destructive': editErrors.name}"
-                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
+                             class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                          >
                          <span x-show="editErrors.name" class="text-destructive text-xs mt-1" x-text="editErrors.name"></span>
                      </div>
@@ -267,7 +259,7 @@ function salespersonManager() {
                              id="edit_phone" 
                              x-model="editingSalesperson.phone"
                              :class="{'border-destructive': editErrors.phone}"
-                             class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
+                             class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                          >
                          <span x-show="editErrors.phone" class="text-destructive text-xs mt-1" x-text="editErrors.phone"></span>
                      </div>
@@ -282,7 +274,7 @@ function salespersonManager() {
                          id="edit_email" 
                          x-model="editingSalesperson.email"
                          :class="{'border-destructive': editErrors.email}"
-                         class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
+                         class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                      >
                      <span x-show="editErrors.email" class="text-destructive text-xs mt-1" x-text="editErrors.email"></span>
                  </div>
@@ -306,18 +298,16 @@ function salespersonManager() {
                      <button 
                          type="button" 
                          @click="isEditDialogOpen = false" 
-                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-10 px-6 text-sm font-semibold"
+                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-11 px-6 text-sm font-semibold"
                      >
                          Batal
                      </button>
                      <button 
                          type="submit" 
                          :disabled="isEditSubmitting"
-                         class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                         class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-11 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                      >
-                         <svg x-show="!isEditSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                         </svg>
+                         <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                          <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
                              <span class="animate-spin">⚙️</span>
                          </span>
@@ -334,14 +324,12 @@ function salespersonManager() {
         <div class="flex gap-3 flex-wrap items-center flex-1">
             <!-- Search Input -->
             <div class="relative flex-1 min-w-64">
-                <svg class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+                 <?= icon('Search', 'absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground') ?>
                 <input 
                     type="text" 
                     x-model="search"
                     placeholder="Cari nama atau nomor telepon salesperson..." 
-                    class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 pl-10 transition-all"
+                    class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 pl-10 transition-all"
                 >
             </div>
         </div>
@@ -349,11 +337,9 @@ function salespersonManager() {
         <!-- Right Side: Add Button -->
         <button 
             @click="isDialogOpen = true"
-            class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
+            class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-11 px-6 gap-2 text-sm font-semibold shadow-sm hover:shadow-md whitespace-nowrap"
         >
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-            </svg>
+             <?= icon('Plus', 'h-5 w-5') ?>
             <span class="hidden sm:inline">Tambah Salesperson</span>
             <span class="sm:hidden">Tambah</span>
         </button>
@@ -396,9 +382,7 @@ function salespersonManager() {
                                          class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
                                          title="Edit salesperson"
                                      >
-                                         <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                         </svg>
+                                         <?= icon('Edit', 'h-4 w-4') ?>
                                      </button>
                                     <!-- Delete Button -->
                                     <button 
@@ -406,9 +390,7 @@ function salespersonManager() {
                                         class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                         title="Hapus salesperson"
                                     >
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                        </svg>
+                                         <?= icon('Trash2', 'h-4 w-4') ?>
                                     </button>
                                 </div>
                             </td>
@@ -420,17 +402,13 @@ function salespersonManager() {
 
         <!-- Empty State -->
         <div x-show="filteredSalespersons.length === 0" class="p-12 text-center">
-            <svg class="h-16 w-16 mx-auto text-muted-foreground opacity-30 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
+             <?= icon('Zap', 'h-16 w-16 mx-auto text-muted-foreground opacity-30 mb-4') ?>
             <p class="text-lg font-semibold text-foreground mt-2">Tidak ada salesperson ditemukan</p>
             <p class="text-sm text-muted-foreground mt-1">Coba ubah filter atau cari dengan kata kunci lain</p>
-            <button 
+                <button 
                 @click="isDialogOpen = true"
-                class="mt-6 inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-10 px-6 gap-2 text-sm font-semibold">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                </svg>
+                class="mt-6 inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-11 px-6 gap-2 text-sm font-semibold">
+                <?= icon('Plus', 'h-5 w-5') ?>
                 Tambah Salesperson Pertama
             </button>
         </div>
@@ -457,9 +435,7 @@ function salespersonManager() {
                     @click="isDialogOpen = false"
                     class="text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-muted p-1"
                 >
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <?= icon('X', 'h-5 w-5') ?>
                 </button>
             </div>
             
@@ -478,7 +454,7 @@ function salespersonManager() {
                             required 
                             placeholder="Contoh: Budi Santoso"
                             :class="{'border-destructive': errors.name}"
-                            class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
+                            class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                         >
                         <span x-show="errors.name" class="text-destructive text-xs mt-1" x-text="errors.name"></span>
                     </div>
@@ -490,7 +466,7 @@ function salespersonManager() {
                             id="phone" 
                             placeholder="Contoh: 081234567890"
                             :class="{'border-destructive': errors.phone}"
-                            class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
+                            class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                         >
                         <span x-show="errors.phone" class="text-destructive text-xs mt-1" x-text="errors.phone"></span>
                     </div>
@@ -505,7 +481,7 @@ function salespersonManager() {
                         id="email" 
                         placeholder="Contoh: budi@company.com"
                         :class="{'border-destructive': errors.email}"
-                        class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
+                        class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple/50 transition-all"
                     >
                     <span x-show="errors.email" class="text-destructive text-xs mt-1" x-text="errors.email"></span>
                 </div>
@@ -529,18 +505,16 @@ function salespersonManager() {
                     <button 
                         type="button" 
                         @click="isDialogOpen = false" 
-                        class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-10 px-6 text-sm font-semibold"
+                        class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-11 px-6 text-sm font-semibold"
                     >
                         Batal
                     </button>
                     <button 
                         type="submit" 
                         :disabled="isSubmitting"
-                        class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="inline-flex items-center justify-center rounded-lg bg-purple text-white hover:bg-purple-light transition h-11 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg x-show="!isSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                        </svg>
+                        <span x-show="!isSubmitting" class="mr-2"><?= icon('Plus', 'h-5 w-5') ?></span>
                         <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
                             <span class="animate-spin">⚙️</span>
                         </span>

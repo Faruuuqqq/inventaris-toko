@@ -213,9 +213,7 @@
                     @click="isEditDialogOpen = false"
                     class="text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-muted p-1"
                 >
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <?= icon('X', 'h-5 w-5') ?>
                 </button>
             </div>
             
@@ -313,9 +311,7 @@
                         :disabled="isEditSubmitting"
                         class="inline-flex items-center justify-center rounded-lg bg-secondary text-white hover:bg-blue-600 transition h-10 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <svg x-show="!isEditSubmitting" class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                        </svg>
+                        <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
                             <span class="animate-spin">⚙️</span>
                         </span>

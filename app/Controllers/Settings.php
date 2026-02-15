@@ -21,12 +21,17 @@ class Settings extends BaseController
         $userId = session()->get('user_id');
         $user = $this->userModel->find($userId);
         $config = $this->configModel->getConfig();
+        
+        // Get notification settings
+        $notificationModel = new \App\Models\NotificationModel();
+        $notificationSettings = $notificationModel->getUserSettings($userId);
 
         $data = [
             'title' => 'Pengaturan',
             'subtitle' => 'Kelola pengaturan sistem',
             'user' => $user,
             'config' => $config,
+            'notificationSettings' => $notificationSettings,
         ];
 
         return view('layout/main', $data)

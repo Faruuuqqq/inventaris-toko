@@ -53,9 +53,7 @@
                     <button @click="sidebarOpen = !sidebarOpen" 
                             class="inline-flex items-center justify-center rounded-lg p-2 text-foreground/60 hover:bg-primary-lighter hover:text-primary transition-all duration-200 md:hidden"
                             aria-label="Toggle Sidebar">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
+                        <?= icon('Menu', 'h-5 w-5') ?>
                     </button>
 
                     <!-- Page Title -->
@@ -76,47 +74,43 @@
                                class="h-9 rounded-lg border border-border bg-muted px-3 py-1.5 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all duration-200 w-56"
                                aria-label="Global search">
                         <span class="absolute left-3 text-muted-foreground pointer-events-none">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
+                            <?= icon('Search', 'h-4 w-4') ?>
                         </span>
                     </div>
 
                     <!-- Divider -->
                     <div class="hidden md:block w-px h-6 bg-border/50"></div>
 
-                    <!-- Notifications Dropdown -->
-                    <div class="relative" x-data="{ notifOpen: false }">
-                        <button @click="notifOpen = !notifOpen"
-                                class="relative inline-flex items-center justify-center h-9 w-9 rounded-lg text-foreground/60 hover:bg-primary-lighter hover:text-primary transition-all duration-200"
-                                aria-label="Notifications">
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                            </svg>
-                            <span class="absolute right-2.5 top-2.5 h-2 w-2 rounded-full bg-destructive animate-pulse"></span>
-                        </button>
-                        
-                        <!-- Notification Panel -->
-                        <div x-show="notifOpen"
-                             x-transition:enter="transition ease-out duration-150"
-                             x-transition:enter-start="opacity-0 scale-95"
-                             x-transition:enter-end="opacity-100 scale-100"
-                             x-transition:leave="transition ease-in duration-100"
-                             x-transition:leave-start="opacity-100 scale-100"
-                             x-transition:leave-end="opacity-0 scale-95"
-                             @click.away="notifOpen = false"
-                             class="absolute right-0 mt-3 w-80 rounded-xl border border-border bg-surface shadow-lg overflow-hidden z-50">
-                            <div class="bg-muted px-4 py-3 border-b border-border">
-                                <h3 class="font-bold text-foreground text-sm">Notifikasi</h3>
-                            </div>
-                            <div class="max-h-96 overflow-y-auto">
-                                <div class="px-4 py-3 hover:bg-primary-lighter/50 cursor-pointer transition-colors border-b border-border last:border-0">
-                                    <p class="text-sm font-medium text-foreground">Belum ada notifikasi</p>
-                                    <p class="text-xs text-muted-foreground mt-1">Anda akan menerima pemberitahuan di sini</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!-- Notifications Dropdown -->
+                     <div class="relative" x-data="{ notifOpen: false }">
+                         <button @click="notifOpen = !notifOpen"
+                                 class="relative inline-flex items-center justify-center h-9 w-9 rounded-lg text-foreground/60 hover:bg-primary-lighter hover:text-primary transition-all duration-200"
+                                 aria-label="Notifications">
+                             <?= icon('Bell', 'h-5 w-5') ?>
+                             <span data-notification-badge class="hidden absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-xs text-white flex items-center justify-center font-bold">0</span>
+                         </button>
+                         
+                         <!-- Notification Panel -->
+                         <div x-show="notifOpen"
+                              x-transition:enter="transition ease-out duration-150"
+                              x-transition:enter-start="opacity-0 scale-95"
+                              x-transition:enter-end="opacity-100 scale-100"
+                              x-transition:leave="transition ease-in duration-100"
+                              x-transition:leave-start="opacity-100 scale-100"
+                              x-transition:leave-end="opacity-0 scale-95"
+                              @click.away="notifOpen = false"
+                              class="absolute right-0 mt-3 w-80 rounded-xl border border-border bg-surface shadow-lg overflow-hidden z-50">
+                             <div class="bg-muted px-4 py-3 border-b border-border">
+                                 <h3 class="font-bold text-foreground text-sm">Notifikasi</h3>
+                             </div>
+                             <div data-notification-container class="max-h-96 overflow-y-auto">
+                                 <div class="px-4 py-3 hover:bg-primary-lighter/50 cursor-pointer transition-colors border-b border-border last:border-0">
+                                     <p class="text-sm font-medium text-foreground">Belum ada notifikasi</p>
+                                     <p class="text-xs text-muted-foreground mt-1">Anda akan menerima pemberitahuan di sini</p>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
 
                     <!-- User Menu Dropdown -->
                     <div class="relative md:ml-2 md:pl-2 md:border-l md:border-border" x-data="{ userOpen: false }">
@@ -147,16 +141,11 @@
                             </div>
                             <div class="py-1">
                                 <a href="<?= base_url('settings') ?>" class="flex items-center gap-2 px-4 py-2 text-sm text-foreground/70 hover:bg-primary-lighter hover:text-primary transition-colors">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
+                                    <?= icon('Settings', 'h-4 w-4') ?>
                                     <span>Pengaturan</span>
                                 </a>
                                 <a href="<?= base_url('logout') ?>" class="flex items-center gap-2 px-4 py-2 text-sm text-destructive/70 hover:bg-destructive-light/20 hover:text-destructive transition-colors">
-                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                    </svg>
+                                    <?= icon('LogOut', 'h-4 w-4') ?>
                                     <span>Keluar</span>
                                 </a>
                             </div>
@@ -174,8 +163,15 @@
         </main>
     </div>
 
-    <!-- Modal Management JavaScript -->
+<!-- Modal Management JavaScript -->
     <script src="<?= base_url('assets/js/modal.js') ?>"></script>
+    
+    <!-- Notification System JavaScript -->
+    <script src="<?= base_url('assets/js/notifications.js') ?>"></script>
+    <script>
+        // Make base_url available to the notification system
+        const base_url = '<?= base_url() ?>';
+    </script>
 
     <!-- Global Modal Instances -->
     <?= view('partials/delete-confirm-modal') ?>

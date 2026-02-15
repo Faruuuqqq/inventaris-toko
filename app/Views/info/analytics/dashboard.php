@@ -70,20 +70,14 @@
         <div class="rounded-lg border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/30 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
-                    <svg class="h-6 w-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <?= icon('DollarSign', 'h-6 w-6 text-success') ?>
                 </div>
                 <div class="flex items-center gap-1 text-xs font-medium" :class="stats.revenueGrowth >= 0 ? 'text-success' : 'text-danger'">
                     <template x-if="stats.revenueGrowth >= 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
+                        <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
                     <template x-if="stats.revenueGrowth < 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                        </svg>
+                        <?= icon('ArrowDown', 'h-3 w-3') ?>
                     </template>
                     <span x-text="Math.abs(stats.revenueGrowth) + '%'"></span>
                 </div>
@@ -96,20 +90,14 @@
         <div class="rounded-lg border border-border/50 bg-gradient-to-br from-primary/5 to-transparent p-6 hover:border-primary/30 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
+                    <?= icon('BarChart', 'h-6 w-6 text-primary') ?>
                 </div>
                 <div class="flex items-center gap-1 text-xs font-medium" :class="stats.profitGrowth >= 0 ? 'text-success' : 'text-danger'">
                     <template x-if="stats.profitGrowth >= 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
+                        <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
                     <template x-if="stats.profitGrowth < 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                        </svg>
+                        <?= icon('ArrowDown', 'h-3 w-3') ?>
                     </template>
                     <span x-text="Math.abs(stats.profitGrowth) + '%'"></span>
                 </div>
@@ -122,20 +110,14 @@
         <div class="rounded-lg border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/30 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
-                    <svg class="h-6 w-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
+                    <?= icon('ClipboardList', 'h-6 w-6 text-warning') ?>
                 </div>
                 <div class="flex items-center gap-1 text-xs font-medium" :class="stats.transactionGrowth >= 0 ? 'text-success' : 'text-danger'">
                     <template x-if="stats.transactionGrowth >= 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
+                        <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
                     <template x-if="stats.transactionGrowth < 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                        </svg>
+                        <?= icon('ArrowDown', 'h-3 w-3') ?>
                     </template>
                     <span x-text="Math.abs(stats.transactionGrowth) + '%'"></span>
                 </div>
@@ -148,20 +130,14 @@
         <div class="rounded-lg border border-border/50 bg-gradient-to-br from-blue-500/5 to-transparent p-6 hover:border-blue-500/30 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <svg class="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
+                    <?= icon('ShoppingCart', 'h-6 w-6 text-blue-500') ?>
                 </div>
                 <div class="flex items-center gap-1 text-xs font-medium" :class="stats.aovGrowth >= 0 ? 'text-success' : 'text-danger'">
                     <template x-if="stats.aovGrowth >= 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
+                        <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
                     <template x-if="stats.aovGrowth < 0">
-                        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                        </svg>
+                        <?= icon('ArrowDown', 'h-3 w-3') ?>
                     </template>
                     <span x-text="Math.abs(stats.aovGrowth) + '%'"></span>
                 </div>
@@ -237,9 +213,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <div class="h-8 w-8 rounded-lg flex items-center justify-center" :class="method.bgClass">
-                                    <svg class="h-4 w-4" :class="method.iconClass" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="method.iconPath" />
-                                    </svg>
+                                    <?= icon('method.icon', 'h-4 w-4') ?>
                                 </div>
                                 <span class="font-medium text-foreground" x-text="method.label"></span>
                             </div>

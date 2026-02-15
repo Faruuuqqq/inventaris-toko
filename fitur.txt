@@ -1,0 +1,39 @@
+Fitur
+Utama:
+Supplier: menampilkan daftar supplier, dapat menambahkan daftar supplier
+Customer: menampilkan daftar supplier, dapat menambahkan daftar supplier, menampilkan customer yang memiliki utang/piutang
+Produk: berisikan daftar produk dan kategori, dapat merubah nama produk, harga, kategori ,dll
+Gudang: menampilkan daftar gudang
+Sales: daftar nama sales, bisa menambah sales
+Transaksi:
+Pembelian: membeli barang ke pihak lain
+Penjualan tunai: membuat transaksi tunai
+Penjualan kredit: membuat transaksi kredit
+Pembayaran utang: pihak yang memberikan utang
+Pembayaran piutang: pembeli yang memiliki utang ke toko
+Retur pembelian: membuat surat terima barang yang diretur ke distributor
+Retur penjualan: membuat surat terima barang yang diretur oleh pembeli
+Surat jalan: surat terima barang yang diberikan pegawai jika mengantar ke pembeli (tidak dituliskan harga)
+Kontra bon: daftar bon yang belum dilunasi (dipilah berdasarkan nama customer dan tanggal)
+Informasi:
+Pembelian: histori pembelian barang ke distributor/toko lain
+Penjualan: histori penjualan yang terjadi di toko
+Retur pembelian: histori barang yang diretur ke distributor/toko lain
+Retur penjualan: histori barang yang diretur oleh konsumen
+Biaya/jasa: histori biaya yang dikeluarkan diluar transaksi toko
+Pembayaran utang: histori pembayaran utang
+Pembayaran piutang: histori pembayaran piutang
+Informasi tambahan:
+Saldo piutang: daftar orang yang melakukan mengutang, total
+Saldo utang: daftar utang toko, total
+Saldo stok: total stok, nilai persediaan barang
+Kartu stok: menampilkan histori terhadap suatu barang
+Laporan Harian: laporan yang dibuat harian transaksi dll
+Akses
+2 role owner dan admin
+Login sesuai role
+Mockup
+
+
+Tambahan:
+Penjualan akan ada yang dapat di hide dari histori jika disetting oleh owner

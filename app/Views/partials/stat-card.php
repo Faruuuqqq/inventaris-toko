@@ -58,9 +58,9 @@ $colorClass = $colorClasses[$color] ?? $colorClasses['primary'];
         <?php if ($change !== null): ?>
             <p class="text-xs <?= $changeType === 'up' ? 'text-success' : 'text-destructive' ?> flex items-center gap-1 mt-1">
                 <?php if ($changeType === 'up'): ?>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+                    <?= icon('ChevronUp', 'w-3 h-3') ?>
                 <?php else: ?>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    <?= icon('ChevronDown', 'w-3 h-3') ?>
                 <?php endif; ?>
                 <?= $change ?>%
             </p>
