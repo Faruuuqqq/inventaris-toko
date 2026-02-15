@@ -18,10 +18,11 @@ TokoManager adalah sistem POS dan manajemen inventori yang komprehensif, diranca
 - 💳 **Credit Limit Tracking** untuk pelanggan
 - 📈 **Sales Analytics** dengan trend analysis
 - 🔔 **Real-time Notification System** dengan auto-refresh
-- 📑 **CSV Export** untuk inventory dan analytics
-- 🔐 **Role-based Access Control** (Owner/Admin/Gudang/Sales)
+- 📑 **Export Reports** - CSV export untuk semua laporan (Daily, P&L, Cash Flow, Monthly)
+- 🔐 **Role-based Access Control** (Owner & Admin)
 - 🎨 **Modern UI/UX** dengan Tailwind CSS
 - 📱 **Responsive Design** (Mobile/Tablet/Desktop)
+- 🏷️ **Hidden Transactions** - Owner bisa sembunyikan transaksi tertentu
 
 ## 🚀 Prasyarat Sistem
 
@@ -221,6 +222,7 @@ Aplikasi memiliki dokumentasi lengkap di folder `docs/`:
 | Dokumen | Deskripsi |
 |---------|-----------|
 | **[TESTING_GUIDE.md](docs/TESTING_GUIDE.md)** | Panduan testing lengkap (manual & automated) |
+| **[EXPORT_ENHANCEMENT_PLAN.md](docs/EXPORT_ENHANCEMENT_PLAN.md)** | Rencana pengembangan fitur export (3 fase) |
 | **[MODAL_SYSTEM_GUIDE.md](docs/MODAL_SYSTEM_GUIDE.md)** | Panduan modal dialog system |
 | **[SEEDING_GUIDE.md](docs/SEEDING_GUIDE.md)** | Panduan database seeding & sample data |
 | **[Postman Collection](docs/api/Inventaris_Toko_API.postman_collection.json)** | Import ke Postman untuk test API |
@@ -367,6 +369,47 @@ docs/api/Inventaris_Toko_API.postman_collection.json
 ```
 
 Lihat `docs/API.md` untuk dokumentasi lengkap semua endpoints!
+
+---
+
+## 📊 Export Features
+
+### Current Export Capabilities (Built-in)
+
+| Report Type | CSV Export | PDF Export |
+|-------------|------------|------------|
+| Daily Report | ✅ `?export=csv` | - |
+| Profit & Loss | ✅ `?export=csv` | - |
+| Cash Flow | ✅ `?export=csv` | - |
+| Monthly Summary | ✅ `?export=csv` | - |
+| Products | - | ✅ `?export=pdf` |
+| Customers | - | ✅ `?export=pdf` |
+| Suppliers | - | ✅ `?export=pdf` |
+
+### Export Examples
+
+```bash
+# Daily Report CSV
+curl -X GET "http://localhost:8080/info/reports/daily?export=csv"
+
+# Daily Report with specific date
+curl -X GET "http://localhost:8080/info/reports/daily?date=2026-02-15&export=csv"
+
+# Owner: Include hidden transactions
+curl -X GET "http://localhost:8080/info/reports/daily?include_hidden=1&export=csv"
+```
+
+### 🔮 Future Export Enhancements
+
+Lihat rencana lengkap di: **[EXPORT_ENHANCEMENT_PLAN.md](docs/EXPORT_ENHANCEMENT_PLAN.md)**
+
+**Planned Features:**
+- 📗 **Excel Export** (XLSX format)
+- 📋 **JSON Export** (API consumption)
+- ⚙️ **Background Processing** (large datasets)
+- 📬 **Scheduled Reports** (email delivery)
+- 🔧 **Custom Report Builder** (drag & drop)
+- ☁️ **Cloud Storage Integration**
 
 ---
 
