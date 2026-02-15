@@ -9,7 +9,8 @@
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.js"></script>
 
-    <!-- Note: Icons use inline SVG from icon_helper.php - Lucide CDN not needed -->
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@0.263.1"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -181,8 +182,21 @@
     <?= view('partials/error-modal') ?>
     <?= view('partials/warning-modal') ?>
 
-    <!-- Global Loading Overlay -->
-    <?= view('components/loading-overlay') ?>
+    <!-- Initialize Lucide Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) {
+                try {
+                    lucide.createIcons();
+                    console.log('Lucide icons initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing Lucide icons:', error);
+                }
+            } else {
+                console.warn('Lucide library not loaded. Icons may not display correctly.');
+            }
+        });
+    </script>
 
 </body>
 </html>
