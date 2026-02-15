@@ -41,7 +41,7 @@
                     Tampilkan
                 </button>
                 <a href="<?= base_url('/info/reports/profit-loss') ?>" class="inline-flex items-center justify-center gap-2 h-10 px-4 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
-                    <?= icon('RefreshCw', 'h-5 w-5') ?>
+                    <?= icon('RotateCcw', 'h-5 w-5') ?>
                     Reset
                 </a>
             </div>

@@ -18,7 +18,7 @@
                 Export
             </button>
             <button @click="refreshData()" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
-                <?= icon('RefreshCw', 'h-5 w-5') ?>
+                <?= icon('RotateCcw', 'h-5 w-5') ?>
                 Refresh
             </button>
         </div>
@@ -213,7 +213,9 @@
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center gap-2">
                                 <div class="h-8 w-8 rounded-lg flex items-center justify-center" :class="method.bgClass">
-                                    <?= icon('method.icon', 'h-4 w-4') ?>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="method.iconClass">
+                                        <path x-text="method.iconPath"></path>
+                                    </svg>
                                 </div>
                                 <span class="font-medium text-foreground" x-text="method.label"></span>
                             </div>

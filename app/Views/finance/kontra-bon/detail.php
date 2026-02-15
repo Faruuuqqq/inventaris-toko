@@ -21,7 +21,7 @@
             Edit
         </a>
         <a href="<?= base_url('finance/kontra-bon/pdf/' . $kontraBon['id']) ?>" target="_blank" class="inline-flex items-center justify-center gap-2 h-10 px-4 bg-destructive text-white font-medium rounded-lg hover:bg-destructive/90 transition whitespace-nowrap text-sm">
-            <?= icon('FileDown', 'h-4 w-4') ?>
+            <?= icon('Download', 'h-4 w-4') ?>
             Export PDF
         </a>
     </div>

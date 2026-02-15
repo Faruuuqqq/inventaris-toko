@@ -6,7 +6,7 @@
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
         <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
-            <?= icon('FileEdit', 'h-8 w-8 text-primary') ?>
+            <?= icon('Edit', 'h-8 w-8 text-primary') ?>
             <?= $title ?? 'Edit Kontra Bon' ?>
         </h1>
         <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Update data kontra bon' ?></p>

@@ -6,7 +6,7 @@
 <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
         <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
-            <?= icon('FileEdit', 'h-8 w-8 text-primary') ?>
+            <?= icon('Edit', 'h-8 w-8 text-primary') ?>
             Edit Pesanan Pembelian
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Ubah detail pesanan pembelian ke supplier</p>
@@ -177,7 +177,7 @@
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
         <div class="p-6 border-b border-border/50 bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
-                <?= icon('CalculatorIcon', 'h-5 w-5 text-primary') ?>
+                <?= icon('Calculator', 'h-5 w-5 text-primary') ?>
                 Ringkasan Pesanan
             </h2>
         </div>
