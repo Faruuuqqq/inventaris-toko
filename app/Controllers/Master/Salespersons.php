@@ -39,12 +39,14 @@ class Salespersons extends BaseCRUDController
     }
 
     protected function getDataFromRequest(): array
-    {
-        return [
-            'name' => $this->request->getPost('name'),
-            'phone' => $this->request->getPost('phone'),
-        ];
-    }
+     {
+         return [
+             'name' => $this->request->getPost('name'),
+             'phone' => $this->request->getPost('phone'),
+             'email' => $this->request->getPost('email'),
+             'address' => $this->request->getPost('address'),
+         ];
+     }
 
     /**
      * Override index to use SalespersonDataService

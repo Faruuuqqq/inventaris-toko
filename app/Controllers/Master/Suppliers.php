@@ -45,6 +45,7 @@ class Suppliers extends BaseCRUDController
             'code' => $this->request->getPost('code'),
             'name' => $this->request->getPost('name'),
             'phone' => $this->request->getPost('phone'),
+            'address' => $this->request->getPost('address'),
         ];
     }
 

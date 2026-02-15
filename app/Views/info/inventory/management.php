@@ -35,9 +35,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">item stok</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
+                    <?= icon('Package', 'h-5 w-5 text-primary') ?>
                 </div>
             </div>
         </div>
@@ -51,9 +49,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">perlu perhatian</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
-                    <svg class="h-5 w-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0 5v.01M7.08 6.24l1.41 1.41m3.54-3.54l1.41-1.41m3.54 3.54l1.41 1.41m3.54-3.54l1.41-1.41M5 12a7 7 0 1114 0 7 7 0 01-14 0z" />
-                    </svg>
+                    <?= icon('AlertTriangle', 'h-5 w-5 text-warning') ?>
                 </div>
             </div>
         </div>
@@ -67,9 +63,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">tidak tersedia</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-danger/10">
-                    <svg class="h-5 w-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
+                    <?= icon('Lock', 'h-5 w-5 text-danger') ?>
                 </div>
             </div>
         </div>
@@ -83,9 +77,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">total aset</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
-                    <svg class="h-5 w-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <?= icon('DollarSign', 'h-5 w-5 text-success') ?>
                 </div>
             </div>
         </div>
@@ -251,9 +243,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-foreground">Atur Min/Maks Stok</h3>
                     <button @click="closeReorderModal()" class="text-muted-foreground hover:text-foreground transition">
-                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <?= icon('X', 'h-5 w-5') ?>
                     </button>
                 </div>
 

@@ -4,9 +4,11 @@ namespace App\Controllers\Info;
 use App\Controllers\BaseController;
 use App\Models\SaleModel;
 use App\Models\CustomerModel;
+use App\Traits\ApiResponseTrait;
 
 class Saldo extends BaseController
 {
+    use ApiResponseTrait;
     protected $saleModel;
     protected $customerModel;
 
@@ -160,6 +162,6 @@ class Saldo extends BaseController
 
         $stocks = $builder->get()->getResultArray();
 
-        return $this->response->setJSON($stocks);
+        return $this->respondData($stocks);
     }
 }

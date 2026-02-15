@@ -91,12 +91,11 @@ class ProductsController extends ResourceController
         // Add sales history
         $salesDetailModel = new \App\Models\SalesDetailModel();
         $product['recent_sales'] = $salesDetailModel
-            ->select('penjualan.tanggal_penjualan, penjualan_detail.jumlah, penjualan_detail.harga_jual, customers.name as nama_customer')
-            ->join('penjualan', 'penjualan.id_penjualan = penjualan_detail.id_penjualan')
-            ->join('customers', 'customers.id_customer = penjualan.id_customer')
-            ->where('penjualan_detail.id_produk', $id)
-            ->where('penjualan.status', 'Selesai')
-            ->orderBy('penjualan.tanggal_penjualan', 'DESC')
+            ->select('sales.created_at, sale_items.quantity, sale_items.price, customers.name as customer_name')
+            ->join('sales', 'sales.id = sale_items.sale_id')
+            ->join('customers', 'customers.id = sales.customer_id')
+            ->where('sale_items.product_id', $id)
+            ->orderBy('sales.created_at', 'DESC')
             ->limit(10)
             ->findAll();
         

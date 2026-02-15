@@ -8,6 +8,22 @@ class InitialDataSeeder extends Seeder
 {
     public function run()
     {
+        // Truncate tables to clear existing data
+        $db = \Config\Database::connect();
+        
+        // Disable foreign key checks temporarily
+        $db->disableForeignKeyChecks();
+        $db->table('users')->truncate();
+        $db->table('warehouses')->truncate();
+        $db->table('categories')->truncate();
+        $db->table('products')->truncate();
+        $db->table('product_stocks')->truncate();
+        $db->table('customers')->truncate();
+        $db->table('suppliers')->truncate();
+        $db->table('salespersons')->truncate();
+        $db->table('system_config')->truncate();
+        $db->enableForeignKeyChecks();
+
         // 1. Insert Users (password: test123)
         $passwordHash = password_hash('test123', PASSWORD_DEFAULT);
         

@@ -106,13 +106,13 @@ class KontraBonModel extends Model
     /**
      * Get single kontra bon with full customer details
      */
-    public function getById($id)
-    {
-        return $this->select('kontra_bons.*, customers.name as customer_name, customers.phone as customer_phone, customers.address as customer_address, customers.email as customer_email')
-            ->join('customers', 'customers.id = kontra_bons.customer_id', 'left')
-            ->where('kontra_bons.id', $id)
-            ->first();
-    }
+     public function getById($id)
+     {
+         return $this->select('kontra_bons.*, customers.name as customer_name, customers.phone as customer_phone, customers.address as customer_address')
+             ->join('customers', 'customers.id = kontra_bons.customer_id', 'left')
+             ->where('kontra_bons.id', $id)
+             ->first();
+     }
     
     /**
      * Get statistics

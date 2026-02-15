@@ -22,9 +22,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">penjualan</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                    <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('Info', 'h-5 w-5 text-primary') ?>
                 </div>
             </div>
         </div>
@@ -38,9 +36,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">transaksi</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-success/10">
-                    <svg class="h-5 w-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('DollarSign', 'h-5 w-5 text-success') ?>
                 </div>
             </div>
         </div>
@@ -54,9 +50,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">transaksi</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
-                    <svg class="h-5 w-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('CheckCircle', 'h-5 w-5 text-warning') ?>
                 </div>
             </div>
         </div>
@@ -70,9 +64,7 @@
                     <p class="mt-1 text-xs text-muted-foreground">semua penjualan</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10">
-                    <svg class="h-5 w-5 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                    <?= icon('DollarSign', 'h-5 w-5 text-blue') ?>
                 </div>
             </div>
         </div>
@@ -84,9 +76,7 @@
         <div class="flex gap-3 flex-1 flex-wrap">
             <!-- Search Input -->
             <div class="relative flex-1 min-w-64">
-                <svg class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
+                <?= icon('Search', 'absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground') ?>
                 <input 
                     type="text" 
                     x-model="search"
@@ -136,9 +126,7 @@
                 class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-10 px-3 gap-2 text-sm font-medium"
                 title="Export data"
             >
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
+                <?= icon('ArrowDown', 'h-4 w-4') ?>
                 <span class="hidden sm:inline">Export</span>
             </button>
 
@@ -148,9 +136,7 @@
                     class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md"
                     title="Tambah penjualan baru"
                 >
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
+                    <?= icon('Plus', 'h-5 w-5') ?>
                     <span class="hidden sm:inline">Penjualan</span>
                     <span class="sm:hidden">Buat</span>
                 </button>
@@ -242,10 +228,7 @@
                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
                                         title="Lihat detail"
                                     >
-                                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
+                                        <?= icon('Eye', 'h-4 w-4') ?>
                                     </a>
                                     <template x-if="sale.status_pembayaran !== 'PAID' && sale.status_pembayaran !== 'CANCELLED'">
                                         <button 
@@ -253,9 +236,7 @@
                                             class="inline-flex items-center justify-center rounded-lg border border-primary/30 bg-primary/5 hover:bg-primary/15 transition h-9 w-9 text-primary"
                                             title="Catat pembayaran"
                                         >
-                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
+                                            <?= icon('DollarSign', 'h-4 w-4') ?>
                                         </button>
                                     </template>
                                 </div>
@@ -267,9 +248,7 @@
                     <tr x-show="filteredSales.length === 0">
                         <td colspan="7" class="py-12 px-6 text-center">
                             <div class="flex flex-col items-center gap-3">
-                                <svg class="h-12 w-12 text-muted-foreground opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                                <?= icon('Info', 'h-12 w-12 text-muted-foreground opacity-30') ?>
                                 <p class="text-sm font-medium text-foreground">Tidak ada penjualan ditemukan</p>
                                 <p class="text-xs text-muted-foreground">Coba ubah filter atau cari dengan kata kunci lain</p>
                             </div>

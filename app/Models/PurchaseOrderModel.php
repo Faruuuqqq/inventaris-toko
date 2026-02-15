@@ -55,6 +55,33 @@ class PurchaseOrderModel extends Model
     ];
 
     /**
+     * Get purchase orders with filters for history view
+     */
+    public function getFilteredHistory($supplierId = null, $status = null, $startDate = null, $endDate = null)
+    {
+        $query = $this->select('purchase_orders.*, suppliers.name as supplier_name')
+            ->join('suppliers', 'suppliers.id = purchase_orders.supplier_id');
+
+        if ($supplierId) {
+            $query->where('purchase_orders.supplier_id', $supplierId);
+        }
+
+        if ($status) {
+            $query->where('purchase_orders.status', $status);
+        }
+
+        if ($startDate) {
+            $query->where('purchase_orders.tanggal_po >=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('purchase_orders.tanggal_po <=', $endDate);
+        }
+
+        return $query->orderBy('purchase_orders.tanggal_po', 'DESC')->asArray()->findAll();
+    }
+
+    /**
      * Get purchase orders with unpaid status
      */
     public function getUnpaid()

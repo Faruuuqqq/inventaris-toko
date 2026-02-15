@@ -6,25 +6,19 @@
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
         <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
-            <svg class="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
-            </svg>
+            <?= icon('UserPlus', 'h-8 w-8 text-primary') ?>
             Detail Pengguna
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Informasi detail pengguna sistem</p>
     </div>
     <div class="flex gap-3">
         <a href="<?= base_url('master/users') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
+            <?= icon('ChevronLeft', 'h-5 w-5') ?>
             Kembali
         </a>
         <?php if (is_admin()): ?>
         <a href="<?= base_url('master/users/edit/' . $pengguna->id) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
+            <?= icon('Edit', 'h-5 w-5') ?>
             Edit
         </a>
         <?php endif; ?>
@@ -39,9 +33,7 @@
             <!-- Header Section -->
             <div class="p-6 border-b border-border/50 bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <svg class="h-5 w-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
+                    <?= icon('User', 'h-5 w-5 text-primary') ?>
                     Informasi Pengguna
                 </h2>
             </div>
@@ -138,9 +130,7 @@
             
             <div class="space-y-2">
                 <a href="<?= base_url('master/users') ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
-                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                    </svg>
+                    <?= icon('ArrowLeft', 'h-4 w-4 mr-2') ?>
                     Kembali ke Daftar
                 </a>
             </div>

@@ -57,8 +57,8 @@
                     <select name="id_warehouse" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Gudang</option>
                         <?php foreach ($warehouses as $warehouse): ?>
-                            <option value="<?= $warehouse['id'] ?>" <?= selected($warehouse['id'], old('id_warehouse')) ?>>
-                                <?= $warehouse['name'] ?>
+                            <option value="<?= $warehouse->id ?>" <?= selected($warehouse->id, old('id_warehouse')) ?>>
+                                <?= esc($warehouse->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -72,8 +72,8 @@
                     <select name="id_customer" x-model="form.id_customer" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Pelanggan</option>
                         <?php foreach ($customers as $customer): ?>
-                            <option value="<?= $customer['id'] ?>" data-credit="<?= $customer['credit_limit'] ?>">
-                                <?= $customer['name'] ?> (<?= $customer['phone'] ?>)
+                            <option value="<?= $customer->id ?>" data-credit="<?= $customer->credit_limit ?>">
+                                <?= esc($customer->name) ?> (<?= esc($customer->phone) ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -84,8 +84,8 @@
                     <select name="id_salesperson" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Tanpa Salesman</option>
                         <?php foreach ($salespersons as $person): ?>
-                            <option value="<?= $person['id'] ?>" <?= selected($person['id'], old('id_salesperson')) ?>>
-                                <?= $person['name'] ?>
+                            <option value="<?= $person->id ?>" <?= selected($person->id, old('id_salesperson')) ?>>
+                                <?= esc($person->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -94,9 +94,7 @@
 
             <!-- Credit Limit Warning -->
             <div x-show="form.tipe_pembayaran === 'CREDIT'" class="p-4 rounded-lg bg-warning/10 border border-warning/20 flex items-start gap-3">
-                <svg class="h-5 w-5 text-warning flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
+                <?= icon('AlertTriangle', 'h-5 w-5 text-warning flex-shrink-0 mt-0.5') ?>
                 <div class="text-sm text-warning">
                     <p class="font-semibold">Perhatian Kredit</p>
                     <p class="text-xs mt-1">Pastikan total penjualan tidak melebihi batas kredit pelanggan</p>
@@ -135,10 +133,10 @@
                     <thead class="bg-muted/50 border-b border-border/50">
                         <tr>
                             <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
-                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-20">Qty</th>
-                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Harga</th>
-                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-28">Subtotal</th>
-                            <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground flex-1">Catatan</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Qty</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-32">Harga Jual</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-24">Diskon</th>
+                            <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-32">Subtotal</th>
                             <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground w-12"></th>
                         </tr>
                     </thead>
@@ -149,37 +147,32 @@
                                 <td class="px-4 py-3">
                                     <select x-model="product.id_produk" @change="updateProductPrice(index)" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                                         <option value="">Pilih Produk</option>
-                                        <?php foreach ($products as $prod): ?>
-                                            <option value="<?= $prod['id'] ?>" data-price="<?= $prod['price_sell'] ?>" data-stock="<?= $prod['stock'] ?>">
-                                                <?= $prod['name'] ?> (<?= $prod['sku'] ?>) - Stok: <?= $prod['stock'] ?>
+                                        <?php foreach ($products as $product_option): ?>
+                                            <option value="<?= $product_option->id ?>" data-price="<?= $product_option->price_sell ?>">
+                                                <?= esc($product_option->name) ?> (<?= esc($product_option->sku) ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
                                 </td>
-
                                 <!-- Quantity -->
                                 <td class="px-4 py-3">
-                                    <input type="number" x-model.number="product.qty" @change="calculateSubtotal(index)" min="1" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <input type="number" x-model.number="product.qty" @change="updateProductPrice(index)" min="1" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                                 </td>
-
-                                <!-- Price -->
-                                <td class="px-4 py-3">
-                                    <input type="number" x-model.number="product.price" @change="calculateSubtotal(index)" min="0" step="100" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <!-- Sell Price -->
+                                <td class="px-4 py-3 text-right">
+                                    <input type="number" x-model.number="product.harga_jual" @change="updateProductPrice(index)" step="0.01" min="0" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono">
                                 </td>
-
+                                <!-- Discount -->
+                                <td class="px-4 py-3 text-right">
+                                    <input type="number" x-model.number="product.diskon" @change="updateProductPrice(index)" step="0.01" min="0" class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono" placeholder="0">
+                                </td>
                                 <!-- Subtotal -->
                                 <td class="px-4 py-3 text-right font-semibold text-foreground">
-                                    <span x-text="'Rp ' + formatNumber(product.qty * product.price)"></span>
+                                    <span x-text="'Rp ' + ((product.qty * product.harga_jual) - (product.diskon || 0)).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
                                 </td>
-
-                                <!-- Notes -->
-                                <td class="px-4 py-3">
-                                    <input type="text" x-model="product.catatan" placeholder="Catatan produk..." class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                                </td>
-
-                                <!-- Delete Button -->
+                                <!-- Remove Button -->
                                 <td class="px-4 py-3 text-center">
-                                    <button type="button" @click="removeProduct(index)" class="inline-flex items-center justify-center h-9 w-9 rounded-lg hover:bg-destructive/10 text-destructive transition">
+                                    <button type="button" @click="removeProduct(index)" class="text-destructive hover:text-destructive/80 transition">
                                         <?= icon('Trash2', 'h-4 w-4') ?>
                                     </button>
                                 </td>
@@ -189,146 +182,75 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <!-- Summary Section -->
-    <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
-            <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
-                <?= icon('CalculatorIcon', 'h-5 w-5 text-primary') ?>
-                Ringkasan Penjualan
-            </h2>
-        </div>
-
-        <div class="p-6 space-y-4">
-            <!-- Summary Grid -->
-            <div class="grid gap-4 md:grid-cols-4">
-                <!-- Total Items -->
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
-                    <p class="text-xs text-muted-foreground font-medium">Total Item</p>
-                    <p class="text-2xl font-bold text-foreground mt-1" x-text="form.products.length"></p>
-                </div>
-
-                <!-- Subtotal -->
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
-                    <p class="text-xs text-muted-foreground font-medium">Subtotal</p>
-                    <p class="text-2xl font-bold text-foreground mt-1" x-text="'Rp ' + formatNumber(calculateSubtotal())"></p>
-                </div>
-
-                <!-- Tax (if applicable) -->
-                <div class="space-y-2">
-                    <label class="text-xs text-muted-foreground font-medium">Pajak (%) (Opsional)</label>
-                    <input type="number" name="tax_percent" x-model.number="form.tax_percent" @change="calculateTotal()" min="0" max="100" step="0.1" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                </div>
-
-                <!-- Total -->
-                <div class="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                    <p class="text-xs text-primary font-semibold">Total</p>
-                    <p class="text-2xl font-bold text-primary mt-1" x-text="'Rp ' + formatNumber(form.total)"></p>
-                </div>
-            </div>
-
-            <!-- Payment Details (if CREDIT) -->
-            <div x-show="form.tipe_pembayaran === 'CREDIT'" class="p-4 rounded-lg bg-muted/30 border border-border/50 space-y-4">
-                <h3 class="font-semibold text-foreground text-sm">Rincian Pembayaran Kredit</h3>
-                
-                <div class="grid gap-4 md:grid-cols-2">
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-foreground">Jumlah Dibayar Sekarang (Rp)</label>
-                        <input type="number" name="jumlah_dibayar" x-model.number="form.paid_amount" min="0" step="100" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+        <!-- Summary Section -->
+        <div class="p-6 border-t border-border/50 bg-muted/20 space-y-4">
+            <div class="grid gap-4 text-right">
+                <div class="grid gap-2">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-muted-foreground">Total Qty:</span>
+                        <span class="font-semibold text-foreground" x-text="form.products.reduce((s, p) => s + (p.qty || 0), 0)"></span>
                     </div>
-
-                    <div class="space-y-2">
-                        <label class="text-sm font-medium text-foreground">Sisa Piutang</label>
-                        <input type="text" :value="'Rp ' + formatNumber(form.total - form.paid_amount)" disabled class="h-10 w-full rounded-lg border border-border bg-muted px-3 py-2 text-sm text-muted-foreground">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-muted-foreground">Subtotal:</span>
+                        <span class="font-semibold text-foreground" x-text="'Rp ' + form.products.reduce((s, p) => s + ((p.qty || 0) * (p.harga_jual || 0)), 0).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                    </div>
+                    <div class="flex justify-between text-sm text-destructive">
+                        <span class="font-semibold">Total Diskon:</span>
+                        <span class="font-semibold" x-text="'- Rp ' + form.products.reduce((s, p) => s + (p.diskon || 0), 0).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                    </div>
+                    <hr class="border-border/50 my-2">
+                    <div class="flex justify-between text-lg">
+                        <span class="font-bold text-foreground">Total Bayar:</span>
+                        <span class="font-bold text-primary" x-text="'Rp ' + (form.products.reduce((s, p) => s + ((p.qty || 0) * (p.harga_jual || 0)) - (p.diskon || 0), 0)).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Action Buttons -->
-    <div class="flex gap-3 justify-end">
-        <a href="<?= base_url('transactions/sales') ?>" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
-            Batal
-        </a>
-        <button type="submit" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
-            <?= icon('Save', 'h-5 w-5') ?>
-            Simpan Penjualan
-        </button>
+            <div class="flex gap-3">
+                <button type="reset" class="flex-1 h-11 border border-border/50 rounded-lg text-foreground font-semibold hover:bg-muted transition">
+                    Reset
+                </button>
+                <button type="submit" class="flex-1 h-11 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-2">
+                    <?= icon('Save', 'h-5 w-5') ?>
+                    Simpan Penjualan
+                </button>
+            </div>
+        </div>
     </div>
 </form>
 
 <script>
-function salesForm() {
-    return {
-        form: {
-            tipe_pembayaran: '',
-            id_customer: '',
-            tax_percent: 0,
-            paid_amount: 0,
-            total: 0,
-            products: []
-        },
+    function salesForm() {
+        return {
+            form: {
+                tipe_pembayaran: '<?= old('tipe_pembayaran') ?>',
+                id_customer: '<?= old('id_customer') ?>',
+                products: <?= json_encode(old('products') ?? [['id_produk' => '', 'qty' => 1, 'harga_jual' => 0, 'diskon' => 0]]) ?>
+            },
 
-        updatePaymentType() {
-            if (this.form.tipe_pembayaran === 'CASH') {
-                this.form.paid_amount = this.form.total;
-            } else {
-                this.form.paid_amount = 0;
+            addProduct() {
+                this.form.products.push({
+                    id_produk: '',
+                    qty: 1,
+                    harga_jual: 0,
+                    diskon: 0
+                });
+            },
+
+            removeProduct(index) {
+                this.form.products.splice(index, 1);
+            },
+
+            updateProductPrice(index) {
+                // Update price based on product selection
+            },
+
+            updatePaymentType() {
+                // Handle payment type change
             }
-        },
-
-        addProduct() {
-            this.form.products.push({
-                id_produk: '',
-                qty: 1,
-                price: 0,
-                catatan: ''
-            });
-        },
-
-        removeProduct(index) {
-            this.form.products.splice(index, 1);
-            this.calculateTotal();
-        },
-
-        updateProductPrice(index) {
-            const select = event.target;
-            const option = select.options[select.selectedIndex];
-            const price = option.dataset.price || 0;
-            this.form.products[index].price = parseInt(price);
-            this.calculateSubtotal(index);
-        },
-
-        calculateSubtotal(index) {
-            this.calculateTotal();
-        },
-
-        calculateSubtotal() {
-            return this.form.products.reduce((total, product) => {
-                return total + (product.qty * product.price);
-            }, 0);
-        },
-
-        calculateTotal() {
-            const subtotal = this.calculateSubtotal();
-            const tax = (subtotal * this.form.tax_percent) / 100;
-            this.form.total = subtotal + tax;
-
-            if (this.form.tipe_pembayaran === 'CASH') {
-                this.form.paid_amount = this.form.total;
-            }
-        },
-
-        formatNumber(num) {
-            return new Intl.NumberFormat('id-ID', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(num || 0);
-        }
-    };
-}
+        };
+    }
 </script>
 
 <?= $this->endSection() ?>

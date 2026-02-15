@@ -22,9 +22,7 @@
                 <p class="mt-2 text-2xl font-bold text-foreground" x-text="stats.total">0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
+                <?= icon('FileText', 'h-6 w-6 text-primary') ?>
             </div>
         </div>
     </div>
@@ -37,9 +35,7 @@
                 <p class="mt-2 text-xl font-bold text-success" x-text="formatRupiah(stats.total_amount)">Rp 0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
-                <svg class="h-6 w-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
-                </svg>
+                <?= icon('ArrowUp', 'h-6 w-6 text-success') ?>
             </div>
         </div>
     </div>
@@ -52,9 +48,7 @@
                 <p class="mt-2 text-2xl font-bold text-warning" x-text="stats.this_month">0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
-                <svg class="h-6 w-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
+                <?= icon('Calendar', 'h-6 w-6 text-warning') ?>
             </div>
         </div>
     </div>
@@ -67,9 +61,7 @@
                 <p class="mt-2 text-xl font-bold text-secondary" x-text="formatRupiah(stats.avg_amount)">Rp 0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary/10">
-                <svg class="h-6 w-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                </svg>
+                <?= icon('Calculator', 'h-6 w-6 text-secondary') ?>
             </div>
         </div>
     </div>
@@ -119,15 +111,11 @@
     <!-- Filter Buttons -->
     <div class="mt-4 flex gap-3">
         <button onclick="loadPayments()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-            </svg>
+            <?= icon('Filter', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
         <button onclick="resetFilters()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
+            <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset Filter
         </button>
     </div>
@@ -155,9 +143,7 @@
                 <tr>
                     <td colspan="7" class="px-6 py-12 text-center">
                         <div class="flex flex-col items-center gap-2">
-                            <svg class="h-12 w-12 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
+                            <?= icon('FileText', 'h-12 w-12 text-muted-foreground/50') ?>
                             <p class="text-sm font-medium text-muted-foreground">Gunakan filter untuk menampilkan data</p>
                         </div>
                     </td>
@@ -182,7 +168,7 @@
 
         showTableLoading('paymentsTable', 7);
 
-        fetch(buildUrl('/info/history/payments-receivable-data', params))
+        fetch(buildUrl('<?= base_url('info/history/payments-receivable-data') ?>', params))
             .then(response => response.json())
             .then(data => {
                 renderPayments(data);
@@ -297,10 +283,7 @@
             <tr>
                 <td colspan="${colspan}" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center gap-3">
-                        <svg class="animate-spin h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <?= icon('Loader2', 'h-8 w-8 text-primary animate-spin') ?>
                         <p class="text-sm text-muted-foreground">Memuat data...</p>
                     </div>
                 </td>
@@ -314,9 +297,7 @@
             <tr>
                 <td colspan="${colspan}" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center gap-2">
-                        <svg class="h-12 w-12 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                        </svg>
+                        <?= icon('FileText', 'h-12 w-12 text-muted-foreground/50') ?>
                         <p class="text-sm font-medium text-muted-foreground">Tidak ada data ditemukan</p>
                         <p class="text-xs text-muted-foreground">Coba ubah filter pencarian Anda</p>
                     </div>
@@ -331,9 +312,7 @@
             <tr>
                 <td colspan="${colspan}" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center gap-2">
-                        <svg class="h-12 w-12 text-destructive/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                        <?= icon('AlertCircle', 'h-12 w-12 text-destructive/50') ?>
                         <p class="text-sm font-medium text-destructive">Gagal memuat data</p>
                         <p class="text-xs text-muted-foreground">Silakan coba lagi</p>
                     </div>

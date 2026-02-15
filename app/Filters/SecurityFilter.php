@@ -148,7 +148,7 @@ class SecurityFilter implements FilterInterface
         // Content Security Policy
         // Note: unsafe-eval is needed for Alpine.js x-data attribute evaluation
         // This is acceptable since Alpine.js input is from our trusted application code
-        $response->setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com 'self' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self'");
+        $response->setHeader('Content-Security-Policy', "default-src 'self' http://localhost:* http://127.0.0.1:*; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com 'self' https://cdn.jsdelivr.net https://cdn.tailwindcss.com https://fonts.googleapis.com http://localhost:* http://127.0.0.1:*; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com http://localhost:* http://127.0.0.1:*; img-src 'self' data: http://localhost:* http://127.0.0.1:*; font-src 'self' https://fonts.gstatic.com https://fonts.googleapis.com; connect-src 'self' http://localhost:* http://127.0.0.1:*");
         
         // Referrer Policy
         $response->setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');

@@ -108,6 +108,34 @@ class StockMutationModel extends Model
     }
 
     /**
+     * Get filtered stock movements with product and warehouse info
+     */
+    public function getFilteredMovements($productId = null, $type = null, $startDate = null, $endDate = null)
+    {
+        $query = $this->select('stock_mutations.*, products.name as product_name, products.sku, warehouses.name as warehouse_name')
+            ->join('products', 'products.id = stock_mutations.product_id')
+            ->join('warehouses', 'warehouses.id = stock_mutations.warehouse_id');
+
+        if ($productId) {
+            $query->where('stock_mutations.product_id', $productId);
+        }
+
+        if ($type) {
+            $query->where('stock_mutations.type', $type);
+        }
+
+        if ($startDate) {
+            $query->where('stock_mutations.created_at >=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('stock_mutations.created_at <=', $endDate);
+        }
+
+        return $query->orderBy('stock_mutations.created_at', 'DESC')->asArray()->findAll();
+    }
+
+    /**
      * Get all products with their stock information
      */
     public function getAllProductsStock()

@@ -5,7 +5,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3+-38B2AC.svg)](https://tailwindcss.com)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-**Status:** ✅ **PRODUCTION READY** | Last Updated: Feb 2024 | All 222 Routes Verified ✅
+**Status:** ✅ **PRODUCTION READY** | Last Updated: Feb 2026 | All 222 Routes Verified ✅
 
 ## 🎯 Tentang Aplikasi
 
@@ -17,8 +17,9 @@ TokoManager adalah sistem POS dan manajemen inventori yang komprehensif, diranca
 - 💰 **Multi-warehouse Stock Management**
 - 💳 **Credit Limit Tracking** untuk pelanggan
 - 📈 **Sales Analytics** dengan trend analysis
+- 🔔 **Real-time Notification System** dengan auto-refresh
 - 📑 **CSV Export** untuk inventory dan analytics
-- 🔐 **Role-based Access Control** (Owner/Admin)
+- 🔐 **Role-based Access Control** (Owner/Admin/Gudang/Sales)
 - 🎨 **Modern UI/UX** dengan Tailwind CSS
 - 📱 **Responsive Design** (Mobile/Tablet/Desktop)
 
@@ -76,10 +77,10 @@ Dashboard                    ┌── Data Utama
 
 ## 🔐 Kredensial Login
 
-| Role | Username | Password | Akses |
-|------|----------|---------|--------|--------------|
-| Owner | owner | password | **SEMUA FITUR** |
-| Admin | admin | password | Transaksi, Master Data |
+| Role | Username | Email | Password | Akses |
+|------|----------|--------|---------|--------|--------------|
+| Owner | owner | owner@example.com | password123 | **SEMUA FITUR** + Hidden Transactions |
+| Admin | admin | admin@example.com | password123 | Transaksi, Master Data, Settings |
 
 ---
 
@@ -122,6 +123,87 @@ php spark serve
 
 ---
 
+## 🛠️ Development Commands
+
+Like `npm run` in modern development workflows, use `composer run` for common tasks:
+
+### Server & Development
+```bash
+composer run dev              # Start development server (localhost:8080)
+```
+
+### Testing
+```bash
+composer run test             # Run PHPUnit tests
+composer run test:coverage    # Generate coverage report (build/logs/html)
+```
+
+### Notification System Testing
+```bash
+# Seed notifications for testing
+php spark db:seed NotificationSeeder
+
+# Check notification endpoints
+curl -X GET http://localhost:8080/notifications/getUnreadCount \
+     -H "X-Requested-With: XMLHttpRequest"
+```
+
+### CSV Export Testing
+```bash
+# Test CSV export for daily report
+curl -X GET "http://localhost:8080/info/reports/daily?export=csv" \
+     -H "X-Requested-With: XMLHttpRequest"
+
+# Test CSV with date range
+curl -X GET "http://localhost:8080/info/reports/daily?date=2026-02-15&export=csv" \
+     -H "X-Requested-With: XMLHttpRequest"
+```
+
+### Database
+```bash
+composer run db:migrate       # Apply pending migrations
+composer run db:refresh       # Rollback & re-run all migrations + seed
+composer run db:seed          # Run database seeders
+composer run fresh            # Full reset: db:refresh + cache:clear
+```
+
+### Seeding Test Data
+```bash
+# Seed core data for testing
+php spark db:seed DatabaseSeeder
+
+# Seed notifications specifically
+php spark db:seed NotificationSeeder
+
+# Seed all test data
+php spark db:seed DatabaseSeeder && php spark db:seed NotificationSeeder
+```
+
+### Code Quality
+```bash
+composer run lint             # Auto-fix code formatting (PSR-12 standard)
+composer run lint:check       # Check formatting without changes
+composer run prepare          # Run lint + test before committing
+```
+
+### Utilities
+```bash
+composer run cache:clear      # Clear application cache
+composer run route:list       # Display all routes
+```
+
+### Installation (First Time)
+```bash
+# 1. Install php-cs-fixer for linting
+composer require --dev friendsofphp/php-cs-fixer:^3.59
+
+# 2. Then use composer run commands
+```
+
+**Code Standards:** All commands enforce PSR-12 standard. See `.php-cs-fixer.dist.php` for configuration.
+
+---
+
 ## 📚 Dokumentasi
 
 Aplikasi memiliki dokumentasi lengkap di folder `docs/`:
@@ -138,6 +220,7 @@ Aplikasi memiliki dokumentasi lengkap di folder `docs/`:
 
 | Dokumen | Deskripsi |
 |---------|-----------|
+| **[TESTING_GUIDE.md](docs/TESTING_GUIDE.md)** | Panduan testing lengkap (manual & automated) |
 | **[MODAL_SYSTEM_GUIDE.md](docs/MODAL_SYSTEM_GUIDE.md)** | Panduan modal dialog system |
 | **[SEEDING_GUIDE.md](docs/SEEDING_GUIDE.md)** | Panduan database seeding & sample data |
 | **[Postman Collection](docs/api/Inventaris_Toko_API.postman_collection.json)** | Import ke Postman untuk test API |

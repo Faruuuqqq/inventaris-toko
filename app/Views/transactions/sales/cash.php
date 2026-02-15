@@ -51,9 +51,7 @@
                             
                             <!-- Product Image Placeholder -->
                             <div class="bg-muted h-24 rounded-lg flex items-center justify-center mb-2 group-hover:bg-muted/80 transition">
-                                <svg class="h-10 w-10 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m0 0v10l8 4"/>
-                                </svg>
+                                <?= icon('Package', 'h-10 w-10 text-muted-foreground') ?>
                             </div>
                             
                             <!-- Product Info -->
@@ -322,8 +320,6 @@
         }
     }
 </script>
-
-<?= $this->endSection() ?>
 
 <script>
     function salesForm() {

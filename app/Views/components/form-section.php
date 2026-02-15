@@ -34,12 +34,8 @@ $id = $id ?? 'form-section-' . uniqid();
                     class="flex h-6 w-6 items-center justify-center rounded hover:bg-muted transition-colors"
                     x-data="{ open: true }"
                     @click="open = !open">
-                <svg x-show="open" class="h-5 w-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-                <svg x-show="!open" class="h-5 w-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                </svg>
+                <?= icon('ChevronDown', 'h-5 w-5 text-muted-foreground') ?>
+                <?= icon('ChevronRight', 'h-5 w-5 text-muted-foreground') ?>
             </button>
         <?php endif; ?>
     </div>

@@ -687,22 +687,66 @@ class Sales extends BaseController
         }
     }
 
-    /**
-     * Action: Hide/unhide sale (OWNER only)
-     */
-    public function toggleHide($id)
-    {
-        if (session()->get('role') !== 'OWNER') {
-            return redirect()->back()->with('error', 'Hanya OWNER yang dapat menyembunyikan penjualan');
-        }
+     /**
+      * Action: Toggle sale visibility (hide/unhide from transaction history)
+      *
+      * ⚠️ CRITICAL SECURITY: OWNER ROLE ONLY
+      *
+      * Permission Check:
+      * This method ALWAYS checks that the user has OWNER role before allowing any action.
+      * Only the business owner can hide sales from transaction history.
+      *
+      * Why OWNER Only?
+      * ─────────────────
+      * 1. Compliance: Hiding sales is a sensitive financial operation
+      * 2. Accountability: Owner bears final responsibility for all financial records
+      * 3. Data Integrity: Prevents accidental hiding of transactions by staff
+      * 4. Audit Trail: Clear chain of command - only owner makes visibility changes
+      * 5. Regulatory: Business/tax authorities expect owner to control what's visible
+      *
+      * Role Restrictions:
+      * ✅ OWNER   - Can hide/unhide sales
+      * ❌ ADMIN   - Cannot hide sales (financial sensitivity)
+      * ❌ GUDANG  - Cannot hide sales (warehouse staff)
+      * ❌ SALES   - Cannot hide sales (sales staff)
+      *
+      * Implementation Flow:
+      * 1. Check user role (OWNER only)
+      * 2. Call Model::toggleHide() to update is_hidden column
+      * 3. Handle exceptions (e.g., sale not found)
+      * 4. Return success/error feedback to user
+      *
+      * Business Effects:
+      * - Hidden sales don't appear in normal history view
+      * - OWNER can still see hidden sales for audit purposes
+      * - Hidden sales can be un-hidden by owner at any time
+      * - Data is preserved in database (recovery always possible)
+      *
+      * @param int $id The sale ID to toggle visibility
+      * @return RedirectResponse With success/error message
+      *
+      * @see \App\Models\SaleModel::toggleHide() - The actual update logic
+      * @see \App\Controllers\Info\History::toggleSaleHide() - AJAX endpoint version
+      * @see https://codeigniter.com/user_guide/general/security.html - Security best practices
+      */
+     public function toggleHide($id)
+     {
+         // CRITICAL: Only OWNER can hide sales for compliance and accountability
+         if (session()->get('role') !== 'OWNER') {
+             return redirect()->back()
+                 ->with('error', 'Hanya OWNER yang dapat menyembunyikan penjualan');
+         }
 
-        try {
-            $this->saleModel->toggleHide($id);
-            return redirect()->back()->with('success', 'Status penyembunyian penjualan berhasil diubah');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
-    }
+         try {
+             // Toggle the visibility in database
+             $this->saleModel->toggleHide($id);
+             return redirect()->back()
+                 ->with('success', 'Status penyembunyian penjualan berhasil diubah');
+         } catch (\Exception $e) {
+             return redirect()->back()
+                 ->with('error', $e->getMessage());
+         }
+     }
 
     /**
      * API Helper: Get Products with stock

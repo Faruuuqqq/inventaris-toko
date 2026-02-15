@@ -58,8 +58,8 @@
                     <select name="id_warehouse_asal" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Gudang</option>
                         <?php foreach ($warehouses as $warehouse): ?>
-                            <option value="<?= $warehouse['id_warehouse'] ?>" <?= selected($warehouse['id_warehouse'], old('id_warehouse_asal')) ?>>
-                                <?= $warehouse['nama_warehouse'] ?>
+                            <option value="<?= $warehouse->id ?>" <?= selected($warehouse->id, old('id_warehouse_asal')) ?>>
+                                <?= esc($warehouse->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -73,8 +73,8 @@
                     <select name="id_customer" x-model="form.id_customer" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Customer</option>
                         <?php foreach ($customers as $customer): ?>
-                            <option value="<?= $customer['id_customer'] ?>" <?= selected($customer['id_customer'], old('id_customer')) ?>>
-                                <?= $customer['name'] ?>
+                            <option value="<?= $customer->id ?>" <?= selected($customer->id, old('id_customer')) ?>>
+                                <?= esc($customer->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -85,8 +85,8 @@
                     <select name="id_penjualan" @change="loadSalesDetails()" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Penjualan</option>
                         <?php foreach ($salesList as $sale): ?>
-                            <option value="<?= $sale['id_penjualan'] ?>" data-customer="<?= $sale['id_customer'] ?>">
-                                <?= $sale['nomor_penjualan'] ?> - <?= format_date($sale['tanggal_penjualan']) ?> (<?= $sale['nama_customer'] ?>)
+                            <option value="<?= $sale->id ?>" data-customer="<?= $sale->id_customer ?>">
+                                <?= esc($sale->nomor_penjualan) ?> - <?= format_date($sale->tanggal_penjualan) ?> (<?= esc($sale->nama_customer) ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -136,8 +136,8 @@
                                     <select x-model="product.id_produk" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                                         <option value="">Pilih Produk</option>
                                         <?php foreach ($products as $product_option): ?>
-                                            <option value="<?= $product_option['id_produk'] ?>">
-                                                <?= $product_option['nama_produk'] ?> (<?= $product_option['kode_produk'] ?>)
+                                            <option value="<?= $product_option->id ?>">
+                                                <?= esc($product_option->name) ?> (<?= esc($product_option->sku) ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>

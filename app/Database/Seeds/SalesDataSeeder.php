@@ -10,6 +10,20 @@ class SalesDataSeeder extends Seeder
     {
         echo "💰 Creating Sales Transaction Data..." . PHP_EOL . PHP_EOL;
         
+        // Clear existing sales data to avoid duplicate keys
+        $db = \Config\Database::connect();
+        $db->disableForeignKeyChecks();
+        $db->table('sales')->truncate();
+        $db->table('sale_items')->truncate();
+        $db->table('stock_mutations')->truncate();
+        $db->table('sales_returns')->truncate();
+        $db->table('sales_return_items')->truncate();
+        $db->table('purchase_returns')->truncate();
+        $db->table('purchase_return_items')->truncate();
+        $db->table('payments')->truncate();
+        $db->table('expenses')->truncate();
+        $db->enableForeignKeyChecks();
+        
         // Get existing data
         $products = $this->db->table('products')->select('id, sku, name, price, cost_price')->get()->getResultArray();
         $customers = $this->db->table('customers')->select('id, name, receivable_balance')->get()->getResultArray();
@@ -22,14 +36,6 @@ class SalesDataSeeder extends Seeder
         if (empty($customers)) {
             echo "❌ Error: No customers found. Please run Phase4TestDataSeeder first." . PHP_EOL;
             return;
-        }
-        
-        // Check if sales already exist
-        $existingSales = $this->db->table('sales')->countAll();
-        if ($existingSales > 0) {
-            echo "⚠️  Warning: Found {$existingSales} existing sales." . PHP_EOL;
-            echo "❓ This seeder will add MORE sales data." . PHP_EOL;
-            echo "   If you want to start fresh, truncate 'sales' and 'sale_items' tables first." . PHP_EOL . PHP_EOL;
         }
         
         $productMap = [];

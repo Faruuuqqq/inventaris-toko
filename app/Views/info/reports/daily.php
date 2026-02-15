@@ -23,6 +23,26 @@
                 </button>
             </div>
         </div>
+        
+        <!-- Export and Hidden Options -->
+        <div class="flex flex-col sm:flex-row gap-2 items-end">
+            <?php if ($isOwner): ?>
+            <div class="flex items-center gap-2">
+                <input type="checkbox" id="includeHidden" name="include_hidden" value="1" 
+                       class="rounded border-gray-300 text-primary focus:ring-primary"
+                       onchange="this.form.submit()">
+                <label for="includeHidden" class="text-sm text-gray-600 cursor-pointer">
+                    Sertakan transaksi tersembunyi
+                </label>
+            </div>
+            <?php endif; ?>
+            
+            <a href="<?= current_url() ?>?export=csv&date=<?= $date ?>&include_hidden=<?= isset($_GET['include_hidden']) ? $_GET['include_hidden'] : '0' ?>" 
+               class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+                <?= icon('FileText', 'w-4 h-4') ?>
+                Export CSV
+            </a>
+        </div>
     </form>
 </div>
 

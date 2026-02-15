@@ -22,9 +22,7 @@
                 <p class="mt-2 text-2xl font-bold text-foreground" x-text="stats.total">0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <svg class="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
+                <?= icon('FileText', 'h-6 w-6 text-primary') ?>
             </div>
         </div>
     </div>
@@ -37,9 +35,7 @@
                 <p class="mt-2 text-2xl font-bold text-warning" x-text="stats.pending">0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
-                <svg class="h-6 w-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+                <?= icon('Clock', 'h-6 w-6 text-warning') ?>
             </div>
         </div>
     </div>
@@ -52,9 +48,7 @@
                 <p class="mt-2 text-2xl font-bold text-success" x-text="stats.completed">0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
-                <svg class="h-6 w-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+                <?= icon('CheckCircle', 'h-6 w-6 text-success') ?>
             </div>
         </div>
     </div>
@@ -67,9 +61,7 @@
                 <p class="mt-2 text-xl font-bold text-foreground" x-text="formatRupiah(stats.total_amount)">Rp 0</p>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary/10">
-                <svg class="h-6 w-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+                <?= icon('DollarSign', 'h-6 w-6 text-secondary') ?>
             </div>
         </div>
     </div>
@@ -119,15 +111,11 @@
     <!-- Filter Buttons -->
     <div class="mt-4 flex gap-3">
         <button type="button" onclick="loadPurchases()" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
+            <?= icon('Search', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
         <button type="button" onclick="resetFilters()" class="h-10 px-4 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition flex items-center gap-2">
-            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
+            <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset
         </button>
     </div>
@@ -155,9 +143,7 @@
                 <tr>
                     <td colspan="7" class="px-6 py-12 text-center">
                         <div class="flex flex-col items-center gap-2">
-                            <svg class="h-12 w-12 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
+                            <?= icon('Search', 'h-12 w-12 text-muted-foreground/50') ?>
                             <p class="text-sm font-medium text-muted-foreground">Gunakan filter untuk menampilkan data</p>
                         </div>
                     </td>
@@ -178,7 +164,7 @@
 
         showTableLoading('purchasesTable', 7);
 
-        fetch(buildUrl('/info/history/purchases-data', params))
+        fetch(buildUrl('<?= base_url('info/history/purchases-data') ?>', params))
             .then(response => response.json())
             .then(data => {
                 renderPurchases(data);
@@ -210,10 +196,7 @@
                     <td class="px-6 py-4 text-right text-sm text-muted-foreground">${formatCurrency(purchase.received_amount || 0)}</td>
                     <td class="px-6 py-4 text-center">
                         <button onclick="viewDetail(${purchase.id_po})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Lihat Detail">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
+                            <?= icon('Eye', 'h-4 w-4') ?>
                         </button>
                     </td>
                 </tr>
@@ -258,9 +241,7 @@
             <tr>
                 <td colspan="7" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center gap-2">
-                        <svg class="h-12 w-12 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
+                        <?= icon('Search', 'h-12 w-12 text-muted-foreground/50') ?>
                         <p class="text-sm font-medium text-muted-foreground">Gunakan filter untuk menampilkan data</p>
                     </div>
                 </td>
@@ -283,10 +264,7 @@
             <tr>
                 <td colspan="${colspan}" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center gap-3">
-                        <svg class="animate-spin h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <?= icon('Loader2', 'h-8 w-8 text-primary animate-spin') ?>
                         <p class="text-sm text-muted-foreground">Memuat data...</p>
                     </div>
                 </td>
@@ -300,9 +278,7 @@
             <tr>
                 <td colspan="${colspan}" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center gap-2">
-                        <svg class="h-12 w-12 text-destructive/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                        <?= icon('AlertCircle', 'h-12 w-12 text-destructive/50') ?>
                         <p class="text-sm font-medium text-destructive">Gagal memuat data</p>
                         <button onclick="loadPurchases()" class="text-sm text-primary hover:underline">Coba lagi</button>
                     </div>
@@ -317,9 +293,7 @@
             <tr>
                 <td colspan="${colspan}" class="px-6 py-12 text-center">
                     <div class="flex flex-col items-center gap-2">
-                        <svg class="h-12 w-12 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                        </svg>
+                        <?= icon('Package', 'h-12 w-12 text-muted-foreground/50') ?>
                         <p class="text-sm font-medium text-muted-foreground">Tidak ada data ditemukan</p>
                         <p class="text-xs text-muted-foreground">Coba ubah filter pencarian Anda</p>
                     </div>
