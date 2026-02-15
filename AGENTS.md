@@ -1,9 +1,9 @@
-# AGENTS.md - AI Agent Guidelines for Inventaris Toko
+# AGENTS.md - AI Agent Guidelines for TokoManager
 
-# AGENTS.md - Protocol for Store Inventory System
-
-> **CORE PHILOSOPHY:** "Pragmatic Monolith". Keep it Simple. Keep it Snappy.
+> **CORE PHILOSOPHY**: "Pragmatic Monolith". Keep it Simple. Keep it Snappy.
 > This is a Local Area Network (LAN) application. Do NOT suggest Microservices, Docker containers, or complex Event Sourcing unless explicitly asked.
+
+---
 
 ## 1. TECHNICAL STACK (STRICT)
 * **Framework**: CodeIgniter 4.x (PHP 8.1+)
@@ -11,106 +11,21 @@
 * **Frontend**: Tailwind CSS (Utility-first) + Alpine.js (Lightweight interactivity)
 * **Environment**: Laragon (Windows/Apache) compatibility is required.
 * **Testing**: PHPUnit 10.x
+* **PDF Generation**: DomPDF or MPDF
 
 ---
 
-## 2. CRITICAL BUSINESS RULES (DO NOT VIOLATE) 🚨
+## 2. BUILD & TEST COMMANDS
 
-### 💰 Financial Integrity (Zero Tolerance)
-1.  **NO FLOATS**: Never use `FLOAT` or `DOUBLE` for money or stock quantities.
-    * **Database**: Use `DECIMAL(15, 2)` or `INT`.
-    * **PHP**: Handle calculations carefully. Format currency only at the View layer.
-2.  **Transactional Writes**: ALL write operations involving Money, Stock, or Journal Entries MUST be wrapped in:
-    ```php
-    $db->transStart();
-    // ... logic ...
-    $db->transComplete();
-    ```
-
-### 📦 Inventory Logic
-1.  **No Negative Stock**: Always validate `$currentStock >= $qty` *before* deducting.
-2.  **Atomic Updates**: Prevent race conditions in LAN environments.
-3.  **Validation**: Validate input in the **Model** or **Service**, not just the Controller.
-
----
-
-## 3. CODING STANDARDS & BEST PRACTICES
-
-### Backend (The Logic)
-* **Slim Controllers**: Controllers only handle Input -> Service/Model -> Response.
-* **Fat Services**: Complex logic (e.g., `CheckoutService`, `StockAdjustmentService`) belongs in `app/Services/`.
-* **Naming Conventions**:
-    * **Tables**: `snake_case` (e.g., `transaction_details`)
-    * **Classes/Files**: `PascalCase` (e.g., `ProductController`)
-    * **Methods/Variables**: `camelCase` (e.g., `calculateTotal`)
-    * **Routes/URLs**: `kebab-case` (e.g., `/master-data/products`)
-
-### Frontend (The View & UX)
-* **Component Reuse**: Use existing components in `app/Views/components/` (Cards, Badges, Buttons). Do not write raw HTML if a component exists.
-* **Alpine.js usage**: Use `x-data` for UI toggles (modals, dropdowns). Avoid inline `onclick="..."`.
-* **Cashier UX (POS)**:
-    * **Keyboard First**: Inputs must have `autofocus`. Forms should submit on `Enter`.
-    * **Feedback**: Always show Toast/Alert on success or failure. Never fail silently.
-
----
-
-## 4. ROUTING & ARCHITECTURE
-1.  **Explicit Routing**: Do NOT use Auto-Routing. Define every route in `app/Config/Routes.php`.
-2.  **Route Integrity**: Before creating a `<a href="...">` in a View, VERIFY the route exists.
-3.  **Paths**: Use `base_url()` for all internal links and assets. Use `DIRECTORY_SEPARATOR` for file paths (Windows compatibility).
-
----
-
-## 5. DEVELOPMENT COMMANDS
-
-### Setup & Migration
-```bash
-# Install Dependencies
-composer install
-
-# Database Migration (ALWAYS use this, never manual SQL)
-php spark migrate
-
-# Create New Migration
-php spark make:migration AddColumnToTable
-
-# Run Local Server (if not using Laragon)
-php spark serve
-
-6. GIT COMMIT CONVENTION
-feat: New features (e.g., "feat: add barcode scanner support")
-
-fix: Bug fixes (e.g., "fix: decimal precision in total calculation")
-
-refactor: Code cleanup without logic change
-
-style: UI/CSS adjustments
-
-docs: Documentation updates
-
-Generated for Store Inventory Project - Keep it working, keep it clean.
-
-This document provides guidelines for AI agents (Claude, Cursor, Copilot) operating on this CodeIgniter 4 inventory management system.
-
-## Quick Links
-- **Framework**: CodeIgniter 4.0+, PHP 8.1+
-- **Database**: MySQL 5.7+
-- **Frontend**: Alpine.js 3.x, Tailwind CSS
-- **Test Framework**: PHPUnit 10.5+
-
----
-
-## 1. BUILD & TEST COMMANDS
-
-### Installation
+### Installation & Setup
 ```bash
 # Install dependencies
 composer install
 
-# Copy .env file
-cp .env.example .env
+# Copy environment file
+cp env .env
 
-# Generate app key (CI4)
+# Generate app key
 php spark key:generate
 
 # Run database migrations
@@ -147,12 +62,88 @@ php spark db:seed DatabaseSeeder
 ./vendor/bin/phpunit tests/Feature/
 ```
 
-**Watch mode (requires installation of optional tool):**
+**Run Unit tests only:**
+```bash
+./vendor/bin/phpunit tests/Unit/
+```
+
+**Run with specific group:**
+```bash
+./vendor/bin/phpunit --group database
+./vendor/bin/phpunit --group auth
+```
+
+**Debug test failures:**
+```bash
+# Run with verbose output
+./vendor/bin/phpunit --verbose
+
+# Run with stop on failure
+./vendor/bin/phpunit --stop-on-failure
+```
+
+### Development Commands
+
+**Start development server:**
 ```bash
 php spark serve --host localhost --port 8080
 ```
 
-## 2. CODE STYLE GUIDELINES
+**Database operations:**
+```bash
+# Run migrations
+php spark migrate
+
+# Create new migration
+php spark make:migration AddColumnToTable
+
+# Rollback migrations
+php spark migrate:rollback
+
+# Refresh database (rollback + migrate + seed)
+php spark migrate:refresh --seed
+```
+
+**Cache & Performance:**
+```bash
+# Clear cache
+php spark cache:clear
+
+# Optimize autoloader
+composer dump-autoload --optimize
+```
+
+### Code Quality
+
+**PHP CodeSniffer (PSR-12):**
+```bash
+./vendor/bin/phpcs --standard=PSR12 app/
+```
+
+**PHP Code Fixer:**
+```bash
+# Fix code style (uses .php-cs-fixer.dist.php config)
+composer lint
+
+# Check code style without fixing
+composer lint:check
+```
+
+**Run Composer scripts:**
+```bash
+# Prepare before commit (lint + test)
+composer prepare
+
+# Fresh installation (db refresh + cache clear)
+composer fresh
+
+# Development server
+composer dev
+```
+
+---
+
+## 3. CODE STYLE GUIDELINES
 
 ### Imports & Namespaces
 - **Namespace format**: `App\{Folder}\{ClassName}` (PSR-4)
@@ -162,10 +153,12 @@ php spark serve --host localhost --port 8080
   namespace App\Controllers;
 
   use CodeIgniter\Controller;
+  use CodeIgniter\HTTP\ResponseInterface;
   use App\Models\UserModel;
   use App\Entities\User;
   ```
 - **Always use full namespace** in use statements, never relative imports
+- **No trailing commas** in use statements
 
 ### Formatting & Structure
 - **Indentation**: 4 spaces (NOT tabs)
@@ -173,6 +166,7 @@ php spark serve --host localhost --port 8080
 - **Files**: Start with `<?php` tag, no closing `?>` tag
 - **Blank lines**: One blank line between methods, two between class sections
 - **Braces**: Opening brace on same line (Allman style NOT used)
+- **Class structure** order: Constants, Properties, Constructor, Public methods, Protected methods, Private methods
 
 ### Types & Type Hints
 - **Always add type hints** to method parameters and return types:
@@ -184,6 +178,7 @@ php spark serve --host localhost --port 8080
 - **Use nullable types**: `?string`, `?int` for optional values
 - **Never use mixed type** - be specific with union types: `int|string`
 - **Entities**: Use entity classes with type hints, not plain arrays
+- **Return early pattern**: Return early from methods, avoid deep nesting
 
 ### Naming Conventions
 
@@ -196,6 +191,9 @@ php spark serve --host localhost --port 8080
 | Database tables | snake_case | `users`, `product_categories` |
 | Database columns | snake_case | `created_at`, `is_active` |
 | Files | Match class name | `UserModel.php`, `AuthController.php` |
+| Routes | kebab-case | `/master-data/products` |
+| Views | kebab-case | `products/index.php` |
+| Helpers | snake_case | `format_currency()` |
 
 ### Error Handling
 - **Always validate input** before processing:
@@ -226,6 +224,7 @@ php spark serve --host localhost --port 8080
   ```
 - **Type-hint return types**: Use `mixed` only when absolutely necessary
 - **Validate before database operations**
+- **Use service layer** for complex business logic
 
 ### Models
 - **Extend Model** base class
@@ -241,6 +240,8 @@ php spark serve --host localhost --port 8080
   ```php
   public function findByUsername(string $username): ?User { }
   ```
+- **Use soft deletes** where appropriate
+- **Always use prepared statements** for security
 
 ### Entities
 - **Extend Entity** class from CodeIgniter
@@ -258,16 +259,19 @@ php spark serve --host localhost --port 8080
 - **Pass data array**: `view('name', $data)`
 - **Alpine.js**: Use Alpine for interactivity (no jQuery)
 - **Tailwind CSS**: All styling uses Tailwind, no custom CSS if possible
+- **Use icon() helper**: Never inline SVG, always use `<?= icon('IconName', 'classes') ?>`
 
 ### Database
 - **Migrations**: Use `php spark make:migration` for schema changes
 - **Seeders**: Create seeders for test data: `php spark make:seeder UserSeeder`
 - **Column naming**: snake_case, add `_at` suffix for timestamps
 - **Foreign keys**: name as `{table}_id` (e.g., `user_id`)
+- **Use indexes** for performance
+- **Transaction safety**: Wrap financial operations in transactions
 
 ---
 
-## 3. PROJECT STRUCTURE
+## 4. PROJECT STRUCTURE
 
 ```
 inventaris-toko/
@@ -285,6 +289,8 @@ inventaris-toko/
 │   ├── Database/
 │   │   ├── Migrations/     # Schema changes
 │   │   └── Seeds/          # Test data
+│   ├── Services/            # Business logic services
+│   ├── Helpers/           # Custom helper functions
 │   └── Config/             # Application config
 ├── tests/
 │   ├── Feature/            # Integration tests
@@ -293,12 +299,33 @@ inventaris-toko/
 │   └── assets/
 │       ├── js/             # JavaScript
 │       └── css/            # CSS (Tailwind)
-└── docs/                   # Documentation
+├── docs/                   # Documentation
+└── build/                  # Build artifacts (coverage, etc.)
 ```
 
 ---
 
-## 4. COMMON PATTERNS
+## 5. CRITICAL BUSINESS RULES (DO NOT VIOLATE) 🚨
+
+### 💰 Financial Integrity (Zero Tolerance)
+1. **NO FLOATS**: Never use `FLOAT` or `DOUBLE` for money or stock quantities.
+   * **Database**: Use `DECIMAL(15, 2)` or `INT`.
+   * **PHP**: Handle calculations carefully. Format currency only at the View layer.
+2. **Transactional Writes**: ALL write operations involving Money, Stock, or Journal Entries MUST be wrapped in:
+   ```php
+   $db->transStart();
+   // ... logic ...
+   $db->transComplete();
+   ```
+
+### 📦 Inventory Logic
+1. **No Negative Stock**: Always validate `$currentStock >= $qty` *before* deducting.
+2. **Atomic Updates**: Prevent race conditions in LAN environments.
+3. **Validation**: Validate input in the **Model** or **Service**, not just the Controller.
+
+---
+
+## 6. COMMON PATTERNS
 
 ### API Response (ResourceController)
 ```php
@@ -324,44 +351,93 @@ if (!$this->validate($rules)) {
 }
 ```
 
-### Views
+### Service Layer Pattern
 ```php
-// Pass data
-view('name', $data, $options = []);
-
-// In template
-<?= $variable ?>
-<?= esc($userInput) ?>
-<?= view('partial', $data) ?>
+class PurchaseService {
+    public function createPurchase(array $data): ?int {
+        $db = db_connect();
+        $db->transStart();
+        
+        try {
+            // Business logic here
+            $purchaseId = $this->purchaseModel->insert($data);
+            
+            $db->transComplete();
+            return $purchaseId;
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', $e->getMessage());
+            return null;
+        }
+    }
+}
 ```
 
 ---
 
-## 5. KEY TECHNOLOGIES
-
-| Technology | Version | Use |
-|-----------|---------|-----|
-| CodeIgniter | 4.0+ | Framework |
-| PHP | 8.1+ | Runtime |
-| MySQL | 5.7+ | Database |
-| Alpine.js | 3.x | Frontend interactivity |
-| Tailwind CSS | 3.x | Styling |
-| PHPUnit | 10.5+ | Testing |
-
----
-
-## 6. WHEN TO CREATE NEW CODE
+## 7. WHEN TO CREATE NEW CODE
 
 **Controllers**: One per logical feature/resource  
 **Models**: One per database table  
 **Entities**: One per model, use for type safety  
 **Views**: One per page/feature  
 **Migrations**: One per schema change  
-**Tests**: Parallel structure to app/ folder
+**Tests**: Parallel structure to app/ folder  
+**Services**: For complex business logic
 
 ---
 
-## 7. GIT WORKFLOW
+## 8. SECURITY BEST PRACTICES
+
+1. **Input Validation**: Always validate and sanitize input
+2. **SQL Injection Prevention**: Use CodeIgniter query builder
+3. **XSS Prevention**: Use `esc()` function for output
+4. **CSRF Protection**: CodeIgniter handles automatically
+5. **Authentication**: Use CodeIgniter's built-in session library
+6. **Authorization**: Check permissions before actions
+7. **File Upload**: Validate file types, sizes, use secure paths
+
+---
+
+## 9. TESTING GUIDELINES
+
+### Test Structure
+```php
+class UserTest extends CIUnitTestCase
+{
+    public function setUp(): void
+    {
+        parent::setUp();
+    }
+    
+    public function testCreateUser(): void
+    {
+        // Test user creation
+    }
+    
+    public function testValidateRequiredFields(): void
+    {
+        // Test validation rules
+    }
+}
+```
+
+### What to Test
+- **Controller endpoints**: Request/Response cycles
+- **Model methods**: CRUD operations and queries
+- **Service methods**: Business logic
+- **Validation rules**: All validation scenarios
+- **Authentication**: Login/logout flows
+- **Permissions**: Access control
+
+### Test Data
+- **Use factories**: Create test data efficiently
+- **Clean up**: Reset database between tests
+- **Seeders**: Create reusable test data sets
+
+---
+
+## 10. GIT WORKFLOW
 
 ```bash
 # Create feature branch
@@ -375,7 +451,7 @@ git commit -m "fix: resolve login validation bug"
 git push origin feature/description
 ```
 
-**Commit prefixes**: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`
+**Commit prefixes**: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `style:`
 
 ---
 
@@ -389,7 +465,9 @@ git push origin feature/description
 - **Type safety**: Use type hints everywhere for better IDE support
 - **Views**: Use Alpine.js for dynamic behavior, not JavaScript in HTML
 - **Documentation**: Add docblocks to public methods
+- **Performance**: Consider indexes for frequently queried columns
+- **Accessibility**: Use semantic HTML5 tags, proper ARIA labels
 
 ---
 
-Last Updated: February 3, 2024
+Last Updated: February 2026

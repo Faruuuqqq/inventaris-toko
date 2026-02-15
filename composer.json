@@ -17,6 +17,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",
+        "friendsofphp/php-cs-fixer": "^3.59",
         "mikey179/vfsstream": "^1.6",
         "phpunit/phpunit": "^10.5.16"
     },
@@ -40,6 +41,17 @@
         "sort-packages": true
     },
     "scripts": {
-        "test": "phpunit"
+        "dev": "php spark serve",
+        "test": "phpunit",
+        "test:coverage": "phpunit --coverage-html=build/logs/html",
+        "db:migrate": "php spark migrate",
+        "db:refresh": "php spark migrate:refresh --seed",
+        "db:seed": "php spark db:seed",
+        "cache:clear": "php spark cache:clear",
+        "route:list": "php spark routes",
+        "lint": "php-cs-fixer fix app",
+        "lint:check": "php-cs-fixer check app",
+        "prepare": ["@lint", "@test"],
+        "fresh": ["@db:refresh", "@cache:clear"]
     }
 }

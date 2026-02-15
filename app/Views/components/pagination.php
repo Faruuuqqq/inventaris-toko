@@ -39,15 +39,11 @@
             <a href="<?= $pagination['previousPageUrl'] ?>"
                class="inline-flex items-center justify-center h-9 w-9 rounded border border-border/50 bg-background hover:bg-primary/10 hover:border-primary/30 transition-colors text-sm font-medium text-foreground"
                title="Halaman Sebelumnya">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
+                <?= icon('ChevronLeft', 'h-4 w-4') ?>
             </a>
         <?php else: ?>
             <span class="inline-flex items-center justify-center h-9 w-9 rounded border border-border/30 bg-muted/30 text-muted-foreground/50 cursor-not-allowed">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
+                <?= icon('ChevronLeft', 'h-4 w-4') ?>
             </span>
         <?php endif; ?>
 
@@ -76,15 +72,11 @@
             <a href="<?= $pagination['nextPageUrl'] ?>"
                class="inline-flex items-center justify-center h-9 w-9 rounded border border-border/50 bg-background hover:bg-primary/10 hover:border-primary/30 transition-colors text-sm font-medium text-foreground"
                title="Halaman Berikutnya">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
+                <?= icon('ChevronRight', 'h-4 w-4') ?>
             </a>
         <?php else: ?>
             <span class="inline-flex items-center justify-center h-9 w-9 rounded border border-border/30 bg-muted/30 text-muted-foreground/50 cursor-not-allowed">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
+                <?= icon('ChevronRight', 'h-4 w-4') ?>
             </span>
         <?php endif; ?>
     </div>

@@ -52,6 +52,33 @@ class SalesReturnModel extends Model
     ];
 
     /**
+     * Get sales returns with filters for history view
+     */
+    public function getSalesReturns($customerId = null, $status = null, $startDate = null, $endDate = null)
+    {
+        $query = $this->select('sales_returns.*, customers.name as customer_name')
+            ->join('customers', 'customers.id = sales_returns.customer_id');
+
+        if ($customerId) {
+            $query->where('sales_returns.customer_id', $customerId);
+        }
+
+        if ($status) {
+            $query->where('sales_returns.status', $status);
+        }
+
+        if ($startDate) {
+            $query->where('sales_returns.tanggal_retur >=', $startDate);
+        }
+
+        if ($endDate) {
+            $query->where('sales_returns.tanggal_retur <=', $endDate);
+        }
+
+        return $query->orderBy('sales_returns.tanggal_retur', 'DESC')->asArray()->findAll();
+    }
+
+    /**
      * Get sales returns by status
      */
     public function getByStatus($status = null)

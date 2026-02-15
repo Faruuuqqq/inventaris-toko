@@ -5,6 +5,8 @@ use App\Controllers\BaseController;
 use App\Models\StockMutationModel;
 use App\Models\ProductModel;
 use App\Models\WarehouseModel;
+use App\Models\CategoryModel;
+use App\Models\ProductStockModel;
 use App\Traits\ApiResponseTrait;
 
 class Stock extends BaseController
@@ -13,12 +15,16 @@ class Stock extends BaseController
     protected $stockMutationModel;
     protected $productModel;
     protected $warehouseModel;
+    protected $categoryModel;
+    protected $productStockModel;
 
     public function __construct()
     {
         $this->stockMutationModel = new StockMutationModel();
         $this->productModel = new ProductModel();
         $this->warehouseModel = new WarehouseModel();
+        $this->categoryModel = new CategoryModel();
+        $this->productStockModel = new ProductStockModel();
     }
 
     public function card()
@@ -35,46 +41,50 @@ class Stock extends BaseController
 
     public function balance()
     {
-        $productStockModel = new \App\Models\ProductStockModel();
-        
-        // Get all stock data
-        $stocks = $productStockModel
-            ->select('products.name as product_name, product_stocks.quantity, warehouses.name as warehouse_name')
+        // Get all stock data with price for valuation
+        $stocks = $this->productStockModel
+            ->select('products.id as product_id, products.name as product_name, products.sku, products.price_buy, product_stocks.quantity, warehouses.name as warehouse_name')
             ->join('products', 'products.id = product_stocks.product_id')
             ->join('warehouses', 'warehouses.id = product_stocks.warehouse_id')
+            ->orderBy('products.name', 'ASC')
+            ->asArray()
             ->findAll();
-        
+
         // Group by product
         $productStocks = [];
         $totalStock = 0;
         $totalValue = 0;
-        
+
         foreach ($stocks as $stock) {
-            $productId = $stock['product_name'];
-            
+            $productId = $stock['product_id'];
+
             if (!isset($productStocks[$productId])) {
                 $productStocks[$productId] = [
                     'name' => $stock['product_name'],
+                    'sku' => $stock['sku'],
                     'total_stock' => 0,
+                    'price' => (float)$stock['price_buy'],
                     'warehouses' => []
                 ];
             }
-            
-            $productStocks[$productId]['total_stock'] += $stock['quantity'];
+
+            $qty = (int)$stock['quantity'];
+            $productStocks[$productId]['total_stock'] += $qty;
             $productStocks[$productId]['warehouses'][] = [
                 'warehouse' => $stock['warehouse_name'],
-                'quantity' => $stock['quantity']
+                'quantity' => $qty
             ];
-            
-            $totalStock += $stock['quantity'];
+
+            $totalStock += $qty;
+            $totalValue += $qty * (float)$stock['price_buy'];
         }
-        
+
         $data = [
             'title' => 'Saldo Stok',
             'subtitle' => 'Total stok dan nilai persediaan',
             'productStocks' => $productStocks,
             'totalStock' => $totalStock,
-            'totalValue' => 0, // Will be calculated when product prices are available
+            'totalValue' => $totalValue,
         ];
 
         return view('info/stock/balance', $data);
@@ -85,53 +95,13 @@ class Stock extends BaseController
      */
     public function management()
     {
-        $db = \Config\Database::connect();
-        
-        // Get all products with current stock levels
-        // Check if products table has deleted_at column
-        $hasDeletedAt = $db->fieldExists('deleted_at', 'products');
-        
-        $productsQuery = $db->table('products')
-            ->select('products.id, products.name, products.sku, products.price, products.min_stock, products.max_stock, products.category_id, categories.name as category_name')
-            ->join('categories', 'categories.id = products.category_id', 'LEFT');
-            
-        if ($hasDeletedAt) {
-            $productsQuery->where('products.deleted_at', null);
-        }
-        
-        $products = $productsQuery
-            ->orderBy('products.name', 'ASC')
-            ->get()
-            ->getResultArray();
-
-        // Add current stock for each product
-        foreach ($products as &$product) {
-            $stock = $db->table('product_stocks')
-                ->selectSum('quantity', 'current_stock')
-                ->where('product_id', $product['id'])
-                ->get()
-                ->getRow();
-            
-            $product['current_stock'] = (int)($stock->current_stock ?? 0);
-            $product['min_stock'] = (int)($product['min_stock'] ?? 10); // Default min stock
-            $product['max_stock'] = (int)($product['max_stock'] ?? 100); // Default max stock
-        }
-
-        // Get categories
-        $categoriesQuery = $db->table('categories');
-        
-        // Check if categories table has deleted_at column
-        if ($db->fieldExists('deleted_at', 'categories')) {
-            $categoriesQuery->where('deleted_at', null);
-        }
-        
-        $categories = $categoriesQuery->get()->getResultArray();
+        $products = $this->getProductsWithStock();
 
         $data = [
             'title' => 'Manajemen Inventaris',
             'subtitle' => 'Pantau stok, atur reorder, dan kelola tingkat stok produk',
             'products' => $products,
-            'categories' => $categories,
+            'categories' => $this->categoryModel->asArray()->findAll(),
         ];
 
         return view('info/inventory/management', $data);
@@ -142,50 +112,21 @@ class Stock extends BaseController
      */
     public function exportInventory()
     {
-        $db = \Config\Database::connect();
-        
-        // Get all products with current stock levels (same query as management method)
-        $hasDeletedAt = $db->fieldExists('deleted_at', 'products');
-        
-        $productsQuery = $db->table('products')
-            ->select('products.id, products.name, products.sku, products.price, products.min_stock, products.max_stock, products.category_id, categories.name as category_name')
-            ->join('categories', 'categories.id = products.category_id', 'LEFT');
-            
-        if ($hasDeletedAt) {
-            $productsQuery->where('products.deleted_at', null);
-        }
-        
-        $products = $productsQuery
-            ->orderBy('products.name', 'ASC')
-            ->get()
-            ->getResultArray();
+        $products = $this->getProductsWithStock();
 
-        // Add current stock for each product
-        foreach ($products as &$product) {
-            $stock = $db->table('product_stocks')
-                ->selectSum('quantity', 'current_stock')
-                ->where('product_id', $product['id'])
-                ->get()
-                ->getRow();
-            
-            $product['current_stock'] = (int)($stock->current_stock ?? 0);
-            $product['min_stock'] = (int)($product['min_stock'] ?? 10);
-            $product['max_stock'] = (int)($product['max_stock'] ?? 100);
-        }
-        
         // Set response headers for CSV download
         $filename = 'inventory_export_' . date('Y-m-d_His') . '.csv';
         $this->response->setHeader('Content-Type', 'text/csv; charset=utf-8');
         $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
         $this->response->setHeader('Pragma', 'no-cache');
         $this->response->setHeader('Expires', '0');
-        
+
         // Open output stream
         $output = fopen('php://output', 'w');
-        
+
         // Add UTF-8 BOM for Excel compatibility
         fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-        
+
         // Write header row
         fputcsv($output, [
             'Product Name',
@@ -198,7 +139,7 @@ class Stock extends BaseController
             'Total Value (Rp)',
             'Stock Status'
         ]);
-        
+
         // Write data rows
         foreach ($products as $product) {
             $currentStock = $product['current_stock'];
@@ -206,7 +147,7 @@ class Stock extends BaseController
             $maxStock = $product['max_stock'];
             $price = (float)($product['price'] ?? 0);
             $totalValue = $currentStock * $price;
-            
+
             // Determine stock status
             if ($currentStock == 0) {
                 $status = 'Out of Stock';
@@ -217,7 +158,7 @@ class Stock extends BaseController
             } else {
                 $status = 'Normal';
             }
-            
+
             fputcsv($output, [
                 $product['name'],
                 $product['sku'],
@@ -230,7 +171,7 @@ class Stock extends BaseController
                 $status
             ]);
         }
-        
+
         fclose($output);
         return $this->response;
     }
@@ -336,9 +277,8 @@ class Stock extends BaseController
     {
         $warehouseId = $this->request->getGet('warehouse_id');
         $categoryId = $this->request->getGet('category_id');
-        
-        $productStockModel = new \App\Models\ProductStockModel();
-        $query = $productStockModel
+
+        $query = $this->productStockModel
             ->select('products.name as product_name, products.sku, SUM(product_stocks.quantity) as total_quantity')
             ->join('products', 'products.id = product_stocks.product_id')
             ->groupBy('product_stocks.product_id');
@@ -354,5 +294,41 @@ class Stock extends BaseController
         $summary = $query->findAll();
         
         return $this->respondData($summary);
+    }
+
+    /**
+     * Get all products with aggregated stock in a single query (no N+1)
+     */
+    private function getProductsWithStock(): array
+    {
+        $db = \Config\Database::connect();
+
+        $products = $db->table('products')
+            ->select('
+                products.id,
+                products.name,
+                products.sku,
+                products.price_sell as price,
+                products.min_stock_alert as min_stock,
+                products.category_id,
+                categories.name as category_name,
+                COALESCE(SUM(product_stocks.quantity), 0) as current_stock
+            ')
+            ->join('categories', 'categories.id = products.category_id', 'LEFT')
+            ->join('product_stocks', 'product_stocks.product_id = products.id', 'LEFT')
+            ->where('products.deleted_at', null)
+            ->groupBy('products.id')
+            ->orderBy('products.name', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        foreach ($products as &$product) {
+            $product['current_stock'] = (int)$product['current_stock'];
+            $product['min_stock'] = (int)($product['min_stock'] ?? 10);
+            $product['max_stock'] = 100; // No max_stock column in DB; use fixed default
+            $product['price'] = (float)($product['price'] ?? 0);
+        }
+
+        return $products;
     }
 }

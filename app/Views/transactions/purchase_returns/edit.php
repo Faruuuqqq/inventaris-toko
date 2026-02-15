@@ -11,14 +11,14 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Edit pengembalian pembelian ke supplier</p>
     </div>
-    <a href="<?= base_url('transactions/purchase-returns/detail/' . $purchaseReturn['id_retur_pembelian']) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('transactions/purchase-returns/detail/' . $purchaseReturn->id_retur_pembelian) ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
 </div>
 
 <!-- Purchase Return Form -->
-<form method="post" action="<?= base_url('transactions/purchase-returns/update/' . $purchaseReturn['id_retur_pembelian']) ?>" x-data="purchaseReturnForm()" class="space-y-6">
+<form method="post" action="<?= base_url('transactions/purchase-returns/update/' . $purchaseReturn->id_retur_pembelian) ?>" x-data="purchaseReturnForm()" class="space-y-6">
     <?= csrf_field() ?>
 
     <!-- Header Section -->
@@ -35,20 +35,20 @@
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-foreground">No. Return</label>
-                    <input type="text" name="nomor_retur" value="<?= old('nomor_retur', $purchaseReturn['nomor_retur']) ?>" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <input type="text" name="nomor_retur" value="<?= old('nomor_retur', $purchaseReturn->nomor_retur) ?>" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary/50">
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-foreground">Tanggal Return *</label>
-                    <input type="date" name="tanggal_retur" value="<?= old('tanggal_retur', $purchaseReturn['tanggal_retur']) ?>" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <input type="date" name="tanggal_retur" value="<?= old('tanggal_retur', $purchaseReturn->tanggal_retur) ?>" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                 </div>
 
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-foreground">Status</label>
                     <select name="status" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                        <option value="Menunggu Persetujuan" <?= selected('Menunggu Persetujuan', old('status', $purchaseReturn['status'])) ?>>Menunggu Persetujuan</option>
+                        <option value="Menunggu Persetujuan" <?= selected('Menunggu Persetujuan', old('status', $purchaseReturn->status)) ?>>Menunggu Persetujuan</option>
                         <?php if (is_admin()): ?>
-                            <option value="Disetujui" <?= selected('Disetujui', old('status', $purchaseReturn['status'])) ?>>Disetujui</option>
+                            <option value="Disetujui" <?= selected('Disetujui', old('status', $purchaseReturn->status)) ?>>Disetujui</option>
                         <?php endif; ?>
                     </select>
                 </div>
@@ -58,8 +58,8 @@
                     <select name="id_warehouse_asal" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Gudang</option>
                         <?php foreach ($warehouses as $warehouse): ?>
-                            <option value="<?= $warehouse['id_warehouse'] ?>" <?= selected($warehouse['id_warehouse'], old('id_warehouse_asal', $purchaseReturn['id_warehouse_asal'])) ?>>
-                                <?= $warehouse['nama_warehouse'] ?>
+                            <option value="<?= $warehouse->id ?>" <?= selected($warehouse->id, old('id_warehouse_asal', $purchaseReturn->id_warehouse_asal)) ?>>
+                                <?= esc($warehouse->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -73,8 +73,8 @@
                     <select name="id_supplier" x-model="form.id_supplier" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Supplier</option>
                         <?php foreach ($suppliers as $supplier): ?>
-                            <option value="<?= $supplier['id_supplier'] ?>" <?= selected($supplier['id_supplier'], old('id_supplier', $purchaseReturn['id_supplier'])) ?>>
-                                <?= $supplier['name'] ?>
+                            <option value="<?= $supplier->id ?>" <?= selected($supplier->id, old('id_supplier', $purchaseReturn->id_supplier)) ?>>
+                                <?= esc($supplier->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -85,8 +85,8 @@
                     <select name="id_po" @change="loadPurchaseOrderDetails()" class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Purchase Order</option>
                         <?php foreach ($purchaseOrdersList as $po): ?>
-                            <option value="<?= $po['id_po'] ?>" data-supplier="<?= $po['id_supplier'] ?>" <?= selected($po['id_po'], old('id_po', $purchaseReturn['id_po'])) ?>>
-                                <?= $po['nomor_po'] ?> - <?= format_date($po['tanggal_po']) ?> (<?= $po['name'] ?>)
+                            <option value="<?= $po->id ?>" data-supplier="<?= $po->id_supplier ?>" <?= selected($po->id, old('id_po', $purchaseReturn->id_po)) ?>>
+                                <?= esc($po->nomor_po) ?> - <?= format_date($po->tanggal_po) ?> (<?= esc($po->name) ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -96,7 +96,7 @@
             <!-- Notes -->
             <div class="space-y-2">
                 <label class="text-sm font-medium text-foreground">Catatan (Opsional)</label>
-                <textarea name="keterangan" rows="2" placeholder="Alasan pengembalian atau keterangan tambahan..." class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"><?= old('keterangan', $purchaseReturn['keterangan']) ?></textarea>
+                <textarea name="keterangan" rows="2" placeholder="Alasan pengembalian atau keterangan tambahan..." class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"><?= old('keterangan', esc($purchaseReturn->keterangan)) ?></textarea>
             </div>
         </div>
     </div>
@@ -134,8 +134,8 @@
                                     <select x-model="product.id_produk" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                                         <option value="">Pilih Produk</option>
                                         <?php foreach ($products as $product_option): ?>
-                                            <option value="<?= $product_option['id_produk'] ?>">
-                                                <?= $product_option['nama_produk'] ?> (<?= $product_option['kode_produk'] ?>)
+                                            <option value="<?= $product_option->id ?>">
+                                                <?= esc($product_option->name) ?> (<?= esc($product_option->sku) ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -187,7 +187,7 @@
 
     <!-- Action Buttons -->
     <div class="flex gap-3 justify-end">
-        <a href="<?= base_url('transactions/purchase-returns/detail/' . $purchaseReturn['id_retur_pembelian']) ?>" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
+        <a href="<?= base_url('transactions/purchase-returns/detail/' . $purchaseReturn->id_retur_pembelian) ?>" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
             Batal
         </a>
         <button type="submit" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
@@ -201,14 +201,14 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('purchaseReturnForm', () => ({
             form: {
-                id_supplier: '<?= $purchaseReturn['id_supplier'] ?>',
+                id_supplier: '<?= $purchaseReturn->id_supplier ?>',
                 products: [
-                    <?php foreach ($purchaseReturn['details'] as $detail): ?>
+                    <?php foreach ($purchaseReturn->details as $detail): ?>
                         {
-                            id_produk: '<?= $detail['id_produk'] ?>',
-                            jumlah: <?= $detail['jumlah'] ?>,
-                            alasan: '<?= $detail['alasan'] ?>',
-                            keterangan: '<?= $detail['keterangan'] ?>'
+                            id_produk: '<?= $detail->id_produk ?>',
+                            jumlah: <?= $detail->jumlah ?>,
+                            alasan: '<?= esc($detail->alasan) ?>',
+                            keterangan: '<?= esc($detail->keterangan) ?>'
                         },
                     <?php endforeach; ?>
                 ]

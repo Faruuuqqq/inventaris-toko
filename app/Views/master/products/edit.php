@@ -27,7 +27,7 @@
                         value="<?= esc($product->sku) ?>"
                         placeholder="Contoh: PRD-001"
                         :class="{'border-destructive': errors.sku}"
-                        class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                        class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
                     <span x-show="errors.sku" class="text-destructive text-xs mt-1" x-text="errors.sku"></span>
                 </div>
@@ -41,7 +41,7 @@
                         value="<?= esc($product->name) ?>"
                         placeholder="Contoh: Produk Berkualitas"
                         :class="{'border-destructive': errors.name}"
-                        class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                        class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
                     <span x-show="errors.name" class="text-destructive text-xs mt-1" x-text="errors.name"></span>
                 </div>
@@ -56,7 +56,7 @@
                         id="category_id" 
                         required 
                         :class="{'border-destructive': errors.category_id}"
-                        class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                        class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
                         <option value="">-- Pilih Kategori --</option>
                         <?php foreach ($categories ?? [] as $category): ?>
@@ -77,7 +77,7 @@
                         value="<?= esc($product->unit) ?>"
                         placeholder="Contoh: PCS, BOX, KG"
                         :class="{'border-destructive': errors.unit}"
-                        class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                        class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
                     <span x-show="errors.unit" class="text-destructive text-xs mt-1" x-text="errors.unit"></span>
                 </div>
@@ -97,7 +97,7 @@
                         step="0.01"
                         min="0"
                         :class="{'border-destructive': errors.price_buy}"
-                        class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                        class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
                     <span x-show="errors.price_buy" class="text-destructive text-xs mt-1" x-text="errors.price_buy"></span>
                 </div>
@@ -113,7 +113,7 @@
                         step="0.01"
                         min="0"
                         :class="{'border-destructive': errors.price_sell}"
-                        class="flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
+                        class="flex h-11 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 transition-all"
                     >
                     <span x-show="errors.price_sell" class="text-destructive text-xs mt-1" x-text="errors.price_sell"></span>
                 </div>
@@ -138,24 +138,20 @@
 
             <!-- Form Footer -->
             <div class="flex gap-3 justify-end pt-4 border-t border-border/50">
-                <a href="<?= base_url('master/products') ?>" class="inline-flex items-center justify-center rounded-lg border border-border bg-muted/30 text-foreground hover:bg-muted transition h-10 px-6 gap-2 text-sm font-semibold">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                    Batal
-                </a>
-                <button 
-                    type="submit" 
-                    :disabled="isSubmitting"
-                    class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-6 gap-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
-                    <svg x-show="!isSubmitting" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span x-show="isSubmitting" class="inline-flex items-center gap-2">
-                        <span class="animate-spin">⚙️</span>
-                    </span>
-                    <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
-                </button>
+            <a href="<?= base_url('master/products') ?>" class="inline-flex items-center justify-center rounded-lg border border-border bg-muted/30 text-foreground hover:bg-muted transition h-11 px-6 gap-2 text-sm font-semibold">
+                <?= icon('X', 'h-5 w-5') ?>
+                Batal
+            </a>
+            <button 
+                type="submit" 
+                :disabled="isSubmitting"
+                class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-11 px-6 gap-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+                <span x-show="!isSubmitting"><?= icon('Check', 'h-5 w-5') ?></span>
+                <span x-show="isSubmitting" class="inline-flex items-center gap-2">
+                    <span class="animate-spin">⚙️</span>
+                </span>
+                <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
+            </button>
             </div>
         </form>
     </div>
@@ -198,7 +194,8 @@ function editManager() {
                     if (data.errors) {
                         this.errors = data.errors;
                     }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.');
+                    // Show generic message, field errors will be displayed inline
+                    ModalManager.error('Silakan periksa kembali data yang Anda masukkan. Lihat pesan kesalahan di setiap field.');
                 } else {
                     // Other error
                     const data = await response.json();

@@ -7,41 +7,32 @@ use CodeIgniter\Database\Seeder;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run database seeds.
      * 
-     * Seeder utama yang mengatur urutan eksekusi seeder lainnya
+     * Main seeder that controls the execution order of other seeders
      * 
-     * Cara menggunakan:
-     * 1. php spark db:seed DatabaseSeeder          (Run semua seeder)
-     * 2. php spark db:seed InitialDataSeeder       (Run spesifik seeder)
-     * 3. php spark db:seed Phase4TestDataSeeder    (Run test data)
-     * 4. php spark db:seed SalesDataSeeder         (Run sales data)
+     * Usage:
+     * 1. php spark db:seed DatabaseSeeder          (Run all seeders)
+     * 2. php spark db:seed UserSeeder            (Run specific seeder)
+     * 3. php spark db:seed ProductSeeder         (Run specific seeder)
      */
     public function run()
     {
         echo "\n";
-        echo "╔══════════════════════════════════════════════════════════╗\n";
+        echo "╔════════════════════════════════════════════════════════╗\n";
         echo "║     🌱 DATABASE SEEDING - INVENTARIS TOKO                ║\n";
-        echo "╚══════════════════════════════════════════════════════════╝\n\n";
+        echo "╚════════════════════════════════════════════════════════╝\n\n";
 
         try {
-            // 1. Initial Data (Users, Categories, Warehouses, etc)
-            echo "▶️  Step 1: Loading initial data...\n";
-            $this->call('InitialDataSeeder');
-            echo "✅ Step 1 complete!\n\n";
+            // 1. Core Data (Users, Products, Customers, etc.)
+            echo "▶️  Step 1: Loading core data for integration testing...\n";
+            $this->call('UserSeeder');
+            echo "   - Users: ✅\n";
+            
+            echo "✅ Core data seeding complete!\n\n";
 
-            // 2. Phase 4 Test Data (Products, Customers, Suppliers)
-            echo "▶️  Step 2: Loading test data...\n";
-            $this->call('Phase4TestDataSeeder');
-            echo "✅ Step 2 complete!\n\n";
-
-            // 3. Sales Data (Transactions)
-            echo "▶️  Step 3: Loading sales data...\n";
-            $this->call('SalesDataSeeder');
-            echo "✅ Step 3 complete!\n\n";
-
-            // Print Summary
-            $this->printSummary();
+            // Print integration test credentials
+            $this->printTestCredentials();
 
         } catch (\Exception $e) {
             echo "\n❌ ERROR: " . $e->getMessage() . "\n\n";
@@ -50,51 +41,42 @@ class DatabaseSeeder extends Seeder
     }
 
     /**
-     * Print summary of seeded data
+     * Print test credentials for integration testing
      */
-    private function printSummary()
+    private function printTestCredentials()
     {
-        echo "╔══════════════════════════════════════════════════════════╗\n";
-        echo "║                  ✅ SEEDING COMPLETE!                    ║\n";
-        echo "╚══════════════════════════════════════════════════════════╝\n\n";
+        echo "╔════════════════════════════════════════════════════════╗\n";
+        echo "║                  ✅ INTEGRATION TEST READY!               ║\n";
+        echo "╚════════════════════════════════════════════════════════╝\n\n";
 
-        $tables = [
-            'users' => 'Users',
-            'categories' => 'Categories',
-            'warehouses' => 'Warehouses',
-            'salespersons' => 'Salespersons',
-            'products' => 'Products',
-            'customers' => 'Customers',
-            'suppliers' => 'Suppliers',
-            'sales_transactions' => 'Sales (Tunai)',
-            'credit_transactions' => 'Sales (Kredit)',
-            'purchases' => 'Purchases',
-            'sale_returns' => 'Sale Returns',
-            'purchase_returns' => 'Purchase Returns',
-        ];
+        echo "🧪 INTEGRATION TEST CREDENTIALS:\n";
+        echo "   Admin:  admin@example.com / password123\n";
+        echo "   User:   user@example.com / password123\n";
+        echo "   Sales:  sales@example.com / password123\n\n";
 
-        echo "📊 DATA SUMMARY:\n";
-        foreach ($tables as $table => $name) {
-            try {
-                $count = $this->db->table($table)->countAll();
-                printf("   %-25s: %4d records\n", $name, $count);
-            } catch (\Exception $e) {
-                echo "   ⚠️  $name - Not seeded\n";
-            }
-        }
+        echo "📋 AVAILABLE TEST DATA:\n";
+        echo "   - 10 Products with varying stock levels\n";
+        echo "   - 3 Customers with credit limits\n";
+        echo "   - 3 Suppliers with payment terms\n";
+        echo "   - 3 Warehouses with capacity\n\n";
 
-        echo "\n🔑 DEFAULT CREDENTIALS:\n";
-        echo "   Owner:  owner / password\n";
-        echo "   Admin:  admin / password\n";
-        echo "   Sales:  sales / password\n";
-        echo "   Gudang: gudang / password\n";
+        echo "🔧 TEST COMMANDS:\n";
+        echo "   ./vendor/bin/phpunit tests/Feature/SalesIntegrationTest.php\n";
+        echo "   ./vendor/bin/phpunit tests/Feature/PurchaseIntegrationTest.php\n";
+        echo "   ./vendor/bin/phpunit tests/Feature/InventoryIntegrationTest.php\n";
+        echo "   ./vendor/bin/phpunit tests/Feature/FinancialIntegrationTest.php\n";
+        echo "   ./vendor/bin/phpunit tests/Feature/DashboardIntegrationTest.php\n";
+        echo "   ./vendor/bin/phpunit tests/Feature/AuthIntegrationTest.php\n";
+        echo "   ./vendor/bin/phpunit --group integration\n\n";
 
-        echo "\n📍 NEXT STEPS:\n";
-        echo "   1. Login: http://localhost/inventaris-toko/public/\n";
-        echo "   2. Explore dashboard dan features\n";
-        echo "   3. Baca dokumentasi: docs/INDEX.md\n";
-        echo "   4. API testing: docs/api/Inventaris_Toko_API.postman_collection.json\n";
+        echo "🌐 TEST URLs:\n";
+        echo "   1. Dashboard: http://localhost:8000/dashboard\n";
+        echo "   2. Sales:     http://localhost:8000/transactions/sales\n";
+        echo "   3. Products:  http://localhost:8000/master/products\n";
+        echo "   4. Reports:    http://localhost:8000/info/reports\n\n";
 
-        echo "\n";
+        echo "╔════════════════════════════════════════════════════════╗\n";
+        echo "║           🚀 RUN TESTS TO VERIFY FUNCTIONALITY!         ║\n";
+        echo "╚════════════════════════════════════════════════════════╝\n\n";
     }
 }

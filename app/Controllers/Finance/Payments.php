@@ -60,8 +60,7 @@ class Payments extends BaseController
             'customers' => $customers,
         ];
 
-        return view('layout/main', $data)
-            . view('finance/payments/receivable', $data);
+        return view('finance/payments/receivable', $data);
     }
 
     /**
@@ -182,8 +181,7 @@ class Payments extends BaseController
             'suppliers' => $suppliers,
         ];
 
-        return view('layout/main', $data)
-            . view('finance/payments/payable', $data);
+        return view('finance/payments/payable', $data);
     }
 
     /**

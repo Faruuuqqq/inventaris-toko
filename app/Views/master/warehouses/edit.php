@@ -64,18 +64,14 @@
             <!-- Form Footer -->
             <div class="flex gap-3 justify-end pt-4 border-t border-border/50">
                 <a href="<?= base_url('master/warehouses') ?>" class="inline-flex items-center justify-center rounded-lg border border-border bg-muted/30 text-foreground hover:bg-muted transition h-10 px-6 gap-2 text-sm font-semibold">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
+                    <?= icon('X', 'h-5 w-5') ?>
                     Batal
                 </a>
                 <button 
                     type="submit" 
                     :disabled="isSubmitting"
                     class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-6 gap-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
-                    <svg x-show="!isSubmitting" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
+                    <?= icon('Check', 'h-5 w-5') ?>
                     <span x-show="isSubmitting" class="inline-flex items-center gap-2">
                         <span class="animate-spin">⚙️</span>
                     </span>

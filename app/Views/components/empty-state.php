@@ -1,45 +1,44 @@
 <?php
 /**
  * Empty State Component - Display when no data available
- * 
+ *
  * Usage:
  * <?= view('components/empty-state', [
  *     'icon' => 'Package',
- *     'title' => 'No Data',
- *     'description' => 'Start by creating your first item',
- *     'action' => ['text' => 'Create New', 'url' => '/create']
+ *     'title' => 'Belum ada data',
+ *     'description' => 'Silakan tambahkan data baru untuk memulai',
+ *     'action' => [
+ *         'text' => 'Tambah Data',
+ *         'url' => base_url('create'),
+ *         'icon' => 'Plus'
+ *     ]
  * ]) ?>
  */
 
 $icon = $icon ?? 'Package';
-$title = $title ?? 'No Data';
-$description = $description ?? '';
+$title = $title ?? 'Tidak ada data ditemukan';
+$description = $description ?? 'Belum ada data yang tersedia untuk halaman ini. Silakan tambahkan data baru atau ubah filter pencarian Anda.';
 $action = $action ?? null;
-$class = $class ?? '';
 ?>
 
-<div class="rounded-lg border border-dashed border-border bg-muted/30 py-12 px-6 text-center <?= $class ?>">
-    <div class="flex justify-center mb-4">
-        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
-            <?= icon($icon, 'h-8 w-8') ?>
+<div class="flex flex-col items-center justify-center py-16 text-center h-full min-h-[400px] animate-in fade-in zoom-in duration-300">
+    <div class="relative mb-6 group">
+        <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div class="relative bg-muted/30 p-8 rounded-full ring-1 ring-border/50 shadow-sm group-hover:shadow-md transition-all duration-300">
+            <?= icon($icon ?? 'Package', 'h-12 w-12 text-muted-foreground/60 group-hover:text-primary/80 transition-colors duration-300') ?>
         </div>
     </div>
-    
-    <h3 class="text-lg font-semibold text-foreground"><?= esc($title) ?></h3>
-    
-    <?php if ($description): ?>
-        <p class="mt-2 text-sm text-muted-foreground max-w-sm mx-auto"><?= esc($description) ?></p>
-    <?php endif; ?>
-    
+
+    <h3 class="text-xl font-bold text-foreground mb-2"><?= esc($title) ?></h3>
+    <p class="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed mb-8">
+        <?= esc($description) ?>
+    </p>
+
     <?php if ($action): ?>
-        <div class="mt-6">
-            <a href="<?= esc($action['url'] ?? '#') ?>" 
-               class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
-                <?php if (isset($action['icon'])): ?>
-                    <span><?= icon($action['icon'], 'h-4 w-4') ?></span>
-                <?php endif; ?>
-                <span><?= esc($action['text'] ?? 'Create') ?></span>
-            </a>
-        </div>
+        <a href="<?= esc($action['url'] ?? '#') ?>"
+           class="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-xl bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20 hover:bg-primary/90 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200">
+            <?= icon($action['icon'] ?? 'Plus', 'h-5 w-5') ?>
+            <span><?= esc($action['text'] ?? 'Tambah Baru') ?></span>
+        </a>
     <?php endif; ?>
 </div>

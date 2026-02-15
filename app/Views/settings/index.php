@@ -114,7 +114,7 @@
     </div>
 
     <div class="space-y-6">
-        <!-- Notification Settings -->
+<!-- Notification Settings -->
         <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
             <div class="flex flex-col space-y-1.5 p-6">
                 <h3 class="text-xl font-semibold flex items-center gap-2">
@@ -129,7 +129,9 @@
                         <p class="text-sm text-muted-foreground">Peringatan saat stok rendah</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" class="sr-only peer" checked>
+                        <input type="checkbox" class="sr-only peer" 
+                               data-notification-setting="low_stock" 
+                               <?= (isset($notificationSettings['low_stock']) && $notificationSettings['low_stock']) ? 'checked' : '' ?>>
                         <div class="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                     </label>
                 </div>
@@ -140,7 +142,35 @@
                         <p class="text-sm text-muted-foreground">Pengingat piutang</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" class="sr-only peer" checked>
+                        <input type="checkbox" class="sr-only peer" 
+                               data-notification-setting="overdue_receivable"
+                               <?= (isset($notificationSettings['overdue_receivable']) && $notificationSettings['overdue_receivable']) ? 'checked' : '' ?>>
+                        <div class="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                    </label>
+                </div>
+                <hr class="border-border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">Utang Jatuh Tempo</p>
+                        <p class="text-sm text-muted-foreground">Pengingat utang</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" 
+                               data-notification-setting="overdue_payable"
+                               <?= (isset($notificationSettings['overdue_payable']) && $notificationSettings['overdue_payable']) ? 'checked' : '' ?>>
+                        <div class="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                    </label>
+                </div>
+                <hr class="border-border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">PO Menunggu Penerimaan</p>
+                        <p class="text-sm text-muted-foreground">Pengingat PO pending</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" class="sr-only peer" 
+                               data-notification-setting="pending_po"
+                               <?= (isset($notificationSettings['pending_po']) && $notificationSettings['pending_po']) ? 'checked' : '' ?>>
                         <div class="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                     </label>
                 </div>
@@ -151,7 +181,9 @@
                         <p class="text-sm text-muted-foreground">Kirim laporan via email</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" class="sr-only peer">
+                        <input type="checkbox" class="sr-only peer" 
+                               data-notification-setting="daily_report"
+                               <?= (isset($notificationSettings['daily_report']) && $notificationSettings['daily_report']) ? 'checked' : '' ?>>
                         <div class="w-11 h-6 bg-muted rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                     </label>
                 </div>
@@ -244,6 +276,3 @@
     </div>
 </div>
 <?= $this->endSection() ?>
-
-
-<?php $this->endSection() ?>

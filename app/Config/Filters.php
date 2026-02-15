@@ -109,26 +109,19 @@ class Filters extends BaseFilters
                 'dashboard*',
                 'master/*',
                 'transactions/*',
-                'reports/*',
-            ],
-            'except' => [
-                'api/*',  // API routes use api-auth filter instead
+                'finance/*',
+                'info/*',
+                'settings*',
             ],
         ],
         'role:OWNER,ADMIN' => [
             'before' => [
-                'master/users*',
-                'master/warehouses*',
-                'master/salespersons*',
-                'reports/*',
-            ],
-        ],
-        'role:OWNER,ADMIN,GUDANG' => [
-            'before' => [
-                'master/products*',
-                'master/categories*',
-                'transactions/purchases*',
-                'transactions/stock*',
+                'dashboard*',
+                'master/*',
+                'transactions/*',
+                'finance/*',
+                'info/*',
+                'settings*',
             ],
         ],
     ];

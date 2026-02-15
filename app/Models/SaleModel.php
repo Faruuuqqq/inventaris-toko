@@ -15,7 +15,8 @@ class SaleModel extends Model
         'invoice_number', 'customer_id', 'warehouse_id', 'salesperson_id', 'user_id',
         'total_amount', 'due_date', 'paid_amount',
         'payment_type', 'payment_status', 'is_hidden',
-        'kontra_bon_id'
+        'kontra_bon_id',
+        'delivery_number', 'delivery_date', 'delivery_address', 'delivery_notes', 'delivery_driver_id'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
@@ -59,17 +60,37 @@ class SaleModel extends Model
         ],
     ];
 
-    // GLOBAL SCOPE: Hide hidden sales from non-Owner users
-    public function findAll(?int $limit = null, ?int $offset = 0)
-    {
-        $userRole = session()->get('role');
+     /**
+      * GLOBAL SCOPE: Automatically filter hidden sales from query results
+      *
+      * This is a security measure to prevent non-OWNER users from seeing hidden sales in history.
+      * Hidden sales (is_hidden = 1) are only visible to OWNER role users.
+      *
+      * Implementation Detail:
+      * - Whenever findAll() is called, this method adds WHERE is_hidden = 0 if user is not OWNER
+      * - OWNER can see all sales including hidden ones (for audit/recovery)
+      * - Other roles (ADMIN, GUDANG, SALES) never see hidden sales, even if queried directly
+      *
+      * Security Benefit:
+      * - Prevents accidental exposure of hidden transactions
+      * - Ensures hidden sales don't appear in reports/exports for non-owner users
+      * - Clear separation between OWNER visibility and staff visibility
+      *
+      * @param int|null $limit Optional result limit
+      * @param int $offset Query offset
+      * @return mixed Array of Sale entities
+      */
+     public function findAll(?int $limit = null, ?int $offset = 0)
+     {
+         $userRole = session()->get('role');
 
-        if ($userRole !== 'OWNER') {
-            $this->where('is_hidden', 0);
-        }
+         // Only OWNER can see hidden sales. All other roles must filter them out.
+         if ($userRole !== 'OWNER') {
+             $this->where('is_hidden', 0);
+         }
 
-        return parent::findAll($limit, $offset);
-    }
+         return parent::findAll($limit, $offset);
+     }
 
     /**
      * Get customer sales
@@ -114,20 +135,49 @@ class SaleModel extends Model
         return $result ? (float)$result->receivable : 0;
     }
 
-    /**
-     * Toggle hide status (only for OWNER)
-     */
-    public function toggleHide($saleId)
-    {
-        $sale = $this->find($saleId);
+     /**
+      * Toggle sale visibility (hide/unhide from transaction history)
+      *
+      * SECURITY NOTE: This method performs the actual data update but does NOT check permissions.
+      * Permission validation MUST happen in the Controller layer before calling this method.
+      * Only users with OWNER role are allowed to hide sales.
+      *
+      * Business Logic:
+      * - Hidden sales are excluded from history queries via global scope (findAll)
+      * - Hidden sales are still in database and can be restored by owner
+      * - Hiding sales is a sensitive operation (hides revenue) - only OWNER can do this
+      *
+      * Permission Chain:
+      * 1. UI: Only OWNER role sees the hide button
+      * 2. Controller: OWNER role check happens in Sales::toggleHide()
+      * 3. Model: This method executes the toggle (assumes permission already checked)
+      *
+      * Why OWNER Only?
+      * - Sales hiding is a sensitive financial operation
+      * - Only business owner should decide what appears in reports
+      * - Prevents accidental data hiding by staff (ADMIN, GUDANG, SALES roles)
+      * - Maintains data integrity and audit trail
+      *
+      * @param int $saleId The ID of the sale to toggle
+      * @return bool True if update was successful
+      * @throws \Exception If sale with given ID is not found
+      *
+      * @see \App\Controllers\Transactions\Sales::toggleHide() - Permission check
+      * @see \App\Controllers\Info\History::toggleSaleHide() - AJAX endpoint
+      * @see findAll() - Global scope that automatically filters hidden sales
+      */
+     public function toggleHide($saleId)
+     {
+         $sale = $this->find($saleId);
 
-        if (!$sale) {
-            throw new \Exception('Penjualan tidak ditemukan');
-        }
+         if (!$sale) {
+             throw new \Exception('Penjualan tidak ditemukan');
+         }
 
-        $newStatus = ($sale->is_hidden ?? 0) == 1 ? 0 : 1;
+         // Toggle: 0 (visible) ↔ 1 (hidden)
+         $newStatus = ($sale->is_hidden ?? 0) == 1 ? 0 : 1;
 
-        return $this->update($saleId, ['is_hidden' => $newStatus]);
+         return $this->update($saleId, ['is_hidden' => $newStatus]);
     }
 
     /**

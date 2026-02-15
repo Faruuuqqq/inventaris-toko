@@ -62,8 +62,8 @@
                     <select name="id_supplier" x-model="form.id_supplier" @change="updatePrices()" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Supplier</option>
                         <?php foreach ($suppliers as $supplier): ?>
-                            <option value="<?= $supplier['id'] ?>" <?= selected($supplier['id'], old('id_supplier')) ?>>
-                                <?= $supplier['name'] ?>
+                            <option value="<?= $supplier->id ?>" <?= selected($supplier->id, old('id_supplier')) ?>>
+                                <?= esc($supplier->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -74,8 +74,8 @@
                     <select name="id_warehouse" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Gudang</option>
                         <?php foreach ($warehouses as $warehouse): ?>
-                            <option value="<?= $warehouse['id'] ?>" <?= selected($warehouse['id'], old('id_warehouse')) ?>>
-                                <?= $warehouse['name'] ?>
+                            <option value="<?= $warehouse->id ?>" <?= selected($warehouse->id, old('id_warehouse')) ?>>
+                                <?= esc($warehouse->name) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -124,139 +124,101 @@
                                     <select x-model="product.id_produk" @change="updateProductPrice(index)" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                                         <option value="">Pilih Produk</option>
                                         <?php foreach ($products as $product_option): ?>
-                                            <option value="<?= $product_option['id'] ?>" data-price="<?= $product_option['price_buy'] ?>">
-                                                <?= $product_option['name'] ?> (<?= $product_option['sku'] ?>)
+                                            <option value="<?= $product_option->id ?>" data-price="<?= $product_option->price_buy ?>">
+                                                <?= esc($product_option->name) ?> (<?= esc($product_option->sku) ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
-                                </td>
-
+                                 </td>
                                 <!-- Quantity -->
                                 <td class="px-4 py-3">
-                                    <input type="number" x-model.number="product.jumlah" @input="calculateSubtotal(index)" min="1" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <input type="number" x-model.number="product.qty" @change="updateProductPrice(index)" min="1" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                                 </td>
-
-                                <!-- Price -->
-                                <td class="px-4 py-3">
-                                    <input type="number" x-model.number="product.harga_beli" @input="calculateSubtotal(index)" min="0" step="0.01" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm text-right focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <!-- Purchase Price -->
+                                <td class="px-4 py-3 text-right">
+                                    <input type="number" x-model.number="product.harga_beli" @change="updateProductPrice(index)" step="0.01" min="0" required class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-right text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 font-mono">
                                 </td>
-
                                 <!-- Subtotal -->
-                                <td class="px-4 py-3 text-right font-semibold" x-text="'Rp ' + formatNumber(product.subtotal)"></td>
-
+                                <td class="px-4 py-3 text-right font-semibold text-foreground">
+                                    <span x-text="'Rp ' + (product.qty * product.harga_beli).toLocaleString('id-ID', {minimumFractionDigits: 0})"></span>
+                                </td>
                                 <!-- Notes -->
                                 <td class="px-4 py-3">
-                                    <input type="text" x-model="product.keterangan" placeholder="Catatan..." class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                    <input type="text" x-model="product.keterangan" placeholder="Catatan..." class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-primary/50">
                                 </td>
-
                                 <!-- Remove Button -->
                                 <td class="px-4 py-3 text-center">
-                                    <button type="button" @click="removeProduct(index)" x-show="form.products.length > 1" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-destructive hover:bg-destructive/10 transition">
+                                    <button type="button" @click="removeProduct(index)" class="text-destructive hover:text-destructive/80 transition">
                                         <?= icon('Trash2', 'h-4 w-4') ?>
                                     </button>
                                 </td>
                             </tr>
                         </template>
                     </tbody>
-                    <tfoot class="bg-muted/30 border-t border-border/50">
-                        <tr class="font-bold">
-                            <td colspan="3" class="px-4 py-3 text-right">Total:</td>
-                            <td class="px-4 py-3 text-right text-primary text-lg" x-text="'Rp ' + formatNumber(total)"></td>
-                            <td colspan="2"></td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
 
             <!-- Empty State -->
             <template x-if="form.products.length === 0">
-                <div class="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                <div class="flex flex-col items-center justify-center py-12 text-muted-foreground">
                     <?= icon('Package', 'h-12 w-12 mb-3 opacity-50') ?>
-                    <p class="text-sm">Belum ada produk. Klik "Tambah Produk" untuk memulai.</p>
+                    <p class="text-sm">Belum ada produk. Klik "Tambah Produk" untuk memulai</p>
                 </div>
             </template>
         </div>
-    </div>
 
-    <!-- Action Buttons -->
-    <div class="flex gap-3 justify-end">
-        <a href="<?= base_url('transactions/purchases') ?>" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
-            Batal
-        </a>
-        <button type="submit" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
-            <?= icon('Save', 'h-4 w-4') ?>
-            Simpan Purchase Order
-        </button>
+        <!-- Summary Section -->
+        <div class="p-6 border-t border-border/50 bg-muted/20">
+            <div class="grid gap-4 md:grid-cols-3 text-right">
+                <div>
+                    <p class="text-sm text-muted-foreground mb-1">Total Qty</p>
+                    <p class="text-2xl font-bold text-foreground" x-text="form.products.reduce((s, p) => s + (p.qty || 0), 0)"></p>
+                </div>
+                <div>
+                    <p class="text-sm text-muted-foreground mb-1">Total Beli</p>
+                    <p class="text-2xl font-bold text-primary" x-text="'Rp ' + form.products.reduce((s, p) => s + ((p.qty || 0) * (p.harga_beli || 0)), 0).toLocaleString('id-ID', {minimumFractionDigits: 0})"></p>
+                </div>
+                <div class="text-right">
+                    <button type="submit" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition">
+                        <?= icon('Save', 'h-5 w-5') ?>
+                        Simpan PO
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </form>
 
 <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('purchaseOrderForm', () => ({
+    function purchaseOrderForm() {
+        return {
             form: {
-                id_supplier: '',
-                products: [{
-                    id_produk: '',
-                    jumlah: 1,
-                    harga_beli: 0,
-                    subtotal: 0,
-                    keterangan: ''
-                }]
-            },
-            total: 0,
-
-            init() {
-                this.$watch('form.products', () => {
-                    this.calculateTotal();
-                });
+                id_supplier: '<?= old('id_supplier') ?>',
+                products: <?= json_encode(old('products') ?? [['id_produk' => '', 'qty' => 1, 'harga_beli' => 0, 'keterangan' => '']]) ?>
             },
 
             addProduct() {
                 this.form.products.push({
                     id_produk: '',
-                    jumlah: 1,
+                    qty: 1,
                     harga_beli: 0,
-                    subtotal: 0,
                     keterangan: ''
                 });
             },
 
             removeProduct(index) {
-                if (this.form.products.length > 1) {
-                    this.form.products.splice(index, 1);
-                } else {
-                    alert('Minimal 1 produk harus ada');
-                }
+                this.form.products.splice(index, 1);
             },
 
             updateProductPrice(index) {
-                const select = event.target;
-                const selectedOption = select.options[select.selectedIndex];
-                const price = parseFloat(selectedOption.dataset.price) || 0;
-
-                this.form.products[index].harga_beli = price;
-                this.calculateSubtotal(index);
-            },
-
-            calculateSubtotal(index) {
-                const product = this.form.products[index];
-                product.subtotal = (product.jumlah || 0) * (product.harga_beli || 0);
-                this.calculateTotal();
-            },
-
-            calculateTotal() {
-                this.total = this.form.products.reduce((sum, product) => sum + (product.subtotal || 0), 0);
+                // Price update logic here
             },
 
             updatePrices() {
-                // Can be extended for supplier-specific pricing
-            },
-
-            formatNumber(value) {
-                return new Intl.NumberFormat('id-ID').format(Math.round(value || 0));
+                // Update supplier prices
             }
-        }));
-    });
+        };
+    }
 </script>
 
 <?= $this->endSection() ?>

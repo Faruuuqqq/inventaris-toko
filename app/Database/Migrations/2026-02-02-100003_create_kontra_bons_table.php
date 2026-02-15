@@ -8,6 +8,11 @@ class CreateKontraBonsTable extends Migration
 {
     public function up()
     {
+        // Skip if table already created in core migration
+        if ($this->db->tableExists('kontra_bons')) {
+            return;
+        }
+        
         $this->forge->addField([
             'id' => [
                 'type' => 'BIGINT',

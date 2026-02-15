@@ -12,7 +12,7 @@ class SupplierModel extends Model
     protected $returnType = Supplier::class;
     protected $useSoftDeletes = false;
     protected $allowedFields = [
-        'code', 'name', 'phone', 'debt_balance'
+        'code', 'name', 'phone', 'address', 'debt_balance'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
@@ -22,6 +22,7 @@ class SupplierModel extends Model
     protected $validationRules = [
         'name' => 'required|min_length[2]|max_length[100]',
         'phone' => 'permit_empty|max_length[20]',
+        'address' => 'permit_empty|max_length[500]',
     ];
 
     protected $validationMessages = [

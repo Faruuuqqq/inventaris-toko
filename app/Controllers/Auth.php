@@ -2,7 +2,6 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
-use CodeIgniter\RESTful\ResourceController;
 
 class Auth extends BaseController
 {
@@ -26,6 +25,7 @@ class Auth extends BaseController
         try {
             $username = $this->request->getPost('username');
             $password = $this->request->getPost('password');
+            $selectedRole = $this->request->getPost('role');
 
             if (empty($username) || empty($password)) {
                 return redirect()->back()
@@ -35,15 +35,16 @@ class Auth extends BaseController
 
             $user = $this->userModel->where('username', $username)->first();
 
-            if (!$user) {
+            if (!$user || !password_verify($password, $user->password_hash)) {
                 return redirect()->back()
-                    ->with('error', 'Username tidak ditemukan')
+                    ->with('error', 'Username atau password salah')
                     ->withInput();
             }
 
-            if (!password_verify($password, $user->password_hash)) {
+            // Validate role matches user's actual role
+            if ($selectedRole && $user->role !== $selectedRole) {
                 return redirect()->back()
-                    ->with('error', 'Username atau password salah')
+                    ->with('error', 'Akun Anda tidak memiliki akses sebagai ' . ucfirst($selectedRole))
                     ->withInput();
             }
 
@@ -56,17 +57,17 @@ class Auth extends BaseController
                 'isLoggedIn' => true,
             ];
             session()->set($sessionData);
-            
+
             // Regenerate session ID for security
             session()->regenerate();
-            
+
             log_message('info', "User logged in: {$user->username} (Role: {$user->role})");
-            
+
             return redirect()->to('/dashboard')->with('success', 'Login berhasil');
         } catch (\Exception $e) {
             log_message('error', 'Login error: ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'Terjadi kesalahan saat login: ' . $e->getMessage())
+                ->with('error', 'Terjadi kesalahan saat login. Silakan coba lagi.')
                 ->withInput();
         }
     }

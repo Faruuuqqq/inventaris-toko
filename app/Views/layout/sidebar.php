@@ -28,6 +28,7 @@ $menuItems = [
             ['title' => 'Pembayaran Piutang', 'icon' => 'arrow-down-circle', 'path' => 'finance/payments/receivable'],
             ['title' => 'Retur Pembelian', 'icon' => 'undo', 'path' => 'transactions/purchase-returns'],
             ['title' => 'Retur Penjualan', 'icon' => 'undo', 'path' => 'transactions/sales-returns'],
+            ['title' => 'Surat Jalan', 'icon' => 'file-text', 'path' => 'transactions/delivery-note'],
             ['title' => 'Kontra Bon', 'icon' => 'clipboard', 'path' => 'finance/kontra-bon'],
         ]
     ],
@@ -126,9 +127,7 @@ if (!function_exists('getSvgIcon')) {
         <button @click="sidebarOpen = false" 
                 class="ml-auto md:hidden text-sidebar-fg/70 hover:text-sidebar-fg rounded-lg p-2 hover:bg-sidebar-accent transition-all duration-200"
                 aria-label="Close sidebar">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+            <?= icon('X', 'h-5 w-5') ?>
         </button>
     </div>
 
@@ -150,9 +149,7 @@ if (!function_exists('getSvgIcon')) {
                         <!-- Chevron Animation -->
                         <span class="transition-transform duration-300 ease-out flex-shrink-0"
                               :class="open ? 'rotate-180' : 'rotate-0'">
-                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7-7m0 0L5 14m7-7v12"/>
-                            </svg>
+                            <?= icon('ChevronDown', 'h-4 w-4') ?>
                         </span>
                     </button>
                     
@@ -197,6 +194,25 @@ if (!function_exists('getSvgIcon')) {
         <?php endforeach; ?>
     </nav>
 
+    <!-- User Profile + Logout -->
+    <div class="border-t border-sidebar-border p-4">
+        <div class="mb-3 flex items-center gap-3">
+            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-sidebar-accent flex-shrink-0">
+                <span class="text-sm font-medium text-sidebar-fg">
+                    <?= strtoupper(substr(session()->get('fullname') ?? session()->get('username') ?? 'U', 0, 1)) ?>
+                </span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-sidebar-fg truncate"><?= esc(session()->get('fullname') ?? session()->get('username') ?? 'User') ?></p>
+                <p class="text-xs text-sidebar-fg/60 capitalize"><?= esc(session()->get('role') ?? 'guest') ?></p>
+            </div>
+        </div>
+        <a href="<?= base_url('logout') ?>"
+           class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-fg/75 hover:bg-sidebar-accent hover:text-sidebar-fg transition-all duration-200">
+            <?= icon('LogOut', 'h-4 w-4') ?>
+            Keluar
+        </a>
+    </div>
 
 </aside>
 

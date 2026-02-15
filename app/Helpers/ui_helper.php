@@ -5,11 +5,15 @@ use App\Models\WarehouseModel;
 use App\Models\StockMutationModel;
 
 /**
- * Icon Helper
- * Returns SVG icon from Lucide
+ * Icon helper function
+ * Renders inline SVG icons for the UI
+ * 
+ * @param string $name Name of the icon
+ * @param string $class Additional CSS classes
+ * @return string SVG HTML
  */
-function icon($name, $class = '') {
-    $icons = [
+function icon($name, $class = 'w-4 h-4') {
+    static $icons = [
         'Package' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m7.5 4.27 9 5.15" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16Z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3.3 7 8.7 5 8.7-5" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22V12" />',
         'TrendingUp' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M23 6l-9.5 9.5-5-5L1 18" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 6h6v6" />',
         'ShoppingCart' => '<circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />',

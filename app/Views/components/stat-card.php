@@ -44,14 +44,10 @@ $colorClass = $colorClasses[$color] ?? 'bg-primary/10 text-primary';
                     <?php if ($trend !== null): ?>
                         <div class="flex items-center gap-1">
                             <?php if ($trend > 0): ?>
-                                <svg class="h-4 w-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-11 11M3 17h8m0 0V7m0 10l11-11"/>
-                                </svg>
+                                <?= icon('TrendingUp', 'h-4 w-4 text-success') ?>
                                 <span class="text-xs font-semibold text-success"><?= abs($trend) ?>%</span>
                             <?php else: ?>
-                                <svg class="h-4 w-4 text-destructive" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-11-11m8 11h-8m0 0V7m0 10l11-11"/>
-                                </svg>
+                                <?= icon('TrendingDown', 'h-4 w-4 text-destructive') ?>
                                 <span class="text-xs font-semibold text-destructive"><?= abs($trend) ?>%</span>
                             <?php endif; ?>
                         </div>
