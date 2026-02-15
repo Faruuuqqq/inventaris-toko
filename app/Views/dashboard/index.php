@@ -5,7 +5,7 @@
 <!-- Page Header with Actions -->
 <div class="mb-8 flex items-start justify-between">
     <div>
-        <h2 class="text-2xl font-bold text-foreground">Selamat datang kembali! 👋</h2>
+        <h2 class="text-2xl font-bold text-foreground">Selamat datang kembali!</h2>
         <p class="mt-1 text-muted-foreground">Pantau performa bisnis Anda secara real-time</p>
     </div>
     <div class="text-right text-sm text-muted-foreground">
@@ -17,13 +17,13 @@
 <div class="mb-8 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
     
     <!-- Card 1: Today's Sales - Emerald Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+    <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transition-all hover:shadow-2xl duration-300">
         <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 via-emerald-600 to-green-600"></div>
         <div class="relative p-6">
             <!-- Background accent -->
-            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
+            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all duration-300"></div>
             <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-28 w-28 rounded-full bg-white/5"></div>
-            
+
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
@@ -45,12 +45,12 @@
     </div>
 
     <!-- Card 2: Today's Purchases - Blue Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+    <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transition-all hover:shadow-2xl duration-300">
         <div class="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600"></div>
         <div class="relative p-6">
-            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
+            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all duration-300"></div>
             <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-28 w-28 rounded-full bg-white/5"></div>
-            
+
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
@@ -69,12 +69,12 @@
     </div>
 
     <!-- Card 3: Total Stock - Orange Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+    <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transition-all hover:shadow-2xl duration-300">
         <div class="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-amber-600"></div>
         <div class="relative p-6">
-            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
+            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all duration-300"></div>
             <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-28 w-28 rounded-full bg-white/5"></div>
-            
+
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
@@ -93,12 +93,12 @@
     </div>
 
     <!-- Card 4: Active Customers - Purple Gradient -->
-    <div class="group relative overflow-hidden rounded-xl shadow-lg transition-all hover:shadow-2xl hover:scale-[1.02] duration-300">
+    <div class="group relative overflow-hidden rounded-xl shadow-lg cursor-pointer transition-all hover:shadow-2xl duration-300">
         <div class="absolute inset-0 bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600"></div>
         <div class="relative p-6">
-            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all group-hover:scale-125 duration-300"></div>
+            <div class="absolute right-0 top-0 -mr-12 -mt-12 h-32 w-32 rounded-full bg-white/10 transition-all duration-300"></div>
             <div class="absolute bottom-0 left-0 -ml-8 -mb-8 h-28 w-28 rounded-full bg-white/5"></div>
-            
+
             <div class="relative z-10">
                 <div class="flex items-start justify-between">
                     <div>
@@ -126,7 +126,7 @@
     <!-- Recent Transactions Table (2/3 width) -->
     <div class="lg:col-span-2">
         <div class="card">
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h3 class="text-lg font-bold text-foreground flex items-center gap-2">
                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                         <?= icon('ShoppingCart', 'h-5 w-5 text-primary') ?>
@@ -139,7 +139,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="border-b border-border/50 bg-background/50">
+                        <tr class="border-b border-border bg-background/50">
                             <th class="px-6 py-4 text-left font-semibold text-foreground uppercase text-xs tracking-wide">ID</th>
                             <th class="px-6 py-4 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Customer</th>
                             <th class="px-6 py-4 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Jumlah</th>
@@ -160,7 +160,7 @@
                             </tr>
                         <?php else: ?>
                             <?php foreach ($recentTransactions as $tx): ?>
-                                <tr class="border-b border-border/30 hover:bg-primary/5 transition-colors duration-200">
+                                <tr class="border-b border-border hover:bg-primary/5 transition-colors duration-200 cursor-pointer">
                                     <td class="px-6 py-4 font-semibold text-primary"><?= $tx->invoice_number ?? $tx->id ?></td>
                                     <td class="px-6 py-4">
                                         <span class="text-sm text-foreground/80">
@@ -176,11 +176,11 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <?php
+                        <?php
                                         $statusClass = match($tx->payment_status ?? 'UNPAID') {
-                                            'PAID' => 'bg-success/10 text-success border-success/30',
-                                            'PARTIAL' => 'bg-warning/10 text-warning border-warning/30',
-                                            default => 'bg-danger/10 text-danger border-danger/30'
+                                            'PAID' => 'bg-success/10 text-success border-success/50',
+                                            'PARTIAL' => 'bg-warning/10 text-warning border-warning/50',
+                                            default => 'bg-destructive/10 text-destructive border-destructive/50'
                                         };
                                         ?>
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border <?= $statusClass ?>">
@@ -197,7 +197,7 @@
                 </table>
             </div>
 
-            <div class="border-t border-border/50 bg-background/30 px-6 py-4">
+            <div class="border-t border-border bg-background/30 px-6 py-4">
                 <a href="<?= base_url('info/history/sales') ?>" class="text-sm font-semibold text-primary hover:text-primary-light transition duration-200 flex items-center gap-1">
                     Lihat semua transaksi
                     <?= icon('ArrowRight', 'h-4 w-4') ?>
@@ -208,7 +208,7 @@
 
     <!-- Low Stock Alert - Enhanced -->
     <div class="card overflow-hidden">
-        <div class="border-b border-border/50 px-6 py-4">
+        <div class="border-b border-border px-6 py-4">
                 <h3 class="text-lg font-bold text-foreground flex items-center gap-2">
                     <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
                         <?= icon('AlertCircle', 'h-5 w-5 text-destructive') ?>
@@ -241,7 +241,7 @@
             <?php endif; ?>
         </div>
 
-        <div class="border-t border-border/50 bg-background/30 px-6 py-4">
+        <div class="border-t border-border bg-background/30 px-6 py-4">
             <a href="<?= base_url('info/saldo/stock') ?>" class="text-sm font-semibold text-destructive hover:text-destructive-light transition duration-200 flex items-center gap-1">
                 Kelola stok
                 <?= icon('ArrowRight', 'h-4 w-4') ?>
@@ -258,8 +258,8 @@
     </h3>
     <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <!-- New Sale -->
-        <a href="<?= base_url('transactions/sales/cash') ?>" 
-           class="group relative overflow-hidden rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
+        <a href="<?= base_url('transactions/sales/cash') ?>"
+           class="group relative overflow-hidden rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/50 hover:shadow-lg transition-all duration-300 cursor-pointer">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-all"></div>
                 <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 group-hover:bg-primary/25 transition">
@@ -273,8 +273,8 @@
         </a>
 
         <!-- Receive Payment -->
-        <a href="<?= base_url('finance/payments/receivable') ?>" 
-           class="group relative overflow-hidden rounded-xl border-2 border-success/20 bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
+        <a href="<?= base_url('finance/payments/receivable') ?>"
+           class="group relative overflow-hidden rounded-xl border-2 border-success/20 bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/50 hover:shadow-lg transition-all duration-300 cursor-pointer">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-success/5 group-hover:bg-success/10 transition-all"></div>
                 <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-success/15 group-hover:bg-success/25 transition">
@@ -288,8 +288,8 @@
         </a>
 
         <!-- Add Product -->
-        <a href="<?= base_url('master/products') ?>" 
-           class="group relative overflow-hidden rounded-xl border-2 border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent p-5 hover:border-secondary/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
+        <a href="<?= base_url('master/products') ?>"
+           class="group relative overflow-hidden rounded-xl border-2 border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent p-5 hover:border-secondary/50 hover:shadow-lg transition-all duration-300 cursor-pointer">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-secondary/5 group-hover:bg-secondary/10 transition-all"></div>
                 <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/15 group-hover:bg-secondary/25 transition">
@@ -303,8 +303,8 @@
         </a>
 
         <!-- View Report -->
-        <a href="<?= base_url('info/reports/daily') ?>" 
-           class="group relative overflow-hidden rounded-xl border-2 border-warning/20 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
+        <a href="<?= base_url('info/reports/daily') ?>"
+           class="group relative overflow-hidden rounded-xl border-2 border-warning/20 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/50 hover:shadow-lg transition-all duration-300 cursor-pointer">
             <div class="absolute top-0 right-0 -mr-6 -mt-6 h-20 w-20 rounded-full bg-warning/5 group-hover:bg-warning/10 transition-all"></div>
                 <div class="relative z-10 flex items-center gap-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-warning/15 group-hover:bg-warning/25 transition">

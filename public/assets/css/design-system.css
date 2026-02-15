@@ -99,6 +99,17 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .bg-sidebar-primary { background-color: hsl(var(--sidebar-primary)); }
 .border-sidebar-border { border-color: hsl(var(--sidebar-border)); }
 
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
 /* Opacity variants */
 .bg-primary\/10 { background-color: hsl(var(--primary) / 0.10); }
 .bg-primary\/20 { background-color: hsl(var(--primary) / 0.20); }
@@ -114,7 +125,7 @@ button, a.btn, [role="button"] {
 }
 
 button:active, a.btn:active {
-    transform: scale(0.95);
+    transform: none;
 }
 
 /* Elevated cards with hover effect */
@@ -128,7 +139,7 @@ button:active, a.btn:active {
 .card:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     border-color: hsl(var(--primary) / 0.3);
-    transform: translateY(-2px);
+    transform: none;
 }
 
 /* Table row hover */
@@ -143,7 +154,25 @@ tbody tr:hover {
 /* Focus ring with primary color */
 input:focus, button:focus, select:focus, textarea:focus {
     outline: none;
-    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1), 0 0 0 1.5px hsl(var(--primary));
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2), 0 0 0 1px hsl(var(--primary));
+}
+
+input:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2), 0 0 0 1px hsl(var(--primary));
+}
+
+/* Cursor styles for interactive elements */
+button, a, [role="button"], .cursor-pointer {
+    cursor: pointer;
+}
+
+input, select, textarea {
+    cursor: text;
+}
+
+input[type="checkbox"], input[type="radio"] {
+    cursor: pointer;
 }
 
 /* Sticky header with backdrop blur */
@@ -172,4 +201,22 @@ input:focus, button:focus, select:focus, textarea:focus {
 /* Smooth scroll behavior */
 html {
     scroll-behavior: smooth;
+}
+
+/* Better table row focus for keyboard navigation */
+tbody tr:focus-within {
+    background-color: hsl(var(--primary) / 0.08);
+}
+
+/* Better focus states for links */
+a:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Better focus for tabs and buttons */
+button:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
 }

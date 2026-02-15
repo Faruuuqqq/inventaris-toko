@@ -44,7 +44,7 @@ $sizes = [
 $variantClass = $variants[$variant] ?? 'btn-primary';
 $sizeClass = $sizes[$size] ?? '';
 
-$buttonClass = trim("btn {$variantClass} {$sizeClass} {$class}");
+$buttonClass = trim("btn {$variantClass} {$sizeClass} {$class} cursor-pointer");
 
 if ($disabled || $loading) {
     $attributes .= ' disabled';

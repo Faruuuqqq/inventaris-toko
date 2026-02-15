@@ -151,14 +151,14 @@
 
                     <!-- Flash: Error -->
                     <?php if (session()->getFlashdata('error')): ?>
-                        <div class="mb-4 flex gap-3 rounded-md p-3 border" style="background:hsl(var(--destructive)/0.1);border-color:hsl(var(--destructive)/0.3)" role="alert">
+                        <div class="mb-4 flex gap-3 rounded-md p-3 border" style="background:hsl(var(--destructive)/0.1);border-color:hsl(var(--destructive)/0.5)" role="alert">
                             <?= icon('XCircle', 'h-5 w-5 text-destructive flex-shrink-0 mt-0.5') ?>
                             <p class="text-sm text-destructive font-medium"><?= esc(session()->getFlashdata('error')) ?></p>
                         </div>
                     <?php endif; ?>
 
                     <?php if (session()->getFlashdata('success')): ?>
-                        <div class="mb-4 flex gap-3 rounded-md p-3 border" style="background:hsl(var(--success)/0.1);border-color:hsl(var(--success)/0.3)" role="status">
+                        <div class="mb-4 flex gap-3 rounded-md p-3 border" style="background:hsl(var(--success)/0.1);border-color:hsl(var(--success)/0.5)" role="status">
                             <?= icon('CheckCircle', 'h-5 w-5 text-success flex-shrink-0 mt-0.5') ?>
                             <p class="text-sm text-success font-medium"><?= esc(session()->getFlashdata('success')) ?></p>
                         </div>
@@ -185,7 +185,7 @@
                                 required
                                 autofocus
                                 autocomplete="username"
-                                class="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary"
+                                class="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all cursor-text"
                             />
                         </div>
 
@@ -202,12 +202,12 @@
                                     placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;"
                                     required
                                     autocomplete="current-password"
-                                    class="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary"
+                                    class="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all cursor-text"
                                 />
                                 <button
                                     type="button"
                                     @click="showPassword = !showPassword"
-                                    class="password-toggle text-muted-foreground hover:text-foreground"
+                                    class="password-toggle text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 rounded"
                                     :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
                                 >
                                     <?= icon('Eye', 'h-4 w-4') ?>
@@ -220,7 +220,7 @@
                         <button
                             type="submit"
                             :disabled="isLoading"
-                            class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary-light disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                         >
                             <template x-if="!isLoading">
                                 <span x-text="'Masuk sebagai ' + (selectedRole === 'OWNER' ? 'Owner' : 'Admin')"></span>

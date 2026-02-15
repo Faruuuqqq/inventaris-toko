@@ -9,6 +9,9 @@
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.js"></script>
     
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -69,9 +72,9 @@
                 <div class="flex items-center gap-2 sm:gap-3 md:gap-4 ml-4">
                     <!-- Global Search - Hidden on mobile -->
                     <div class="relative hidden lg:flex items-center">
-                        <input type="text" 
-                               placeholder="Cari..." 
-                               class="h-9 rounded-lg border border-border bg-muted px-3 py-1.5 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all duration-200 w-56"
+                        <input type="text"
+                               placeholder="Cari..."
+                               class="h-9 rounded-lg border border-border bg-muted px-3 py-1.5 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 w-56 cursor-text"
                                aria-label="Global search">
                         <span class="absolute left-3 text-muted-foreground pointer-events-none">
                             <?= icon('Search', 'h-4 w-4') ?>
@@ -181,6 +184,15 @@
 
     <!-- Global Loading Overlay -->
     <?= view('components/loading-overlay') ?>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
 
 </body>
 </html>
