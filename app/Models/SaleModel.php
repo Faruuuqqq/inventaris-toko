@@ -15,7 +15,8 @@ class SaleModel extends Model
         'invoice_number', 'customer_id', 'warehouse_id', 'salesperson_id', 'user_id',
         'total_amount', 'due_date', 'paid_amount',
         'payment_type', 'payment_status', 'is_hidden',
-        'kontra_bon_id'
+        'kontra_bon_id',
+        'delivery_number', 'delivery_date', 'delivery_address', 'delivery_notes', 'delivery_driver_id'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';

@@ -65,6 +65,26 @@ class DatabaseSeeder extends Seeder
             $this->call('ExpensesSeeder');
             echo "✅ Step 8 complete!\n\n";
 
+            // 9. Purchase Orders
+            echo "▶️  Step 9: Loading purchase orders...\n";
+            $this->call('PurchaseOrdersSeeder');
+            echo "✅ Step 9 complete!\n\n";
+
+            // 10. Delivery Notes
+            echo "▶️  Step 10: Loading delivery notes...\n";
+            $this->call('DeliveryNotesSeeder');
+            echo "✅ Step 10 complete!\n\n";
+
+            // 11. Audit Logs
+            echo "▶️  Step 11: Loading audit logs...\n";
+            $this->call('AuditLogsSeeder');
+            echo "✅ Step 11 complete!\n\n";
+
+            // 12. Finance Reporting
+            echo "▶️  Step 12: Loading financial reporting data...\n";
+            $this->call('FinanceReportingSeeder');
+            echo "✅ Step 12 complete!\n\n";
+            
             // Print Summary
             $this->printSummary();
 
@@ -89,15 +109,22 @@ class DatabaseSeeder extends Seeder
             'warehouses' => 'Warehouses',
             'salespersons' => 'Salespersons',
             'products' => 'Products',
+            'product_stocks' => 'Product Stocks',
             'customers' => 'Customers',
             'suppliers' => 'Suppliers',
             'sales' => 'Sales Transactions',
+            'sale_items' => 'Sale Items',
             'purchase_orders' => 'Purchase Orders',
+            'purchase_order_items' => 'Purchase Order Items',
             'stock_mutations' => 'Stock Mutations',
             'sales_returns' => 'Sales Returns',
             'purchase_returns' => 'Purchase Returns',
             'payments' => 'Payments',
             'expenses' => 'Expenses',
+            'delivery_notes' => 'Delivery Notes',
+            'delivery_note_items' => 'Delivery Note Items',
+            'contra_bons' => 'Contra Bons',
+            'audit_logs' => 'Audit Logs',
         ];
 
         echo "📊 DATA SUMMARY:\n";
@@ -111,16 +138,18 @@ class DatabaseSeeder extends Seeder
         }
 
         echo "\n🔑 DEFAULT CREDENTIALS:\n";
-        echo "   Owner:  owner / password\n";
-        echo "   Admin:  admin / password\n";
-        echo "   Sales:  sales / password\n";
-        echo "   Gudang: gudang / password\n";
+        echo "   Owner:  owner / test123\n";
+        echo "   Admin:  admin / test123\n";
+        echo "   Sales:  sales / test123\n";
+        echo "   Gudang: gudang / test123\n";
 
         echo "\n📍 NEXT STEPS:\n";
-        echo "   1. Login: http://localhost/inventaris-toko/public/\n";
+        echo "   1. Login: http://localhost:8000/login\n";
         echo "   2. Explore dashboard dan features\n";
-        echo "   3. Baca dokumentasi: docs/INDEX.md\n";
-        echo "   4. API testing: docs/api/Inventaris_Toko_API.postman_collection.json\n";
+        echo "   3. Test financial reports: /finance/reports\n";
+        echo "   4. Check aging reports: /finance/aging\n";
+        echo "   5. View delivery tracking: /logistics/delivery-notes\n";
+        echo "   6. Audit trail: /admin/audit-logs\n";
 
         echo "\n";
     }

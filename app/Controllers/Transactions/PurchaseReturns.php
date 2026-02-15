@@ -7,12 +7,11 @@ use App\Services\StockService;
 use App\Services\BalanceService;
 use App\Exceptions\InvalidTransactionException;
 use CodeIgniter\API\ResponseTrait;
-use CodeIgniter\I18n\Time;
 
 class PurchaseReturns extends BaseController
 {
     use ResponseTrait;
-    
+
     protected $purchaseReturnModel;
     protected $purchaseReturnDetailModel;
     protected $supplierModel;
@@ -22,7 +21,7 @@ class PurchaseReturns extends BaseController
     protected $purchaseOrderDetailModel;
     protected $stockService;
     protected $balanceService;
-    
+
     public function __construct()
     {
         $this->purchaseReturnModel = new \App\Models\PurchaseReturnModel();
@@ -35,7 +34,7 @@ class PurchaseReturns extends BaseController
         $this->stockService = new StockService();
         $this->balanceService = new BalanceService();
     }
-    
+
     /**
      * Display list of all purchase returns with filters
      */
@@ -54,13 +53,13 @@ class PurchaseReturns extends BaseController
 
         // Apply filters
         if ($filters['start_date']) {
-            $query->where('DATE(purchase_returns.tanggal_retur) >=', $filters['start_date']);
+            $query->where('purchase_returns.tanggal_retur >=', $filters['start_date']);
         }
         if ($filters['end_date']) {
-            $query->where('DATE(purchase_returns.tanggal_retur) <=', $filters['end_date']);
+            $query->where('purchase_returns.tanggal_retur <=', $filters['end_date']);
         }
         if ($filters['supplier_id']) {
-            $query->where('purchase_returns.id_supplier', $filters['supplier_id']);
+            $query->where('purchase_returns.supplier_id', $filters['supplier_id']);
         }
         if ($filters['status']) {
             $query->where('purchase_returns.status', $filters['status']);
@@ -72,10 +71,10 @@ class PurchaseReturns extends BaseController
             'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
             'filters' => $filters
         ];
-        
+
         return view('transactions/purchase_returns/index', $data);
     }
-    
+
     /**
      * Show create purchase return form
      */
@@ -89,166 +88,155 @@ class PurchaseReturns extends BaseController
             'purchaseOrdersList' => $this->getPurchaseOrdersList(),
             'nomor_retur' => $this->generateNomorRetur()
         ];
-        
+
         return view('transactions/purchase_returns/create', $data);
     }
-    
+
     /**
-     * Create new purchase return (must link to original purchase order)
-     * Pattern: Inverse of Purchases.store (deducts stock instead of adding, reduces debt)
+     * Create new purchase return
      */
     public function store()
     {
         $rules = [
-            'nomor_retur' => 'required|is_unique[purchase_returns.nomor_retur]',
+            'nomor_retur' => 'required|is_unique[purchase_returns.no_retur]',
             'tanggal_retur' => 'required|valid_date[Y-m-d]',
             'id_supplier' => 'required|is_natural_no_zero',
             'id_po' => 'required|is_natural_no_zero',
             'id_warehouse_asal' => 'required|is_natural_no_zero',
-            'status' => 'required|in_list[Menunggu Persetujuan,Disetujui,Ditolak,Selesai]',
+            'status' => 'required|in_list[Pending,Disetujui,Ditolak]',
             'produk' => 'required',
             'produk.*.id_produk' => 'required|is_natural_no_zero',
             'produk.*.jumlah' => 'required|greater_than[0]',
-            'produk.*.alasan' => 'required'
         ];
-        
+
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
-        
+
         $db = \Config\Database::connect();
         $db->transStart();
-        
+
         try {
             $supplierId = $this->request->getPost('id_supplier');
             $poId = $this->request->getPost('id_po');
             $warehouseId = $this->request->getPost('id_warehouse_asal');
             $produk = $this->request->getPost('produk');
-            
+            $status = $this->request->getPost('status');
+
             // Validate supplier exists
             $supplier = $this->supplierModel->find($supplierId);
             if (!$supplier) {
                 throw new InvalidTransactionException('Supplier tidak ditemukan');
             }
-            
+
             // Validate original PO exists
             $originalPO = $this->purchaseOrderModel->find($poId);
             if (!$originalPO) {
                 throw new InvalidTransactionException('Pesanan pembelian asli tidak ditemukan');
             }
-            
+
             // Validate supplier matches
-            if ($originalPO['id_supplier'] != $supplierId) {
+            if ($originalPO['supplier_id'] != $supplierId) {
                 throw new InvalidTransactionException('Supplier tidak sesuai dengan pesanan pembelian asli');
             }
-            
+
             // Validate warehouse exists
             $warehouse = $this->warehouseModel->find($warehouseId);
             if (!$warehouse) {
                 throw new InvalidTransactionException('Gudang tidak ditemukan');
             }
-            
+
             // Validate items exist
             if (empty($produk)) {
                 throw new InvalidTransactionException('Tidak ada barang yang dipilih');
             }
-            
+
             // Validate products and calculate total refund
             $totalRefund = 0;
             $itemsData = [];
-            
+
             foreach ($produk as $item) {
                 $product = $this->productModel->find($item['id_produk']);
                 if (!$product) {
                     throw new InvalidTransactionException('Produk ID ' . $item['id_produk'] . ' tidak ditemukan');
                 }
-                
+
                 $qty = (int)$item['jumlah'];
-                
+
                 // Get original PO item price
                 $originalItem = $this->purchaseOrderDetailModel
-                    ->where('id_po', $poId)
-                    ->where('id_produk', $item['id_produk'])
+                    ->where('po_id', $poId)
+                    ->where('product_id', $item['id_produk'])
                     ->first();
-                
+
                 if (!$originalItem) {
                     throw new InvalidTransactionException('Produk tidak ditemukan dalam pesanan pembelian asli');
                 }
-                
+
                 // Validate return qty doesn't exceed original qty
-                if ($qty > $originalItem['jumlah']) {
-                    throw new InvalidTransactionException('Jumlah retur melebihi jumlah pemesanan untuk produk ' . $product['nama_produk']);
+                if ($qty > $originalItem['quantity']) {
+                    throw new InvalidTransactionException('Jumlah retur melebihi jumlah pemesanan untuk produk ' . $product['name']);
                 }
-                
-                $hargaBeli = $originalItem['harga_beli'];
-                $subtotal = $qty * $hargaBeli;
-                $totalRefund += $subtotal;
-                
+
+                $price = $originalItem['price'];
+                $totalRefund += ($qty * $price);
+
                 $itemsData[] = [
-                    'id_produk' => $product['id_produk'],
-                    'qty' => $qty,
-                    'harga_beli' => $hargaBeli,
-                    'subtotal' => $subtotal,
-                    'alasan' => $item['alasan'] ?? '',
-                    'keterangan' => $item['keterangan'] ?? ''
+                    'product_id' => $product['id'],
+                    'quantity' => $qty,
+                    'price' => $price,
                 ];
             }
-            
+
             // Create purchase return record
             $purchaseReturnData = [
-                'nomor_retur' => $this->request->getPost('nomor_retur'),
+                'no_retur' => $this->request->getPost('nomor_retur'),
                 'tanggal_retur' => $this->request->getPost('tanggal_retur'),
-                'id_supplier' => $supplierId,
-                'id_po' => $poId,
-                'id_warehouse_asal' => $warehouseId,
-                'status' => $this->request->getPost('status'),
-                'keterangan' => $this->request->getPost('keterangan') ?? '',
-                'total_refund' => $totalRefund,
-                'id_user' => session()->get('id_user')
+                'supplier_id' => $supplierId,
+                'po_id' => $poId,
+                'status' => $status,
+                'alasan' => $this->request->getPost('alasan') ?? '',
+                'total_retur' => $totalRefund,
             ];
-            
+
             $idRetur = $this->purchaseReturnModel->insert($purchaseReturnData);
-            
+
             // Create purchase return details and deduct stock
             foreach ($itemsData as $item) {
-                // Create detail record
                 $detailData = [
-                    'id_retur_pembelian' => $idRetur,
-                    'id_produk' => $item['id_produk'],
-                    'jumlah' => $item['qty'],
-                    'harga_beli' => $item['harga_beli'],
-                    'subtotal' => $item['subtotal'],
-                    'alasan' => $item['alasan'],
-                    'keterangan' => $item['keterangan']
+                    'return_id' => $idRetur,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price']
                 ];
-                
+
                 $this->purchaseReturnDetailModel->insert($detailData);
-                
+
                 // Deduct stock via StockService (inverse of purchase addition)
                 $this->stockService->deductStock(
-                    $item['id_produk'],
+                    $item['product_id'],
                     $warehouseId,
-                    $item['qty'],
+                    $item['quantity'],
                     'PURCHASE_RETURN',
                     $idRetur,
-                    'Retur Pembelian: ' . $purchaseReturnData['nomor_retur']
+                    'Retur Pembelian: ' . $purchaseReturnData['no_retur']
                 );
             }
-            
+
             // If auto-approved, also reduce supplier debt balance
-            if ($this->request->getPost('status') === 'Disetujui') {
+            if ($status === 'Disetujui') {
                 $this->balanceService->calculateSupplierDebt($supplierId);
             }
-            
+
             $db->transComplete();
-            
+
             if ($db->transStatus() === false) {
                 throw new \Exception('Transaction failed');
             }
-            
-            return redirect()->to('/transactions/purchase-returns/' . $idRetur)
+
+            return redirect()->to('/transactions/purchase-returns/detail/' . $idRetur)
                 ->with('success', 'Retur pembelian berhasil dibuat');
-            
+
         } catch (InvalidTransactionException $e) {
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());
@@ -257,7 +245,7 @@ class PurchaseReturns extends BaseController
             return redirect()->back()->withInput()->with('error', 'Gagal membuat retur pembelian: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Show purchase return detail
      */
@@ -267,27 +255,29 @@ class PurchaseReturns extends BaseController
         if (!$purchaseReturn) {
             return redirect()->to('/transactions/purchase-returns')->with('error', 'Retur pembelian tidak ditemukan');
         }
-        
-        $purchaseReturn['supplier'] = $this->supplierModel->find($purchaseReturn['id_supplier']);
-        $purchaseReturn['warehouse'] = $this->warehouseModel->find($purchaseReturn['id_warehouse_asal']);
-        $purchaseReturn['originalPO'] = $this->purchaseOrderModel->find($purchaseReturn['id_po']);
+
+        $purchaseReturn['supplier'] = $this->supplierModel->find($purchaseReturn['supplier_id']);
+        // Attempt to find warehouse from mutations since it's not in return table
+        $warehouseId = $this->getWarehouseFromMutation($id);
+        $purchaseReturn['warehouse'] = $warehouseId ? $this->warehouseModel->find($warehouseId) : null;
+
+        $purchaseReturn['originalPO'] = $this->purchaseOrderModel->find($purchaseReturn['po_id']);
         $purchaseReturn['details'] = $this->purchaseReturnDetailModel
-            ->select('purchase_return_details.*, products.name, products.sku')
-            ->join('products', 'products.id = purchase_return_details.product_id')
-            ->where('id_retur_pembelian', $id)
+            ->select('purchase_return_items.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_return_items.product_id')
+            ->where('return_id', $id)
             ->findAll();
-        
+
         $data = [
             'title' => 'Detail Retur Pembelian',
             'purchaseReturn' => $purchaseReturn
         ];
-        
+
         return view('transactions/purchase_returns/detail', $data);
     }
-    
+
     /**
      * Show edit form for purchase return
-     * Only allowed if status = 'Menunggu Persetujuan'
      */
     public function edit($id)
     {
@@ -295,19 +285,21 @@ class PurchaseReturns extends BaseController
         if (!$purchaseReturn) {
             return redirect()->to('/transactions/purchase-returns')->with('error', 'Retur pembelian tidak ditemukan');
         }
-        
-        if ($purchaseReturn['status'] !== 'Menunggu Persetujuan') {
+
+        if ($purchaseReturn['status'] !== 'Pending') {
             return redirect()->back()->with('error', 'Retur yang sudah diproses tidak dapat diubah');
         }
-        
-        $purchaseReturn['supplier'] = $this->supplierModel->find($purchaseReturn['id_supplier']);
-        $purchaseReturn['warehouse'] = $this->warehouseModel->find($purchaseReturn['id_warehouse_asal']);
+
+        $purchaseReturn['supplier'] = $this->supplierModel->find($purchaseReturn['supplier_id']);
+        $warehouseId = $this->getWarehouseFromMutation($id);
+        $purchaseReturn['id_warehouse_asal'] = $warehouseId; // Pass to view
+
         $purchaseReturn['details'] = $this->purchaseReturnDetailModel
-            ->select('purchase_return_details.*, products.name, products.sku')
-            ->join('products', 'products.id = purchase_return_details.product_id')
-            ->where('id_retur_pembelian', $id)
+            ->select('purchase_return_items.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_return_items.product_id')
+            ->where('return_id', $id)
             ->findAll();
-        
+
         $data = [
             'title' => 'Ubah Retur Pembelian',
             'purchaseReturn' => $purchaseReturn,
@@ -316,14 +308,12 @@ class PurchaseReturns extends BaseController
             'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'purchaseOrdersList' => $this->getPurchaseOrdersList()
         ];
-        
+
         return view('transactions/purchase_returns/edit', $data);
     }
-    
+
     /**
      * Update purchase return
-     * Reverts old stock deductions and creates new ones
-     * Recalculates supplier balance
      */
     public function update($id)
     {
@@ -331,164 +321,159 @@ class PurchaseReturns extends BaseController
         if (!$purchaseReturn) {
             return redirect()->to('/transactions/purchase-returns')->with('error', 'Retur pembelian tidak ditemukan');
         }
-        
-        if ($purchaseReturn['status'] !== 'Menunggu Persetujuan') {
+
+        if ($purchaseReturn['status'] !== 'Pending') {
             return redirect()->back()->with('error', 'Retur yang sudah diproses tidak dapat diubah');
         }
-        
+
         $rules = [
-            'nomor_retur' => "required|is_unique[purchase_returns.nomor_retur,id_retur_pembelian,{$id}]",
+            'nomor_retur' => "required|is_unique[purchase_returns.no_retur,id,{$id}]",
             'tanggal_retur' => 'required|valid_date[Y-m-d]',
             'id_supplier' => 'required|is_natural_no_zero',
             'id_po' => 'required|is_natural_no_zero',
             'id_warehouse_asal' => 'required|is_natural_no_zero',
-            'status' => 'required|in_list[Menunggu Persetujuan,Disetujui,Ditolak,Selesai]',
+            'status' => 'required|in_list[Pending,Disetujui,Ditolak]',
             'produk' => 'required',
             'produk.*.id_produk' => 'required|is_natural_no_zero',
             'produk.*.jumlah' => 'required|greater_than[0]',
-            'produk.*.alasan' => 'required'
         ];
-        
+
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
-        
+
         $db = \Config\Database::connect();
         $db->transStart();
-        
+
         try {
             $supplierId = $this->request->getPost('id_supplier');
             $poId = $this->request->getPost('id_po');
             $warehouseId = $this->request->getPost('id_warehouse_asal');
             $produk = $this->request->getPost('produk');
-            
+            $status = $this->request->getPost('status');
+
+            // Find old warehouse to revert stock
+            $oldWarehouseId = $this->getWarehouseFromMutation($id);
+            if (!$oldWarehouseId) {
+                $oldWarehouseId = $warehouseId; // Fallback to current if can't find
+            }
+
             // Get old details to revert stock
-            $oldDetails = $this->purchaseReturnDetailModel->where('id_retur_pembelian', $id)->findAll();
-            
+            $oldDetails = $this->purchaseReturnDetailModel->where('return_id', $id)->findAll();
+
             // Revert old stock deductions (add stock back)
             foreach ($oldDetails as $detail) {
                 try {
                     $this->stockService->addStock(
-                        $detail['id_produk'],
-                        $purchaseReturn['id_warehouse_asal'],
-                        $detail['jumlah'],
+                        $detail['product_id'],
+                        $oldWarehouseId,
+                        $detail['quantity'],
                         'PURCHASE_RETURN_REVERSAL',
                         $id,
-                        'Pembalikan retur pembelian: ' . $purchaseReturn['nomor_retur']
+                        'Pembalikan retur: ' . $purchaseReturn['no_retur']
                     );
                 } catch (\Exception $e) {
-                    log_message('error', 'Failed to revert stock for product ' . $detail['id_produk'] . ': ' . $e->getMessage());
+                    log_message('error', 'Failed to revert stock: ' . $e->getMessage());
                 }
             }
-            
-            // Validate products and calculate total refund
+
+            // Validate products and calculate new total
             $totalRefund = 0;
             $itemsData = [];
-            
+
             foreach ($produk as $item) {
                 $product = $this->productModel->find($item['id_produk']);
                 if (!$product) {
                     throw new InvalidTransactionException('Produk ID ' . $item['id_produk'] . ' tidak ditemukan');
                 }
-                
+
                 $qty = (int)$item['jumlah'];
-                
-                // Get original PO item price
+
                 $originalItem = $this->purchaseOrderDetailModel
-                    ->where('id_po', $poId)
-                    ->where('id_produk', $item['id_produk'])
+                    ->where('po_id', $poId)
+                    ->where('product_id', $item['id_produk'])
                     ->first();
-                
+
                 if (!$originalItem) {
                     throw new InvalidTransactionException('Produk tidak ditemukan dalam pesanan pembelian asli');
                 }
-                
-                if ($qty > $originalItem['jumlah']) {
-                    throw new InvalidTransactionException('Jumlah retur melebihi jumlah pemesanan untuk produk ' . $product['nama_produk']);
+
+                if ($qty > $originalItem['quantity']) {
+                    throw new InvalidTransactionException('Jumlah retur melebihi jumlah pemesanan');
                 }
-                
-                $hargaBeli = $originalItem['harga_beli'];
-                $subtotal = $qty * $hargaBeli;
-                $totalRefund += $subtotal;
-                
+
+                $price = $originalItem['price'];
+                $totalRefund += ($qty * $price);
+
                 $itemsData[] = [
-                    'id_produk' => $product['id_produk'],
-                    'qty' => $qty,
-                    'harga_beli' => $hargaBeli,
-                    'subtotal' => $subtotal,
-                    'alasan' => $item['alasan'] ?? '',
-                    'keterangan' => $item['keterangan'] ?? ''
+                    'product_id' => $product['id'],
+                    'quantity' => $qty,
+                    'price' => $price,
                 ];
             }
-            
+
             // Update purchase return
             $purchaseReturnData = [
-                'nomor_retur' => $this->request->getPost('nomor_retur'),
+                'no_retur' => $this->request->getPost('nomor_retur'),
                 'tanggal_retur' => $this->request->getPost('tanggal_retur'),
-                'id_supplier' => $supplierId,
-                'id_po' => $poId,
-                'id_warehouse_asal' => $warehouseId,
-                'status' => $this->request->getPost('status'),
-                'keterangan' => $this->request->getPost('keterangan') ?? '',
-                'total_refund' => $totalRefund,
-                'id_user' => session()->get('id_user')
+                'supplier_id' => $supplierId,
+                'po_id' => $poId,
+                'status' => $status,
+                'alasan' => $this->request->getPost('alasan') ?? '',
+                'total_retur' => $totalRefund,
             ];
-            
+
             $this->purchaseReturnModel->update($id, $purchaseReturnData);
-            
+
             // Delete old details
-            $this->purchaseReturnDetailModel->where('id_retur_pembelian', $id)->delete();
-            
+            $this->purchaseReturnDetailModel->where('return_id', $id)->delete();
+
             // Create new details and deduct stock
             foreach ($itemsData as $item) {
                 $detailData = [
-                    'id_retur_pembelian' => $id,
-                    'id_produk' => $item['id_produk'],
-                    'jumlah' => $item['qty'],
-                    'harga_beli' => $item['harga_beli'],
-                    'subtotal' => $item['subtotal'],
-                    'alasan' => $item['alasan'],
-                    'keterangan' => $item['keterangan']
+                    'return_id' => $id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price']
                 ];
-                
+
                 $this->purchaseReturnDetailModel->insert($detailData);
-                
+
                 // Deduct new stock
                 $this->stockService->deductStock(
-                    $item['id_produk'],
+                    $item['product_id'],
                     $warehouseId,
-                    $item['qty'],
+                    $item['quantity'],
                     'PURCHASE_RETURN',
                     $id,
-                    'Retur Pembelian: ' . $purchaseReturnData['nomor_retur']
+                    'Retur Updated: ' . $purchaseReturnData['no_retur']
                 );
             }
-            
-            // Recalculate supplier debt balance
-            $this->balanceService->calculateSupplierDebt($supplierId);
-            
+
+            if ($status === 'Disetujui') {
+                $this->balanceService->calculateSupplierDebt($supplierId);
+            }
+
             $db->transComplete();
-            
+
             if ($db->transStatus() === false) {
                 throw new \Exception('Transaction failed');
             }
-            
-            return redirect()->to('/transactions/purchase-returns/' . $id)
+
+            return redirect()->to('/transactions/purchase-returns/detail/' . $id)
                 ->with('success', 'Retur pembelian berhasil diubah');
-            
+
         } catch (InvalidTransactionException $e) {
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'Gagal mengubah retur pembelian: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal mengubah retur: ' . $e->getMessage());
         }
     }
-    
+
     /**
-     * Delete purchase return (soft delete)
-     * Reverts all stock deductions
-     * Recalculates supplier balance
+     * Delete purchase return
      */
     public function delete($id)
     {
@@ -496,93 +481,55 @@ class PurchaseReturns extends BaseController
         if (!$purchaseReturn) {
             return redirect()->to('/transactions/purchase-returns')->with('error', 'Retur pembelian tidak ditemukan');
         }
-        
-        if ($purchaseReturn['status'] !== 'Menunggu Persetujuan') {
+
+        if ($purchaseReturn['status'] !== 'Pending') {
             return redirect()->back()->with('error', 'Retur yang sudah diproses tidak dapat dihapus');
         }
-        
+
         $db = \Config\Database::connect();
         $db->transStart();
-        
+
         try {
-            // Get all details to revert stock
-            $details = $this->purchaseReturnDetailModel->where('id_retur_pembelian', $id)->findAll();
-            
-            // Revert stock for each item (add stock back)
+            // Find warehouse
+            $warehouseId = $this->getWarehouseFromMutation($id);
+            if (!$warehouseId) {
+                throw new \Exception("Gudang asal tidak dapat ditemukan, tidak dapat mengembalikan stok");
+            }
+
+            $details = $this->purchaseReturnDetailModel->where('return_id', $id)->findAll();
+
+            // Revert stock
             foreach ($details as $detail) {
-                try {
-                    $this->stockService->addStock(
-                        $detail['id_produk'],
-                        $purchaseReturn['id_warehouse_asal'],
-                        $detail['jumlah'],
-                        'PURCHASE_RETURN_REVERSAL',
-                        $id,
-                        'Penghapusan retur pembelian: ' . $purchaseReturn['nomor_retur']
-                    );
-                } catch (\Exception $e) {
-                    log_message('error', 'Failed to revert stock for product ' . $detail['id_produk'] . ': ' . $e->getMessage());
-                }
+                $this->stockService->addStock(
+                    $detail['product_id'],
+                    $warehouseId,
+                    $detail['quantity'],
+                    'PURCHASE_RETURN_REVERSAL',
+                    $id,
+                    'Hapus retur: ' . $purchaseReturn['no_retur']
+                );
             }
-            
+
             // Delete details
-            $this->purchaseReturnDetailModel->where('id_retur_pembelian', $id)->delete();
-            
-            // Soft delete purchase return
+            $this->purchaseReturnDetailModel->where('return_id', $id)->delete();
+
+            // Soft delete header
             $this->purchaseReturnModel->delete($id);
-            
-            // Recalculate supplier debt balance
-            $this->balanceService->calculateSupplierDebt($purchaseReturn['id_supplier']);
-            
+
+            $this->balanceService->calculateSupplierDebt($purchaseReturn['supplier_id']);
+
             $db->transComplete();
-            
-            if ($db->transStatus() === false) {
-                throw new \Exception('Transaction failed');
-            }
-            
+
             return redirect()->to('/transactions/purchase-returns')->with('success', 'Retur pembelian berhasil dihapus');
-            
+
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->with('error', 'Gagal menghapus retur pembelian: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus retur: ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Show approval form for purchase return
-     * Only for status = 'Menunggu Persetujuan'
-     */
-    public function approve($id)
-    {
-        $purchaseReturn = $this->purchaseReturnModel->find($id);
-        if (!$purchaseReturn) {
-            return redirect()->to('/transactions/purchase-returns')->with('error', 'Retur pembelian tidak ditemukan');
-        }
-        
-        if ($purchaseReturn['status'] !== 'Menunggu Persetujuan') {
-            return redirect()->back()->with('error', 'Retur tidak dapat disetujui');
-        }
-        
-        $purchaseReturn['supplier'] = $this->supplierModel->find($purchaseReturn['id_supplier']);
-        $purchaseReturn['warehouse'] = $this->warehouseModel->find($purchaseReturn['id_warehouse_asal']);
-        $purchaseReturn['details'] = $this->purchaseReturnDetailModel
-            ->select('purchase_return_details.*, products.name, products.sku')
-            ->join('products', 'products.id = purchase_return_details.product_id')
-            ->where('id_retur_pembelian', $id)
-            ->findAll();
-        
-        $data = [
-            'title' => 'Setujui Retur Pembelian',
-            'purchaseReturn' => $purchaseReturn,
-            'warehouses' => $this->warehouseModel->findAll()
-        ];
-        
-        return view('transactions/purchase_returns/approve', $data);
-    }
-    
+
     /**
      * Process purchase return approval or rejection
-     * Approval: marks as 'Selesai' (stock already deducted during creation)
-     * Rejection: adds stock back, marks as 'Ditolak'
      */
     public function processApproval($id)
     {
@@ -590,87 +537,59 @@ class PurchaseReturns extends BaseController
         if (!$purchaseReturn) {
             return redirect()->to('/transactions/purchase-returns')->with('error', 'Retur pembelian tidak ditemukan');
         }
-        
-        if ($purchaseReturn['status'] !== 'Menunggu Persetujuan') {
+
+        if ($purchaseReturn['status'] !== 'Pending') {
             return redirect()->back()->with('error', 'Retur tidak dapat diproses');
         }
-        
+
         $action = $this->request->getPost('action');
-        $approvalNotes = $this->request->getPost('approval_notes') ?? '';
-        
+
         $db = \Config\Database::connect();
         $db->transStart();
-        
+
         try {
             if ($action === 'approve') {
-                $rules = [
-                    'tanggal_proses' => 'required|valid_date[Y-m-d]',
-                ];
-                
-                if (!$this->validate($rules)) {
-                    return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-                }
-                
-                $tanggalProses = $this->request->getPost('tanggal_proses');
-                
-                // Update status to 'Selesai'
-                $this->purchaseReturnModel->update($id, [
-                    'status' => 'Selesai',
-                    'tanggal_proses' => $tanggalProses,
-                    'approval_notes' => $approvalNotes,
-                    'approved_by' => session()->get('id_user')
-                ]);
-                
-                // Reduce supplier debt balance since stock already deducted
-                $this->balanceService->calculateSupplierDebt($purchaseReturn['id_supplier']);
-                
+                $this->purchaseReturnModel->update($id, ['status' => 'Disetujui']);
+                $this->balanceService->calculateSupplierDebt($purchaseReturn['supplier_id']);
+
             } else if ($action === 'reject') {
                 // Add stock back and update status to 'Ditolak'
-                $details = $this->purchaseReturnDetailModel->where('id_retur_pembelian', $id)->findAll();
-                
-                // Add stock back for each item
-                foreach ($details as $detail) {
-                    try {
-                        $this->stockService->addStock(
-                            $detail['id_produk'],
-                            $purchaseReturn['id_warehouse_asal'],
-                            $detail['jumlah'],
-                            'PURCHASE_RETURN_REJECTED',
-                            $id,
-                            'Penolakan retur pembelian: ' . $purchaseReturn['nomor_retur']
-                        );
-                    } catch (\Exception $e) {
-                        log_message('error', 'Failed to revert stock for product ' . $detail['id_produk'] . ': ' . $e->getMessage());
-                    }
+                $warehouseId = $this->getWarehouseFromMutation($id);
+                if (!$warehouseId) {
+                    throw new \Exception("Gudang asal tidak ditemukan");
                 }
-                
-                // Update status to 'Ditolak'
-                $this->purchaseReturnModel->update($id, [
-                    'status' => 'Ditolak',
-                    'approval_notes' => $approvalNotes,
-                    'approved_by' => session()->get('id_user')
-                ]);
-                
-                // Recalculate supplier debt since stock changed
-                $this->balanceService->calculateSupplierDebt($purchaseReturn['id_supplier']);
+
+                $details = $this->purchaseReturnDetailModel->where('return_id', $id)->findAll();
+
+                foreach ($details as $detail) {
+                    $this->stockService->addStock(
+                        $detail['product_id'],
+                        $warehouseId,
+                        $detail['quantity'],
+                        'PURCHASE_RETURN_REJECTED',
+                        $id,
+                        'Penolakan retur: ' . $purchaseReturn['no_retur']
+                    );
+                }
+
+                $this->purchaseReturnModel->update($id, ['status' => 'Ditolak']);
+                // Balance update not needed as debt wasn't reduced yet (only on approve) or was it?
+                // Wait, store() doesn't reduce debt unless status=Disetujui.
+                // So rejecting pending return just reverts stock. Correct.
             }
-            
+
             $db->transComplete();
-            
-            if ($db->transStatus() === false) {
-                throw new \Exception('Transaction failed');
-            }
-            
+
             return redirect()->to('/transactions/purchase-returns')->with('success', 'Retur pembelian berhasil diproses');
-            
+
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'Gagal memproses retur pembelian: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal memproses retur: ' . $e->getMessage());
         }
     }
-    
+
     /**
-     * Get list of received purchase orders for return selection
+     * Get list of received purchase orders
      */
     public function getPurchaseOrdersList()
     {
@@ -681,56 +600,74 @@ class PurchaseReturns extends BaseController
             ->orderBy('purchase_orders.tanggal_po', 'DESC')
             ->findAll();
     }
-    
+
     /**
-     * AJAX endpoint to get details of a specific purchase order
+     * AJAX: Get details of a purchase order
      */
     public function getPurchaseOrderDetails()
     {
         $poId = $this->request->getPost('id_po');
-        
+
         if (!$poId) {
             return $this->respond(['status' => 'error', 'message' => 'ID PO tidak ditemukan']);
         }
-        
+
         $po = $this->purchaseOrderModel->find($poId);
         if (!$po) {
             return $this->respond(['status' => 'error', 'message' => 'Pesanan pembelian tidak ditemukan']);
         }
-        
+
         $details = $this->purchaseOrderDetailModel
-            ->select('purchase_order_details.*, products.name, products.sku')
-            ->join('products', 'products.id = purchase_order_details.product_id')
-            ->where('id_po', $poId)
+            ->select('purchase_order_items.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_order_items.product_id')
+            ->where('po_id', $poId)
             ->findAll();
-        
+
         return $this->respond([
             'status' => 'success',
             'po' => $po,
             'details' => $details
         ]);
     }
-    
-    /**
-     * Generate unique return number with date prefix
-     * Format: PR-202501001, PR-202501002, etc.
-     */
+
     private function generateNomorRetur()
     {
         $prefix = 'PR-' . date('Ym');
-        
+
         $lastRetur = $this->purchaseReturnModel
-            ->like('nomor_retur', $prefix, 'after')
-            ->orderBy('nomor_retur', 'DESC')
+            ->like('no_retur', $prefix, 'after')
+            ->orderBy('no_retur', 'DESC')
             ->first();
-        
+
         if ($lastRetur) {
-            $lastNumber = (int) substr($lastRetur['nomor_retur'], -3);
+            $lastNumber = (int) substr($lastRetur['no_retur'], -3);
             $newNumber = $lastNumber + 1;
         } else {
             $newNumber = 1;
         }
-        
+
         return $prefix . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Helper to find which warehouse was used for a return
+     * by looking up the stock mutation log
+     */
+    private function getWarehouseFromMutation($returnId)
+    {
+        $db = \Config\Database::connect();
+        // Look for any mutation for this return reference
+        // Note: StockService uses 'PURCHASE_RETURN' and referenceId = returnId
+        $mutation = $db->table('stock_mutations')
+            ->where('reference_number', 'PURCHASE_RETURN-' . $returnId)
+            ->orWhere('reference_number LIKE', "%: %" . $returnId) // Fallback if format differs
+            ->orderBy('id', 'DESC')
+            ->get()->getRow();
+
+        // If not found via standard ref, try to check if we can match by return number?
+        // StockService format: "{$type}-{$referenceId}"
+        // So 'PURCHASE_RETURN-' . $id should match.
+
+        return $mutation ? $mutation->warehouse_id : null;
     }
 }

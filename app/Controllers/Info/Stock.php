@@ -6,6 +6,7 @@ use App\Models\StockMutationModel;
 use App\Models\ProductModel;
 use App\Models\WarehouseModel;
 use App\Models\CategoryModel;
+use App\Models\ProductStockModel;
 use App\Traits\ApiResponseTrait;
 
 class Stock extends BaseController
@@ -15,6 +16,7 @@ class Stock extends BaseController
     protected $productModel;
     protected $warehouseModel;
     protected $categoryModel;
+    protected $productStockModel;
 
     public function __construct()
     {
@@ -22,6 +24,7 @@ class Stock extends BaseController
         $this->productModel = new ProductModel();
         $this->warehouseModel = new WarehouseModel();
         $this->categoryModel = new CategoryModel();
+        $this->productStockModel = new ProductStockModel();
     }
 
     public function card()
@@ -38,46 +41,50 @@ class Stock extends BaseController
 
     public function balance()
     {
-        $productStockModel = new \App\Models\ProductStockModel();
-        
-        // Get all stock data
-        $stocks = $productStockModel
-            ->select('products.name as product_name, product_stocks.quantity, warehouses.name as warehouse_name')
+        // Get all stock data with price for valuation
+        $stocks = $this->productStockModel
+            ->select('products.id as product_id, products.name as product_name, products.sku, products.price_buy, product_stocks.quantity, warehouses.name as warehouse_name')
             ->join('products', 'products.id = product_stocks.product_id')
             ->join('warehouses', 'warehouses.id = product_stocks.warehouse_id')
+            ->orderBy('products.name', 'ASC')
+            ->asArray()
             ->findAll();
-        
+
         // Group by product
         $productStocks = [];
         $totalStock = 0;
         $totalValue = 0;
-        
+
         foreach ($stocks as $stock) {
-            $productId = $stock['product_name'];
-            
+            $productId = $stock['product_id'];
+
             if (!isset($productStocks[$productId])) {
                 $productStocks[$productId] = [
                     'name' => $stock['product_name'],
+                    'sku' => $stock['sku'],
                     'total_stock' => 0,
+                    'price' => (float)$stock['price_buy'],
                     'warehouses' => []
                 ];
             }
-            
-            $productStocks[$productId]['total_stock'] += $stock['quantity'];
+
+            $qty = (int)$stock['quantity'];
+            $productStocks[$productId]['total_stock'] += $qty;
             $productStocks[$productId]['warehouses'][] = [
                 'warehouse' => $stock['warehouse_name'],
-                'quantity' => $stock['quantity']
+                'quantity' => $qty
             ];
-            
-            $totalStock += $stock['quantity'];
+
+            $totalStock += $qty;
+            $totalValue += $qty * (float)$stock['price_buy'];
         }
-        
+
         $data = [
             'title' => 'Saldo Stok',
             'subtitle' => 'Total stok dan nilai persediaan',
             'productStocks' => $productStocks,
             'totalStock' => $totalStock,
-            'totalValue' => 0, // Will be calculated when product prices are available
+            'totalValue' => $totalValue,
         ];
 
         return view('info/stock/balance', $data);
@@ -270,9 +277,8 @@ class Stock extends BaseController
     {
         $warehouseId = $this->request->getGet('warehouse_id');
         $categoryId = $this->request->getGet('category_id');
-        
-        $productStockModel = new \App\Models\ProductStockModel();
-        $query = $productStockModel
+
+        $query = $this->productStockModel
             ->select('products.name as product_name, products.sku, SUM(product_stocks.quantity) as total_quantity')
             ->join('products', 'products.id = product_stocks.product_id')
             ->groupBy('product_stocks.product_id');

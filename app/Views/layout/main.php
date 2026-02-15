@@ -183,5 +183,8 @@
     <?= view('partials/error-modal') ?>
     <?= view('partials/warning-modal') ?>
 
+    <!-- Global Loading Overlay -->
+    <?= view('components/loading-overlay') ?>
+
 </body>
 </html>

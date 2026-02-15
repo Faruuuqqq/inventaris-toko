@@ -107,12 +107,38 @@ function productManager() {
             }).format(value);
         },
 
-        exportData() {
+        async exportData() {
+            window.Loading.show('Mengekspor Data', 'Sedang menyiapkan file PDF...');
             try {
-                window.location.href = `<?= base_url('master/products/export-pdf') ?>`;
+                const response = await fetch(`<?= base_url('master/products/export-pdf') ?>`);
+
+                if (!response.ok) throw new Error('Gagal mengunduh file');
+
+                // Get filename from header if possible, otherwise default
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'products_export.pdf';
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (filenameMatch.length === 2) filename = filenameMatch[1];
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Optional: Show success toast
+                // ModalManager.success('Export berhasil diunduh');
             } catch (error) {
                 console.error('Export failed:', error);
-                alert('Gagal mengekspor data. Silakan coba lagi.');
+                ModalManager.error('Gagal mengekspor data. Silakan coba lagi.');
+            } finally {
+                window.Loading.hide();
             }
         }
     }
@@ -345,13 +371,20 @@ function productManager() {
 
                     <!-- Empty State -->
                     <tr x-show="filteredProducts.length === 0">
-                        <td colspan="6" class="py-12 px-6 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <svg class="h-12 w-12 text-muted-foreground opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m0 0v10l8 4"/>
-                                </svg>
-                                <p class="text-sm font-medium text-foreground">Tidak ada produk ditemukan</p>
-                                <p class="text-xs text-muted-foreground">Coba ubah filter atau cari dengan kata kunci lain</p>
+                        <td colspan="6" class="py-12">
+                            <div class="flex flex-col items-center justify-center text-center">
+                                <div class="bg-muted/30 p-4 rounded-full mb-3">
+                                    <svg class="h-10 w-10 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-foreground">Tidak ada produk ditemukan</h3>
+                                <p class="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
+                                    Coba ubah kata kunci pencarian atau filter kategori Anda.
+                                </p>
+                                <button @click="search = ''; categoryFilter = 'all'" x-show="search !== '' || categoryFilter !== 'all'" class="mt-4 text-sm text-primary font-medium hover:underline">
+                                    Reset Filter
+                                </button>
                             </div>
                         </td>
                     </tr>
