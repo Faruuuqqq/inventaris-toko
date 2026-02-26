@@ -3,24 +3,18 @@
 namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
+use App\Helpers\PaginationHelper;
 use App\Models\UserModel;
-use App\Services\UserDataService;
-use CodeIgniter\Model;
 
 class Users extends BaseCRUDController
 {
     protected string $viewPath = 'master/users';
+
     protected string $routePath = '/master/users';
+
     protected string $entityName = 'Pengguna';
+
     protected string $entityNamePlural = 'Users';
-
-    protected UserDataService $dataService;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->dataService = new UserDataService();
-    }
 
     protected function getModel(): UserModel
     {
@@ -58,50 +52,42 @@ class Users extends BaseCRUDController
         ];
     }
 
-    /**
-     * Override index to use UserDataService
-     */
     public function index()
     {
         try {
             $page = (int)($this->request->getGet('page') ?? 1);
             $perPage = (int)($this->request->getGet('per_page') ?? 20);
 
-            $data = array_merge(
-                ['title' => 'Daftar Pengguna'],
-                $this->dataService->getPaginatedData($page, $perPage)
-            );
+            $params = PaginationHelper::getSafeParams($page, $perPage);
+            $page = $params['page'];
+            $perPage = $params['perPage'];
 
-            return view($this->viewPath . '/index', $data);
+            $users = $this->model->asArray()->paginate($perPage, 'default', $page);
+            $pager = $this->model->pager;
+
+            return view($this->viewPath . '/index', [
+                'title' => 'Daftar Pengguna',
+                'users' => $users,
+                'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
+            ]);
         } catch (\Exception $e) {
             log_message('error', 'Users index error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data pengguna');
         }
     }
 
-    /**
-     * Override create to use UserDataService
-     */
     public function create()
     {
         if (!$this->checkStoreAccess()) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Tambah Pengguna',
-                'subtitle' => 'Tambahkan pengguna baru',
-            ],
-            $this->dataService->getCreateData()
-        );
-
-        return view($this->viewPath . '/create', $data);
+        return view($this->viewPath . '/create', [
+            'title' => 'Tambah Pengguna',
+            'subtitle' => 'Tambahkan pengguna baru',
+        ]);
     }
 
-    /**
-     * Override edit to use UserDataService and pass 'user' variable
-     */
     public function edit($id)
     {
         if (!$this->checkUpdateAccess($id)) {
@@ -114,41 +100,28 @@ class Users extends BaseCRUDController
             return redirect()->back()->with('error', 'Pengguna tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Edit Pengguna',
-                'subtitle' => 'Ubah data pengguna',
-                'user' => $record,
-            ],
-            $this->dataService->getEditData()
-        );
-
-        return view($this->viewPath . '/edit', $data);
+        return view($this->viewPath . '/edit', [
+            'title' => 'Edit Pengguna',
+            'subtitle' => 'Ubah data pengguna',
+            'user' => $record,
+        ]);
     }
 
-    /**
-     * Override detail to use UserDataService
-     */
     public function detail($id)
     {
-        $detailData = $this->dataService->getDetailData($id);
+        $pengguna = $this->model->find($id);
 
-        if (empty($detailData)) {
+        if (!$pengguna) {
             return redirect()->to($this->routePath)->with('error', 'Pengguna tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Detail Pengguna',
-                'subtitle' => $detailData['pengguna']->fullname,
-            ],
-            $detailData
-        );
-
-        return view($this->viewPath . '/detail', $data);
+        return view($this->viewPath . '/detail', [
+            'title' => 'Detail Pengguna',
+            'subtitle' => $pengguna->fullname,
+            'pengguna' => $pengguna,
+        ]);
     }
 
-    // Access control - only OWNER can manage users
     protected function checkStoreAccess(): bool
     {
         return session()->get('role') === 'OWNER';
@@ -161,24 +134,21 @@ class Users extends BaseCRUDController
 
     protected function checkDeleteAccess($id): bool
     {
-        // Owner only and cannot delete yourself
         if (session()->get('role') !== 'OWNER') {
             return false;
         }
-        if ($id == session()->get('user_id')) {
+        if ($id === session()->get('user_id')) {
             return false;
         }
         return true;
     }
 
-    // Hash password before store
     protected function beforeStore(array $data): array
     {
         $data['password_hash'] = password_hash($this->request->getPost('password'), PASSWORD_DEFAULT);
         return $data;
     }
 
-    // Only update password if provided
     protected function beforeUpdate($id, array $data): array
     {
         $password = $this->request->getPost('password');

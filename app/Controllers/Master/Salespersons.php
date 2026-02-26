@@ -3,27 +3,21 @@
 namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
+use App\Helpers\PaginationHelper;
 use App\Models\SalespersonModel;
-use App\Services\SalespersonDataService;
 use App\Traits\ApiResponseTrait;
-use CodeIgniter\Model;
 
 class Salespersons extends BaseCRUDController
 {
     use ApiResponseTrait;
-    
+
     protected string $viewPath = 'master/salespersons';
+
     protected string $routePath = '/master/salespersons';
+
     protected string $entityName = 'Sales';
+
     protected string $entityNamePlural = 'Salespersons';
-
-    protected SalespersonDataService $dataService;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->dataService = new SalespersonDataService();
-    }
 
     protected function getModel(): SalespersonModel
     {
@@ -39,59 +33,56 @@ class Salespersons extends BaseCRUDController
     }
 
     protected function getDataFromRequest(): array
-     {
-         return [
-             'name' => $this->request->getPost('name'),
-             'phone' => $this->request->getPost('phone'),
-             'email' => $this->request->getPost('email'),
-             'address' => $this->request->getPost('address'),
-         ];
-     }
+    {
+        return [
+            'name' => $this->request->getPost('name'),
+            'phone' => $this->request->getPost('phone'),
+            'email' => $this->request->getPost('email'),
+            'address' => $this->request->getPost('address'),
+        ];
+    }
 
-    /**
-     * Override index to use SalespersonDataService
-     */
+    protected function getListSelectFields(): string
+    {
+        return 'id, name, phone';
+    }
+
     public function index()
     {
         try {
             $page = (int)($this->request->getGet('page') ?? 1);
             $perPage = (int)($this->request->getGet('per_page') ?? 20);
 
-            $data = array_merge(
-                ['title' => 'Daftar Sales'],
-                $this->dataService->getPaginatedData($page, $perPage)
-            );
+            $params = PaginationHelper::getSafeParams($page, $perPage);
+            $page = $params['page'];
+            $perPage = $params['perPage'];
 
-            return view($this->viewPath . '/index', $data);
+            $salespersons = $this->model->asArray()->paginate($perPage, 'default', $page);
+            $pager = $this->model->pager;
+
+            return view($this->viewPath . '/index', [
+                'title' => 'Daftar Sales',
+                'salespersons' => $salespersons,
+                'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
+            ]);
         } catch (\Exception $e) {
             log_message('error', 'Salespersons index error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data sales');
         }
     }
 
-    /**
-     * Override create to use SalespersonDataService
-     */
     public function create()
     {
         if (!$this->checkStoreAccess()) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Tambah Sales',
-                'subtitle' => 'Tambahkan sales baru',
-            ],
-            $this->dataService->getCreateData()
-        );
-
-        return view($this->viewPath . '/create', $data);
+        return view($this->viewPath . '/create', [
+            'title' => 'Tambah Sales',
+            'subtitle' => 'Tambahkan sales baru',
+        ]);
     }
 
-    /**
-     * Override edit to use SalespersonDataService and pass 'salesperson' variable
-     */
     public function edit($id)
     {
         if (!$this->checkUpdateAccess($id)) {
@@ -104,38 +95,26 @@ class Salespersons extends BaseCRUDController
             return redirect()->back()->with('error', 'Sales tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Edit Sales',
-                'subtitle' => 'Ubah data sales',
-                'salesperson' => $record,
-            ],
-            $this->dataService->getEditData()
-        );
-
-        return view($this->viewPath . '/edit', $data);
+        return view($this->viewPath . '/edit', [
+            'title' => 'Edit Sales',
+            'subtitle' => 'Ubah data sales',
+            'salesperson' => $record,
+        ]);
     }
 
-    /**
-     * Override detail to use SalespersonDataService
-     */
     public function detail($id)
     {
-        $detailData = $this->dataService->getDetailData($id);
+        $sales = $this->model->find($id);
 
-        if (empty($detailData)) {
+        if (!$sales) {
             return redirect()->to($this->routePath)->with('error', 'Sales tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Detail Sales',
-                'subtitle' => $detailData['sales']->name,
-            ],
-            $detailData
-        );
-
-        return view($this->viewPath . '/detail', $data);
+        return view($this->viewPath . '/detail', [
+            'title' => 'Detail Sales',
+            'subtitle' => $sales->name,
+            'sales' => $sales,
+        ]);
     }
 
     protected function beforeStore(array $data): array
@@ -144,10 +123,6 @@ class Salespersons extends BaseCRUDController
         return $data;
     }
 
-    /**
-     * AJAX: Get salesperson list for dropdown selection
-     * Used in sales forms
-     */
     public function getList()
     {
         $salespersons = $this->model
@@ -155,7 +130,7 @@ class Salespersons extends BaseCRUDController
             ->where('is_active', 1)
             ->orderBy('name', 'ASC')
             ->findAll();
-        
+
         return $this->respondData($salespersons);
     }
 }

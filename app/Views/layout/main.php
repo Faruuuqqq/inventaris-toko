@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Content Security Policy Removed for Development -->
-    <title><?= $title ?? 'TokoManager' ?></title>
+    <title><?= $title ?? app_name() ?></title>
     
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.js"></script>
@@ -166,9 +166,12 @@
         </main>
     </div>
 
-<!-- Modal Management JavaScript -->
+ <!-- Modal Management JavaScript -->
     <script src="<?= base_url('assets/js/modal.js') ?>"></script>
-    
+
+    <!-- Global Modal Container -->
+    <div id="globalModal"></div>
+
     <!-- Notification System JavaScript -->
     <script src="<?= base_url('assets/js/notifications.js') ?>"></script>
     <script>
@@ -176,11 +179,7 @@
         const base_url = '<?= base_url() ?>';
     </script>
 
-    <!-- Global Modal Instances -->
-    <?= view('partials/delete-confirm-modal') ?>
-    <?= view('partials/success-modal') ?>
-    <?= view('partials/error-modal') ?>
-    <?= view('partials/warning-modal') ?>
+
 
     <!-- Initialize Lucide Icons -->
     <script>

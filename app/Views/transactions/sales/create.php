@@ -240,15 +240,50 @@
 
             removeProduct(index) {
                 this.form.products.splice(index, 1);
+                this.updateTotal();
             },
 
             updateProductPrice(index) {
-                // Update price based on product selection
+                const select = document.querySelector(`select[x-model="form.products[${index}].id_produk"]`);
+                if (!select) return;
+
+                const option = select.options[select.selectedIndex];
+                if (!option) return;
+
+                const price = parseFloat(option.dataset.price || 0);
+                this.form.products[index].harga_jual = price;
+                this.updateTotal();
+            },
+
+            updateTotal() {
+                let total = 0;
+                this.form.products.forEach(p => {
+                    const subtotal = (p.qty || 0) * (p.harga_jual || 0) - (p.diskon || 0);
+                    total += subtotal;
+                });
+                this.form.total_amount = total;
             },
 
             updatePaymentType() {
-                // Handle payment type change
-            }
+                if (this.form.tipe_pembayaran !== 'CREDIT') {
+                    return;
+                }
+
+                const customer = customers.find(c => c.id === this.form.id_customer);
+                if (!customer) {
+                    return;
+                }
+
+                const creditLimit = parseFloat(customer.credit_limit || 0);
+                const currentReceivable = parseFloat(customer.receivable_balance || 0);
+
+                if (this.form.total_amount > creditLimit) {
+                    const availableCredit = creditLimit - currentReceivable;
+                    if (availableCredit < this.form.total_amount) {
+                        alert(`Batas kredit tidak mencukupi!\nSisa limit: Rp ${availableCredit.toLocaleString('id-ID')}`);
+                    }
+                }
+            },
         };
     }
 </script>

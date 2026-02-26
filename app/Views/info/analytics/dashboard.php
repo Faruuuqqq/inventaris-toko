@@ -8,9 +8,9 @@
         <div>
             <h2 class="text-3xl font-bold text-foreground flex items-center gap-3">
                 <?= icon('BarChart', 'h-8 w-8 text-primary') ?>
-                Analytics Dashboard
+                Ringkasan Bisnis
             </h2>
-            <p class="mt-1 text-muted-foreground">Analisis mendalam terhadap penjualan, pendapatan, dan performa bisnis</p>
+            <p class="mt-1 text-muted-foreground">Ringkasan pendapatan, profit, dan transaksi</p>
         </div>
         <div class="flex gap-3">
             <button @click="exportReport()" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
@@ -30,16 +30,16 @@
             <div class="grid gap-4 grid-cols-1 md:grid-cols-4">
                 <div>
                     <label class="text-sm font-medium text-foreground block mb-2">Tanggal Mulai</label>
-                    <input 
-                        type="date" 
+                    <input
+                        type="date"
                         x-model="dateFrom"
                         class="w-full h-10 rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                 </div>
                 <div>
                     <label class="text-sm font-medium text-foreground block mb-2">Tanggal Akhir</label>
-                    <input 
-                        type="date" 
+                    <input
+                        type="date"
                         x-model="dateTo"
                         class="w-full h-10 rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
@@ -72,7 +72,7 @@
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-success/10">
                     <?= icon('DollarSign', 'h-6 w-6 text-success') ?>
                 </div>
-                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.revenueGrowth >= 0 ? 'text-success' : 'text-danger'">
+                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.revenueGrowth >= 0 ? 'text-success' : 'text-destructive'">
                     <template x-if="stats.revenueGrowth >= 0">
                         <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
@@ -90,9 +90,9 @@
         <div class="rounded-lg border border-border bg-gradient-to-br from-primary/5 to-transparent p-6 hover:border-primary/50 transition-colors">
             <div class="flex items-start justify-between mb-4">
                 <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <?= icon('BarChart', 'h-6 w-6 text-primary') ?>
+                    <?= icon('TrendingUp', 'h-6 w-6 text-primary') ?>
                 </div>
-                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.profitGrowth >= 0 ? 'text-success' : 'text-danger'">
+                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.profitGrowth >= 0 ? 'text-success' : 'text-destructive'">
                     <template x-if="stats.profitGrowth >= 0">
                         <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
@@ -107,12 +107,12 @@
         </div>
 
         <!-- Total Transactions -->
-        <div class="rounded-lg border border-border bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/50 transition-colors">
+        <div class="rounded-lg border border-border bg-gradient-to-br from-blue-500/5 to-transparent p-6 hover:border-blue-500/50 transition-colors">
             <div class="flex items-start justify-between mb-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-warning/10">
-                    <?= icon('ClipboardList', 'h-6 w-6 text-warning') ?>
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
+                    <?= icon('ShoppingCart', 'h-6 w-6 text-blue-500') ?>
                 </div>
-                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.transactionGrowth >= 0 ? 'text-success' : 'text-danger'">
+                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.transactionGrowth >= 0 ? 'text-success' : 'text-destructive'">
                     <template x-if="stats.transactionGrowth >= 0">
                         <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
@@ -123,91 +123,72 @@
                 </div>
             </div>
             <p class="text-sm font-medium text-muted-foreground">Total Transaksi</p>
-            <p class="mt-2 text-3xl font-bold text-foreground" x-text="stats.totalTransactions"></p>
+            <p class="mt-2 text-3xl font-bold text-foreground" x-text="stats.totalTransactions.toLocaleString('id-ID')"></p>
         </div>
 
         <!-- Average Order Value -->
-        <div class="rounded-lg border border-border bg-gradient-to-br from-blue-500/5 to-transparent p-6 hover:border-blue-500/30 transition-colors">
+        <div class="rounded-lg border border-border bg-gradient-to-br from-purple-500/5 to-transparent p-6 hover:border-purple-500/50 transition-colors">
             <div class="flex items-start justify-between mb-4">
-                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500/10">
-                    <?= icon('ShoppingCart', 'h-6 w-6 text-blue-500') ?>
+                <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500/10">
+                    <?= icon('TrendingUp', 'h-6 w-6 text-purple-500') ?>
                 </div>
-                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.aovGrowth >= 0 ? 'text-success' : 'text-danger'">
-                    <template x-if="stats.aovGrowth >= 0">
+                <div class="flex items-center gap-1 text-xs font-medium" :class="stats.avgGrowth >= 0 ? 'text-success' : 'text-destructive'">
+                    <template x-if="stats.avgGrowth >= 0">
                         <?= icon('ArrowUp', 'h-3 w-3') ?>
                     </template>
-                    <template x-if="stats.aovGrowth < 0">
+                    <template x-if="stats.avgGrowth < 0">
                         <?= icon('ArrowDown', 'h-3 w-3') ?>
                     </template>
-                    <span x-text="Math.abs(stats.aovGrowth) + '%'"></span>
+                    <span x-text="Math.abs(stats.avgGrowth) + '%'"></span>
                 </div>
             </div>
-            <p class="text-sm font-medium text-muted-foreground">Rata-rata Nilai Order</p>
+            <p class="text-sm font-medium text-muted-foreground">Rata-rata Pesanan</p>
             <p class="mt-2 text-3xl font-bold text-foreground" x-text="formatCurrency(stats.avgOrderValue)"></p>
         </div>
     </div>
 
-    <!-- Charts Section -->
-    <div class="mb-8 grid gap-6 grid-cols-1 lg:grid-cols-2">
-        <!-- Revenue Trend Chart -->
-        <div class="rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border bg-muted/30">
-                <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <?= icon('TrendingUp', 'h-5 w-5 text-primary') ?>
-                    Tren Pendapatan & Profit
-                </h3>
-            </div>
-            <div class="p-6">
-                <canvas id="revenueTrendChart" style="height: 250px;"></canvas>
-            </div>
+    <!-- Revenue by Category Table -->
+    <div class="mb-8 rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border bg-muted/30">
+            <h3 class="text-lg font-semibold text-foreground">Pendapatan per Kategori</h3>
         </div>
-
-        <!-- Category Revenue Chart -->
-        <div class="rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border bg-muted/30">
-                <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <?= icon('PieChart', 'h-5 w-5 text-primary') ?>
-                    Distribusi Pendapatan per Kategori
-                </h3>
-            </div>
-            <div class="p-6">
-                <canvas id="categoryRevenueChart" style="height: 250px;"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Revenue by Category Breakdown -->
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-border bg-muted/20">
+                        <th class="px-6 py-3 text-left text-sm font-semibold text-foreground">Kategori</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-foreground">Pendapatan</th>
+                        <th class="px-6 py-3 text-right text-sm font-semibold text-foreground">Persentase</th>
+                    </tr>
+                </thead>
+                <tbody>
                     <template x-for="category in revenueByCategory" :key="category.name">
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm font-medium text-foreground" x-text="category.name"></span>
-                                <div class="text-right">
-                                    <p class="text-sm font-bold text-foreground" x-text="formatCurrency(category.revenue)"></p>
-                                    <p class="text-xs text-muted-foreground" x-text="category.percentage + '%'"></p>
-                                </div>
-                            </div>
-                            <div class="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
-                                <div class="h-full rounded-full transition-all duration-500" 
-                                     :style="'width: ' + category.percentage + '%'" 
-                                     :class="getCategoryColor(category.name)"></div>
-                            </div>
-                        </div>
+                        <tr class="border-b border-border hover:bg-muted/30 transition">
+                            <td class="px-6 py-4">
+                                <p class="font-medium text-foreground" x-text="category.name"></p>
+                                <p class="text-xs text-muted-foreground" x-text="category.count + ' transaksi'"></p>
+                            </td>
+                            <td class="px-6 py-4 text-right font-bold text-foreground" x-text="formatCurrency(category.revenue)"></td>
+                            <td class="px-6 py-4 text-right">
+                                <span class="text-sm font-medium text-muted-foreground" x-text="category.percentage + '%'"></span>
+                            </td>
+                        </tr>
                     </template>
-                </div>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- Payment Method Breakdown -->
-    <div class="mb-8 rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
+    <div class="rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
         <div class="p-6 border-b border-border bg-muted/30">
             <h3 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('CreditCard', 'h-5 w-5 text-primary') ?>
-                Breakdown Metode Pembayaran
+                Metode Pembayaran
             </h3>
         </div>
         <div class="p-6">
-            <div class="grid gap-6 grid-cols-1 md:grid-cols-3">
+            <div class="grid gap-4 grid-cols-1 md:grid-cols-2">
                 <template x-for="method in paymentMethods" :key="method.type">
                     <div class="rounded-lg border border-border p-4 hover:border-primary/50 transition-colors">
                         <div class="flex items-center justify-between mb-3">
@@ -221,7 +202,7 @@
                             </div>
                             <span class="text-xs font-medium text-muted-foreground" x-text="method.count + ' transaksi'"></span>
                         </div>
-                        <p class="text-2xl font-bold text-foreground mb-1" x-text="formatCurrency(method.amount)"></p>
+                        <p class="text-2xl font-bold text-foreground mb-2" x-text="formatCurrency(method.amount)"></p>
                         <div class="flex items-center gap-2">
                             <div class="flex-1 bg-muted/50 rounded-full h-1.5 overflow-hidden">
                                 <div class="h-full rounded-full" :class="method.barClass" :style="'width: ' + method.percentage + '%'"></div>
@@ -252,14 +233,13 @@
                         <th class="px-6 py-3 text-center text-sm font-semibold text-foreground">Qty Terjual</th>
                         <th class="px-6 py-3 text-right text-sm font-semibold text-foreground">Total Pendapatan</th>
                         <th class="px-6 py-3 text-right text-sm font-semibold text-foreground">Profit</th>
-                        <th class="px-6 py-3 text-center text-sm font-semibold text-foreground">Share</th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="(product, index) in topProducts" :key="product.id">
                         <tr class="border-b border-border hover:bg-muted/30 transition">
                             <td class="px-6 py-4">
-                                <div class="flex items-center justify-center h-8 w-8 rounded-full font-bold text-sm" 
+                                <div class="flex items-center justify-center h-8 w-8 rounded-full font-bold text-sm"
                                      :class="index === 0 ? 'bg-yellow-100 text-yellow-700' : index === 1 ? 'bg-gray-100 text-gray-700' : index === 2 ? 'bg-orange-100 text-orange-700' : 'bg-muted/50 text-muted-foreground'">
                                     <span x-text="index + 1"></span>
                                 </div>
@@ -273,9 +253,6 @@
                             </td>
                             <td class="px-6 py-4 text-right font-medium" x-text="formatCurrency(product.revenue)"></td>
                             <td class="px-6 py-4 text-right font-bold text-success" x-text="formatCurrency(product.profit)"></td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="text-sm font-medium text-muted-foreground" x-text="product.share + '%'"></span>
-                            </td>
                         </tr>
                     </template>
                 </tbody>
@@ -283,9 +260,6 @@
         </div>
     </div>
 </div>
-
-<!-- Chart.js Library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
 
 <script>
 function analyticsManager() {
@@ -300,7 +274,7 @@ function analyticsManager() {
             'revenueGrowth' => 0,
             'profitGrowth' => 0,
             'transactionGrowth' => 0,
-            'aovGrowth' => 0
+            'avgGrowth' => 0,
         ]) ?>,
         revenueByCategory: <?= json_encode($revenueByCategory ?? []) ?>,
         paymentMethods: <?= json_encode($paymentMethods ?? []) ?>,
@@ -308,240 +282,6 @@ function analyticsManager() {
         dateRange: {
             from: '<?= $dateFrom ?? date('Y-m-01') ?>',
             to: '<?= $dateTo ?? date('Y-m-d') ?>'
-        },
-        revenueTrendChart: null,
-        categoryRevenueChart: null,
-
-        init() {
-            this.initCharts();
-        },
-
-        initCharts() {
-            const revenueTrendData = <?= json_encode($revenueTrend ?? []) ?>;
-            
-            // Revenue Trend Chart (Line Chart)
-            const ctx1 = document.getElementById('revenueTrendChart');
-            if (ctx1 && revenueTrendData.length > 0) {
-                this.revenueTrendChart = new Chart(ctx1, {
-                    type: 'line',
-                    data: {
-                        labels: revenueTrendData.map(d => this.formatPeriodLabel(d.period_label)),
-                        datasets: [
-                            {
-                                label: 'Pendapatan',
-                                data: revenueTrendData.map(d => parseFloat(d.revenue)),
-                                borderColor: '#0F7B4D',
-                                backgroundColor: 'rgba(15, 123, 77, 0.1)',
-                                tension: 0.4,
-                                fill: true,
-                                borderWidth: 3,
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                pointBackgroundColor: '#0F7B4D',
-                                pointBorderColor: '#fff',
-                                pointBorderWidth: 2
-                            },
-                            {
-                                label: 'Profit',
-                                data: revenueTrendData.map(d => parseFloat(d.profit)),
-                                borderColor: '#10B981',
-                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                                tension: 0.4,
-                                fill: true,
-                                borderWidth: 3,
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                pointBackgroundColor: '#10B981',
-                                pointBorderColor: '#fff',
-                                pointBorderWidth: 2
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                                labels: {
-                                    usePointStyle: true,
-                                    padding: 20,
-                                    font: {
-                                        size: 13,
-                                        weight: '600',
-                                        family: 'Inter, sans-serif'
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                                padding: 15,
-                                titleFont: {
-                                    size: 14,
-                                    weight: 'bold'
-                                },
-                                bodyFont: {
-                                    size: 13
-                                },
-                                borderColor: '#0F7B4D',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: (context) => {
-                                        let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        label += 'Rp ' + this.formatNumber(context.parsed.y);
-                                        return label;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: {
-                                    display: false,
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 11
-                                    },
-                                    maxRotation: 45,
-                                    minRotation: 0
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.06)',
-                                    drawBorder: false
-                                },
-                                ticks: {
-                                    font: {
-                                        size: 11
-                                    },
-                                    callback: (value) => {
-                                        if (value >= 1000000) {
-                                            return 'Rp ' + (value / 1000000).toFixed(1) + 'jt';
-                                        } else if (value >= 1000) {
-                                            return 'Rp ' + (value / 1000).toFixed(0) + 'rb';
-                                        }
-                                        return 'Rp ' + value;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Category Revenue Doughnut Chart
-            const ctx2 = document.getElementById('categoryRevenueChart');
-            if (ctx2 && this.revenueByCategory.length > 0) {
-                this.categoryRevenueChart = new Chart(ctx2, {
-                    type: 'doughnut',
-                    data: {
-                        labels: this.revenueByCategory.map(c => c.name),
-                        datasets: [{
-                            data: this.revenueByCategory.map(c => parseFloat(c.revenue)),
-                            backgroundColor: [
-                                '#0F7B4D',
-                                '#10B981',
-                                '#34D399',
-                                '#6EE7B7',
-                                '#A7F3D0',
-                                '#F59E0B',
-                                '#F97316',
-                                '#EF4444'
-                            ],
-                            borderWidth: 3,
-                            borderColor: '#fff',
-                            hoverOffset: 15,
-                            hoverBorderWidth: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'right',
-                                labels: {
-                                    usePointStyle: true,
-                                    padding: 15,
-                                    font: {
-                                        size: 12,
-                                        family: 'Inter, sans-serif'
-                                    },
-                                    generateLabels: (chart) => {
-                                        const data = chart.data;
-                                        if (data.labels.length && data.datasets.length) {
-                                            return data.labels.map((label, i) => {
-                                                const value = data.datasets[0].data[i];
-                                                const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                                const percentage = ((value / total) * 100).toFixed(1);
-                                                return {
-                                                    text: `${label} (${percentage}%)`,
-                                                    fillStyle: data.datasets[0].backgroundColor[i],
-                                                    hidden: false,
-                                                    index: i
-                                                };
-                                            });
-                                        }
-                                        return [];
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: 'rgba(0, 0, 0, 0.85)',
-                                padding: 15,
-                                borderColor: '#0F7B4D',
-                                borderWidth: 1,
-                                callbacks: {
-                                    label: (context) => {
-                                        const label = context.label || '';
-                                        const value = context.parsed;
-                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = ((value / total) * 100).toFixed(1);
-                                        return `${label}: Rp ${this.formatNumber(value)} (${percentage}%)`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        },
-
-        formatPeriodLabel(label) {
-            // Format date labels based on grouping
-            if (!label) return '';
-            
-            if (label.includes('W')) {
-                // Weekly format: 2026-W05
-                const parts = label.split('-W');
-                return `Week ${parts[1]}`;
-            } else if (label.length === 7) {
-                // Monthly format: 2026-01
-                const [year, month] = label.split('-');
-                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-                return `${monthNames[parseInt(month) - 1]} ${year}`;
-            } else {
-                // Daily format: 2026-01-15
-                const [year, month, day] = label.split('-');
-                return `${day}/${month}`;
-            }
-        },
-
-        formatNumber(num) {
-            return new Intl.NumberFormat('id-ID').format(Math.round(num));
         },
 
         setQuickPeriod(period) {
@@ -585,12 +325,11 @@ function analyticsManager() {
         },
 
         exportReport() {
-            // Build URL with current date range
             const params = new URLSearchParams({
                 date_from: this.dateRange.from,
                 date_to: this.dateRange.to
             });
-            window.location.href = '<?= base_url('info/analytics/export-csv') ?>?' + params.toString();
+            window.location.href = '<?= base_url('info/reports/export-csv') ?>?' + params.toString();
         },
 
         formatCurrency(value) {
@@ -600,12 +339,6 @@ function analyticsManager() {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             }).format(value || 0);
-        },
-
-        getCategoryColor(categoryName) {
-            const colors = ['bg-primary', 'bg-success', 'bg-warning', 'bg-danger', 'bg-blue-500', 'bg-purple-500'];
-            const index = categoryName.charCodeAt(0) % colors.length;
-            return colors[index];
         }
     };
 }
