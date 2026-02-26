@@ -313,7 +313,7 @@
                     >
                         <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <?= icon("Loader2", "h-4 w-4") ?>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Supplier'"></span>
                     </button>

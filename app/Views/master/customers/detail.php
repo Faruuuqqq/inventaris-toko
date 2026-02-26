@@ -92,10 +92,10 @@
                 </div>
 
                 <!-- Credit Status -->
-                <?php 
+                <?php
                 $used_percent = ($customer['receivable_balance'] / $customer['credit_limit']) * 100;
-                $status_class = $used_percent > 80 ? 'destructive' : ($used_percent > 50 ? 'warning' : 'success');
-                ?>
+$status_class = $used_percent > 80 ? 'destructive' : ($used_percent > 50 ? 'warning' : 'success');
+?>
                 <div class="pt-4 border-t border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide mb-2">Status Kredit</p>
                     <div class="space-y-2">
@@ -352,7 +352,7 @@
                     >
                         <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <?= icon("Loader2", "h-4 w-4") ?>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Pelanggan'"></span>
                     </button>

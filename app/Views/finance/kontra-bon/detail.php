@@ -58,9 +58,9 @@
                     </div>
                     <!-- Status Badge -->
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border
-                        <?php if ($kontraBon['status'] == 'PAID'): ?>
+                        <?php if ($kontraBon['status'] === 'PAID'): ?>
                             bg-success/10 text-success border-success/50
-                        <?php elseif ($kontraBon['status'] == 'PENDING'): ?>
+                        <?php elseif ($kontraBon['status'] === 'PENDING'): ?>
                             bg-warning/10 text-warning border-warning/50
                         <?php else: ?>
                             bg-destructive/10 text-destructive border-destructive/50

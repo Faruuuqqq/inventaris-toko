@@ -71,8 +71,8 @@
                                 'GUDANG' => 'bg-warning/10 text-warning',
                                 'SALES' => 'bg-success/10 text-success',
                             ];
-                            $roleColor = $roleColors[$pengguna->role] ?? 'bg-muted/10 text-muted-foreground';
-                            ?>
+$roleColor = $roleColors[$pengguna->role] ?? 'bg-muted/10 text-muted-foreground';
+?>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold <?= $roleColor ?>">
                                 <?= esc($pengguna->role) ?>
                             </span>

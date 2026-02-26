@@ -37,7 +37,7 @@
             </div>
             <?php endif; ?>
             
-            <a href="<?= current_url() ?>?export=csv&date=<?= $date ?>&include_hidden=<?= isset($_GET['include_hidden']) ? $_GET['include_hidden'] : '0' ?>" 
+            <a href="<?= current_url() ?>?export=csv&date=<?= esc($date) ?>&include_hidden=<?= esc($includeHidden ?? '0') ?>" 
                class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
                 <?= icon('FileText', 'w-4 h-4') ?>
                 Export CSV

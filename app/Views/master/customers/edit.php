@@ -105,7 +105,7 @@
                     class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-10 px-6 gap-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
                     <?= icon('Check', 'h-5 w-5') ?>
                     <span x-show="isSubmitting" class="inline-flex items-center gap-2">
-                        <?= icon("Loader2", "h-4 w-4") ?>
+                        <?= icon('Loader2', 'h-4 w-4') ?>
                     </span>
                     <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
                 </button>

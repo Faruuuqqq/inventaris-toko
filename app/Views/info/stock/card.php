@@ -33,11 +33,11 @@
          </div>
      </div>
      <div class="flex gap-2 mt-4">
-         <button onclick="loadMutations()" class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary/90 transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md">
+         <button @click="loadMutations()" class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary/90 transition h-10 px-4 gap-2 text-sm font-semibold shadow-sm hover:shadow-md">
              <?= icon('Search', 'h-4 w-4') ?>
              Filter
          </button>
-         <button onclick="resetFilters()" class="inline-flex items-center justify-center rounded-lg border border-border bg-background text-foreground hover:bg-muted transition h-10 px-4 gap-2 text-sm font-semibold">
+         <button @click="resetFilters()" class="inline-flex items-center justify-center rounded-lg border border-border bg-background text-foreground hover:bg-muted transition h-10 px-4 gap-2 text-sm font-semibold">
              Reset
          </button>
      </div>

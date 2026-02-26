@@ -1,13 +1,13 @@
 <?php
+
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
 use App\Models\UserModel;
-use App\Models\ConfigModel;
 
 class Settings extends BaseController
 {
     protected $userModel;
+
     protected $configModel;
 
     public function __construct()
@@ -21,7 +21,7 @@ class Settings extends BaseController
         $userId = session()->get('user_id');
         $user = $this->userModel->find($userId);
         $config = $this->configModel->getConfig();
-        
+
         // Get notification settings
         $notificationModel = new \App\Models\NotificationModel();
         $notificationSettings = $notificationModel->getUserSettings($userId);
@@ -41,7 +41,7 @@ class Settings extends BaseController
     public function updateProfile()
     {
         $userId = session()->get('user_id');
-        
+
         $rules = [
             'fullname' => 'required',
             'email' => "required|valid_email|is_unique[users.email,id,{$userId}]",
@@ -70,7 +70,7 @@ class Settings extends BaseController
     public function changePassword()
     {
         $userId = session()->get('user_id');
-        
+
         $rules = [
             'current_password' => 'required',
             'new_password' => 'required|min_length[6]',
@@ -125,7 +125,7 @@ class Settings extends BaseController
     public function updatePreferences()
     {
         $userId = session()->get('user_id');
-        
+
         try {
             // Update user preferences (if you have a preferences table)
             // For now, just return success

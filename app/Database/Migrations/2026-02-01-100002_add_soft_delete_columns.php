@@ -14,10 +14,10 @@ class AddSoftDeleteColumns extends Migration
             $this->forge->addColumn('sales', [
                 'deleted_at' => [
                     'type' => 'DATETIME',
-                    'null' => true
-                ]
+                    'null' => true,
+                ],
             ]);
-            
+
             // Add index for soft delete queries
             $this->db->query('ALTER TABLE sales ADD INDEX idx_deleted_at (deleted_at)');
         }
@@ -27,10 +27,10 @@ class AddSoftDeleteColumns extends Migration
             $this->forge->addColumn('purchase_orders', [
                 'deleted_at' => [
                     'type' => 'DATETIME',
-                    'null' => true
-                ]
+                    'null' => true,
+                ],
             ]);
-            
+
             $this->db->query('ALTER TABLE purchase_orders ADD INDEX idx_deleted_at (deleted_at)');
         }
 
@@ -39,10 +39,10 @@ class AddSoftDeleteColumns extends Migration
             $this->forge->addColumn('sales_returns', [
                 'deleted_at' => [
                     'type' => 'DATETIME',
-                    'null' => true
-                ]
+                    'null' => true,
+                ],
             ]);
-            
+
             $this->db->query('ALTER TABLE sales_returns ADD INDEX idx_deleted_at (deleted_at)');
         }
 
@@ -51,10 +51,10 @@ class AddSoftDeleteColumns extends Migration
             $this->forge->addColumn('purchase_returns', [
                 'deleted_at' => [
                     'type' => 'DATETIME',
-                    'null' => true
-                ]
+                    'null' => true,
+                ],
             ]);
-            
+
             $this->db->query('ALTER TABLE purchase_returns ADD INDEX idx_deleted_at (deleted_at)');
         }
 
@@ -63,39 +63,45 @@ class AddSoftDeleteColumns extends Migration
             if (!$this->indexExists('sales', 'idx_created_at')) {
                 $this->db->query('ALTER TABLE sales ADD INDEX idx_created_at (created_at)');
             }
-        } catch (\Exception $e) {}
-        
+        } catch (\Exception $e) {
+        }
+
         try {
             if (!$this->indexExists('sales', 'idx_customer_id')) {
                 $this->db->query('ALTER TABLE sales ADD INDEX idx_customer_id (customer_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             if (!$this->indexExists('purchase_orders', 'idx_po_created_at')) {
                 $this->db->query('ALTER TABLE purchase_orders ADD INDEX idx_po_created_at (created_at)');
             }
-        } catch (\Exception $e) {}
-        
+        } catch (\Exception $e) {
+        }
+
         try {
             if (!$this->indexExists('purchase_orders', 'idx_supplier_id')) {
                 $this->db->query('ALTER TABLE purchase_orders ADD INDEX idx_supplier_id (supplier_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             if (!$this->indexExists('sales_returns', 'idx_sr_customer_id')) {
                 $this->db->query('ALTER TABLE sales_returns ADD INDEX idx_sr_customer_id (customer_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             if (!$this->indexExists('purchase_returns', 'idx_pr_supplier_id')) {
                 $this->db->query('ALTER TABLE purchase_returns ADD INDEX idx_pr_supplier_id (supplier_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
     }
-    
+
     /**
      * Helper method to check if index exists
      */

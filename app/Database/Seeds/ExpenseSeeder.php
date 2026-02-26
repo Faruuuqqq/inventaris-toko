@@ -18,7 +18,7 @@ class ExpenseSeeder extends Seeder
                 'receipt_number' => 'EXP-001',
                 'status' => 'approved',
                 'notes' => 'Kertas, pulpen, stapler, map plastik',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-15 days'))
+                'created_at' => date('Y-m-d H:i:s', strtotime('-15 days')),
             ],
             [
                 'description' => 'Biaya Marketing Digital',
@@ -29,7 +29,7 @@ class ExpenseSeeder extends Seeder
                 'receipt_number' => 'EXP-002',
                 'status' => 'approved',
                 'notes' => 'Iklan Google Ads, Instagram Ads',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-10 days'))
+                'created_at' => date('Y-m-d H:i:s', strtotime('-10 days')),
             ],
             [
                 'description' => 'Gaji Karyawan Bulanan',
@@ -40,7 +40,7 @@ class ExpenseSeeder extends Seeder
                 'receipt_number' => 'EXP-003',
                 'status' => 'approved',
                 'notes' => 'Gaji bulan Januari 2024',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-5 days'))
+                'created_at' => date('Y-m-d H:i:s', strtotime('-5 days')),
             ],
             [
                 'description' => 'Maintenance Server',
@@ -51,7 +51,7 @@ class ExpenseSeeder extends Seeder
                 'receipt_number' => 'EXP-004',
                 'status' => 'pending', // For approval test
                 'notes' => 'Upgrade RAM dan cleaning service',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-3 days'))
+                'created_at' => date('Y-m-d H:i:s', strtotime('-3 days')),
             ],
             [
                 'description' => 'Transportasi Pengiriman',
@@ -62,8 +62,8 @@ class ExpenseSeeder extends Seeder
                 'receipt_number' => 'EXP-005',
                 'status' => 'approved',
                 'notes' => 'Ongkos kirim ke customer Jakarta',
-                'created_at' => date('Y-m-d H:i:s', strtotime('-1 days'))
-            ]
+                'created_at' => date('Y-m-d H:i:s', strtotime('-1 days')),
+            ],
         ];
 
         $this->db->table('expenses')->insertBatch($data);

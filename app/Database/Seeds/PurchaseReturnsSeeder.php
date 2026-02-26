@@ -48,13 +48,13 @@ class PurchaseReturnsSeeder extends Seeder
 
             foreach ($selectedPos as $idx) {
                 $po = $pos[$idx];
-                
+
                 // Generate return number
                 $returnNo = 'RET-PO-' . date('Y-m-d', strtotime($po['tanggal_po'])) . '-' . str_pad(random_int(1, 9999), 4, '0', STR_PAD_LEFT);
-                
+
                 // Return date: 3-10 days after PO
                 $returnDate = date('Y-m-d', strtotime($po['tanggal_po'] . ' +' . random_int(3, 10) . ' days'));
-                
+
                 // Random status (mostly approved)
                 $status = random_int(1, 100) <= 80 ? 'Disetujui' : 'Pending';
 
@@ -82,7 +82,7 @@ class PurchaseReturnsSeeder extends Seeder
                     $returnQty = min($poItem['quantity'], random_int(1, max(1, (int)($poItem['quantity'] * 0.5))));
                     $itemSubtotal = $returnQty * $poItem['price'];
                     $totalReturn += $itemSubtotal;
-                    
+
                     $returnItems[] = [
                         'product_id' => $poItem['product_id'],
                         'quantity' => $returnQty,
@@ -142,7 +142,7 @@ class PurchaseReturnsSeeder extends Seeder
 
         } catch (\Exception $e) {
             $db->transRollback();
-            echo "❌ Error: " . $e->getMessage() . "\n\n";
+            echo '❌ Error: ' . $e->getMessage() . "\n\n";
             throw $e;
         }
     }

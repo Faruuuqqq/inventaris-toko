@@ -150,7 +150,7 @@
                                 'CANCELLED' => 'bg-destructive/10 text-destructive border-destructive/50',
                                 default => 'bg-muted/10 text-muted-foreground border-border',
                             };
-                            ?>
+                        ?>
                             <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap <?= $statusClass ?>">
                                 <?= esc($kb['status']) ?>
                             </span>

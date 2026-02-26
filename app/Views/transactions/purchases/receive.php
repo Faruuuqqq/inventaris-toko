@@ -122,7 +122,7 @@
                                 <select class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" name="produk[<?= $index ?>][id_warehouse_baik]" :disabled="jumlahBaik == 0">
                                     <option value="">Pilih</option>
                                     <?php foreach ($warehouses_good as $warehouse): ?>
-                                        <option value="<?= $warehouse['id_warehouse'] ?>" <?= $purchaseOrder['id_warehouse'] == $warehouse['id_warehouse'] ? 'selected' : '' ?>>
+                                        <option value="<?= $warehouse['id_warehouse'] ?>" <?= $purchaseOrder['id_warehouse'] === $warehouse['id_warehouse'] ? 'selected' : '' ?>>
                                             <?= $warehouse['nama_warehouse'] ?>
                                         </option>
                                     <?php endforeach; ?>

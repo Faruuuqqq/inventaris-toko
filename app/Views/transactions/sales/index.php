@@ -2,6 +2,14 @@
 
 <?= $this->section('content') ?>
 
+<script>
+window.__PAGE_CONFIG__ = {
+    sales: <?= json_encode($sales ?? []) ?>,
+    baseUrl: '<?= base_url('transactions/sales') ?>'
+};
+</script>
+<script src="<?= base_url('assets/js/modules/transactions/salesManager.js') ?>"></script>
+
 <div x-data="salesManager()">
     <!-- Page Header -->
     <div class="mb-8 flex items-start justify-between">
@@ -182,7 +190,7 @@
                         <tr class="border-b border-border hover:bg-muted/50 transition-colors duration-150">
                             <!-- Invoice Number -->
                             <td class="px-6 py-4">
-                                <a :href="`<?= base_url('transactions/sales/') ?>${sale.id_sale}`" class="font-semibold text-primary hover:text-primary-light transition" x-text="sale.nomor_faktur"></a>
+                                <a :href="`${window.__PAGE_CONFIG__.baseUrl}/${sale.id_sale}`" class="font-semibold text-primary hover:text-primary-light transition" x-text="sale.nomor_faktur"></a>
                             </td>
 
                             <!-- Customer -->
@@ -224,7 +232,7 @@
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-1.5">
                                     <a 
-                                        :href="`<?= base_url('transactions/sales/') ?>${sale.id_sale}`"
+                                        :href="`${window.__PAGE_CONFIG__.baseUrl}/${sale.id_sale}`"
                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
                                         title="Lihat detail"
                                     >
@@ -267,77 +275,5 @@
         </div>
     </div>
 </div>
-
-<script>
-function salesManager() {
-    return {
-        sales: <?= json_encode($sales ?? []) ?>,
-        search: '',
-        customerFilter: 'all',
-        paymentTypeFilter: 'all',
-        paymentStatusFilter: 'all',
-
-        get filteredSales() {
-            return this.sales.filter(sale => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = (sale.nomor_faktur && sale.nomor_faktur.toLowerCase().includes(searchLower)) ||
-                                    (sale.customer_name && sale.customer_name.toLowerCase().includes(searchLower));
-                
-                const matchesCustomer = this.customerFilter === 'all' || 
-                                       sale.id_customer == this.customerFilter;
-                
-                const matchesPaymentType = this.paymentTypeFilter === 'all' || 
-                                         sale.tipe_penjualan === this.paymentTypeFilter;
-                
-                const matchesPaymentStatus = this.paymentStatusFilter === 'all' || 
-                                           sale.status_pembayaran === this.paymentStatusFilter;
-                                          
-                return matchesSearch && matchesCustomer && matchesPaymentType && matchesPaymentStatus;
-            });
-        },
-
-        get cashCount() {
-            return this.sales.filter(s => s.tipe_penjualan === 'CASH').length;
-        },
-
-        get creditCount() {
-            return this.sales.filter(s => s.tipe_penjualan === 'CREDIT').length;
-        },
-
-        get totalRevenue() {
-            return this.sales.reduce((sum, s) => sum + (parseFloat(s.total_penjualan) || 0), 0);
-        },
-
-        recordPayment(saleId) {
-            alert('Fitur pencatatan pembayaran akan diimplementasikan segera.');
-            // window.location.href = `<?= base_url('finance/payments/receivable') ?>?sale_id=${saleId}`;
-        },
-
-        exportSales() {
-            alert('Fitur export akan diimplementasikan segera.');
-        },
-
-        getPaymentStatusLabel(status) {
-            const labels = {
-                'PAID': 'Lunas',
-                'PENDING': 'Menunggu',
-                'PARTIAL': 'Sebagian',
-                'CANCELLED': 'Dibatalkan'
-            };
-            return labels[status] || status;
-        },
-
-        formatNumber(value) {
-            return parseFloat(value || 0).toLocaleString('id-ID');
-        },
-
-        formatDate(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-        }
-    }
-}
-</script>
 
 <?= $this->endSection() ?>

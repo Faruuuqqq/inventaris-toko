@@ -17,33 +17,33 @@ class RoleSeeder extends Seeder
                     'products.create', 'products.read', 'products.update', 'products.delete',
                     'sales.create', 'sales.read', 'sales.update', 'sales.delete',
                     'purchases.create', 'purchases.read', 'purchases.update', 'purchases.delete',
-                    'reports.read', 'settings.update'
-                ])
+                    'reports.read', 'settings.update',
+                ]),
             ],
             [
                 'name' => 'user',
                 'description' => 'Regular user with limited access',
                 'permissions' => json_encode([
                     'products.read', 'sales.create', 'sales.read',
-                    'purchases.create', 'purchases.read', 'reports.read'
-                ])
+                    'purchases.create', 'purchases.read', 'reports.read',
+                ]),
             ],
             [
                 'name' => 'sales',
                 'description' => 'Sales personnel with sales focus',
                 'permissions' => json_encode([
                     'products.read', 'customers.read', 'sales.create', 'sales.read', 'sales.update',
-                    'purchases.create', 'purchases.read', 'reports.read'
-                ])
+                    'purchases.create', 'purchases.read', 'reports.read',
+                ]),
             ],
             [
                 'name' => 'gudang',
                 'description' => 'Warehouse staff with inventory focus',
                 'permissions' => json_encode([
                     'products.read', 'products.update', 'inventory.read', 'inventory.update',
-                    'purchases.read', 'reports.read'
-                ])
-            ]
+                    'purchases.read', 'reports.read',
+                ]),
+            ],
         ];
 
         $this->db->table('roles')->insertBatch($data);

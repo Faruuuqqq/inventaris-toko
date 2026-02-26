@@ -8,7 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 /**
  * Request/Response Logging Filter
- * 
+ *
  * Logs all HTTP requests and responses for debugging and monitoring
  * Can be enabled/disabled via environment variable
  */
@@ -33,7 +33,7 @@ class RequestLogger implements FilterInterface
         $body = '';
         if (in_array($method, ['POST', 'PUT', 'PATCH'])) {
             $rawBody = $request->getBody();
-            
+
             // Don't log passwords or sensitive data
             $bodyData = $request->getPost() ?: $request->getJSON(true);
             if (is_array($bodyData)) {
@@ -76,7 +76,7 @@ class RequestLogger implements FilterInterface
         $method = $request->getMethod();
         $uri = (string) $request->getUri();
         $statusCode = $response->getStatusCode();
-        
+
         // Calculate response time
         $responseTime = 0;
         if (isset($request->startTime)) {
@@ -86,7 +86,7 @@ class RequestLogger implements FilterInterface
         // Get response body (only for JSON responses)
         $contentType = $response->getHeaderLine('Content-Type');
         $responseBody = '';
-        
+
         if (strpos($contentType, 'application/json') !== false) {
             $body = $response->getBody();
             if (strlen($body) < 1000) {

@@ -4,16 +4,16 @@
  *
  * Displays a header with title, subtitle and optional add button
  *
- * @param string $title Main title
- * @param string $subtitle Subtitle/description
+ * @param string $title     Main title
+ * @param string $subtitle  Subtitle/description
  * @param string $addButton Button text (optional)
- * @param string $modalId Modal ID to open on click (optional)
+ * @param string $modalId   Modal ID to open on click (optional)
  */
-$title = $title ?? '';
-$subtitle = $subtitle ?? '';
-$addButton = $addButton ?? '';
-$modalId = $modalId ?? '';
-$addUrl = $addUrl ?? '';
+$title ??= '';
+$subtitle ??= '';
+$addButton ??= '';
+$modalId ??= '';
+$addUrl ??= '';
 ?>
 <div class="flex justify-between items-center mb-6">
     <div>
@@ -26,9 +26,9 @@ $addUrl = $addUrl ?? '';
     <button
         class="btn btn-primary"
         <?php if ($modalId): ?>
-        onclick="document.getElementById('<?= $modalId ?>').classList.remove('hidden')"
+        x-on:click="$dispatch('open-modal', '<?= esc($modalId, 'js') ?>')"
         <?php elseif ($addUrl): ?>
-        onclick="window.location.href='<?= $addUrl ?>'"
+        x-on:click="window.location.href='<?= esc($addUrl, 'js') ?>'"
         <?php endif; ?>
     >
         <?= icon('Plus', 'h-4 w-4') ?>

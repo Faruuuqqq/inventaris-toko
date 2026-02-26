@@ -2,38 +2,38 @@
 /**
  * Modern Alert Component - Notification Messages
  * Professional design with smooth animations
- * 
- * Usage: 
+ *
+ * Usage:
  * <?= view('components/alert', [
  *     'type' => 'success',  // success, error, warning, info
  *     'title' => 'Success!',
  *     'message' => 'Operation completed successfully',
  *     'dismissible' => true
  * ]) ?>
- * 
- * @param string $type - success, error, warning, info (default: info)
- * @param string $message - Alert message
- * @param string $title - Optional title
- * @param bool $dismissible - Show close button (default: false)
+ *
+ * @param string $type        - success, error, warning, info (default: info)
+ * @param string $message     - Alert message
+ * @param string $title       - Optional title
+ * @param bool   $dismissible - Show close button (default: false)
  */
 
-$type = $type ?? 'info';
-$message = $message ?? '';
-$title = $title ?? '';
-$dismissible = $dismissible ?? true;
+$type ??= 'info';
+$message ??= '';
+$title ??= '';
+$dismissible ??= true;
 
 $typeClasses = [
     'success' => 'alert-success',
     'error' => 'alert-error',
     'warning' => 'alert-warning',
-    'info' => 'alert-info'
+    'info' => 'alert-info',
 ];
 
 $icons = [
     'success' => 'CheckCircle',
     'error' => 'AlertCircle',
     'warning' => 'AlertTriangle',
-    'info' => 'Info'
+    'info' => 'Info',
 ];
 
 $alertClass = $typeClasses[$type] ?? 'alert-info';

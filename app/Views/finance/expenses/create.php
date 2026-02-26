@@ -67,7 +67,7 @@
                     <select name="category" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Kategori</option>
                         <?php foreach ($categories as $key => $label): ?>
-                            <option value="<?= $key ?>" <?= old('category') == $key ? 'selected' : '' ?>>
+                            <option value="<?= $key ?>" <?= old('category') === $key ? 'selected' : '' ?>>
                                 <?= $label ?>
                             </option>
                         <?php endforeach; ?>
@@ -78,9 +78,9 @@
                     <label class="text-sm font-medium text-foreground">Metode Pembayaran *</label>
                     <select name="payment_method" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
                         <option value="">Pilih Metode</option>
-                        <option value="CASH" <?= old('payment_method') == 'CASH' ? 'selected' : '' ?>>Tunai</option>
-                        <option value="TRANSFER" <?= old('payment_method') == 'TRANSFER' ? 'selected' : '' ?>>Transfer Bank</option>
-                        <option value="CHECK" <?= old('payment_method') == 'CHECK' ? 'selected' : '' ?>>Cek/Giro</option>
+                        <option value="CASH" <?= old('payment_method') === 'CASH' ? 'selected' : '' ?>>Tunai</option>
+                        <option value="TRANSFER" <?= old('payment_method') === 'TRANSFER' ? 'selected' : '' ?>>Transfer Bank</option>
+                        <option value="CHECK" <?= old('payment_method') === 'CHECK' ? 'selected' : '' ?>>Cek/Giro</option>
                     </select>
                 </div>
             </div>

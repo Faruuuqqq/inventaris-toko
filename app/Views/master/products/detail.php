@@ -84,10 +84,10 @@
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Margin</p>
                         <p class="text-lg font-bold text-foreground mt-1">
-                            <?php 
+                            <?php
                                 $margin = (($product->price_sell - $product->price_buy) / $product->price_buy * 100);
-                                echo round($margin, 2) . '%';
-                            ?>
+echo round($margin, 2) . '%';
+?>
                         </p>
                     </div>
 

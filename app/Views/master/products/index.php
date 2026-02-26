@@ -3,147 +3,15 @@
 <?= $this->section('content') ?>
 
 <script>
-function productManager() {
-    return {
-        products: <?= json_encode($products) ?>,
-        search: '',
-        categoryFilter: 'all',
-        isDialogOpen: false,
-        isSubmitting: false,
-        errors: {},
-
-        get filteredProducts() {
-            return this.products.filter(product => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = product.name.toLowerCase().includes(searchLower) ||
-                                    product.sku.toLowerCase().includes(searchLower);
-
-                const matchesCategory = this.categoryFilter === 'all' ||
-                                      product.category_name === this.categoryFilter;
-
-                return matchesSearch && matchesCategory;
-            });
-        },
-
-        openModal() {
-            // Reset form and errors
-            this.errors = {};
-            const form = document.querySelector('form[action*="master/products"]');
-            if (form) form.reset();
-            this.isDialogOpen = true;
-        },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-
-            // Clear previous errors
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    // Success
-                    ModalManager.success('Data produk berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        // Reload page to refresh product list
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    // Validation error
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    // Show generic message, field errors will be displayed inline
-                    ModalManager.error('Silakan periksa kembali data yang Anda masukkan. Lihat pesan kesalahan di setiap field.');
-                } else {
-                    // Other error
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
-
-        editProduct(productId) {
-            // TODO: Implement edit functionality
-            window.location.href = `<?= base_url('master/products/edit') ?>/${productId}`;
-        },
-
-        deleteProduct(productId) {
-            const product = this.products.find(p => p.id === productId);
-            const productName = product ? product.name : 'produk ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/products') ?>/${productId}`,
-                productName,
-                () => {
-                    this.products = this.products.filter(p => p.id !== productId);
-                }
-            );
-        },
-
-        formatRupiah(value) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(value);
-        },
-
-        async exportData() {
-            window.Loading.show('Mengekspor Data', 'Sedang menyiapkan file PDF...');
-            try {
-                const response = await fetch(`<?= base_url('master/products/export-pdf') ?>`);
-
-                if (!response.ok) throw new Error('Gagal mengunduh file');
-
-                // Get filename from header if possible, otherwise default
-                const contentDisposition = response.headers.get('Content-Disposition');
-                let filename = 'products_export.pdf';
-                if (contentDisposition) {
-                    const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-                    if (filenameMatch.length === 2) filename = filenameMatch[1];
-                }
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                // Optional: Show success toast
-                // ModalManager.success('Export berhasil diunduh');
-            } catch (error) {
-                console.error('Export failed:', error);
-                ModalManager.error('Gagal mengekspor data. Silakan coba lagi.');
-            } finally {
-                window.Loading.hide();
-            }
-        }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    products: <?= json_encode($products) ?>,
+    baseUrl: '<?= base_url('master/products') ?>',
+    exportUrl: '<?= base_url('master/products/export-pdf') ?>',
+    searchFields: ['name', 'sku']
+};
 </script>
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/productManager.js') ?>"></script>
 
 <div x-data="productManager()">
     <!-- Page Header -->

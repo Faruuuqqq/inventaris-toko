@@ -60,7 +60,7 @@
                     >
                         <option value="">-- Pilih Kategori --</option>
                         <?php foreach ($categories ?? [] as $category): ?>
-                        <option value="<?= $category['id'] ?? $category->id ?>" <?= ($product->category_id == ($category['id'] ?? $category->id)) ? 'selected' : '' ?>>
+                        <option value="<?= $category['id'] ?? $category->id ?>" <?= ($product->category_id === ($category['id'] ?? $category->id)) ? 'selected' : '' ?>>
                             <?= esc($category['name'] ?? $category->name) ?>
                         </option>
                         <?php endforeach; ?>
@@ -148,7 +148,7 @@
                 class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-11 px-6 gap-2 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
                 <span x-show="!isSubmitting"><?= icon('Check', 'h-5 w-5') ?></span>
                 <span x-show="isSubmitting" class="inline-flex items-center gap-2">
-                    <?= icon("Loader2", "h-4 w-4") ?>
+                    <?= icon('Loader2', 'h-4 w-4') ?>
                 </span>
                 <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
             </button>

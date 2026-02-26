@@ -97,7 +97,7 @@ class ExpensesSeeder extends Seeder
                 $catConfig = $categories[$selectedCategory];
                 $expenseDate = date('Y-m-d', random_int($startDate, $today));
                 $amount = random_int($catConfig['min'], $catConfig['max']);
-                
+
                 // Generate description
                 $descList = $descriptions[$selectedCategory];
                 $description = $descList[array_rand($descList)];
@@ -133,7 +133,7 @@ class ExpensesSeeder extends Seeder
 
         } catch (\Exception $e) {
             $db->transRollback();
-            echo "❌ Error: " . $e->getMessage() . "\n\n";
+            echo '❌ Error: ' . $e->getMessage() . "\n\n";
             throw $e;
         }
     }

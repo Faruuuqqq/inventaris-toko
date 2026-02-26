@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
@@ -14,7 +15,7 @@ class PurchaseReturnsController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'data' => $returns
+            'data' => $returns,
         ]);
     }
 
@@ -33,8 +34,8 @@ class PurchaseReturnsController extends ResourceController
             'status' => 'success',
             'data' => [
                 'return' => $return,
-                'items' => $items
-            ]
+                'items' => $items,
+            ],
         ]);
     }
 
@@ -48,7 +49,7 @@ class PurchaseReturnsController extends ResourceController
         return $this->respondCreated([
             'status' => 'success',
             'message' => 'Purchase return created successfully',
-            'id' => $db->insertID()
+            'id' => $db->insertID(),
         ]);
     }
 
@@ -66,7 +67,7 @@ class PurchaseReturnsController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Purchase return updated successfully'
+            'message' => 'Purchase return updated successfully',
         ]);
     }
 
@@ -83,7 +84,7 @@ class PurchaseReturnsController extends ResourceController
 
         return $this->respondDeleted([
             'status' => 'success',
-            'message' => 'Purchase return deleted successfully'
+            'message' => 'Purchase return deleted successfully',
         ]);
     }
 
@@ -100,7 +101,7 @@ class PurchaseReturnsController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Purchase return approved successfully'
+            'message' => 'Purchase return approved successfully',
         ]);
     }
 }

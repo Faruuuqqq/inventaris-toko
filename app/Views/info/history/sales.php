@@ -122,11 +122,11 @@
 
     <!-- Filter Buttons -->
     <div class="mt-4 flex gap-3">
-        <button type="button" onclick="loadSales()" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
+        <button type="button" @click="loadSales()" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
             <?= icon('Search', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
-        <button type="button" onclick="resetFilters()" class="h-10 px-4 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition flex items-center gap-2">
+        <button type="button" @click="resetFilters()" class="h-10 px-4 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition flex items-center gap-2">
             <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset
         </button>
@@ -207,7 +207,7 @@
             const isHidden = sale.is_hidden == 1;
 
             const hideButton = isOwner ? `
-                <button onclick="toggleHide(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-${isHidden ? 'success' : 'destructive'} hover:bg-${isHidden ? 'success' : 'destructive'}/10 transition-colors" title="${isHidden ? 'Tampilkan' : 'Sembunyikan'}">
+                <button @click="toggleHide(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-${isHidden ? 'success' : 'destructive'} hover:bg-${isHidden ? 'success' : 'destructive'}/10 transition-colors" title="${isHidden ? 'Tampilkan' : 'Sembunyikan'}">
                     ${isHidden
                         ? '<?= icon('Eye', 'h-4 w-4') ?>'
                         : '<?= icon('EyeOff', 'h-4 w-4') ?>'}
@@ -228,10 +228,10 @@
                     <td class="px-6 py-4 text-right text-sm text-muted-foreground">${formatCurrency(sale.paid_amount || 0)}</td>
                     <td class="px-6 py-4 text-center">
                         <div class="inline-flex items-center gap-1">
-                            <button onclick="viewDetail(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Lihat Detail">
+                            <button @click="viewDetail(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Lihat Detail">
                                 <?= icon('Eye', 'h-4 w-4') ?>
                             </button>
-                            <button onclick="printDeliveryNote(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-secondary hover:bg-secondary/10 transition-colors" title="Cetak Surat Jalan">
+                            <button @click="printDeliveryNote(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-secondary hover:bg-secondary/10 transition-colors" title="Cetak Surat Jalan">
                                 <?= icon('Printer', 'h-4 w-4') ?>
                             </button>
                             ${hideButton}
@@ -404,7 +404,7 @@
                     <div class="flex flex-col items-center gap-2">
                         <?= icon('AlertCircle', 'h-12 w-12 text-destructive/50') ?>
                         <p class="text-sm font-medium text-destructive">Gagal memuat data</p>
-                        <button onclick="loadSales()" class="text-sm text-primary hover:underline">Coba lagi</button>
+                        <button @click="loadSales()" class="text-sm text-primary hover:underline">Coba lagi</button>
                     </div>
                 </td>
             </tr>

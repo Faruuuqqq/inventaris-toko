@@ -1,13 +1,14 @@
 <?php
+
 namespace App\Controllers\Finance;
 
 use App\Controllers\BaseController;
-use App\Models\PaymentModel;
-use App\Models\SaleModel;
-use App\Models\KontraBonModel;
 use App\Models\CustomerModel;
-use App\Models\SupplierModel;
+use App\Models\KontraBonModel;
+use App\Models\PaymentModel;
 use App\Models\PurchaseOrderModel;
+use App\Models\SaleModel;
+use App\Models\SupplierModel;
 use App\Services\BalanceService;
 use App\Traits\ApiResponseTrait;
 
@@ -16,11 +17,17 @@ class Payments extends BaseController
     use ApiResponseTrait;
 
     protected $paymentModel;
+
     protected $saleModel;
+
     protected $kontraBonModel;
+
     protected $customerModel;
+
     protected $supplierModel;
+
     protected $poModel;
+
     protected $balanceService;
 
     public function __construct()
@@ -65,7 +72,7 @@ class Payments extends BaseController
 
     /**
      * Action: Record Customer Payment
-     * 
+     *
      * Validates and records payment from customer, updates balance.
      * If specific sale is linked, updates that sale's payment status.
      */
@@ -76,7 +83,7 @@ class Payments extends BaseController
             'customer_id' => 'required|numeric',
             'amount' => 'required|numeric|greater_than[0]',
             'payment_method' => 'required|string',
-            'payment_date' => 'required|valid_date[Y-m-d]'
+            'payment_date' => 'required|valid_date[Y-m-d]',
         ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
@@ -120,16 +127,16 @@ class Payments extends BaseController
                 'method' => $paymentMethod,
                 'notes' => $notes,
                 'user_id' => $userId,
-                'customer_id' => $customerId
+                'customer_id' => $customerId,
             ]);
 
             // 4. Update specific sale if linked
             if ($referenceId > 0) {
                 $sale = $this->saleModel->find($referenceId);
-                if ($sale && $sale['customer_id'] == $customerId) {
+                if ($sale && $sale['customer_id'] === $customerId) {
                     $newPaidAmount = (float)$sale['paid_amount'] + $amount;
                     $saleTotal = (float)$sale['total_amount'];
-                    
+
                     // Determine payment status
                     $newStatus = 'UNPAID';
                     if ($newPaidAmount >= $saleTotal) {
@@ -137,10 +144,10 @@ class Payments extends BaseController
                     } elseif ($newPaidAmount > 0 && $newPaidAmount < $saleTotal) {
                         $newStatus = 'PARTIAL';
                     }
-                    
+
                     $this->saleModel->update($referenceId, [
                         'paid_amount' => $newPaidAmount,
-                        'payment_status' => $newStatus
+                        'payment_status' => $newStatus,
                     ]);
                 }
             }
@@ -159,7 +166,7 @@ class Payments extends BaseController
 
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
@@ -186,7 +193,7 @@ class Payments extends BaseController
 
     /**
      * Action: Record Supplier Payment
-     * 
+     *
      * Validates and records payment to supplier, updates balance.
      * If specific PO is linked, updates that PO's payment status.
      */
@@ -197,7 +204,7 @@ class Payments extends BaseController
             'supplier_id' => 'required|numeric',
             'amount' => 'required|numeric|greater_than[0]',
             'payment_method' => 'required|string',
-            'payment_date' => 'required|valid_date[Y-m-d]'
+            'payment_date' => 'required|valid_date[Y-m-d]',
         ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
@@ -241,16 +248,16 @@ class Payments extends BaseController
                 'method' => $paymentMethod,
                 'notes' => $notes,
                 'user_id' => $userId,
-                'supplier_id' => $supplierId
+                'supplier_id' => $supplierId,
             ]);
 
             // 4. Update specific PO if linked
             if ($referenceId > 0) {
                 $po = $this->poModel->find($referenceId);
-                if ($po && $po['supplier_id'] == $supplierId) {
+                if ($po && $po['supplier_id'] === $supplierId) {
                     $newPaidAmount = (float)($po['paid_amount'] ?? 0) + $amount;
                     $poTotal = (float)$po['total_bayar'];
-                    
+
                     // Determine payment status
                     $newStatus = 'UNPAID';
                     if ($newPaidAmount >= $poTotal) {
@@ -258,10 +265,10 @@ class Payments extends BaseController
                     } elseif ($newPaidAmount > 0 && $newPaidAmount < $poTotal) {
                         $newStatus = 'PARTIAL';
                     }
-                    
+
                     $this->poModel->update($referenceId, [
                         'paid_amount' => $newPaidAmount,
-                        'payment_status' => $newStatus
+                        'payment_status' => $newStatus,
                     ]);
                 }
             }
@@ -280,7 +287,7 @@ class Payments extends BaseController
 
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
@@ -291,7 +298,7 @@ class Payments extends BaseController
     public function getCustomerInvoices()
     {
         $customerId = $this->request->getGet('customer_id');
-        
+
         if (!$customerId) {
             return $this->respondEmpty();
         }
@@ -304,14 +311,14 @@ class Payments extends BaseController
             ->orderBy('sales.created_at', 'DESC')
             ->findAll();
 
-        $result = array_map(function($invoice) {
+        $result = array_map(function ($invoice) {
             return [
                 'id' => $invoice['id'],
                 'invoice_number' => $invoice['invoice_number'],
                 'total_amount' => (float)$invoice['total_amount'],
                 'paid_amount' => (float)$invoice['paid_amount'],
                 'outstanding' => (float)$invoice['total_amount'] - (float)$invoice['paid_amount'],
-                'created_at' => $invoice['created_at']
+                'created_at' => $invoice['created_at'],
             ];
         }, $invoices);
 
@@ -326,7 +333,7 @@ class Payments extends BaseController
     public function getSupplierPurchases()
     {
         $supplierId = $this->request->getGet('supplier_id');
-        
+
         if (!$supplierId) {
             return $this->respondEmpty();
         }
@@ -339,14 +346,14 @@ class Payments extends BaseController
             ->orderBy('purchase_orders.tanggal_po', 'DESC')
             ->findAll();
 
-        $result = array_map(function($po) {
+        $result = array_map(function ($po) {
             return [
                 'id' => $po['id'],
                 'nomor_po' => $po['nomor_po'],
                 'total_bayar' => (float)$po['total_bayar'],
                 'paid_amount' => (float)($po['paid_amount'] ?? 0),
                 'outstanding' => (float)$po['total_bayar'] - (float)($po['paid_amount'] ?? 0),
-                'tanggal_po' => $po['tanggal_po']
+                'tanggal_po' => $po['tanggal_po'],
             ];
         }, $pos);
 
@@ -360,28 +367,28 @@ class Payments extends BaseController
     public function getKontraBons()
     {
         $customerId = $this->request->getGet('customer_id');
-        
+
         if (!$customerId) {
             return $this->respondEmpty();
         }
-        
+
         $kontraBons = $this->kontraBonModel
             ->where('customer_id', $customerId)
             ->whereIn('status', ['PENDING', 'APPROVED'])
             ->where('deleted_at', null)
             ->orderBy('created_at', 'DESC')
             ->findAll();
-        
-        $result = array_map(function($kb) {
+
+        $result = array_map(function ($kb) {
             return [
                 'id' => $kb['id'],
                 'nomor_kontra_bon' => $kb['nomor_kontra_bon'],
                 'tanggal' => $kb['tanggal'],
                 'total_amount' => (float)$kb['total_amount'],
-                'status' => $kb['status']
+                'status' => $kb['status'],
             ];
         }, $kontraBons);
-        
+
         return $this->respondData($result);
     }
 }

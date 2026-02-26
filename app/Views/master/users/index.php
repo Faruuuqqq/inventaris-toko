@@ -3,94 +3,15 @@
 <?= $this->section('content') ?>
 
 <script>
-function userManager() {
-    return {
-        users: <?= json_encode($users) ?>,
-        sessionRole: '<?= session()->get("role") ?>',
-        sessionUserId: <?= session()->get('user_id') ?>,
-        search: '',
-        roleFilter: 'all',
-        isDialogOpen: false,
-        editingUser: {
-            id: null,
-            username: '',
-            email: '',
-            fullname: '',
-            role: '',
-            password: ''
-        },
-
-        get filteredUsers() {
-            return this.users.filter(user => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = user.username.toLowerCase().includes(searchLower) ||
-                                    user.fullname.toLowerCase().includes(searchLower) ||
-                                    (user.email && user.email.toLowerCase().includes(searchLower));
-
-                const matchesRole = this.roleFilter === 'all' ||
-                                   user.role === this.roleFilter;
-
-                return matchesSearch && matchesRole;
-            });
-        },
-
-        openModal(userId = null) {
-            if (userId) {
-                const user = this.users.find(u => u.id === userId);
-                if (user) {
-                    this.editingUser = {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email || '',
-                        fullname: user.fullname,
-                        role: user.role,
-                        password: ''
-                    };
-                }
-            } else {
-                this.editingUser = {
-                    id: null,
-                    username: '',
-                    email: '',
-                    fullname: '',
-                    role: '',
-                    password: ''
-                };
-            }
-            this.isDialogOpen = true;
-        },
-
-        editUser(userId) {
-            this.openModal(userId);
-        },
-
-        deleteUser(userId) {
-            const user = this.users.find(u => u.id === userId);
-            const userName = user ? user.fullname : 'pengguna ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/users/delete') ?>/${userId}`,
-                userName,
-                () => {
-                    this.users = this.users.filter(u => u.id !== userId);
-                }
-            );
-        },
-
-        submitForm(e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-
-            const action = this.editingUser.id
-                ? `<?= base_url('master/users/update') ?>/${this.editingUser.id}`
-                : '<?= base_url('master/users/store') ?>';
-
-            form.action = action;
-            form.submit();
-        }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    users: <?= json_encode($users) ?>,
+    sessionRole: '<?= session()->get('role') ?>',
+    sessionUserId: <?= session()->get('user_id') ?>,
+    baseUrl: '<?= base_url('master/users') ?>'
+};
 </script>
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/userManager.js') ?>"></script>
 
 <div x-data="userManager()">
     <!-- Page Header -->
@@ -122,7 +43,7 @@ function userManager() {
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Pengguna Aktif</p>
-                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn($u) => ($u['status'] ?? 'active') === 'active')) ?></p>
+                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn ($u) => ($u['status'] ?? 'active') === 'active')) ?></p>
                     <p class="mt-1 text-xs text-muted-foreground">status</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10">
@@ -136,7 +57,7 @@ function userManager() {
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Pengguna Admin</p>
-                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn($u) => $u['role'] === 'ADMIN')) ?></p>
+                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn ($u) => $u['role'] === 'ADMIN')) ?></p>
                     <p class="mt-1 text-xs text-muted-foreground">role</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
@@ -150,7 +71,7 @@ function userManager() {
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Pemilik Akun</p>
-                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn($u) => $u['role'] === 'OWNER')) ?></p>
+                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn ($u) => $u['role'] === 'OWNER')) ?></p>
                     <p class="mt-1 text-xs text-muted-foreground">role</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
@@ -349,7 +270,7 @@ function userManager() {
         >
             <!-- Modal Header -->
             <div class="border-b border-border px-6 py-4 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-foreground" x-text="editingUser ? 'Edit Pengguna' : 'Tambah Pengguna Baru'"></h2>
+                <h2 class="text-xl font-bold text-foreground" x-text="editingUser.id ? 'Edit Pengguna' : 'Tambah Pengguna Baru'"></h2>
                 <button 
                     @click="isDialogOpen = false"
                     class="text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-muted p-1"

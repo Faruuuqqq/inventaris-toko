@@ -1,13 +1,15 @@
 <?php
+
 namespace App\Controllers\Api;
 
-use CodeIgniter\RESTful\ResourceController;
 use App\Models\WarehouseModel;
 use App\Services\WarehouseDataService;
+use CodeIgniter\RESTful\ResourceController;
 
 class WarehousesController extends ResourceController
 {
     protected WarehouseModel $modelName = 'App\Models\WarehouseModel';
+
     protected string $format = 'json';
 
     protected WarehouseDataService $dataService;
@@ -25,7 +27,7 @@ class WarehousesController extends ResourceController
         $data = $this->dataService->getPaginatedData($page, $perPage);
         return $this->respond([
             'status' => 'success',
-            'data' => $data
+            'data' => $data,
         ]);
     }
 
@@ -37,7 +39,7 @@ class WarehousesController extends ResourceController
         }
         return $this->respond([
             'status' => 'success',
-            'data' => $detailData
+            'data' => $detailData,
         ]);
     }
 
@@ -53,7 +55,7 @@ class WarehousesController extends ResourceController
         return $this->respondCreated([
             'status' => 'success',
             'message' => 'Gudang berhasil dibuat',
-            'id' => $model->getInsertID()
+            'id' => $model->getInsertID(),
         ]);
     }
 
@@ -73,7 +75,7 @@ class WarehousesController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Gudang berhasil diperbarui'
+            'message' => 'Gudang berhasil diperbarui',
         ]);
     }
 
@@ -89,7 +91,7 @@ class WarehousesController extends ResourceController
 
         return $this->respondDeleted([
             'status' => 'success',
-            'message' => 'Gudang berhasil dihapus'
+            'message' => 'Gudang berhasil dihapus',
         ]);
     }
 }

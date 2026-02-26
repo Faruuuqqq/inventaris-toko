@@ -6,20 +6,21 @@ use CodeIgniter\Model;
 
 class ConfigModel extends Model
 {
-    protected $table      = 'system_config';
-    protected $primaryKey  = 'id_config';
-    
+    protected $table = 'system_config';
+
+    protected $primaryKey = 'id_config';
+
     protected $allowedFields = [
-        'config_key', 'config_value'
+        'config_key', 'config_value',
     ];
-    
+
     protected $useTimestamps = false;
-    
+
     /**
      * Get configuration value
      *
-     * @param string $key
-     * @param mixed $default
+     * @param  string $key
+     * @param  mixed  $default
      * @return mixed
      */
     public function getConfigValue($key, $default = null)
@@ -27,25 +28,25 @@ class ConfigModel extends Model
         $config = $this->where('config_key', $key)->first();
         return $config ? $config['config_value'] : $default;
     }
-    
+
     /**
      * Set configuration value
      *
-     * @param string $key
-     * @param mixed $value
+     * @param  string $key
+     * @param  mixed  $value
      * @return bool
      */
     public function setConfigValue($key, $value)
     {
         $config = $this->where('config_key', $key)->first();
-        
+
         if ($config) {
             return $this->update($config['id_config'], ['config_value' => $value]);
         } else {
             return $this->insert(['config_key' => $key, 'config_value' => $value]);
         }
     }
-    
+
     /**
      * Get all configuration
      *
@@ -55,82 +56,84 @@ class ConfigModel extends Model
     {
         $config = $this->findAll();
         $result = [];
-        
+
         foreach ($config as $item) {
             $result[$item['config_key']] = $item['config_value'];
         }
-        
+
         return $result;
     }
-    
+
     /**
      * Update configuration
      *
-     * @param array $config
+     * @param  array $config
      * @return bool
      */
     public function updateConfig($key, $value)
     {
         $db = \Config\Database::connect();
         $db->transStart();
-        
+
         try {
             // Check if key exists
             $existing = $this->where('config_key', $key)->first();
-            
+
             if ($existing) {
                 $this->update($existing['id_config'], ['config_value' => $value]);
             } else {
                 $this->insert(['config_key' => $key, 'config_value' => $value]);
             }
-            
+
             $db->transComplete();
-            
+
             if ($db->transStatus() === false) {
                 throw new \Exception('Transaction failed');
             }
-            
+
             return true;
-            
+
         } catch (\Exception $e) {
             $db->transRollback();
             return false;
         }
     }
-    
+
     /**
      * Update multiple configuration values
      *
-     * @param array $configArray
+     * @param  array $configArray
      * @return bool
      */
     public function updateMultipleConfig($configArray)
     {
         $db = \Config\Database::connect();
         $db->transStart();
-        
+
         try {
             foreach ($configArray as $key => $value) {
                 // Skip CSRF token
-                if ($key === 'csrf_test_name') continue;
-                
+                if ($key === 'csrf_test_name') {
+                    continue;
+                }
+
                 $this->updateConfig($key, $value);
             }
-            
+
             $db->transComplete();
-            
+
             if ($db->transStatus() === false) {
                 throw new \Exception('Transaction failed');
             }
-            
+
             return true;
-            
+
         } catch (\Exception $e) {
             $db->transRollback();
             return false;
         }
     }
-    
+
     /**
      * Get company configuration
      *
@@ -143,17 +146,17 @@ class ConfigModel extends Model
             'company_address',
             'company_phone',
             'company_email',
-            'tax_number'
+            'tax_number',
         ];
-        
+
         $config = [];
         foreach ($keys as $key) {
             $config[$key] = $this->getConfigValue($key);
         }
-        
+
         return $config;
     }
-    
+
     /**
      * Get system configuration
      *
@@ -167,17 +170,17 @@ class ConfigModel extends Model
             'time_format',
             'timezone',
             'language',
-            'decimal_places'
+            'decimal_places',
         ];
-        
+
         $config = [];
         foreach ($keys as $key) {
             $config[$key] = $this->getConfigValue($key);
         }
-        
+
         return $config;
     }
-    
+
     /**
      * Get security configuration
      *
@@ -194,17 +197,17 @@ class ConfigModel extends Model
             'password_require_number',
             'password_require_special',
             'enable_2fa',
-            'allowed_ips'
+            'allowed_ips',
         ];
-        
+
         $config = [];
         foreach ($keys as $key) {
             $config[$key] = $this->getConfigValue($key);
         }
-        
+
         return $config;
     }
-    
+
     /**
      * Get notification configuration
      *
@@ -222,17 +225,17 @@ class ConfigModel extends Model
             'from_email',
             'from_name',
             'low_stock_alert',
-            'backup_frequency'
+            'backup_frequency',
         ];
-        
+
         $config = [];
         foreach ($keys as $key) {
             $config[$key] = $this->getConfigValue($key);
         }
-        
+
         return $config;
     }
-    
+
     /**
      * Initialize default configuration
      *
@@ -270,20 +273,20 @@ class ConfigModel extends Model
             'from_email' => '',
             'from_name' => '',
             'low_stock_alert' => '1',
-            'backup_frequency' => 'daily'
+            'backup_frequency' => 'daily',
         ];
-        
+
         foreach ($defaults as $key => $value) {
             $this->updateConfig($key, $value);
         }
-        
+
         return true;
     }
-    
+
     /**
      * Validate configuration key
      *
-     * @param string $key
+     * @param  string $key
      * @return bool
      */
     public function isValidConfigKey($key)
@@ -318,9 +321,9 @@ class ConfigModel extends Model
             'from_email',
             'from_name',
             'low_stock_alert',
-            'backup_frequency'
+            'backup_frequency',
         ];
-        
+
         return in_array($key, $validKeys);
     }
 }

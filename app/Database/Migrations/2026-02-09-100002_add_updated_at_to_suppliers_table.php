@@ -13,8 +13,8 @@ class AddUpdatedAtToSuppliersTable extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
                 'after' => 'created_at',
-                'comment' => 'Record last update timestamp'
-            ]
+                'comment' => 'Record last update timestamp',
+            ],
         ]);
     }
 

@@ -16,80 +16,92 @@ class AddPerformanceIndexes extends Migration
             if (!$this->indexExists('stock_mutations', 'idx_sm_product_id')) {
                 $this->db->query('ALTER TABLE stock_mutations ADD INDEX idx_sm_product_id (product_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             if (!$this->indexExists('stock_mutations', 'idx_sm_created_at')) {
                 $this->db->query('ALTER TABLE stock_mutations ADD INDEX idx_sm_created_at (created_at)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Payments - frequently queried by type and payment_date
         try {
             if (!$this->indexExists('payments', 'idx_payment_type')) {
                 $this->db->query('ALTER TABLE payments ADD INDEX idx_payment_type (type)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             if (!$this->indexExists('payments', 'idx_payment_date')) {
                 $this->db->query('ALTER TABLE payments ADD INDEX idx_payment_date (payment_date)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             if (!$this->indexExists('payments', 'idx_reference_id')) {
                 $this->db->query('ALTER TABLE payments ADD INDEX idx_reference_id (reference_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Products - frequently queried by name and sku
         try {
             if (!$this->indexExists('products', 'idx_product_name')) {
                 $this->db->query('ALTER TABLE products ADD INDEX idx_product_name (name)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Customers - frequently queried by name and code
         try {
             if (!$this->indexExists('customers', 'idx_customer_name')) {
                 $this->db->query('ALTER TABLE customers ADD INDEX idx_customer_name (name)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         try {
             if (!$this->indexExists('customers', 'idx_customer_phone')) {
                 $this->db->query('ALTER TABLE customers ADD INDEX idx_customer_phone (phone)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Suppliers - frequently queried by name
         try {
             if (!$this->indexExists('suppliers', 'idx_supplier_name')) {
                 $this->db->query('ALTER TABLE suppliers ADD INDEX idx_supplier_name (name)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Sale Items - frequently queried by product and sale
         try {
             if (!$this->indexExists('sale_items', 'idx_si_product_sale')) {
                 $this->db->query('ALTER TABLE sale_items ADD INDEX idx_si_product_sale (sale_id, product_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Purchase Order Items - frequently queried by product and PO
         try {
             if (!$this->indexExists('purchase_order_items', 'idx_poi_product_po')) {
                 $this->db->query('ALTER TABLE purchase_order_items ADD INDEX idx_poi_product_po (po_id, product_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         // Product Stocks - frequently queried by product and warehouse
         try {
             if (!$this->indexExists('product_stocks', 'idx_ps_product_warehouse')) {
                 $this->db->query('ALTER TABLE product_stocks ADD INDEX idx_ps_product_warehouse (product_id, warehouse_id)');
             }
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
     }
 
     public function down()
@@ -110,7 +122,8 @@ class AddPerformanceIndexes extends Migration
             foreach ($indexes as $index) {
                 try {
                     $this->db->query("ALTER TABLE {$table} DROP INDEX IF EXISTS {$index}");
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                }
             }
         }
     }

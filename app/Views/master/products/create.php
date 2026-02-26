@@ -60,7 +60,7 @@
                     >
                         <option value="">-- Pilih Kategori --</option>
                         <?php foreach ($categories ?? [] as $category): ?>
-                        <option value="<?= $category->id ?>" <?= old('category_id') == $category->id ? 'selected' : '' ?>>
+                        <option value="<?= $category->id ?>" <?= old('category_id') === $category->id ? 'selected' : '' ?>>
                             <?= esc($category->name) ?>
                         </option>
                         <?php endforeach; ?>

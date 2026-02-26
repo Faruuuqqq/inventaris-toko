@@ -3,157 +3,15 @@
 <?= $this->section('content') ?>
 
 <script>
-function supplierManager() {
-    return {
-        suppliers: <?= json_encode($suppliers ?? []) ?>,
-        search: '',
-        isDialogOpen: false,
-        isEditDialogOpen: false,
-        isSubmitting: false,
-        isEditSubmitting: false,
-        errors: {},
-        editErrors: {},
-        editingSupplier: {},
-
-        get filteredSuppliers() {
-            return this.suppliers.filter(sup => {
-                const searchLower = this.search.toLowerCase();
-                return (sup.name && sup.name.toLowerCase().includes(searchLower)) ||
-                       (sup.code && sup.code.toLowerCase().includes(searchLower));
-            });
-        },
-
-        get activeCount() {
-            return this.suppliers.filter(s => s.status === 'active' || s.is_active === 1).length;
-        },
-
-        get totalDebt() {
-            return this.suppliers.reduce((sum, s) => sum + (parseFloat(s.debt_balance) || 0), 0);
-        },
-
-        openEditModal(supplier) {
-            this.editingSupplier = JSON.parse(JSON.stringify(supplier));
-            this.editErrors = {};
-            this.isEditDialogOpen = true;
-        },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    ModalManager.success('Supplier berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                } else {
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
-
-        async submitEditForm(event) {
-            event.preventDefault();
-            const form = event.target;
-
-            this.editErrors = {};
-            this.isEditSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 200) {
-                    ModalManager.success('Supplier berhasil diperbarui', () => {
-                        this.isEditDialogOpen = false;
-                        this.editErrors = {};
-                        this.editingSupplier = {};
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.editErrors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                } else {
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal memperbarui data.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isEditSubmitting = false;
-            }
-        },
-
-        deleteSupplier(supplierId) {
-            const supplier = this.suppliers.find(s => s.id === supplierId);
-            const supplierName = supplier ? supplier.name : 'supplier ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/suppliers') ?>/${supplierId}`,
-                supplierName,
-                () => {
-                    this.suppliers = this.suppliers.filter(s => s.id !== supplierId);
-                }
-            );
-        },
-
-        exportData() {
-            try {
-                window.location.href = `<?= base_url('master/suppliers/export-pdf') ?>`;
-            } catch (error) {
-                console.error('Export failed:', error);
-                alert('Gagal mengekspor data.');
-            }
-        },
-
-        formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(number || 0);
-        }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    suppliers: <?= json_encode($suppliers ?? []) ?>,
+    baseUrl: '<?= base_url('master/suppliers') ?>',
+    exportUrl: '<?= base_url('master/suppliers/export-pdf') ?>',
+    searchFields: ['name', 'code']
+};
 </script>
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/supplierManager.js') ?>"></script>
 
 <div x-data="supplierManager()">
     <!-- Page Header -->
@@ -377,7 +235,7 @@ function supplierManager() {
             </div>
             
             <!-- Modal Body -->
-            <form @submit.prevent="submitForm" action="<?= base_url('master/suppliers/store') ?>" method="POST" class="p-6 space-y-4">
+            <form @submit.prevent="submitForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/store`" method="POST" class="p-6 space-y-4">
                 <?= csrf_field() ?>
                 
                 <!-- Nama Supplier -->
@@ -439,7 +297,7 @@ function supplierManager() {
                     >
                         <?= icon('Plus', 'h-5 w-5 mr-2') ?>
                         <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <?= icon("Loader2", "h-4 w-4") ?>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Supplier'"></span>
                     </button>
@@ -474,7 +332,7 @@ function supplierManager() {
             </div>
             
             <!-- Modal Body -->
-            <form @submit.prevent="submitEditForm" :action="`<?= base_url('master/suppliers') ?>/${editingSupplier.id}`" method="POST" class="p-6 space-y-4">
+            <form @submit.prevent="submitEditForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/${editingSupplier.id}`" method="POST" class="p-6 space-y-4">
                 <?= csrf_field() ?>
                 
                 <!-- Nama Supplier -->
@@ -536,7 +394,7 @@ function supplierManager() {
                     >
                         <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <?= icon("Loader2", "h-4 w-4") ?>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Supplier'"></span>
                     </button>

@@ -10,7 +10,7 @@ class ClearTestTransactionsSeeder extends Seeder
     {
         $this->db->query("DELETE FROM sales WHERE invoice_number LIKE 'INV-" . date('Ymd') . "%'");
         $this->db->query("DELETE FROM purchase_orders WHERE nomor_po LIKE 'PO-" . date('Ymd') . "%'");
-        
+
         echo "Cleared test transactions\n";
     }
 }

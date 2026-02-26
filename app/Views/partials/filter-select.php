@@ -23,14 +23,14 @@
  * - selected: Currently selected value (optional)
  */
 
-$id = $id ?? '';
-$name = $name ?? $id;
-$label = $label ?? 'Select';
-$placeholder = $placeholder ?? 'Semua';
-$options = $options ?? [];
-$valueKey = $valueKey ?? 'id';
-$labelKey = $labelKey ?? 'name';
-$selected = $selected ?? '';
+$id ??= '';
+$name ??= $id;
+$label ??= 'Select';
+$placeholder ??= 'Semua';
+$options ??= [];
+$valueKey ??= 'id';
+$labelKey ??= 'name';
+$selected ??= '';
 ?>
 <div class="space-y-2">
     <label for="<?= $id ?>"><?= $label ?></label>
@@ -40,7 +40,7 @@ $selected = $selected ?? '';
             <?php
             $value = $option->$valueKey ?? $option[$valueKey] ?? '';
             $text = $option->$labelKey ?? $option[$labelKey] ?? '';
-            $isSelected = ($value == $selected) ? 'selected' : '';
+            $isSelected = ($value === $selected) ? 'selected' : '';
             ?>
             <option value="<?= $value ?>" <?= $isSelected ?>><?= esc($text) ?></option>
         <?php endforeach; ?>

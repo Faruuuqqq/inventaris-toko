@@ -1,7 +1,7 @@
 <?php
 /**
  * Badge Component - Status Indicators
- * 
+ *
  * Usage:
  * <?= view('components/badge', [
  *     'text' => 'Paid',
@@ -11,18 +11,18 @@
  * ]) ?>
  */
 
-$text = $text ?? '';
-$variant = $variant ?? 'secondary';
-$icon = $icon ?? null;
-$animated = $animated ?? false;
-$class = $class ?? '';
+$text ??= '';
+$variant ??= 'secondary';
+$icon ??= null;
+$animated ??= false;
+$class ??= '';
 
 $variantClasses = [
     'success' => 'badge-success',
     'destructive' => 'badge-destructive',
     'warning' => 'badge-warning',
     'primary' => 'badge-primary',
-    'secondary' => 'badge-secondary'
+    'secondary' => 'badge-secondary',
 ];
 
 $badgeClass = $variantClasses[$variant] ?? 'badge-secondary';

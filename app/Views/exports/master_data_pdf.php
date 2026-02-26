@@ -205,12 +205,12 @@
             <span class="filter-label">Filter:</span>
             <?php
             $filterStrings = [];
-            foreach ($filters as $key => $value) {
-                if (!empty($value)) {
-                    $filterStrings[] = "{$key}: {$value}";
-                }
+        foreach ($filters as $key => $value) {
+            if (!empty($value)) {
+                $filterStrings[] = "{$key}: {$value}";
             }
-            ?>
+        }
+        ?>
             <?= esc(implode(' | ', $filterStrings) ?? 'Semua Data') ?>
         </div>
     <?php endif; ?>

@@ -1,21 +1,27 @@
 <?php
+
 namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
-use App\Models\StockMutationModel;
-use App\Models\ProductModel;
-use App\Models\WarehouseModel;
 use App\Models\CategoryModel;
+use App\Models\ProductModel;
 use App\Models\ProductStockModel;
+use App\Models\StockMutationModel;
+use App\Models\WarehouseModel;
 use App\Traits\ApiResponseTrait;
 
 class Stock extends BaseController
 {
     use ApiResponseTrait;
+
     protected $stockMutationModel;
+
     protected $productModel;
+
     protected $warehouseModel;
+
     protected $categoryModel;
+
     protected $productStockModel;
 
     public function __construct()
@@ -64,7 +70,7 @@ class Stock extends BaseController
                     'sku' => $stock['sku'],
                     'total_stock' => 0,
                     'price' => (float)$stock['price_buy'],
-                    'warehouses' => []
+                    'warehouses' => [],
                 ];
             }
 
@@ -72,7 +78,7 @@ class Stock extends BaseController
             $productStocks[$productId]['total_stock'] += $qty;
             $productStocks[$productId]['warehouses'][] = [
                 'warehouse' => $stock['warehouse_name'],
-                'quantity' => $qty
+                'quantity' => $qty,
             ];
 
             $totalStock += $qty;
@@ -137,7 +143,7 @@ class Stock extends BaseController
             'Max Stock',
             'Unit Price (Rp)',
             'Total Value (Rp)',
-            'Stock Status'
+            'Stock Status',
         ]);
 
         // Write data rows
@@ -149,7 +155,7 @@ class Stock extends BaseController
             $totalValue = $currentStock * $price;
 
             // Determine stock status
-            if ($currentStock == 0) {
+            if ($currentStock === 0) {
                 $status = 'Out of Stock';
             } elseif ($currentStock <= $minStock) {
                 $status = 'Low Stock';
@@ -168,7 +174,7 @@ class Stock extends BaseController
                 $maxStock,
                 number_format($price, 0, ',', '.'),
                 number_format($totalValue, 0, ',', '.'),
-                $status
+                $status,
             ]);
         }
 
@@ -183,33 +189,33 @@ class Stock extends BaseController
         $warehouseId = $this->request->getGet('warehouse_id');
         $startDate = $this->request->getGet('start_date');
         $endDate = $this->request->getGet('end_date');
-        
+
         $query = $this->stockMutationModel
             ->select('stock_mutations.*, products.name as product_name, warehouses.name as warehouse_name')
             ->join('products', 'products.id = stock_mutations.product_id')
             ->join('warehouses', 'warehouses.id = stock_mutations.warehouse_id')
             ->orderBy('stock_mutations.created_at', 'DESC');
-        
+
         if ($productId) {
             $query->where('stock_mutations.product_id', $productId);
         }
-        
+
         if ($warehouseId) {
             $query->where('stock_mutations.warehouse_id', $warehouseId);
         }
-        
+
         if ($startDate) {
             $query->where('stock_mutations.created_at >=', $startDate);
         }
-        
+
         if ($endDate) {
             $query->where('stock_mutations.created_at <=', $endDate . ' 23:59:59');
         }
-        
+
         $mutations = $query->findAll();
         return $this->respondData($mutations);
     }
-    
+
     /**
      * Get stock card data
      */
@@ -217,20 +223,20 @@ class Stock extends BaseController
     {
         $productId = $this->request->getGet('product_id');
         $warehouseId = $this->request->getGet('warehouse_id');
-        
+
         if (!$productId) {
             return $this->respondEmpty();
         }
-        
+
         // Get product info
         $product = $this->productModel->find($productId);
         if (!$product) {
             return $this->respondEmpty();
         }
-        
+
         // Get current stock
         $productStocks = $this->productModel->getStockInAllWarehouses($productId);
-        
+
         // Get mutations with proper field names
         $mutations = $this->stockMutationModel
             ->select('stock_mutations.*, products.name as product_name, warehouses.name as warehouse_name')
@@ -238,38 +244,38 @@ class Stock extends BaseController
             ->join('warehouses', 'warehouses.id = stock_mutations.warehouse_id')
             ->where('stock_mutations.product_id', $productId)
             ->orderBy('stock_mutations.created_at', 'DESC');
-            
+
         if ($warehouseId) {
             $mutations->where('stock_mutations.warehouse_id', $warehouseId);
         }
-        
+
         $mutations = $mutations->findAll();
-        
+
         // Calculate running balance
         $runningBalance = [];
         $balance = 0;
-        
+
         foreach ($mutations as $mutation) {
             if ($mutation['mutation_type'] === 'IN') {
                 $balance += $mutation['quantity'];
             } else {
                 $balance -= $mutation['quantity'];
             }
-            
+
             $mutation['running_balance'] = $balance;
             $runningBalance[] = $mutation;
         }
-        
+
         $data = [
             'product' => $product,
             'currentStocks' => $productStocks,
             'mutations' => $runningBalance,
-            'finalBalance' => $balance
+            'finalBalance' => $balance,
         ];
-        
+
         return $this->respondData($data);
     }
-    
+
     /**
      * Get stock summary
      */
@@ -282,17 +288,17 @@ class Stock extends BaseController
             ->select('products.name as product_name, products.sku, SUM(product_stocks.quantity) as total_quantity')
             ->join('products', 'products.id = product_stocks.product_id')
             ->groupBy('product_stocks.product_id');
-            
+
         if ($warehouseId) {
             $query->where('product_stocks.warehouse_id', $warehouseId);
         }
-        
+
         if ($categoryId) {
             $query->where('products.category_id', $categoryId);
         }
-        
+
         $summary = $query->findAll();
-        
+
         return $this->respondData($summary);
     }
 

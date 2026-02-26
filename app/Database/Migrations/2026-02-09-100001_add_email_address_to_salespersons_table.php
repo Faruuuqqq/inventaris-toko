@@ -14,14 +14,14 @@ class AddEmailAddressToSalespersonsTable extends Migration
                 'constraint' => 255,
                 'null' => true,
                 'after' => 'phone',
-                'comment' => 'Salesperson email for communication'
+                'comment' => 'Salesperson email for communication',
             ],
             'address' => [
                 'type' => 'TEXT',
                 'null' => true,
                 'after' => 'email',
-                'comment' => 'Salesperson address for documentation'
-            ]
+                'comment' => 'Salesperson address for documentation',
+            ],
         ]);
     }
 

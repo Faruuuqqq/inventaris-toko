@@ -10,7 +10,7 @@ class InitialDataSeeder extends Seeder
     {
         // Truncate tables to clear existing data
         $db = \Config\Database::connect();
-        
+
         // Disable foreign key checks temporarily
         $db->disableForeignKeyChecks();
         $db->table('users')->truncate();
@@ -26,7 +26,7 @@ class InitialDataSeeder extends Seeder
 
         // 1. Insert Users (password: test123)
         $passwordHash = password_hash('test123', PASSWORD_DEFAULT);
-        
+
         $users = [
             [
                 'username' => 'owner',
@@ -65,7 +65,7 @@ class InitialDataSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
             ],
         ];
-        
+
         $this->db->table('users')->insertBatch($users);
         echo "✓ Inserted 4 users\n";
 
@@ -76,7 +76,7 @@ class InitialDataSeeder extends Seeder
             'address' => 'Jl. Utama No. 1',
             'is_active' => 1,
         ];
-        
+
         $this->db->table('warehouses')->insert($warehouse);
         echo "✓ Inserted 1 warehouse\n";
 
@@ -88,7 +88,7 @@ class InitialDataSeeder extends Seeder
             ['name' => 'Pakaian'],
             ['name' => 'Lainnya'],
         ];
-        
+
         $this->db->table('categories')->insertBatch($categories);
         echo "✓ Inserted 5 categories\n";
 
@@ -145,7 +145,7 @@ class InitialDataSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
             ],
         ];
-        
+
         $this->db->table('products')->insertBatch($products);
         echo "✓ Inserted 5 products\n";
 
@@ -157,7 +157,7 @@ class InitialDataSeeder extends Seeder
             ['product_id' => 4, 'warehouse_id' => 1, 'quantity' => 10, 'min_stock_alert' => 3],
             ['product_id' => 5, 'warehouse_id' => 1, 'quantity' => 100, 'min_stock_alert' => 50],
         ];
-        
+
         $this->db->table('product_stocks')->insertBatch($stocks);
         echo "✓ Inserted 5 product stocks\n";
 
@@ -191,7 +191,7 @@ class InitialDataSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
             ],
         ];
-        
+
         $this->db->table('customers')->insertBatch($customers);
         echo "✓ Inserted 3 customers\n";
 
@@ -212,7 +212,7 @@ class InitialDataSeeder extends Seeder
                 'created_at' => date('Y-m-d H:i:s'),
             ],
         ];
-        
+
         $this->db->table('suppliers')->insertBatch($suppliers);
         echo "✓ Inserted 2 suppliers\n";
 
@@ -222,7 +222,7 @@ class InitialDataSeeder extends Seeder
             ['name' => 'Siti Aminah', 'phone' => '08222222222', 'is_active' => 1],
             ['name' => 'Joko Widodo', 'phone' => '08333333333', 'is_active' => 1],
         ];
-        
+
         $this->db->table('salespersons')->insertBatch($salespersons);
         echo "✓ Inserted 3 salespersons\n";
 
@@ -233,7 +233,7 @@ class InitialDataSeeder extends Seeder
             ['config_key' => 'company_phone', 'config_value' => '021-12345678'],
             ['config_key' => 'session_timeout', 'config_value' => '7200'],
         ];
-        
+
         $this->db->table('system_config')->insertBatch($configs);
         echo "✓ Inserted system config\n";
 

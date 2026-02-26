@@ -15,29 +15,29 @@
  * - selected: Currently selected value (optional)
  */
 
-$id = $id ?? 'statusFilter';
-$name = $name ?? $id;
-$type = $type ?? 'payment';
-$label = $label ?? 'Status';
-$selected = $selected ?? '';
+$id ??= 'statusFilter';
+$name ??= $id;
+$type ??= 'payment';
+$label ??= 'Status';
+$selected ??= '';
 
 // Define status options by type
 $statusOptions = [
     'payment' => [
         'PAID' => 'Lunas',
         'UNPAID' => 'Belum Lunas',
-        'PARTIAL' => 'Sebagian'
+        'PARTIAL' => 'Sebagian',
     ],
     'order' => [
         'Dipesan' => 'Dipesan',
         'Sebagian' => 'Sebagian Diterima',
         'Diterima Semua' => 'Diterima Semua',
-        'Dibatalkan' => 'Dibatalkan'
+        'Dibatalkan' => 'Dibatalkan',
     ],
     'return' => [
         'Pending' => 'Pending',
         'Disetujui' => 'Disetujui',
-        'Ditolak' => 'Ditolak'
+        'Ditolak' => 'Ditolak',
     ],
     'expense' => [
         'OPERASIONAL' => 'Operasional',
@@ -48,8 +48,8 @@ $statusOptions = [
         'SEWA' => 'Sewa',
         'PERBAIKAN' => 'Perbaikan',
         'ATK' => 'ATK',
-        'LAINNYA' => 'Lainnya'
-    ]
+        'LAINNYA' => 'Lainnya',
+    ],
 ];
 
 $options = $statusOptions[$type] ?? $statusOptions['payment'];
@@ -59,7 +59,7 @@ $options = $statusOptions[$type] ?? $statusOptions['payment'];
     <select id="<?= $id ?>" name="<?= $name ?>" class="form-input">
         <option value="">Semua</option>
         <?php foreach ($options as $value => $text): ?>
-            <option value="<?= $value ?>" <?= ($value == $selected) ? 'selected' : '' ?>><?= $text ?></option>
+            <option value="<?= $value ?>" <?= ($value === $selected) ? 'selected' : '' ?>><?= $text ?></option>
         <?php endforeach; ?>
     </select>
 </div>

@@ -212,15 +212,15 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('purchaseOrderForm', () => ({
         form: {
-            id_supplier: '<?= $purchaseOrder["id_supplier"] ?>',
+            id_supplier: '<?= $purchaseOrder['id_supplier'] ?>',
             products: [
                 <?php foreach ($purchaseOrder->details as $detail): ?>
                     {
-                        id_produk: '<?= $detail["id_produk"] ?>',
-                        jumlah: <?= $detail["jumlah"] ?>,
-                        harga_beli: <?= $detail["harga_beli"] ?>,
-                        subtotal: <?= $detail["subtotal"] ?>,
-                        keterangan: '<?= $detail["keterangan"] ?>'
+                        id_produk: '<?= $detail['id_produk'] ?>',
+                        jumlah: <?= $detail['jumlah'] ?>,
+                        harga_beli: <?= $detail['harga_beli'] ?>,
+                        subtotal: <?= $detail['subtotal'] ?>,
+                        keterangan: <?= json_encode($detail['keterangan'] ?? '', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT) ?>
                     },
                 <?php endforeach; ?>
             ]

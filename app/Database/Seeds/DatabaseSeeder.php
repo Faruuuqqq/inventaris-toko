@@ -8,9 +8,9 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Run database seeds.
-     * 
+     *
      * Main seeder that controls the execution order of other seeders
-     * 
+     *
      * Usage:
      * 1. php spark db:seed DatabaseSeeder          (Run all seeders)
      * 2. php spark db:seed UserSeeder            (Run specific seeder)
@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             echo "▶️  Step 1: Loading core data for integration testing...\n";
             $this->call('UserSeeder');
             echo "   - Users: ✅\n";
-            
+
             echo "✅ Core data seeding complete!\n\n";
 
             // Print integration test credentials

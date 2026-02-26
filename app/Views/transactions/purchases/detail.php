@@ -153,14 +153,6 @@
                 </div>
 
                 <!-- Received Value -->
-                <?php 
-                $totalReceived = 0;
-                foreach ($purchaseOrder['details'] as $detail) {
-                    $totalReceived += $detail['jumlah_diterima'] * $detail['harga_beli'];
-                }
-                $totalRemaining = $purchaseOrder['total_bayar'] - $totalReceived;
-                ?>
-
                 <div class="rounded-lg bg-success/10 p-4 border border-success/20">
                     <p class="text-xs font-medium text-success uppercase mb-1">Nilai Diterima</p>
                     <p class="text-lg font-bold text-success">Rp <?= number_format($totalReceived, 0, ',', '.') ?></p>
@@ -176,25 +168,25 @@
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-muted-foreground">Status Penerimaan</span>
                         <span class="text-xs font-semibold px-2 py-1 rounded-full 
-                            <?php 
-                            if ($purchaseOrder['status'] === 'Diterima Semua') {
-                                echo 'bg-success/10 text-success';
-                            } elseif ($purchaseOrder['status'] === 'Diterima Sebagian') {
-                                echo 'bg-warning/10 text-warning';
-                            } else {
-                                echo 'bg-muted/50 text-muted-foreground';
-                            }
-                            ?>
+                            <?php
+            if ($purchaseOrder['status'] === 'Diterima Semua') {
+                echo 'bg-success/10 text-success';
+            } elseif ($purchaseOrder['status'] === 'Diterima Sebagian') {
+                echo 'bg-warning/10 text-warning';
+            } else {
+                echo 'bg-muted/50 text-muted-foreground';
+            }
+?>
                         ">
-                            <?php 
-                            if ($purchaseOrder['status'] === 'Diterima Semua') {
-                                echo 'Lengkap';
-                            } elseif ($purchaseOrder['status'] === 'Diterima Sebagian') {
-                                echo 'Sebagian';
-                            } else {
-                                echo 'Belum Diterima';
-                            }
-                            ?>
+                            <?php
+if ($purchaseOrder['status'] === 'Diterima Semua') {
+    echo 'Lengkap';
+} elseif ($purchaseOrder['status'] === 'Diterima Sebagian') {
+    echo 'Sebagian';
+} else {
+    echo 'Belum Diterima';
+}
+?>
                         </span>
                     </div>
                 </div>

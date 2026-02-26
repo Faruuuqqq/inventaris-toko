@@ -208,14 +208,27 @@
 
             removeProduct(index) {
                 this.form.products.splice(index, 1);
+                this.updateTotal();
             },
 
             updateProductPrice(index) {
-                // Price update logic here
+                const select = document.querySelector(`select[x-model="form.products[${index}].id_produk"]`);
+                if (!select) return;
+
+                const option = select.options[select.selectedIndex];
+                if (!option) return;
+
+                const price = parseFloat(option.dataset.price || 0);
+                this.form.products[index].harga_beli = price;
             },
 
-            updatePrices() {
-                // Update supplier prices
+            updateTotal() {
+                let total = 0;
+                this.form.products.forEach(p => {
+                    const subtotal = (p.qty || 0) * (p.harga_beli || 0);
+                    total += subtotal;
+                });
+                this.form.total_amount = total;
             }
         };
     }

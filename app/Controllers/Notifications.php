@@ -2,21 +2,25 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Models\CustomerModel;
 use App\Models\NotificationModel;
 use App\Models\ProductStockModel;
-use App\Models\CustomerModel;
-use App\Models\SupplierModel;
-use App\Models\SaleModel;
 use App\Models\PurchaseOrderModel;
+use App\Models\SaleModel;
+use App\Models\SupplierModel;
 
 class Notifications extends BaseController
 {
     protected $notificationModel;
+
     protected $productStockModel;
+
     protected $customerModel;
+
     protected $supplierModel;
+
     protected $saleModel;
+
     protected $poModel;
 
     public function __construct()
@@ -102,7 +106,7 @@ class Notifications extends BaseController
         $this->checkOverdueReceivables();
         $this->checkOverduePayables();
         $this->checkPendingPOs();
-        
+
         return $this->response->setJSON(['success' => true, 'message' => 'Notifications checked']);
     }
 
@@ -135,7 +139,7 @@ class Notifications extends BaseController
                     'reference_type' => 'product',
                     'link' => base_url('master/products'),
                     'is_read' => 0,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
                 ]);
             }
         }
@@ -168,12 +172,12 @@ class Notifications extends BaseController
                     'user_id' => null,
                     'type' => 'overdue_receivable',
                     'title' => 'Piutang Jatuh Tempo',
-                    'message' => "Invoice {$sale['invoice_number']} - {$sale['customer_name']} jatuh tempo " . date('d/m/Y', strtotime($sale['due_date'])) . " (Rp " . number_format($sale['total_amount'] - $sale['paid_amount'], 0, ',', '.') . ")",
+                    'message' => "Invoice {$sale['invoice_number']} - {$sale['customer_name']} jatuh tempo " . date('d/m/Y', strtotime($sale['due_date'])) . ' (Rp ' . number_format($sale['total_amount'] - $sale['paid_amount'], 0, ',', '.') . ')',
                     'reference_id' => $sale['id'],
                     'reference_type' => 'sale',
                     'link' => base_url('finance/payments/receivable'),
                     'is_read' => 0,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
                 ]);
             }
         }
@@ -204,12 +208,12 @@ class Notifications extends BaseController
                     'user_id' => null,
                     'type' => 'overdue_payable',
                     'title' => 'Utang Jatuh Tempo',
-                    'message' => "PO {$po['nomor_po']} - {$po['supplier_name']} (Rp " . number_format($po['total_amount'] - $po['paid_amount'], 0, ',', '.') . ")",
+                    'message' => "PO {$po['nomor_po']} - {$po['supplier_name']} (Rp " . number_format($po['total_amount'] - $po['paid_amount'], 0, ',', '.') . ')',
                     'reference_id' => $po['id_po'],
                     'reference_type' => 'purchase_order',
                     'link' => base_url('finance/payments/payable'),
                     'is_read' => 0,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
                 ]);
             }
         }
@@ -245,7 +249,7 @@ class Notifications extends BaseController
                     'reference_type' => 'purchase_order',
                     'link' => base_url('transactions/purchases'),
                     'is_read' => 0,
-                    'created_at' => date('Y-m-d H:i:s')
+                    'created_at' => date('Y-m-d H:i:s'),
                 ]);
             }
         }
@@ -258,7 +262,7 @@ class Notifications extends BaseController
     {
         $userId = session()->get('user_id');
         $settings = $this->notificationModel->getUserSettings($userId);
-        
+
         return $this->response->setJSON(['settings' => $settings]);
     }
 
@@ -269,9 +273,9 @@ class Notifications extends BaseController
     {
         $userId = session()->get('user_id');
         $settings = $this->request->getJSON(true);
-        
+
         $this->notificationModel->updateUserSettings($userId, $settings);
-        
+
         return $this->response->setJSON(['success' => true]);
     }
 }

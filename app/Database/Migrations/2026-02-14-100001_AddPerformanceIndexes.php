@@ -9,57 +9,57 @@ class AddPerformanceIndexes extends Migration
     public function up()
     {
         // Sales table indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_sales_customer ON sales(customer_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_sales_status ON sales(payment_status)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(created_at)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_sales_customer_status ON sales(customer_id, payment_status)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_sales_invoice ON sales(invoice_number)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_sales_customer ON sales(customer_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_sales_status ON sales(payment_status)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(created_at)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_sales_customer_status ON sales(customer_id, payment_status)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_sales_invoice ON sales(invoice_number)');
+
         // Sale Items indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_sale_items_sale ON sale_items(sale_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_sale_items_product ON sale_items(product_id)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_sale_items_sale ON sale_items(sale_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_sale_items_product ON sale_items(product_id)');
+
         // Purchase Orders indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_po_supplier ON purchase_orders(supplier_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_po_status ON purchase_orders(status)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_po_date ON purchase_orders(tanggal_po)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_po_payment_status ON purchase_orders(payment_status)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_po_supplier ON purchase_orders(supplier_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_po_status ON purchase_orders(status)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_po_date ON purchase_orders(tanggal_po)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_po_payment_status ON purchase_orders(payment_status)');
+
         // Purchase Order Items indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_po_items_po ON purchase_order_items(po_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_po_items_product ON purchase_order_items(product_id)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_po_items_po ON purchase_order_items(po_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_po_items_product ON purchase_order_items(product_id)');
+
         // Products indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_products_sku ON products(sku)');
+
         // Product Stocks indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_stocks_product ON product_stocks(product_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_stocks_warehouse ON product_stocks(warehouse_id)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_stocks_product ON product_stocks(product_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_stocks_warehouse ON product_stocks(warehouse_id)');
+
         // Stock Mutations indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_mutations_product ON stock_mutations(product_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_mutations_type ON stock_mutations(type)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_mutations_date ON stock_mutations(created_at)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_mutations_product ON stock_mutations(product_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_mutations_type ON stock_mutations(type)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_mutations_date ON stock_mutations(created_at)');
+
         // Payments indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_payments_type ON payments(type)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_payments_date ON payments(payment_date)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_payments_user ON payments(user_id)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_payments_type ON payments(type)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_payments_date ON payments(payment_date)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_payments_user ON payments(user_id)');
+
         // Expenses indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(expense_date)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(expense_date)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category)');
+
         // Delivery Notes indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_delivery_notes_sale ON delivery_notes(sale_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_delivery_notes_status ON delivery_notes(status)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_delivery_notes_sale ON delivery_notes(sale_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_delivery_notes_status ON delivery_notes(status)');
+
         // Audit Logs indexes
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_logs(user_id)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action)");
-        $this->db->query("CREATE INDEX IF NOT EXISTS idx_audit_date ON audit_logs(created_at)");
-        
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_logs(user_id)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_logs(action)');
+        $this->db->query('CREATE INDEX IF NOT EXISTS idx_audit_date ON audit_logs(created_at)');
+
         // Notifications indexes (new table)
         // These will be created by CreateNotificationsTable migration
     }
@@ -78,9 +78,9 @@ class AddPerformanceIndexes extends Migration
             'payments' => ['idx_payments_type', 'idx_payments_date', 'idx_payments_user'],
             'expenses' => ['idx_expenses_date', 'idx_expenses_category'],
             'delivery_notes' => ['idx_delivery_notes_sale', 'idx_delivery_notes_status'],
-            'audit_logs' => ['idx_audit_user', 'idx_audit_action', 'idx_audit_date']
+            'audit_logs' => ['idx_audit_user', 'idx_audit_action', 'idx_audit_date'],
         ];
-        
+
         foreach ($tables as $table => $indexes) {
             foreach ($indexes as $index) {
                 try {

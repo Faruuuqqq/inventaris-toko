@@ -3,14 +3,16 @@
 namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
-use App\Models\SaleModel;
-use App\Models\ProductModel;
 use App\Models\CategoryModel;
+use App\Models\ProductModel;
+use App\Models\SaleModel;
 
 class Analytics extends BaseController
 {
     protected $saleModel;
+
     protected $productModel;
+
     protected $categoryModel;
 
     public function __construct()
@@ -32,16 +34,16 @@ class Analytics extends BaseController
 
         // Calculate key metrics
         $stats = $this->calculateStats($dateFrom, $dateTo, $db);
-        
+
         // Revenue by category
         $revenueByCategory = $this->getRevenueByCategory($dateFrom, $dateTo, $db);
-        
+
         // Payment methods breakdown
         $paymentMethods = $this->getPaymentMethodsBreakdown($dateFrom, $dateTo, $db);
-        
+
         // Top products
         $topProducts = $this->getTopProducts($dateFrom, $dateTo, $db);
-        
+
         // Revenue trend data for charts
         $revenueTrend = $this->getRevenueTrend($dateFrom, $dateTo, $db);
 
@@ -118,7 +120,7 @@ class Analytics extends BaseController
      */
     private function getRevenueByCategory($dateFrom, $dateTo, $db)
     {
-        $result = $db->query("
+        $result = $db->query('
             SELECT 
                 c.name as category_name,
                 SUM(si.subtotal) as revenue,
@@ -132,7 +134,7 @@ class Analytics extends BaseController
                 AND s.deleted_at IS NULL
             GROUP BY c.id, c.name
             ORDER BY revenue DESC
-        ", [$dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
+        ', [$dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
 
         $totalRevenue = array_sum(array_column($result, 'revenue'));
 
@@ -142,7 +144,7 @@ class Analytics extends BaseController
                 'name' => $row['category_name'] ?: 'Uncategorized',
                 'revenue' => (float)$row['revenue'],
                 'percentage' => $totalRevenue > 0 ? round(($row['revenue'] / $totalRevenue) * 100, 1) : 0,
-                'transaction_count' => (int)$row['transaction_count']
+                'transaction_count' => (int)$row['transaction_count'],
             ];
         }
 
@@ -154,7 +156,7 @@ class Analytics extends BaseController
      */
     private function getPaymentMethodsBreakdown($dateFrom, $dateTo, $db)
     {
-        $result = $db->query("
+        $result = $db->query('
             SELECT 
                 payment_type,
                 COUNT(*) as count,
@@ -164,7 +166,7 @@ class Analytics extends BaseController
                 AND created_at <= ?
                 AND deleted_at IS NULL
             GROUP BY payment_type
-        ", [$dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
+        ', [$dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
 
         $totalAmount = array_sum(array_column($result, 'amount'));
 
@@ -175,22 +177,22 @@ class Analytics extends BaseController
                 'bgClass' => 'bg-success/10',
                 'iconClass' => 'text-success',
                 'barClass' => 'bg-success',
-                'iconPath' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                'iconPath' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
             ],
             'CREDIT' => [
                 'label' => 'Kredit',
                 'bgClass' => 'bg-warning/10',
                 'iconClass' => 'text-warning',
                 'barClass' => 'bg-warning',
-                'iconPath' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'
+                'iconPath' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
             ],
             'TRANSFER' => [
                 'label' => 'Transfer',
                 'bgClass' => 'bg-primary/10',
                 'iconClass' => 'text-primary',
                 'barClass' => 'bg-primary',
-                'iconPath' => 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4'
-            ]
+                'iconPath' => 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
+            ],
         ];
 
         foreach ($result as $row) {
@@ -201,7 +203,7 @@ class Analytics extends BaseController
                 'type' => $type,
                 'count' => (int)$row['count'],
                 'amount' => (float)$row['amount'],
-                'percentage' => $totalAmount > 0 ? round(($row['amount'] / $totalAmount) * 100, 1) : 0
+                'percentage' => $totalAmount > 0 ? round(($row['amount'] / $totalAmount) * 100, 1) : 0,
             ]);
         }
 
@@ -213,7 +215,7 @@ class Analytics extends BaseController
      */
     private function getTopProducts($dateFrom, $dateTo, $db)
     {
-        $result = $db->query("
+        $result = $db->query('
             SELECT 
                 p.id,
                 p.name,
@@ -230,7 +232,7 @@ class Analytics extends BaseController
             GROUP BY p.id, p.name, p.sku
             ORDER BY revenue DESC
             LIMIT 10
-        ", [$dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
+        ', [$dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
 
         $totalRevenue = array_sum(array_column($result, 'revenue'));
 
@@ -243,7 +245,7 @@ class Analytics extends BaseController
                 'qty_sold' => (int)$row['qty_sold'],
                 'revenue' => (float)$row['revenue'],
                 'profit' => (float)$row['profit'],
-                'share' => $totalRevenue > 0 ? round(($row['revenue'] / $totalRevenue) * 100, 1) : 0
+                'share' => $totalRevenue > 0 ? round(($row['revenue'] / $totalRevenue) * 100, 1) : 0,
             ];
         }
 
@@ -256,7 +258,7 @@ class Analytics extends BaseController
     private function getRevenueTrend($dateFrom, $dateTo, $db)
     {
         $daysDiff = (strtotime($dateTo) - strtotime($dateFrom)) / 86400;
-        
+
         // Determine grouping (daily, weekly, monthly)
         if ($daysDiff <= 31) {
             // Daily grouping
@@ -271,7 +273,7 @@ class Analytics extends BaseController
             $groupBy = 'DATE_FORMAT(s.created_at, "%Y-%m")';
             $dateFormat = '%Y-%m';
         }
-        
+
         $result = $db->query("
             SELECT 
                 DATE_FORMAT(s.created_at, ?) as period_label,
@@ -286,7 +288,7 @@ class Analytics extends BaseController
             GROUP BY period
             ORDER BY period ASC
         ", [$dateFormat, $dateFrom, $dateTo . ' 23:59:59'])->getResultArray();
-        
+
         return $result;
     }
 
@@ -305,49 +307,49 @@ class Analytics extends BaseController
         $revenueByCategory = $this->getRevenueByCategory($dateFrom, $dateTo, $db);
         $paymentMethods = $this->getPaymentMethodsBreakdown($dateFrom, $dateTo, $db);
         $topProducts = $this->getTopProducts($dateFrom, $dateTo, $db);
-        
+
         // Set response headers for CSV download
         $filename = 'analytics_export_' . date('Y-m-d_His') . '.csv';
         $this->response->setHeader('Content-Type', 'text/csv; charset=utf-8');
         $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
         $this->response->setHeader('Pragma', 'no-cache');
         $this->response->setHeader('Expires', '0');
-        
+
         // Open output stream
         $output = fopen('php://output', 'w');
-        
+
         // Add UTF-8 BOM for Excel compatibility
         fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-        
+
         // Section 1: Summary Statistics
         fputcsv($output, ['ANALYTICS DASHBOARD EXPORT']);
         fputcsv($output, ['Period: ' . $dateFrom . ' to ' . $dateTo]);
         fputcsv($output, ['']);
-        
+
         fputcsv($output, ['KEY METRICS']);
         fputcsv($output, ['Metric', 'Value', 'Growth (%)']);
         fputcsv($output, [
-            'Total Revenue', 
+            'Total Revenue',
             'Rp ' . number_format($stats['totalRevenue'], 0, ',', '.'),
-            $stats['revenueGrowth'] . '%'
+            $stats['revenueGrowth'] . '%',
         ]);
         fputcsv($output, [
-            'Total Profit', 
+            'Total Profit',
             'Rp ' . number_format($stats['totalProfit'], 0, ',', '.'),
-            $stats['profitGrowth'] . '%'
+            $stats['profitGrowth'] . '%',
         ]);
         fputcsv($output, [
-            'Total Transactions', 
+            'Total Transactions',
             number_format($stats['totalTransactions'], 0, ',', '.'),
-            $stats['transactionGrowth'] . '%'
+            $stats['transactionGrowth'] . '%',
         ]);
         fputcsv($output, [
-            'Avg Order Value', 
+            'Avg Order Value',
             'Rp ' . number_format($stats['avgOrderValue'], 0, ',', '.'),
-            $stats['aovGrowth'] . '%'
+            $stats['aovGrowth'] . '%',
         ]);
         fputcsv($output, ['']);
-        
+
         // Section 2: Revenue by Category
         if (!empty($revenueByCategory)) {
             fputcsv($output, ['REVENUE BY CATEGORY']);
@@ -357,12 +359,12 @@ class Analytics extends BaseController
                     $cat['name'],
                     number_format($cat['revenue'], 0, ',', '.'),
                     $cat['percentage'] . '%',
-                    $cat['transaction_count']
+                    $cat['transaction_count'],
                 ]);
             }
             fputcsv($output, ['']);
         }
-        
+
         // Section 3: Payment Methods
         if (!empty($paymentMethods)) {
             fputcsv($output, ['PAYMENT METHODS']);
@@ -372,12 +374,12 @@ class Analytics extends BaseController
                     $method['label'],
                     $method['count'],
                     number_format($method['amount'], 0, ',', '.'),
-                    $method['percentage'] . '%'
+                    $method['percentage'] . '%',
                 ]);
             }
             fputcsv($output, ['']);
         }
-        
+
         // Section 4: Top 10 Products
         if (!empty($topProducts)) {
             fputcsv($output, ['TOP 10 PRODUCTS']);
@@ -389,11 +391,11 @@ class Analytics extends BaseController
                     $product['qty_sold'],
                     number_format($product['revenue'], 0, ',', '.'),
                     number_format($product['profit'], 0, ',', '.'),
-                    $product['share'] . '%'
+                    $product['share'] . '%',
                 ]);
             }
         }
-        
+
         fclose($output);
         return $this->response;
     }

@@ -9,14 +9,14 @@
 <?php if (session()->has('error')): ?>
     <?= view('components/alert', [
         'type' => 'error',
-        'message' => session('error')
+        'message' => session('error'),
     ]) ?>
 <?php endif; ?>
 
 <?php if (session()->has('success')): ?>
     <?= view('components/alert', [
         'type' => 'success',
-        'message' => session('success')
+        'message' => session('success'),
     ]) ?>
 <?php endif; ?>
 
@@ -28,7 +28,7 @@
         'label' => 'Username',
         'placeholder' => 'Masukkan username',
         'required' => true,
-        'error' => validation_show_error('username') ?? ''
+        'error' => validation_show_error('username') ?? '',
     ]) ?>
 
     <?= view('components/input', [
@@ -37,7 +37,7 @@
         'label' => 'Password',
         'placeholder' => '••••••••',
         'required' => true,
-        'error' => validation_show_error('password') ?? ''
+        'error' => validation_show_error('password') ?? '',
     ]) ?>
 
     <?= view('components/button', [
@@ -45,7 +45,7 @@
         'size' => 'default',
         'type' => 'submit',
         'slot' => 'Masuk',
-        'class' => 'w-full'
+        'class' => 'w-full',
     ]) ?>
     
 </form>

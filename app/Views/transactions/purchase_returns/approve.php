@@ -121,7 +121,7 @@
 
 <!-- Action Buttons -->
 <div class="flex items-center justify-between gap-3">
-    <button type="button" onclick="processReject()" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-destructive text-white font-medium rounded-lg hover:bg-destructive/90 transition">
+    <button type="button" @click="processReject()" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-destructive text-white font-medium rounded-lg hover:bg-destructive/90 transition">
         <?= icon('X', 'h-5 w-5') ?>
         Tolak
     </button>
@@ -129,7 +129,7 @@
         <a href="<?= base_url('transactions/purchase-returns') ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
             Batal
         </a>
-        <button type="button" onclick="processApprove()" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-success text-white font-medium rounded-lg hover:bg-success/90 transition">
+        <button type="button" @click="processApprove()" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-success text-white font-medium rounded-lg hover:bg-success/90 transition">
             <?= icon('Check', 'h-5 w-5') ?>
             Setujui Retur
         </button>

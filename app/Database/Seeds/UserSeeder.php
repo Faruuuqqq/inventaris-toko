@@ -11,7 +11,7 @@ class UserSeeder extends Seeder
         // Clear existing users first (handle foreign keys)
         $this->db->disableForeignKeyChecks();
         $this->db->table('users')->emptyTable();
-        
+
         $data = [
             [
                 'username' => 'admin',
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
                 'role' => 'OWNER',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-            ]
+            ],
         ];
 
         $this->db->table('users')->insertBatch($data);

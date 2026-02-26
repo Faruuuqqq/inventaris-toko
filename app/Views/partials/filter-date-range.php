@@ -13,12 +13,12 @@
  * - endName: Name attribute for end date (optional)
  */
 
-$startId = $startId ?? 'startDate';
-$endId = $endId ?? 'endDate';
-$startLabel = $startLabel ?? 'Tanggal Mulai';
-$endLabel = $endLabel ?? 'Tanggal Akhir';
-$startName = $startName ?? $startId;
-$endName = $endName ?? $endId;
+$startId ??= 'startDate';
+$endId ??= 'endDate';
+$startLabel ??= 'Tanggal Mulai';
+$endLabel ??= 'Tanggal Akhir';
+$startName ??= $startId;
+$endName ??= $endId;
 ?>
 <div class="space-y-2">
     <label for="<?= $startId ?>"><?= $startLabel ?></label>

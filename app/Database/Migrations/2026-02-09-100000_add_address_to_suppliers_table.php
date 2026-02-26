@@ -13,8 +13,8 @@ class AddAddressToSuppliersTable extends Migration
                 'type' => 'TEXT',
                 'null' => true,
                 'after' => 'phone',
-                'comment' => 'Supplier address for delivery/pickup and documentation'
-            ]
+                'comment' => 'Supplier address for delivery/pickup and documentation',
+            ],
         ]);
     }
 

@@ -16,68 +16,14 @@ class ExportService
     }
 
     /**
-     * Initialize export configuration
+     * Initialize export configuration (simplified for LAN ERP)
      */
     protected function initializeConfig(): void
     {
         $this->config = [
-            // Company Information
             'companyName' => 'INVENTARIS TOKO',
-            'companyLogo' => 'assets/img/logo.png',
-            'showLogo' => true,
-
-            // PDF Page Settings
-            'pageSize' => 'A4',
-            'pageOrientation' => 'P',
-            'pageMarginTop' => 15,
-            'pageMarginBottom' => 15,
-            'pageMarginLeft' => 10,
-            'pageMarginRight' => 10,
-
-            // PDF Font Settings
-            'defaultFont' => 'Arial',
-            'headerFontSize' => 14,
-            'titleFontSize' => 12,
-            'tableFontSize' => 10,
-            'footerFontSize' => 9,
-
-            // Export Settings
             'includeGeneratedAt' => true,
-            'includePrintedBy' => true,
-            'footerText' => 'Confidential - Printed Report',
             'autoRowNumbers' => true,
-
-            // Column Configurations
-            'columnConfigs' => [
-                'products' => [
-                    'no' => ['label' => 'No.', 'align' => 'center', 'width' => 5],
-                    'sku' => ['label' => 'SKU', 'align' => 'left', 'width' => 12],
-                    'name' => ['label' => 'Nama Produk', 'align' => 'left', 'width' => 25],
-                    'category_name' => ['label' => 'Kategori', 'align' => 'left', 'width' => 15],
-                    'unit' => ['label' => 'Satuan', 'align' => 'center', 'width' => 10],
-                    'purchase_price' => ['label' => 'Harga Beli', 'align' => 'right', 'width' => 12],
-                    'selling_price' => ['label' => 'Harga Jual', 'align' => 'right', 'width' => 12],
-                    'stock' => ['label' => 'Stok', 'align' => 'center', 'width' => 8],
-                    'total_value' => ['label' => 'Total Nilai', 'align' => 'right', 'width' => 12],
-                ],
-                'customers' => [
-                    'no' => ['label' => 'No.', 'align' => 'center', 'width' => 5],
-                    'code' => ['label' => 'Kode', 'align' => 'left', 'width' => 12],
-                    'name' => ['label' => 'Nama Pelanggan', 'align' => 'left', 'width' => 25],
-                    'phone' => ['label' => 'Telepon', 'align' => 'left', 'width' => 18],
-                    'address' => ['label' => 'Alamat', 'align' => 'left', 'width' => 25],
-                    'credit_limit' => ['label' => 'Limit Kredit', 'align' => 'right', 'width' => 15],
-                    'status' => ['label' => 'Status', 'align' => 'center', 'width' => 10],
-                ],
-                'suppliers' => [
-                    'no' => ['label' => 'No.', 'align' => 'center', 'width' => 5],
-                    'code' => ['label' => 'Kode', 'align' => 'left', 'width' => 12],
-                    'name' => ['label' => 'Nama Supplier', 'align' => 'left', 'width' => 25],
-                    'phone' => ['label' => 'Telepon', 'align' => 'left', 'width' => 18],
-                    'address' => ['label' => 'Alamat', 'align' => 'left', 'width' => 30],
-                    'status' => ['label' => 'Status', 'align' => 'center', 'width' => 10],
-                ],
-            ],
         ];
     }
 
@@ -90,20 +36,62 @@ class ExportService
     }
 
     /**
-     * Get column configuration for an entity
+     * Get column labels for an entity (simplified)
      */
-    public function getColumnConfig(string $entity): array
+    protected function getColumnLabels(string $entity): array
     {
-        return $this->config['columnConfigs'][$entity] ?? [];
+        $labels = [
+            'products' => [
+                'No.' => 'center',
+                'SKU' => 'left',
+                'Nama Produk' => 'left',
+                'Kategori' => 'left',
+                'Satuan' => 'center',
+                'Harga Beli' => 'right',
+                'Harga Jual' => 'right',
+                'Stok' => 'center',
+                'Total Nilai' => 'right',
+            ],
+            'customers' => [
+                'No.' => 'center',
+                'Kode' => 'left',
+                'Nama Pelanggan' => 'left',
+                'Telepon' => 'left',
+                'Alamat' => 'left',
+                'Limit Kredit' => 'right',
+                'Status' => 'center',
+            ],
+            'suppliers' => [
+                'No.' => 'center',
+                'Kode' => 'left',
+                'Nama Supplier' => 'left',
+                'Telepon' => 'left',
+                'Alamat' => 'left',
+                'Status' => 'center',
+            ],
+        ];
+
+        return $labels[$entity] ?? [];
     }
 
     /**
+     * Get column keys for an entity
+     */
+    protected function getColumnKeys(string $entity): array
+    {
+        return [
+            'products' => ['sku', 'name', 'category_name', 'unit', 'price_buy', 'price_sell', 'stock'],
+            'customers' => ['code', 'name', 'phone', 'address', 'credit_limit', 'status'],
+            'suppliers' => ['code', 'name', 'phone', 'address', 'status'],
+        ][$entity] ?? [];
+    }
+
      * Generate PDF from data and view
      *
-     * @param array $data Data to be exported
-     * @param string $entity Entity type (products, customers, suppliers)
-     * @param string $title Report title
-     * @param array $filters Applied filters (for header display)
+     * @param  array  $data    Data to be exported
+     * @param  string $entity  Entity type (products, customers, suppliers)
+     * @param  string $title   Report title
+     * @param  array  $filters Applied filters (for header display)
      * @return string PDF content as binary string
      */
     public function generatePDF(array $data, string $entity, string $title, array $filters = []): string
@@ -147,9 +135,9 @@ class ExportService
      * - Format status badges
      * - Calculate derived values (e.g., total_value)
      *
-     * @param array $data Raw data from database
-     * @param string $entity Entity type
-     * @return array Formatted data
+     * @param  array  $data   Raw data from database
+     * @param  string $entity Entity type
+     * @return array  Formatted data
      */
     protected function formatDataForExport(array $data, string $entity): array
     {
@@ -175,9 +163,9 @@ class ExportService
     /**
      * Format entity-specific data
      *
-     * @param array $item Single record
-     * @param string $entity Entity type
-     * @return array Formatted record
+     * @param  array  $item   Single record
+     * @param  string $entity Entity type
+     * @return array  Formatted record
      */
     protected function formatEntity(array $item, string $entity): array
     {
@@ -194,35 +182,24 @@ class ExportService
      */
     protected function formatProduct(array $item): array
     {
-        $item['purchase_price'] = isset($item['purchase_price']) ? $this->formatCurrency($item['purchase_price']) : '-';
-        $item['selling_price'] = isset($item['selling_price']) ? $this->formatCurrency($item['selling_price']) : '-';
+        $item['price_buy'] = $this->formatCurrency($item['price_buy'] ?? 0);
+        $item['price_sell'] = $this->formatCurrency($item['price_sell'] ?? 0);
         $item['stock'] = $item['stock'] ?? 0;
 
-        // Calculate total value (stock * purchase_price)
-        if (isset($item['stock']) && isset($item['purchase_price']) && is_numeric($item['purchase_price'])) {
-            $totalValue = $item['stock'] * floatval(str_replace(['Rp ', '.', ','], ['', '', '.'], $item['purchase_price']));
-            $item['total_value'] = $this->formatCurrency($totalValue);
-        } else {
-            $item['total_value'] = '-';
-        }
+        $totalValue = ($item['stock'] ?? 0) * ($item['price_buy'] ?? 0);
+        $item['total_value'] = $this->formatCurrency($totalValue);
 
         return $item;
     }
 
-    /**
-     * Format customer data
-     */
     protected function formatCustomer(array $item): array
     {
-        $item['credit_limit'] = isset($item['credit_limit']) ? $this->formatCurrency($item['credit_limit']) : '-';
+        $item['credit_limit'] = $this->formatCurrency($item['credit_limit'] ?? 0);
         $item['status'] = $this->formatStatus($item['status'] ?? 'active');
 
         return $item;
     }
 
-    /**
-     * Format supplier data
-     */
     protected function formatSupplier(array $item): array
     {
         $item['status'] = $this->formatStatus($item['status'] ?? 'active');
@@ -230,10 +207,11 @@ class ExportService
         return $item;
     }
 
+
     /**
      * Format currency value for display
      *
-     * @param mixed $value Numeric value
+     * @param  mixed  $value Numeric value
      * @return string Formatted currency string (Rp X.XXX,00)
      */
     protected function formatCurrency($value): string
@@ -248,7 +226,7 @@ class ExportService
     /**
      * Format status value
      *
-     * @param string $status Status value
+     * @param  string $status Status value
      * @return string Formatted status
      */
     protected function formatStatus(string $status): string
@@ -283,9 +261,9 @@ class ExportService
     /**
      * Save PDF to file
      *
-     * @param string $pdfContent PDF binary content
-     * @param string $filename Output filename
-     * @param string $directory Output directory (relative to public folder)
+     * @param  string $pdfContent PDF binary content
+     * @param  string $filename   Output filename
+     * @param  string $directory  Output directory (relative to public folder)
      * @return string File path relative to public folder
      */
     public function savePDFToFile(string $pdfContent, string $filename, string $directory = 'exports'): string
@@ -294,7 +272,7 @@ class ExportService
 
         // Create directory if it doesn't exist
         if (!is_dir($publicPath)) {
-            mkdir($publicPath, 0755, true);
+            mkdir($publicPath, 0o755, true);
         }
 
         $filepath = $publicPath . DIRECTORY_SEPARATOR . $filename;
@@ -308,7 +286,7 @@ class ExportService
     /**
      * Generate filename for export
      *
-     * @param string $entity Entity name
+     * @param  string $entity Entity name
      * @return string Filename with timestamp
      */
     public function generateFilename(string $entity): string
@@ -320,8 +298,8 @@ class ExportService
     /**
      * Get PDF download response
      *
-     * @param string $pdfContent PDF binary content
-     * @param string $filename Download filename
+     * @param  string                              $pdfContent PDF binary content
+     * @param  string                              $filename   Download filename
      * @return \CodeIgniter\HTTP\ResponseInterface
      */
     public function getDownloadResponse(string $pdfContent, string $filename)

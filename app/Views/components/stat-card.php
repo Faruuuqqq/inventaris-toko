@@ -2,7 +2,7 @@
 /**
  * Stat Card Component - KPI Statistics Display
  * Modern statistics card with icon, label, value, and trend
- * 
+ *
  * Usage:
  * <?= view('components/stat-card', [
  *     'label' => 'Total Sales',
@@ -14,13 +14,13 @@
  * ]) ?>
  */
 
-$label = $label ?? '';
-$value = $value ?? '0';
-$icon = $icon ?? 'Package';
-$trend = $trend ?? null;
-$color = $color ?? 'primary';
-$subtitle = $subtitle ?? null;
-$class = $class ?? '';
+$label ??= '';
+$value ??= '0';
+$icon ??= 'Package';
+$trend ??= null;
+$color ??= 'primary';
+$subtitle ??= null;
+$class ??= '';
 
 $colorClasses = [
     'primary' => 'bg-primary/10 text-primary',

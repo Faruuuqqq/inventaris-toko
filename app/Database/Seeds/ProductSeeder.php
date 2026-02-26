@@ -21,7 +21,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Gaming laptop with high performance',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Mouse Logitech MX Master 3',
@@ -35,7 +35,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Wireless gaming mouse',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Keyboard Mechanical RGB',
@@ -49,7 +49,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Mechanical keyboard with RGB backlight',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Monitor LG 27 inch 4K',
@@ -63,7 +63,7 @@ class ProductSeeder extends Seeder
                 'description' => '4K IPS monitor with HDR',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'USB Flash Drive 64GB',
@@ -77,7 +77,7 @@ class ProductSeeder extends Seeder
                 'description' => 'High speed USB 3.0 flash drive',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Printer Epson L3150',
@@ -91,7 +91,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Inkjet color printer',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Headset Bluetooth JBL',
@@ -105,7 +105,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Wireless bluetooth headset',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'External SSD 1TB',
@@ -119,7 +119,7 @@ class ProductSeeder extends Seeder
                 'description' => 'NVMe SSD with USB-C adapter',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Webcam Full HD 1080p',
@@ -133,7 +133,7 @@ class ProductSeeder extends Seeder
                 'description' => 'Full HD webcam with microphone',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Power Bank 20000mAh',
@@ -147,8 +147,8 @@ class ProductSeeder extends Seeder
                 'description' => 'High capacity power bank with fast charging',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ]
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
         ];
 
         $this->db->table('products')->insertBatch($data);

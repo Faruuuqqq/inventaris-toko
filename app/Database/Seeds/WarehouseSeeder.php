@@ -19,7 +19,7 @@ class WarehouseSeeder extends Seeder
                 'phone' => '021-5551234',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Gudang Cabang Bandung',
@@ -31,7 +31,7 @@ class WarehouseSeeder extends Seeder
                 'phone' => '022-7654321',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'Gudang Surabaya',
@@ -43,8 +43,8 @@ class WarehouseSeeder extends Seeder
                 'phone' => '031-8901234',
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ]
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
         ];
 
         $this->db->table('warehouses')->insertBatch($data);

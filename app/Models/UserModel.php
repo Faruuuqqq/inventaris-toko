@@ -8,15 +8,23 @@ use CodeIgniter\Model;
 class UserModel extends Model
 {
     protected $table = 'users';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = User::class;
+
     protected $useSoftDeletes = false;
+
     protected $allowedFields = [
-        'username', 'email', 'password_hash', 'fullname', 'role', 'is_active'
+        'username', 'email', 'password_hash', 'fullname', 'role', 'is_active',
     ];
+
     protected $useTimestamps = true;
+
     protected $createdField = 'created_at';
+
     protected $updatedField = 'updated_at';
 
     // Validation Rules

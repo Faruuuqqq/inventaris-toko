@@ -7,7 +7,9 @@ use CodeIgniter\Model;
 class NotificationModel extends Model
 {
     protected $table = 'notifications';
+
     protected $primaryKey = 'id';
+
     protected $allowedFields = [
         'user_id',
         'type',
@@ -18,7 +20,7 @@ class NotificationModel extends Model
         'link',
         'is_read',
         'read_at',
-        'created_at'
+        'created_at',
     ];
 
     protected $returnType = 'array';
@@ -107,7 +109,7 @@ class NotificationModel extends Model
                 'overdue_payable' => true,
                 'pending_po' => true,
                 'daily_report' => false,
-                'email_notifications' => false
+                'email_notifications' => false,
             ];
         }
 

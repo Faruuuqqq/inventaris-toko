@@ -316,7 +316,7 @@
                                     <?= $product['min_stock_alert'] ?? 0 ?>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <?php if (($product['total_stock'] ?? 0) == 0): ?>
+                                    <?php if (($product['total_stock'] ?? 0) === 0): ?>
                                         <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-destructive/20 text-destructive">
                                             <?= icon('X', 'h-3 w-3') ?>
                                             Stok Habis

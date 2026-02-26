@@ -60,7 +60,7 @@
                     <option value="">Pilih Customer</option>
                     <?php if (isset($customers) && is_array($customers)): ?>
                         <?php foreach ($customers as $customer): ?>
-                            <option value="<?= esc($customer->id ?? $customer['id'] ?? '') ?>" <?= old('customer_id', $kontraBon['customer_id']) == ($customer->id ?? $customer['id'] ?? '') ? 'selected' : '' ?>>
+                            <option value="<?= esc($customer->id ?? $customer['id'] ?? '') ?>" <?= old('customer_id', $kontraBon['customer_id']) === ($customer->id ?? $customer['id'] ?? '') ? 'selected' : '' ?>>
                                 <?= esc($customer->name ?? $customer['name'] ?? '') ?> - <?= esc($customer->phone ?? $customer['phone'] ?? 'Tidak ada telepon') ?>
                             </option>
                         <?php endforeach; ?>
@@ -91,9 +91,9 @@
             <div class="space-y-2">
                 <label class="text-sm font-medium text-foreground">Status *</label>
                 <select name="status" required class="h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
-                    <option value="PENDING" <?= old('status', $kontraBon['status']) == 'PENDING' ? 'selected' : '' ?>>Pending</option>
-                    <option value="PAID" <?= old('status', $kontraBon['status']) == 'PAID' ? 'selected' : '' ?>>Lunas</option>
-                    <option value="CANCELLED" <?= old('status', $kontraBon['status']) == 'CANCELLED' ? 'selected' : '' ?>>Dibatalkan</option>
+                    <option value="PENDING" <?= old('status', $kontraBon['status']) === 'PENDING' ? 'selected' : '' ?>>Pending</option>
+                    <option value="PAID" <?= old('status', $kontraBon['status']) === 'PAID' ? 'selected' : '' ?>>Lunas</option>
+                    <option value="CANCELLED" <?= old('status', $kontraBon['status']) === 'CANCELLED' ? 'selected' : '' ?>>Dibatalkan</option>
                 </select>
                 <p class="text-xs text-muted-foreground">Status pembayaran kontra bon</p>
             </div>

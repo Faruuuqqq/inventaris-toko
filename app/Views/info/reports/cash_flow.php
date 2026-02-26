@@ -121,7 +121,7 @@
                         <span class="font-semibold text-foreground"><?= format_currency($amount) ?></span>
                     </div>
                     <div class="h-2 bg-muted rounded-full overflow-hidden">
-                        <div class="h-full bg-success" style="width: <?= array_sum($cashInflows) > 0 ? ($amount/array_sum($cashInflows)*100) : 0 ?>%"></div>
+                        <div class="h-full bg-success" style="width: <?= array_sum($cashInflows) > 0 ? ($amount / array_sum($cashInflows) * 100) : 0 ?>%"></div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -150,7 +150,7 @@
                         <span class="font-semibold text-foreground"><?= format_currency($amount) ?></span>
                     </div>
                     <div class="h-2 bg-muted rounded-full overflow-hidden">
-                        <div class="h-full bg-destructive" style="width: <?= array_sum($cashOutflows) > 0 ? ($amount/array_sum($cashOutflows)*100) : 0 ?>%"></div>
+                        <div class="h-full bg-destructive" style="width: <?= array_sum($cashOutflows) > 0 ? ($amount / array_sum($cashOutflows) * 100) : 0 ?>%"></div>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -214,8 +214,8 @@
                 <div class="h-3 bg-muted rounded-full overflow-hidden flex">
                     <?php
                     $total = array_sum($cashInflows) + array_sum($cashOutflows);
-                    $inflowPercentage = $total > 0 ? (array_sum($cashInflows)/$total*100) : 50;
-                    ?>
+$inflowPercentage = $total > 0 ? (array_sum($cashInflows) / $total * 100) : 50;
+?>
                     <div class="h-full bg-success transition-all" style="width: <?= $inflowPercentage ?>%"></div>
                     <div class="h-full bg-destructive transition-all" style="width: <?= 100 - $inflowPercentage ?>%"></div>
                 </div>

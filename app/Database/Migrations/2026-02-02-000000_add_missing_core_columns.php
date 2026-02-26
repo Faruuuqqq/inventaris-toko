@@ -9,10 +9,10 @@ class AddMissingCoreColumns extends Migration
     public function up()
     {
         $db = \Config\Database::connect();
-        
+
         // Add columns to products table if they don't exist
         $productFields = $db->getFieldNames('products');
-        
+
         // Add min_stock (different from min_stock_alert)
         if (!in_array('min_stock', $productFields)) {
             $this->forge->addColumn('products', [
@@ -21,11 +21,11 @@ class AddMissingCoreColumns extends Migration
                     'constraint' => 11,
                     'default' => 10,
                     'null' => false,
-                    'after' => 'min_stock_alert'
-                ]
+                    'after' => 'min_stock_alert',
+                ],
             ]);
         }
-        
+
         // Add max_stock
         if (!in_array('max_stock', $productFields)) {
             $this->forge->addColumn('products', [
@@ -34,11 +34,11 @@ class AddMissingCoreColumns extends Migration
                     'constraint' => 11,
                     'default' => 100,
                     'null' => false,
-                    'after' => 'min_stock'
-                ]
+                    'after' => 'min_stock',
+                ],
             ]);
         }
-        
+
         // Add price column (alias for price_sell for backwards compatibility)
         if (!in_array('price', $productFields)) {
             $this->forge->addColumn('products', [
@@ -48,11 +48,11 @@ class AddMissingCoreColumns extends Migration
                     'default' => 0,
                     'null' => false,
                     'after' => 'price_sell',
-                    'comment' => 'Alias for price_sell'
-                ]
+                    'comment' => 'Alias for price_sell',
+                ],
             ]);
         }
-        
+
         // Add cost_price (alias for price_buy)
         if (!in_array('cost_price', $productFields)) {
             $this->forge->addColumn('products', [
@@ -62,15 +62,15 @@ class AddMissingCoreColumns extends Migration
                     'default' => 0,
                     'null' => false,
                     'after' => 'price_buy',
-                    'comment' => 'Alias for price_buy'
-                ]
+                    'comment' => 'Alias for price_buy',
+                ],
             ]);
         }
-        
+
         // Check if sales table exists
         if ($db->tableExists('sales')) {
             $salesFields = $db->getFieldNames('sales');
-            
+
             // Add total_profit to sales table
             if (!in_array('total_profit', $salesFields)) {
                 $this->forge->addColumn('sales', [
@@ -79,12 +79,12 @@ class AddMissingCoreColumns extends Migration
                         'constraint' => '15,2',
                         'default' => 0,
                         'null' => false,
-                        'after' => 'total_amount'
-                    ]
+                        'after' => 'total_amount',
+                    ],
                 ]);
             }
         }
-        
+
         // Add deleted_at to categories table for soft delete support
         if ($db->tableExists('categories')) {
             $categoryFields = $db->getFieldNames('categories');
@@ -92,8 +92,8 @@ class AddMissingCoreColumns extends Migration
                 $this->forge->addColumn('categories', [
                     'deleted_at' => [
                         'type' => 'DATETIME',
-                        'null' => true
-                    ]
+                        'null' => true,
+                    ],
                 ]);
             }
         }

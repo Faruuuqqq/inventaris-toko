@@ -4,7 +4,7 @@ namespace App\Helpers;
 
 /**
  * PaginationHelper - Centralized pagination logic for services
- * 
+ *
  * Provides reusable methods for handling pagination across the application.
  * Used by all DataService classes to paginate list data consistently.
  */
@@ -22,10 +22,10 @@ class PaginationHelper
 
     /**
      * Get safe pagination parameters from request or use defaults
-     * 
-     * @param int|null $requestPage Page number from request (1-based)
-     * @param int|null $requestPerPage Items per page from request
-     * @return array ['page' => int, 'perPage' => int]
+     *
+     * @param  int|null $requestPage    Page number from request (1-based)
+     * @param  int|null $requestPerPage Items per page from request
+     * @return array    ['page' => int, 'perPage' => int]
      */
     public static function getSafeParams(?int $requestPage = null, ?int $requestPerPage = null): array
     {
@@ -43,11 +43,11 @@ class PaginationHelper
 
     /**
      * Build pagination metadata from CodeIgniter pager
-     * 
+     *
      * Used after calling Model->paginate() to extract pagination info
-     * 
-     * @param mixed $pager CodeIgniter Pager instance
-     * @param int $perPage Items per page
+     *
+     * @param  mixed $pager   CodeIgniter Pager instance
+     * @param  int   $perPage Items per page
      * @return array Pagination metadata
      */
     public static function getPaginationMeta($pager, int $perPage): array
@@ -64,13 +64,13 @@ class PaginationHelper
 
     /**
      * Build pagination links data for view rendering
-     * 
+     *
      * Returns array with page links, previous/next URLs, and metadata
      * Optimized for numbered pagination: ← Previous | 1 2 3 4 5 | Next →
-     * 
-     * @param mixed $pager CodeIgniter Pager instance
-     * @param int $perPage Items per page
-     * @param int $windowSize Number of page links to show around current page (default 5)
+     *
+     * @param  mixed $pager      CodeIgniter Pager instance
+     * @param  int   $perPage    Items per page
+     * @param  int   $windowSize Number of page links to show around current page (default 5)
      * @return array Pagination data for views
      */
     public static function getPaginationLinks($pager, int $perPage, int $windowSize = 5): array

@@ -2,7 +2,7 @@
 /**
  * Modern Button Component
  * Versatile button with multiple variants and sizes
- * 
+ *
  * Usage:
  * <?= view('components/button', [
  *     'text' => 'Click Me',
@@ -14,16 +14,16 @@
  * ]) ?>
  */
 
-$text = $text ?? '';
-$variant = $variant ?? 'primary';
-$size = $size ?? 'md';
-$disabled = $disabled ?? false;
-$loading = $loading ?? false;
-$icon = $icon ?? null;
-$iconPosition = $iconPosition ?? 'left';
-$type = $type ?? 'button';
-$class = $class ?? '';
-$attributes = $attributes ?? '';
+$text ??= '';
+$variant ??= 'primary';
+$size ??= 'md';
+$disabled ??= false;
+$loading ??= false;
+$icon ??= null;
+$iconPosition ??= 'left';
+$type ??= 'button';
+$class ??= '';
+$attributes ??= '';
 
 $variants = [
     'primary' => 'btn-primary',

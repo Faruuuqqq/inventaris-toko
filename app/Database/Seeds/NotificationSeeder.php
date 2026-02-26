@@ -11,12 +11,12 @@ class NotificationSeeder extends Seeder
         // Get the admin user ID
         $db = \Config\Database::connect();
         $admin = $db->table('users')->where('role', 'ADMIN')->get()->getRow();
-        
+
         if (!$admin) {
             echo "No admin user found, skipping notification seeding\n";
             return;
         }
-        
+
         // Create sample notifications
         $notifications = [
             [
@@ -28,7 +28,7 @@ class NotificationSeeder extends Seeder
                 'reference_type' => 'product',
                 'link' => base_url('master/products'),
                 'is_read' => 0,
-                'created_at' => date('Y-m-d H:i:s', strtotime('-2 hours'))
+                'created_at' => date('Y-m-d H:i:s', strtotime('-2 hours')),
             ],
             [
                 'user_id' => null,
@@ -39,7 +39,7 @@ class NotificationSeeder extends Seeder
                 'reference_type' => 'sale',
                 'link' => base_url('finance/payments/receivable'),
                 'is_read' => 0,
-                'created_at' => date('Y-m-d H:i:s', strtotime('-5 hours'))
+                'created_at' => date('Y-m-d H:i:s', strtotime('-5 hours')),
             ],
             [
                 'user_id' => null,
@@ -50,7 +50,7 @@ class NotificationSeeder extends Seeder
                 'reference_type' => 'purchase_order',
                 'link' => base_url('transactions/purchases'),
                 'is_read' => 1,
-                'created_at' => date('Y-m-d H:i:s', strtotime('-1 day'))
+                'created_at' => date('Y-m-d H:i:s', strtotime('-1 day')),
             ],
             [
                 'user_id' => null,
@@ -61,13 +61,13 @@ class NotificationSeeder extends Seeder
                 'reference_type' => null,
                 'link' => null,
                 'is_read' => 1,
-                'created_at' => date('Y-m-d H:i:s', strtotime('-2 days'))
-            ]
+                'created_at' => date('Y-m-d H:i:s', strtotime('-2 days')),
+            ],
         ];
-        
+
         $this->db->table('notifications')->insertBatch($notifications);
-        echo "Notifications seeded: " . count($notifications) . " records\n";
-        
+        echo 'Notifications seeded: ' . count($notifications) . " records\n";
+
         // Create notification settings for the admin user
         $settings = [
             'user_id' => $admin->id,
@@ -78,9 +78,9 @@ class NotificationSeeder extends Seeder
             'daily_report' => 0,
             'email_notifications' => 0,
             'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Y-m-d H:i:s'),
         ];
-        
+
         $this->db->table('notification_settings')->insert($settings);
         echo "Notification settings created for admin user\n";
     }

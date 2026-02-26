@@ -2,157 +2,15 @@
 
 <?= $this->section('content') ?>
 
-
 <script>
-function warehouseManager() {
-     return {
-         warehouses: <?= json_encode($warehouses ?? []) ?>,
-         search: '',
-         isDialogOpen: false,
-         isEditDialogOpen: false,
-         isSubmitting: false,
-         isEditSubmitting: false,
-         errors: {},
-         editErrors: {},
-         editingWarehouse: {},
-
-          get filteredWarehouses() {
-              return this.warehouses.filter(w => {
-                  const searchLower = this.search.toLowerCase();
-                  return (w.name && w.name.toLowerCase().includes(searchLower)) ||
-                         (w.code && w.code.toLowerCase().includes(searchLower));
-              });
-          },
-
-          get activeCount() {
-              return this.warehouses.filter(w => parseInt(w.is_active) === 1).length;
-          },
-
-          get totalStorageValue() {
-              return 0; // Placeholder - actual total value would come from inventory calculation
-          },
-
-         openEditModal(warehouse) {
-             this.editingWarehouse = JSON.parse(JSON.stringify(warehouse));
-             this.editErrors = {};
-             this.isEditDialogOpen = true;
-         },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            
-            // Clear previous errors
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-                
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    // Success
-                    ModalManager.success('Data gudang berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        // Reload page to refresh warehouse list
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    // Validation error
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.');
-                } else {
-                    // Other error
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-         },
-
-         async submitEditForm(event) {
-             event.preventDefault();
-             const form = event.target;
-             
-             this.editErrors = {};
-             this.isEditSubmitting = true;
-
-             try {
-                 const formData = new FormData(form);
-                 
-                 const response = await fetch(form.action, {
-                     method: 'POST',
-                     body: formData,
-                     headers: {
-                         'X-Requested-With': 'XMLHttpRequest'
-                     }
-                 });
-
-                 if (response.ok || response.status === 200) {
-                     ModalManager.success('Data gudang berhasil diperbarui', () => {
-                         this.isEditDialogOpen = false;
-                         this.editErrors = {};
-                         this.editingWarehouse = {};
-                         window.location.reload();
-                     });
-                 } else if (response.status === 422) {
-                     const data = await response.json();
-                     if (data.errors) {
-                         this.editErrors = data.errors;
-                     }
-                     ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                 } else {
-                     const data = await response.json();
-                     ModalManager.error(data.message || 'Gagal memperbarui data.');
-                 }
-             } catch (error) {
-                 console.error('Form submission error:', error);
-                 ModalManager.error('Terjadi kesalahan: ' + error.message);
-             } finally {
-                 this.isEditSubmitting = false;
-             }
-         },
-
-         deleteWarehouse(warehouseId) {
-             const warehouse = this.warehouses.find(w => w.id === warehouseId);
-             const warehouseName = warehouse ? warehouse.name : 'gudang ini';
-             ModalManager.submitDelete(
-                 `<?= base_url('master/warehouses') ?>/${warehouseId}`,
-                 warehouseName,
-                 () => {
-                     this.warehouses = this.warehouses.filter(w => w.id !== warehouseId);
-                 }
-             );
-         },
-
-           formatRupiah(number) {
-               return new Intl.NumberFormat('id-ID', {
-                   style: 'currency',
-                   currency: 'IDR',
-                   minimumFractionDigits: 0
-               }).format(number || 0);
-           }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    warehouses: <?= json_encode($warehouses ?? []) ?>,
+    baseUrl: '<?= base_url('master/warehouses') ?>',
+    searchFields: ['name', 'code']
+};
 </script>
-
-<div x-data="warehouseManager()">
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/warehouseManager.js') ?>"></script>
      <!-- Page Header with Summary Cards -->
      <div class="mb-8 flex flex-col gap-6">
          <!-- Title & Description -->
@@ -233,7 +91,7 @@ function warehouseManager() {
              </div>
              
              <!-- Modal Body -->
-             <form @submit.prevent="submitEditForm" :action="`<?= base_url('master/warehouses') ?>/${editingWarehouse.id}`" method="POST" class="p-6 space-y-5">
+             <form @submit.prevent="submitEditForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/${editingWarehouse.id}`" method="POST" class="p-6 space-y-5">
                  <?= csrf_field() ?>
                  
                  <!-- Row 1: Name & Code -->
@@ -296,7 +154,7 @@ function warehouseManager() {
                      >
                          <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                          <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                             <?= icon("Loader2", "h-4 w-4") ?>
+                             <?= icon('Loader2', 'h-4 w-4') ?>
                          </span>
                          <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Gudang'"></span>
                      </button>
@@ -427,7 +285,7 @@ function warehouseManager() {
             </div>
             
             <!-- Modal Body -->
-            <form @submit.prevent="submitForm" action="<?= base_url('master/warehouses/store') ?>" method="POST" class="p-6 space-y-5">
+            <form @submit.prevent="submitForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/store`" method="POST" class="p-6 space-y-5">
                 <?= csrf_field() ?>
                 
                 <!-- Row 1: Name & Code -->
@@ -490,7 +348,7 @@ function warehouseManager() {
                     >
                         <span x-show="!isSubmitting" class="mr-2"><?= icon('Plus', 'h-5 w-5') ?></span>
                         <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <?= icon("Loader2", "h-4 w-4") ?>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Gudang'"></span>
                     </button>

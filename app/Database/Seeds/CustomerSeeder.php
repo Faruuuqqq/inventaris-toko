@@ -21,7 +21,7 @@ class CustomerSeeder extends Seeder
                 'payment_terms' => 30,
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'CV. Sentosa Abadi',
@@ -35,7 +35,7 @@ class CustomerSeeder extends Seeder
                 'payment_terms' => 14,
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'name' => 'UD. Makmur Sejahtera',
@@ -49,8 +49,8 @@ class CustomerSeeder extends Seeder
                 'payment_terms' => 7,
                 'is_active' => 1,
                 'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s')
-            ]
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
         ];
 
         $this->db->table('customers')->insertBatch($data);

@@ -10,17 +10,17 @@ class AddPaymentColumnsToPurchaseOrders extends Migration
     {
         $fields = [
             'paid_amount' => [
-                'type'       => 'DECIMAL',
+                'type' => 'DECIMAL',
                 'constraint' => '15,2',
-                'default'    => 0,
-                'after'      => 'total_amount'
+                'default' => 0,
+                'after' => 'total_amount',
             ],
             'payment_status' => [
-                'type'       => 'ENUM',
+                'type' => 'ENUM',
                 'constraint' => ['UNPAID', 'PARTIAL', 'PAID'],
-                'default'    => 'UNPAID',
-                'after'      => 'paid_amount'
-            ]
+                'default' => 'UNPAID',
+                'after' => 'paid_amount',
+            ],
         ];
 
         $this->forge->addColumn('purchase_orders', $fields);

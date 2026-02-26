@@ -7,15 +7,22 @@ use CodeIgniter\Model;
 class PurchaseReturnModel extends Model
 {
     protected $table = 'purchase_returns';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = 'array';
+
     protected $useSoftDeletes = true;
+
     protected $deletedField = 'deleted_at';
+
     protected $protectFields = true;
+
     protected $allowedFields = [
         'no_retur', 'tanggal_retur', 'po_id', 'supplier_id',
-        'alasan', 'status', 'total_retur'
+        'alasan', 'status', 'total_retur',
     ];
 
     protected $useTimestamps = false;
@@ -32,24 +39,24 @@ class PurchaseReturnModel extends Model
         'no_retur' => [
             'required' => 'Nomor retur harus diisi',
             'max_length' => 'Nomor retur maksimal 50 karakter',
-            'is_unique' => 'Nomor retur sudah digunakan'
+            'is_unique' => 'Nomor retur sudah digunakan',
         ],
         'tanggal_retur' => [
             'required' => 'Tanggal retur harus diisi',
-            'valid_date' => 'Format tanggal tidak valid'
+            'valid_date' => 'Format tanggal tidak valid',
         ],
         'po_id' => [
             'required' => 'Purchase Order harus dipilih',
-            'integer' => 'Purchase Order harus berupa ID yang valid'
+            'integer' => 'Purchase Order harus berupa ID yang valid',
         ],
         'supplier_id' => [
             'required' => 'Supplier harus dipilih',
-            'integer' => 'Supplier harus berupa ID yang valid'
+            'integer' => 'Supplier harus berupa ID yang valid',
         ],
         'status' => [
             'required' => 'Status harus dipilih',
-            'in_list' => 'Status tidak valid'
-        ]
+            'in_list' => 'Status tidak valid',
+        ],
     ];
 
     public function getPurchaseReturnWithDetails($id)

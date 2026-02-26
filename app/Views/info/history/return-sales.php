@@ -110,11 +110,11 @@
 
     <!-- Filter Buttons -->
     <div class="mt-4 flex gap-3">
-        <button onclick="loadReturns()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
+        <button @click="loadReturns()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
             <?= icon('Filter', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
-        <button onclick="resetFilters()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
+        <button @click="resetFilters()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
             <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset Filter
         </button>
@@ -200,7 +200,7 @@
                     <td class="px-6 py-4 text-right font-mono font-medium">${formatRupiah(ret.total_retur)}</td>
                     <td class="px-6 py-4">
                         <div class="flex justify-center gap-2">
-                            <button onclick="viewDetail(${ret.id})" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors" title="Lihat Detail">
+                            <button @click="viewDetail(${ret.id})" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors" title="Lihat Detail">
                                 <?= icon('Eye', 'h-4 w-4') ?>
                             </button>
                         </div>

@@ -2,6 +2,16 @@
 
 <?= $this->section('content') ?>
 
+<script>
+window.__PAGE_CONFIG__ = {
+    uploadUrl: '<?= base_url('/info/files/upload') ?>',
+    bulkUploadUrl: '<?= base_url('/info/files/bulk-upload') ?>',
+    viewUrl: '<?= base_url('/info/files/view/') ?>',
+    deleteUrl: '<?= base_url('/info/files/delete/') ?>'
+};
+</script>
+<script src="<?= base_url('assets/js/modules/info/fileManager.js') ?>"></script>
+
 <!-- Page Header -->
 <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
@@ -12,11 +22,11 @@
         <p class="text-sm text-muted-foreground mt-1">Kelola dan simpan file dokumen penting</p>
     </div>
     <div class="flex gap-2 flex-wrap sm:flex-nowrap">
-        <button type="button" onclick="openUploadModal()" class="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition whitespace-nowrap">
+        <button type="button" @click="openUploadModal()" class="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition whitespace-nowrap">
             <?= icon('Plus', 'h-5 w-5') ?>
             Upload File
         </button>
-        <button type="button" onclick="openBulkUploadModal()" class="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition whitespace-nowrap">
+        <button type="button" @click="openBulkUploadModal()" class="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition whitespace-nowrap">
             <?= icon('Package', 'h-5 w-5') ?>
             Bulk Upload
         </button>
@@ -111,13 +121,13 @@
                             <td class="px-6 py-4 text-muted-foreground text-sm"><?= format_datetime($file['created_at']) ?></td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    <button type="button" onclick="viewFile(<?= $file['id_file'] ?>)" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition" title="View">
+                                    <button type="button" @click="viewFile(<?= $file['id_file'] ?>)" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition" title="View">
                                         <?= icon('Eye', 'h-4 w-4') ?>
                                     </button>
                                     <a href="<?= base_url('/info/files/download/' . $file['id_file']) ?>" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-success/10 text-success hover:bg-success/20 transition" title="Download">
                                         <?= icon('Download', 'h-4 w-4') ?>
                                     </a>
-                                    <button type="button" onclick="deleteFile(<?= $file['id_file'] ?>, '<?= esc($file['nama_file']) ?>')" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition" title="Delete">
+                                    <button type="button" @click="deleteFile(<?= $file['id_file'] ?>, '<?= esc($file['nama_file']) ?>')" class="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition" title="Delete">
                                         <?= icon('Trash2', 'h-4 w-4') ?>
                                     </button>
                                 </div>
@@ -140,11 +150,11 @@
 </div>
 
 <!-- Upload Modal -->
-<div id="uploadModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center" onclick="closeUploadModal(event)">
-    <div class="bg-background rounded-lg shadow-lg border border-border max-w-md w-full mx-4" onclick="event.stopPropagation()">
+<div id="uploadModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center" @click="closeUploadModal(event)">
+    <div class="bg-background rounded-lg shadow-lg border border-border max-w-md w-full mx-4" @click="event.stopPropagation()">
         <div class="p-6 border-b border-border flex items-center justify-between">
             <h2 class="text-lg font-semibold text-foreground">Upload File</h2>
-            <button type="button" onclick="closeUploadModal()" class="text-muted-foreground hover:text-foreground">
+            <button type="button" @click="closeUploadModal()" class="text-muted-foreground hover:text-foreground">
                 <?= icon('X', 'h-5 w-5') ?>
             </button>
         </div>
@@ -183,7 +193,7 @@
             <div id="uploadResult" class="hidden rounded-lg p-3 text-sm"></div>
 
             <div class="flex gap-3 pt-4 border-t border-border">
-                <button type="button" onclick="closeUploadModal()" class="flex-1 h-10 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition">
+                <button type="button" @click="closeUploadModal()" class="flex-1 h-10 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition">
                     Batal
                 </button>
                 <button type="submit" id="uploadSubmit" class="flex-1 h-10 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center justify-center gap-2">
@@ -196,11 +206,11 @@
 </div>
 
 <!-- Bulk Upload Modal -->
-<div id="bulkUploadModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center" onclick="closeBulkUploadModal(event)">
-    <div class="bg-background rounded-lg shadow-lg border border-border max-w-md w-full mx-4" onclick="event.stopPropagation()">
+<div id="bulkUploadModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center" @click="closeBulkUploadModal(event)">
+    <div class="bg-background rounded-lg shadow-lg border border-border max-w-md w-full mx-4" @click="event.stopPropagation()">
         <div class="p-6 border-b border-border flex items-center justify-between">
             <h2 class="text-lg font-semibold text-foreground">Bulk Upload File</h2>
-            <button type="button" onclick="closeBulkUploadModal()" class="text-muted-foreground hover:text-foreground">
+            <button type="button" @click="closeBulkUploadModal()" class="text-muted-foreground hover:text-foreground">
                 <?= icon('X', 'h-5 w-5') ?>
             </button>
         </div>
@@ -239,7 +249,7 @@
             <div id="bulkUploadResult" class="hidden rounded-lg p-3 text-sm"></div>
 
             <div class="flex gap-3 pt-4 border-t border-border">
-                <button type="button" onclick="closeBulkUploadModal()" class="flex-1 h-10 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition">
+                <button type="button" @click="closeBulkUploadModal()" class="flex-1 h-10 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition">
                     Batal
                 </button>
                 <button type="submit" id="bulkUploadSubmit" class="flex-1 h-10 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center justify-center gap-2">
@@ -250,157 +260,5 @@
         </form>
     </div>
 </div>
-
-<script>
-function openUploadModal() {
-    document.getElementById('uploadModal').classList.remove('hidden');
-}
-
-function closeUploadModal(event) {
-    if (event && event.target !== document.getElementById('uploadModal')) return;
-    document.getElementById('uploadModal').classList.add('hidden');
-    resetUploadForm();
-}
-
-function openBulkUploadModal() {
-    document.getElementById('bulkUploadModal').classList.remove('hidden');
-}
-
-function closeBulkUploadModal(event) {
-    if (event && event.target !== document.getElementById('bulkUploadModal')) return;
-    document.getElementById('bulkUploadModal').classList.add('hidden');
-    resetBulkUploadForm();
-}
-
-function resetUploadForm() {
-    document.getElementById('uploadForm').reset();
-    document.getElementById('uploadProgress').classList.add('hidden');
-    document.getElementById('uploadResult').classList.add('hidden');
-    document.getElementById('uploadSubmit').disabled = false;
-}
-
-function resetBulkUploadForm() {
-    document.getElementById('bulkUploadForm').reset();
-    document.getElementById('bulkUploadProgress').classList.add('hidden');
-    document.getElementById('bulkUploadResult').classList.add('hidden');
-    document.getElementById('bulkUploadSubmit').disabled = false;
-}
-
-// Single file upload
-document.getElementById('uploadForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const progressDiv = document.getElementById('uploadProgress');
-    const resultDiv = document.getElementById('uploadResult');
-    const submitBtn = document.getElementById('uploadSubmit');
-    
-    progressDiv.classList.remove('hidden');
-    resultDiv.classList.add('hidden');
-    submitBtn.disabled = true;
-    
-    fetch('<?= base_url('/info/files/upload') ?>', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        progressDiv.classList.add('hidden');
-        resultDiv.classList.remove('hidden');
-        
-        if (data.status === 'success') {
-            resultDiv.className = 'rounded-lg p-3 text-sm bg-success/10 text-success border border-success/50';
-            resultDiv.innerHTML = '<strong>Sukses:</strong> ' + data.message;
-            setTimeout(() => {
-                location.reload();
-            }, 2000);
-        } else {
-            resultDiv.className = 'rounded-lg p-3 text-sm bg-destructive/10 text-destructive border border-destructive/50';
-            resultDiv.innerHTML = '<strong>Error:</strong> ' + data.message;
-        }
-        
-        submitBtn.disabled = false;
-    })
-    .catch(error => {
-        progressDiv.classList.add('hidden');
-        resultDiv.classList.remove('hidden');
-        resultDiv.className = 'rounded-lg p-3 text-sm bg-destructive/10 text-destructive border border-destructive/50';
-        resultDiv.innerHTML = '<strong>Error:</strong> Upload gagal: ' + error.message;
-        submitBtn.disabled = false;
-    });
-});
-
-// Bulk file upload
-document.getElementById('bulkUploadForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const progressDiv = document.getElementById('bulkUploadProgress');
-    const resultDiv = document.getElementById('bulkUploadResult');
-    const submitBtn = document.getElementById('bulkUploadSubmit');
-    
-    progressDiv.classList.remove('hidden');
-    resultDiv.classList.add('hidden');
-    submitBtn.disabled = true;
-    
-    fetch('<?= base_url('/info/files/bulk-upload') ?>', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        progressDiv.classList.add('hidden');
-        resultDiv.classList.remove('hidden');
-        
-        if (data.status === 'success') {
-            resultDiv.className = 'rounded-lg p-3 text-sm bg-success/10 text-success border border-success/50';
-            let html = '<strong>Sukses:</strong> ' + data.message + '<br>';
-            
-            if (data.uploaded_files && data.uploaded_files.length > 0) {
-                html += '<strong class="block mt-2">File terupload:</strong><ul class="list-disc list-inside mt-1">';
-                data.uploaded_files.forEach(file => {
-                    html += '<li>' + file.original_name + '</li>';
-                });
-                html += '</ul>';
-            }
-            
-            if (data.errors && data.errors.length > 0) {
-                html += '<strong class="block mt-2">Errors:</strong><ul class="list-disc list-inside mt-1">';
-                data.errors.forEach(error => {
-                    html += '<li>' + error + '</li>';
-                });
-                html += '</ul>';
-            }
-            
-            resultDiv.innerHTML = html;
-            setTimeout(() => {
-                location.reload();
-            }, 3000);
-        } else {
-            resultDiv.className = 'rounded-lg p-3 text-sm bg-destructive/10 text-destructive border border-destructive/50';
-            resultDiv.innerHTML = '<strong>Error:</strong> ' + data.message;
-        }
-        
-        submitBtn.disabled = false;
-    })
-    .catch(error => {
-        progressDiv.classList.add('hidden');
-        resultDiv.classList.remove('hidden');
-        resultDiv.className = 'rounded-lg p-3 text-sm bg-destructive/10 text-destructive border border-destructive/50';
-        resultDiv.innerHTML = '<strong>Error:</strong> Upload gagal: ' + error.message;
-        submitBtn.disabled = false;
-    });
-});
-
-function viewFile(fileId) {
-    window.open('<?= base_url('/info/files/view/') ?>' + fileId, '_blank');
-}
-
-function deleteFile(fileId, fileName) {
-    if (confirm('Yakin ingin menghapus "' + fileName + '"?')) {
-        window.location.href = '<?= base_url('/info/files/delete/') ?>' + fileId;
-    }
-}
-</script>
 
 <?= $this->endSection() ?>

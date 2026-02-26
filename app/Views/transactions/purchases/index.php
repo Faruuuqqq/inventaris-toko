@@ -2,6 +2,14 @@
 
 <?= $this->section('content') ?>
 
+<script>
+window.__PAGE_CONFIG__ = {
+    purchaseOrders: <?= json_encode($purchaseOrders ?? []) ?>,
+    baseUrl: '<?= base_url('transactions/purchases') ?>'
+};
+</script>
+<script src="<?= base_url('assets/js/modules/transactions/purchaseManager.js') ?>"></script>
+
 <div x-data="purchaseManager()">
     <!-- Page Header -->
     <div class="mb-8 flex items-start justify-between">
@@ -148,7 +156,7 @@
                         <tr class="border-b border-border hover:bg-muted/50 transition-colors duration-150">
                             <!-- PO Number -->
                             <td class="px-6 py-4">
-                                <a href="<?= base_url('transactions/purchases/detail') ?>/:po.id_po" class="font-semibold text-primary hover:text-primary-light transition" x-text="po.nomor_po"></a>
+                                <a :href="`${window.__PAGE_CONFIG__.baseUrl}/detail/${po.id_po}`" class="font-semibold text-primary hover:text-primary-light transition" x-text="po.nomor_po"></a>
                             </td>
 
                             <!-- Supplier -->
@@ -181,7 +189,7 @@
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-1.5">
                                     <a 
-                                        :href="`<?= base_url('transactions/purchases/detail') ?>/${po.id_po}`"
+                                        :href="`${window.__PAGE_CONFIG__.baseUrl}/detail/${po.id_po}`"
                                         class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
                                         title="Lihat detail"
                                     >
@@ -189,7 +197,7 @@
                                     </a>
                                     <template x-if="po.status !== 'Diterima Semua' && po.status !== 'Dibatalkan'">
                                         <a 
-                                            :href="`<?= base_url('transactions/purchases/receive') ?>/${po.id_po}`"
+                                            :href="`${window.__PAGE_CONFIG__.baseUrl}/receive/${po.id_po}`"
                                             class="inline-flex items-center justify-center rounded-lg border border-success/50 bg-success/5 hover:bg-success/15 transition h-9 w-9 text-success"
                                             title="Terima barang"
                                         >
@@ -198,7 +206,7 @@
                                     </template>
                                     <template x-if="po.status === 'Dipesan'">
                                         <a 
-                                            :href="`<?= base_url('transactions/purchases/edit') ?>/${po.id_po}`"
+                                            :href="`${window.__PAGE_CONFIG__.baseUrl}/edit/${po.id_po}`"
                                             class="inline-flex items-center justify-center rounded-lg border border-border bg-surface hover:bg-muted/50 transition h-9 w-9 text-foreground"
                                             title="Edit PO"
                                         >
@@ -242,58 +250,5 @@
         </div>
     </div>
 </div>
-
-<script>
-function purchaseManager() {
-    return {
-        purchaseOrders: <?= json_encode($purchaseOrders ?? []) ?>,
-        search: '',
-        supplierFilter: 'all',
-
-        get filteredPurchaseOrders() {
-            return this.purchaseOrders.filter(po => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = (po.nomor_po && po.nomor_po.toLowerCase().includes(searchLower)) ||
-                                    (po.name && po.name.toLowerCase().includes(searchLower));
-                
-                const matchesSupplier = this.supplierFilter === 'all' || 
-                                       po.id_supplier == this.supplierFilter;
-                                      
-                return matchesSearch && matchesSupplier;
-            });
-        },
-
-        get pendingReceived() {
-            return this.purchaseOrders.filter(po => po.status === 'Dipesan' || po.status === 'Sebagian Diterima').length;
-        },
-
-        get fullyReceived() {
-            return this.purchaseOrders.filter(po => po.status === 'Diterima Semua').length;
-        },
-
-        deletePO(poId) {
-            const po = this.purchaseOrders.find(p => p.id === poId);
-            const poNumber = po ? po.po_number : 'PO ini';
-            ModalManager.submitDelete(
-                `<?= base_url('transactions/purchases/delete') ?>/${poId}`,
-                poNumber,
-                () => {
-                    this.purchaseOrders = this.purchaseOrders.filter(p => p.id !== poId);
-                }
-            );
-        },
-
-        formatNumber(value) {
-            return parseFloat(value || 0).toLocaleString('id-ID');
-        },
-
-        formatDate(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr);
-            return date.toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
-        }
-    }
-}
-</script>
 
 <?= $this->endSection() ?>

@@ -10,15 +10,15 @@ class FixCascadeDeleteRisks extends Migration
     {
         // This migration documents the current CASCADE DELETE relationships
         // and provides guidance on which should be changed to RESTRICT
-        
-        // NOTE: Changing foreign key constraints in MySQL requires dropping 
+
+        // NOTE: Changing foreign key constraints in MySQL requires dropping
         // and recreating the constraint. This is complex and risky.
-        // 
+        //
         // SAFER APPROACH: Use soft deletes (already implemented)
-        // 
+        //
         // When a record is soft-deleted, it won't show in normal queries
         // but the data is preserved. Foreign key constraints will still work.
-        // 
+        //
         // CURRENT RISKY CASCADES:
         // 1. product_id in stock_mutations -> CASCADE DELETE
         //    Risk: Deleting a product deletes all stock history
@@ -37,13 +37,13 @@ class FixCascadeDeleteRisks extends Migration
         // ✅ This provides data protection without needing constraint changes
         // ✅ Soft deleted records can be restored
         // ✅ Audit trail is preserved
-        
-        // If you need to enforce RESTRICT (prevent deletion of parent), 
+
+        // If you need to enforce RESTRICT (prevent deletion of parent),
         // you must modify controllers/services to:
         // 1. Check for existing children before deletion
         // 2. Return user-friendly error message
         // 3. Use soft delete instead of hard delete
-        
+
         // Example in controller:
         /*
         public function delete($id)
@@ -52,7 +52,7 @@ class FixCascadeDeleteRisks extends Migration
             if (!$sale) {
                 return $this->response->setStatusCode(404);
             }
-            
+
             // Check if has items
             $itemCount = $this->saleItemModel->where('sale_id', $id)->countAllResults();
             if ($itemCount > 0) {
@@ -61,12 +61,12 @@ class FixCascadeDeleteRisks extends Migration
                     'message' => 'Tidak bisa menghapus penjualan yang memiliki item. Hapus item terlebih dahulu.'
                 ]);
             }
-            
+
             // Safe to delete
             $this->saleModel->delete($id); // Soft delete
         }
         */
-        
+
         echo "Cascade delete risks documented. Using soft delete strategy for data protection.\n";
     }
 

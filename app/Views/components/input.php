@@ -1,29 +1,29 @@
 <?php
 /**
  * Input Component
- * 
+ *
  * Usage: <?= view('components/input', ['name' => 'email', 'type' => 'email', 'label' => 'Email']) ?>
- * 
- * @param string $name - Input name (required)
- * @param string $type - text, email, password, number, date, etc (default: text)
- * @param string $label - Label text
+ *
+ * @param string $name        - Input name (required)
+ * @param string $type        - text, email, password, number, date, etc (default: text)
+ * @param string $label       - Label text
  * @param string $placeholder - Placeholder text
- * @param string $value - Default value
- * @param bool $required - Is required (default: false)
- * @param string $error - Error message to display
- * @param string $hint - Help text
+ * @param string $value       - Default value
+ * @param bool   $required    - Is required (default: false)
+ * @param string $error       - Error message to display
+ * @param string $hint        - Help text
  */
 
-$name = $name ?? '';
-$type = $type ?? 'text';
-$label = $label ?? '';
-$placeholder = $placeholder ?? '';
-$value = $value ?? old($name) ?? '';
-$required = $required ?? false;
-$error = $error ?? '';
-$hint = $hint ?? '';
-$disabled = $disabled ?? false;
-$class = $class ?? '';
+$name ??= '';
+$type ??= 'text';
+$label ??= '';
+$placeholder ??= '';
+$value ??= old($name) ?? '';
+$required ??= false;
+$error ??= '';
+$hint ??= '';
+$disabled ??= false;
+$class ??= '';
 
 $inputClass = 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50 cursor-text';
 

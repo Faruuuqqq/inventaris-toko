@@ -30,8 +30,13 @@
                         <p class="text-sm font-semibold text-emerald-100">Penjualan Hari Ini</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= format_currency($todaySales) ?></p>
                         <div class="mt-3 flex items-center gap-1">
+                            <?php if ($salesGrowth >= 0): ?>
                             <?= icon('TrendingUp', 'h-4 w-4 text-emerald-200') ?>
-                            <p class="text-xs text-emerald-100 font-semibold">↑ 12.5% dari kemarin</p>
+                            <p class="text-xs text-emerald-100 font-semibold">↑ <?= $salesGrowth ?>% dari kemarin</p>
+                            <?php else: ?>
+                            <?= icon('TrendingDown', 'h-4 w-4 text-red-200') ?>
+                            <p class="text-xs text-red-100 font-semibold">↓ <?= abs($salesGrowth) ?>% dari kemarin</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
@@ -56,7 +61,7 @@
                     <div>
                         <p class="text-sm font-semibold text-blue-100">Pembelian Hari Ini</p>
                         <p class="mt-2 text-3xl font-bold text-white"><?= format_currency($todayPurchases) ?></p>
-                        <p class="mt-3 text-xs text-blue-100 font-medium">5 transaksi</p>
+                        <p class="mt-3 text-xs text-blue-100 font-medium"><?= $todayPurchaseCount ?> transaksi</p>
                     </div>
                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
                         <?= icon('ShoppingCart', 'h-7 w-7 text-white') ?>
@@ -106,7 +111,7 @@
                         <p class="mt-2 text-3xl font-bold text-white"><?= number_format($activeCustomers, 0, ',', '.') ?></p>
                         <div class="mt-3 flex items-center gap-1">
                             <?= icon('TrendingUp', 'h-4 w-4 text-purple-200') ?>
-                            <p class="text-xs text-purple-100 font-semibold">↑ 3 pelanggan baru minggu ini</p>
+                            <p class="text-xs text-purple-100 font-semibold">↑ <?= $newCustomersThisWeek ?> pelanggan baru minggu ini</p>
                         </div>
                     </div>
                     <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
@@ -182,7 +187,7 @@
                                             'PARTIAL' => 'bg-warning/10 text-warning border-warning/50',
                                             default => 'bg-destructive/10 text-destructive border-destructive/50'
                                         };
-                                        ?>
+                                ?>
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border <?= $statusClass ?>">
                                             <?= $tx->payment_status ?? 'UNPAID' ?>
                                         </span>

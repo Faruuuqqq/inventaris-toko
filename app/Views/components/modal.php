@@ -2,7 +2,7 @@
 /**
  * Modern Modal Component
  * Alpine.js powered modal with smooth animations and variants
- * 
+ *
  * Usage:
  * <?= view('components/modal', [
  *     'id' => 'confirmModal',
@@ -15,16 +15,16 @@
  * ]) ?>
  */
 
-$id = $id ?? 'modal_' . uniqid();
-$title = $title ?? 'Modal';
-$content = $content ?? '';
-$subtitle = $subtitle ?? null;
-$primaryButton = $primaryButton ?? ['text' => 'Confirm'];
-$secondaryButton = $secondaryButton ?? ['text' => 'Cancel'];
-$size = $size ?? 'md'; // sm, md, lg, xl
-$variant = $variant ?? 'primary'; // primary, danger, success, warning, info
-$icon = $icon ?? null;
-$isLoading = $isLoading ?? false;
+$id ??= 'modal_' . uniqid();
+$title ??= 'Modal';
+$content ??= '';
+$subtitle ??= null;
+$primaryButton ??= ['text' => 'Confirm'];
+$secondaryButton ??= ['text' => 'Cancel'];
+$size ??= 'md'; // sm, md, lg, xl
+$variant ??= 'primary'; // primary, danger, success, warning, info
+$icon ??= null;
+$isLoading ??= false;
 
 $sizeClasses = [
     'sm' => 'max-w-sm',

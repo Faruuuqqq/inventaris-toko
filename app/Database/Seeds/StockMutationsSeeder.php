@@ -85,7 +85,7 @@ class StockMutationsSeeder extends Seeder
                     foreach ($poItemsMap[$po['id_po']] as $item) {
                         // Convert DATE to DATETIME
                         $poDateTime = date('Y-m-d H:i:s', strtotime($po['tanggal_po']));
-                        
+
                         $db->table('stock_mutations')->insert([
                             'product_id' => $item['product_id'],
                             'warehouse_id' => $warehouse1,
@@ -147,7 +147,7 @@ class StockMutationsSeeder extends Seeder
 
             foreach ($mutations as $mutation) {
                 $key = $mutation['product_id'] . '_' . $mutation['warehouse_id'];
-                
+
                 if (!isset($balances[$key])) {
                     $balances[$key] = 0;
                 }
@@ -172,7 +172,7 @@ class StockMutationsSeeder extends Seeder
             echo "   Updating product_stocks final balances...\n";
             foreach ($balances as $key => $balance) {
                 [$productId, $warehouseId] = explode('_', $key);
-                
+
                 $db->table('product_stocks')
                     ->where('product_id', $productId)
                     ->where('warehouse_id', $warehouseId)
@@ -194,7 +194,7 @@ class StockMutationsSeeder extends Seeder
 
         } catch (\Exception $e) {
             $db->transRollback();
-            echo "❌ Error: " . $e->getMessage() . "\n\n";
+            echo '❌ Error: ' . $e->getMessage() . "\n\n";
             throw $e;
         }
     }

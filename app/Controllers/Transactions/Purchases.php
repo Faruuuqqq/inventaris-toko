@@ -3,10 +3,9 @@
 namespace App\Controllers\Transactions;
 
 use App\Controllers\BaseController;
-use App\Models\ProductModel;
-use App\Services\StockService;
-use App\Services\BalanceService;
 use App\Exceptions\InvalidTransactionException;
+use App\Services\BalanceService;
+use App\Services\StockService;
 use CodeIgniter\API\ResponseTrait;
 
 class Purchases extends BaseController
@@ -14,11 +13,17 @@ class Purchases extends BaseController
     use ResponseTrait;
 
     protected $purchaseOrderModel;
+
     protected $purchaseOrderDetailModel;
+
     protected $supplierModel;
+
     protected $productModel;
+
     protected $warehouseModel;
+
     protected $stockService;
+
     protected $balanceService;
 
     public function __construct()
@@ -41,7 +46,7 @@ class Purchases extends BaseController
             'start_date' => $this->request->getGet('start_date'),
             'end_date' => $this->request->getGet('end_date'),
             'supplier_id' => $this->request->getGet('supplier_id'),
-            'status' => $this->request->getGet('status')
+            'status' => $this->request->getGet('status'),
         ];
 
         $query = $this->purchaseOrderModel
@@ -66,7 +71,7 @@ class Purchases extends BaseController
             'title' => 'Pembelian',
             'purchaseOrders' => $query->orderBy('purchase_orders.tanggal_po', 'DESC')->findAll(),
             'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
-            'filters' => $filters
+            'filters' => $filters,
         ];
 
         return view('transactions/purchases/index', $data);
@@ -82,7 +87,7 @@ class Purchases extends BaseController
             'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
             'products' => $this->productModel->where('is_active', 1)->findAll(),
             'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
-            'nomor_po' => $this->generateNomorPO()
+            'nomor_po' => $this->generateNomorPO(),
         ];
 
         return view('transactions/purchases/create', $data);
@@ -101,7 +106,7 @@ class Purchases extends BaseController
             'produk' => 'required',
             'produk.*.id_produk' => 'required|is_natural_no_zero',
             'produk.*.jumlah' => 'required|greater_than[0]',
-            'produk.*.harga_beli' => 'required|greater_than[0]'
+            'produk.*.harga_beli' => 'required|greater_than[0]',
         ];
 
         if (!$this->validate($rules)) {
@@ -160,7 +165,7 @@ class Purchases extends BaseController
                 'notes' => $this->request->getPost('keterangan') ?? '',
                 'total_amount' => $totalAmount,
                 'received_amount' => ($status === 'Diterima Semua') ? $totalAmount : 0,
-                'user_id' => session()->get('id')
+                'user_id' => session()->get('id'),
             ];
 
             $idPO = $this->purchaseOrderModel->insert($purchaseOrderData);
@@ -172,7 +177,7 @@ class Purchases extends BaseController
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
-                    'received_qty' => ($status === 'Diterima Semua') ? $item['quantity'] : 0
+                    'received_qty' => ($status === 'Diterima Semua') ? $item['quantity'] : 0,
                 ];
 
                 $this->purchaseOrderDetailModel->insert($detailData);
@@ -240,12 +245,12 @@ class Purchases extends BaseController
              ->where('purchase_order_items.po_id', $id)
              ->findAll();
 
-         $data = [
-             'title' => 'Ubah Pesanan Pembelian',
+        $data = [
+            'title' => 'Ubah Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder,
             'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
             'products' => $this->productModel->where('is_active', 1)->findAll(),
-            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll()
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
         ];
 
         return view('transactions/purchases/edit', $data);
@@ -273,7 +278,7 @@ class Purchases extends BaseController
             'produk' => 'required',
             'produk.*.id_produk' => 'required|is_natural_no_zero',
             'produk.*.jumlah' => 'required|greater_than[0]',
-            'produk.*.harga_beli' => 'required|greater_than[0]'
+            'produk.*.harga_beli' => 'required|greater_than[0]',
         ];
 
         if (!$this->validate($rules)) {
@@ -339,13 +344,13 @@ class Purchases extends BaseController
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
-                    'received_qty' => ($status === 'Diterima Semua') ? $item['quantity'] : 0
+                    'received_qty' => ($status === 'Diterima Semua') ? $item['quantity'] : 0,
                 ];
 
                 $this->purchaseOrderDetailModel->insert($detailData);
 
                 if ($status === 'Diterima Semua') {
-                     if (!$warehouseId) {
+                    if (!$warehouseId) {
                         $wh = $this->warehouseModel->first();
                         $warehouseId = $wh['id'] ?? 1;
                     }
@@ -434,17 +439,17 @@ class Purchases extends BaseController
             return redirect()->back()->with('error', 'Pesanan pembelian sudah diterima penuh');
         }
 
-         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['supplier_id']);
-         $purchaseOrder['details'] = $this->purchaseOrderDetailModel
-             ->select('purchase_order_items.*, products.name, products.sku')
-             ->join('products', 'products.id = purchase_order_items.product_id')
-             ->where('purchase_order_items.po_id', $id)
-             ->findAll();
+        $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['supplier_id']);
+        $purchaseOrder['details'] = $this->purchaseOrderDetailModel
+            ->select('purchase_order_items.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_order_items.product_id')
+            ->where('purchase_order_items.po_id', $id)
+            ->findAll();
 
-         $data = [
-             'title' => 'Terima Pesanan Pembelian',
+        $data = [
+            'title' => 'Terima Pesanan Pembelian',
             'purchaseOrder' => $purchaseOrder,
-            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll()
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
         ];
 
         return view('transactions/purchases/receive', $data);
@@ -463,7 +468,7 @@ class Purchases extends BaseController
         $rules = [
             'tanggal_terima' => 'required|valid_date[Y-m-d]',
             'id_warehouse' => 'required|is_natural_no_zero',
-            'produk' => 'required'
+            'produk' => 'required',
         ];
 
         if (!$this->validate($rules)) {
@@ -485,10 +490,14 @@ class Purchases extends BaseController
                 $idDetail = $item['id_detail'];
                 $jumlahDiterima = (int)$item['jumlah_diterima'];
 
-                if ($jumlahDiterima <= 0) continue;
+                if ($jumlahDiterima <= 0) {
+                    continue;
+                }
 
                 $detail = $this->purchaseOrderDetailModel->find($idDetail);
-                if (!$detail) continue;
+                if (!$detail) {
+                    continue;
+                }
 
                 $remainingQty = $detail['quantity'] - $detail['received_qty'];
 
@@ -499,7 +508,7 @@ class Purchases extends BaseController
                 // Update detail
                 $newReceived = $detail['received_qty'] + $jumlahDiterima;
                 $this->purchaseOrderDetailModel->update($idDetail, [
-                    'received_qty' => $newReceived
+                    'received_qty' => $newReceived,
                 ]);
 
                 // Add stock
@@ -522,7 +531,7 @@ class Purchases extends BaseController
 
             // Check all items status
             $allItems = $this->purchaseOrderDetailModel->where('po_id', $id)->findAll();
-            foreach($allItems as $itm) {
+            foreach ($allItems as $itm) {
                 if ($itm['received_qty'] < $itm['quantity']) {
                     $isFullyReceived = false;
                     break;
@@ -534,7 +543,7 @@ class Purchases extends BaseController
 
             $this->purchaseOrderModel->update($id, [
                 'status' => $newStatus,
-                'received_amount' => $purchaseOrder['received_amount'] + $totalReceivedAmount
+                'received_amount' => $purchaseOrder['received_amount'] + $totalReceivedAmount,
             ]);
 
             $db->transComplete();
@@ -554,16 +563,23 @@ class Purchases extends BaseController
             return redirect()->to('/transactions/purchases')->with('error', 'Pesanan pembelian tidak ditemukan');
         }
 
-         $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['supplier_id']);
-         $purchaseOrder['details'] = $this->purchaseOrderDetailModel
-             ->select('purchase_order_items.*, products.name, products.sku')
-             ->join('products', 'products.id = purchase_order_items.product_id')
-             ->where('purchase_order_items.po_id', $id)
-             ->findAll();
+        $purchaseOrder['supplier'] = $this->supplierModel->find($purchaseOrder['supplier_id']);
+        $purchaseOrder['details'] = $this->purchaseOrderDetailModel
+            ->select('purchase_order_items.*, products.name, products.sku')
+            ->join('products', 'products.id = purchase_order_items.product_id')
+            ->where('purchase_order_items.po_id', $id)
+            ->findAll();
 
-         $data = [
-             'title' => 'Detail Pesanan Pembelian',
-            'purchaseOrder' => $purchaseOrder
+        $totalReceived = 0;
+        foreach ($purchaseOrder['details'] as $detail) {
+            $totalReceived += ($detail['jumlah_diterima'] ?? 0) * ($detail['harga_beli'] ?? 0);
+        }
+
+        $data = [
+            'title' => 'Detail Pesanan Pembelian',
+            'purchaseOrder' => $purchaseOrder,
+            'totalReceived' => $totalReceived,
+            'totalRemaining' => $purchaseOrder['total_bayar'] - $totalReceived,
         ];
 
         return view('transactions/purchases/detail', $data);
@@ -580,7 +596,7 @@ class Purchases extends BaseController
 
         return $this->respond([
             'status' => 'success',
-            'harga_beli' => $product['price_buy'] ?? 0
+            'harga_beli' => $product['price_buy'] ?? 0,
         ]);
     }
 

@@ -12,7 +12,7 @@ class CreateKontraBonsTable extends Migration
         if ($this->db->tableExists('kontra_bons')) {
             return;
         }
-        
+
         $this->forge->addField([
             'id' => [
                 'type' => 'BIGINT',
@@ -55,7 +55,7 @@ class CreateKontraBonsTable extends Migration
                 'null' => true,
             ],
         ]);
-        
+
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('customer_id', 'customers', 'id', 'CASCADE', 'RESTRICT');
         $this->forge->createTable('kontra_bons');

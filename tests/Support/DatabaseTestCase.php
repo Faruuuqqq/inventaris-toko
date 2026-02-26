@@ -183,7 +183,6 @@ return $this->warehouseModel->insert($warehouseData);
             'logged_in' => true
         ]);
     }
-}
 
     protected function assertDatabaseHas($table, array $data)
     {

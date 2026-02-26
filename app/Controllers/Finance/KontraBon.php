@@ -3,14 +3,15 @@
 namespace App\Controllers\Finance;
 
 use App\Controllers\BaseController;
-use App\Models\KontraBonModel;
 use App\Models\CustomerModel;
+use App\Models\KontraBonModel;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
 class KontraBon extends BaseController
 {
     protected $kontraBonModel;
+
     protected $customerModel;
 
     public function __construct()

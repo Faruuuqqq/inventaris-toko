@@ -1,7 +1,7 @@
 <?php
 /**
  * Page Header Component - Consistent page title and actions
- * 
+ *
  * Usage:
  * <?= view('components/page-header', [
  *     'title' => 'Page Title',
@@ -13,11 +13,11 @@
  * ]) ?>
  */
 
-$title = $title ?? '';
-$subtitle = $subtitle ?? null;
-$icon = $icon ?? null;
-$actions = $actions ?? [];
-$class = $class ?? '';
+$title ??= '';
+$subtitle ??= null;
+$icon ??= null;
+$actions ??= [];
+$class ??= '';
 ?>
 
 <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 <?= $class ?>">
