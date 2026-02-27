@@ -387,6 +387,16 @@ $routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function ($rout
             $routes->get('stats', 'SalesController::stats');          // GET /api/v1/sales/stats
         });
 
+        // Purchase Orders API
+        $routes->group('purchase-orders', function ($routes) {
+            $routes->get('/', 'PurchaseOrdersController::index');              // GET /api/v1/purchase-orders
+            $routes->get('(:num)', 'PurchaseOrdersController::show/$1');       // GET /api/v1/purchase-orders/1
+            $routes->post('/', 'PurchaseOrdersController::create');            // POST /api/v1/purchase-orders
+            $routes->put('(:num)', 'PurchaseOrdersController::update/$1');     // PUT /api/v1/purchase-orders/1
+            $routes->delete('(:num)', 'PurchaseOrdersController::delete/$1');  // DELETE /api/v1/purchase-orders/1
+            $routes->post('receive/(:num)', 'PurchaseOrdersController::receive/$1');  // POST /api/v1/purchase-orders/receive/1
+        });
+
         // Stock Management API
         $routes->group('stock', function ($routes) {
             $routes->get('/', 'StockController::index');              // GET /api/v1/stock

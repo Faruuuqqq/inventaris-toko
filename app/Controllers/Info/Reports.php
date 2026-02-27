@@ -481,4 +481,87 @@ class Reports extends BaseController
     private function calculateExpenses($startDate, $endDate)
     { /* existing implementation */
     }
+
+    public function productPerformance()
+    {
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
+            return redirect()->to('/dashboard')->with('error', 'Access denied');
+        }
+
+        $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
+        $endDate = $this->request->getGet('end_date') ?? date('Y-m-t');
+        $includeHidden = session()->get('role') === 'OWNER' && $this->request->getGet('include_hidden') === '1';
+
+        $products = $this->productModel
+            ->select('products.id, products.name, products.sku, categories.name as category_name')
+            ->select('SUM(sale_items.quantity) as total_sold')
+            ->select('SUM(sale_items.subtotal) as total_revenue')
+            ->select('AVG(sale_items.price) as avg_price')
+            ->join('sale_items', 'sale_items.product_id = products.id')
+            ->join('sales', 'sales.id = sale_items.sale_id')
+            ->join('categories', 'categories.id = products.category_id', 'left')
+            ->where('sales.created_at >=', $startDate)
+            ->where('sales.created_at <=', $endDate)
+            ->where('sales.deleted_at', null);
+
+        if (!$includeHidden) {
+            $products->where('sales.is_hidden', 0);
+        }
+
+        $products = $products->groupBy('products.id')
+            ->orderBy('total_revenue', 'DESC')
+            ->findAll();
+
+        $data = [
+            'title' => 'Product Performance Report',
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'includeHidden' => $this->request->getGet('include_hidden') ?? '0',
+            'products' => $products,
+            'isOwner' => session()->get('role') === 'OWNER',
+        ];
+
+        return view('info/reports/product_performance', $data);
+    }
+
+    public function customerAnalysis()
+    {
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
+            return redirect()->to('/dashboard')->with('error', 'Access denied');
+        }
+
+        $startDate = $this->request->getGet('start_date') ?? date('Y-m-01');
+        $endDate = $this->request->getGet('end_date') ?? date('Y-m-t');
+        $includeHidden = session()->get('role') === 'OWNER' && $this->request->getGet('include_hidden') === '1';
+
+        $customers = $this->customerModel
+            ->select('customers.id, customers.name, customers.phone, customers.email')
+            ->select('COUNT(DISTINCT sales.id) as total_orders')
+            ->select('SUM(sales.total_amount) as total_spent')
+            ->select('AVG(sales.total_amount) as avg_order_value')
+            ->select('MAX(sales.created_at) as last_order_date')
+            ->join('sales', 'sales.customer_id = customers.id', 'left')
+            ->where('sales.created_at >=', $startDate)
+            ->where('sales.created_at <=', $endDate)
+            ->where('sales.deleted_at', null);
+
+        if (!$includeHidden) {
+            $customers->where('sales.is_hidden', 0);
+        }
+
+        $customers = $customers->groupBy('customers.id')
+            ->orderBy('total_spent', 'DESC')
+            ->findAll();
+
+        $data = [
+            'title' => 'Customer Analysis Report',
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'includeHidden' => $this->request->getGet('include_hidden') ?? '0',
+            'customers' => $customers,
+            'isOwner' => session()->get('role') === 'OWNER',
+        ];
+
+        return view('info/reports/customer_analysis', $data);
+    }
 }
