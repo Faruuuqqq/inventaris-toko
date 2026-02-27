@@ -115,7 +115,6 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
         $routes->get('edit/(:num)', 'Sales::edit/$1');
         $routes->get('(:num)', 'Sales::detail/$1');
         $routes->post('/', 'Sales::store');
-        $routes->post('store', 'Sales::store');
         $routes->put('(:num)', 'Sales::update/$1');
         $routes->get('cash', 'Sales::cash');
         $routes->post('storeCash', 'Sales::storeCash');
@@ -134,7 +133,6 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
         $routes->post('processReceive/(:num)', 'Purchases::processReceive/$1');
         $routes->get('(:num)', 'Purchases::detail/$1');
         $routes->post('/', 'Purchases::store');
-        $routes->post('store', 'Purchases::store');
         $routes->put('(:num)', 'Purchases::update/$1');
         $routes->post('update/(:num)', 'Purchases::update/$1');  // POST fallback for update
         $routes->get('delete/(:num)', 'Purchases::delete/$1');  // GET for simple delete links
@@ -151,7 +149,6 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
         $routes->get('detail/(:num)', 'SalesReturns::detail/$1');
         $routes->get('(:num)', 'SalesReturns::detail/$1');
         $routes->post('/', 'SalesReturns::store');
-        $routes->post('store', 'SalesReturns::store');
         $routes->put('(:num)', 'SalesReturns::update/$1');
         $routes->post('update/(:num)', 'SalesReturns::update/$1');
         $routes->get('delete/(:num)', 'SalesReturns::delete/$1');  // GET for simple delete links
@@ -167,7 +164,6 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
         $routes->get('detail/(:num)', 'PurchaseReturns::detail/$1');
         $routes->get('(:num)', 'PurchaseReturns::detail/$1');
         $routes->post('/', 'PurchaseReturns::store');
-        $routes->post('store', 'PurchaseReturns::store');
         $routes->put('(:num)', 'PurchaseReturns::update/$1');
         $routes->post('update/(:num)', 'PurchaseReturns::update/$1');
         $routes->get('delete/(:num)', 'PurchaseReturns::delete/$1');  // GET for simple delete links
@@ -191,7 +187,6 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function (
         $routes->get('/', 'Expenses::index');
         $routes->get('create', 'Expenses::create');
         $routes->post('/', 'Expenses::store');
-        $routes->post('store', 'Expenses::store');  // Alternative POST endpoint
         $routes->get('edit/(:num)', 'Expenses::edit/$1');  // Standard pattern
         $routes->get('(:num)/edit', 'Expenses::edit/$1');  // Legacy compatibility
         $routes->put('(:num)', 'Expenses::update/$1');
