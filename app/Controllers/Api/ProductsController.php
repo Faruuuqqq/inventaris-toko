@@ -2,14 +2,11 @@
 
 namespace App\Controllers\Api;
 
-use App\Services\ExportService;
 use App\Services\ProductDataService;
-use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\RESTful\ResourceController;
 
 class ProductsController extends ResourceController
 {
-    use ResponseTrait;
 
     protected $productModel;
 

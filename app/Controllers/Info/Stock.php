@@ -3,7 +3,6 @@
 namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
-use App\Models\CategoryModel;
 use App\Models\ProductModel;
 use App\Models\ProductStockModel;
 use App\Models\StockMutationModel;

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Exceptions\CreditLimitExceededException;
-use App\Exceptions\InsufficientStockException;
 use App\Models\CustomerModel;
 use App\Models\ProductModel;
 use App\Models\SaleItemModel;

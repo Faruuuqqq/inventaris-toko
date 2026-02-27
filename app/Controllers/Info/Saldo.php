@@ -4,7 +4,6 @@ namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
 use App\Models\CustomerModel;
-use App\Models\SaleModel;
 use App\Traits\ApiResponseTrait;
 
 class Saldo extends BaseController

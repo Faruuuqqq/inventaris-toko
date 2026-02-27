@@ -4,7 +4,6 @@ namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
 use App\Models\CategoryModel;
-use App\Models\ProductModel;
 use App\Models\SaleModel;
 
 class Analytics extends BaseController

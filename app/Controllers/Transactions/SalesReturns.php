@@ -6,11 +6,9 @@ use App\Controllers\BaseController;
 use App\Exceptions\InvalidTransactionException;
 use App\Services\BalanceService;
 use App\Services\StockService;
-use CodeIgniter\API\ResponseTrait;
 
 class SalesReturns extends BaseController
 {
-    use ResponseTrait;
 
     protected $salesReturnModel;
 

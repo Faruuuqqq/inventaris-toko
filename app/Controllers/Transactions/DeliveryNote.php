@@ -9,12 +9,10 @@ use App\Models\SaleItemModel;
 use App\Models\SaleModel;
 use App\Models\SalespersonModel;
 use App\Traits\ApiResponseTrait;
-use App\Traits\DebugLoggingTrait;
 
 class DeliveryNote extends BaseController
 {
     use ApiResponseTrait;
-    use DebugLoggingTrait;
 
     protected $saleModel;
 

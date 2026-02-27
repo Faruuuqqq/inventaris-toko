@@ -10,7 +10,6 @@ use App\Models\ProductModel;
 use App\Models\PurchaseOrderModel;
 use App\Models\PurchaseReturnModel;
 use App\Models\SaleModel;
-use App\Models\SalespersonModel;
 use App\Models\SalesReturnModel;
 use App\Models\StockMutationModel;
 use App\Models\SupplierModel;

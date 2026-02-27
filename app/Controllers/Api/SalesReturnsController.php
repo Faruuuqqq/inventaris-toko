@@ -2,7 +2,6 @@
 
 namespace App\Controllers\Api;
 
-use App\Models\SalesReturnDetailModel;
 use CodeIgniter\RESTful\ResourceController;
 
 class SalesReturnsController extends ResourceController

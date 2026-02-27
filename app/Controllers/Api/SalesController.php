@@ -2,12 +2,10 @@
 
 namespace App\Controllers\Api;
 
-use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\RESTful\ResourceController;
 
 class SalesController extends ResourceController
 {
-    use ResponseTrait;
 
     protected $salesModel;
 

@@ -12,11 +12,9 @@ use App\Models\SaleModel;
 use App\Models\SalespersonModel;
 use App\Models\WarehouseModel;
 use App\Services\SaleService;
-use CodeIgniter\API\ResponseTrait;
 
 class Sales extends BaseController
 {
-    use ResponseTrait;
 
     protected $saleModel;
 
