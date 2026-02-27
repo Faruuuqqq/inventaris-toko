@@ -6,20 +6,20 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 /**
  * API Response Trait
- * 
+ *
  * Provides standardized JSON response methods for controllers
  * Use this trait in any controller that returns JSON responses
- * 
+ *
  * @package App\Traits
  */
 trait ApiResponseTrait
 {
     /**
      * Send success response
-     * 
-     * @param mixed $data Response data
-     * @param string $message Success message
-     * @param int $statusCode HTTP status code (default: 200)
+     *
+     * @param  mixed             $data       Response data
+     * @param  string            $message    Success message
+     * @param  int               $statusCode HTTP status code (default: 200)
      * @return ResponseInterface
      */
     protected function respondSuccess($data = null, string $message = 'Success', int $statusCode = 200): ResponseInterface
@@ -40,10 +40,10 @@ trait ApiResponseTrait
 
     /**
      * Send error response
-     * 
-     * @param string $message Error message
-     * @param int $statusCode HTTP status code (default: 400)
-     * @param mixed $errors Additional error details
+     *
+     * @param  string            $message    Error message
+     * @param  int               $statusCode HTTP status code (default: 400)
+     * @param  mixed             $errors     Additional error details
      * @return ResponseInterface
      */
     protected function respondError(string $message = 'Error', int $statusCode = 400, $errors = null): ResponseInterface
@@ -64,9 +64,9 @@ trait ApiResponseTrait
 
     /**
      * Send created response (201)
-     * 
-     * @param mixed $data Created resource data
-     * @param string $message Success message
+     *
+     * @param  mixed             $data    Created resource data
+     * @param  string            $message Success message
      * @return ResponseInterface
      */
     protected function respondCreated($data = null, string $message = 'Resource created successfully'): ResponseInterface
@@ -76,7 +76,7 @@ trait ApiResponseTrait
 
     /**
      * Send no content response (204)
-     * 
+     *
      * @return ResponseInterface
      */
     protected function respondNoContent(): ResponseInterface
@@ -86,8 +86,8 @@ trait ApiResponseTrait
 
     /**
      * Send not found response (404)
-     * 
-     * @param string $message Error message
+     *
+     * @param  string            $message Error message
      * @return ResponseInterface
      */
     protected function respondNotFound(string $message = 'Resource not found'): ResponseInterface
@@ -97,8 +97,8 @@ trait ApiResponseTrait
 
     /**
      * Send unauthorized response (401)
-     * 
-     * @param string $message Error message
+     *
+     * @param  string            $message Error message
      * @return ResponseInterface
      */
     protected function respondUnauthorized(string $message = 'Unauthorized'): ResponseInterface
@@ -108,8 +108,8 @@ trait ApiResponseTrait
 
     /**
      * Send forbidden response (403)
-     * 
-     * @param string $message Error message
+     *
+     * @param  string            $message Error message
      * @return ResponseInterface
      */
     protected function respondForbidden(string $message = 'Forbidden'): ResponseInterface
@@ -119,9 +119,9 @@ trait ApiResponseTrait
 
     /**
      * Send validation error response (422)
-     * 
-     * @param array $errors Validation errors
-     * @param string $message Error message
+     *
+     * @param  array             $errors  Validation errors
+     * @param  string            $message Error message
      * @return ResponseInterface
      */
     protected function respondValidationError(array $errors, string $message = 'Validation failed'): ResponseInterface
@@ -131,8 +131,8 @@ trait ApiResponseTrait
 
     /**
      * Send internal server error response (500)
-     * 
-     * @param string $message Error message
+     *
+     * @param  string            $message Error message
      * @return ResponseInterface
      */
     protected function respondInternalError(string $message = 'Internal server error'): ResponseInterface
@@ -142,12 +142,12 @@ trait ApiResponseTrait
 
     /**
      * Send paginated response
-     * 
-     * @param array $items Array of items
-     * @param int $total Total count
-     * @param int $page Current page
-     * @param int $perPage Items per page
-     * @param string $message Success message
+     *
+     * @param  array             $items   Array of items
+     * @param  int               $total   Total count
+     * @param  int               $page    Current page
+     * @param  int               $perPage Items per page
+     * @param  string            $message Success message
      * @return ResponseInterface
      */
     protected function respondPaginated(array $items, int $total, int $page, int $perPage, string $message = 'Success'): ResponseInterface
@@ -161,7 +161,7 @@ trait ApiResponseTrait
                 'total_pages' => ceil($total / $perPage),
                 'from' => (($page - 1) * $perPage) + 1,
                 'to' => min($page * $perPage, $total),
-            ]
+            ],
         ];
 
         return $this->respondSuccess($data, $message);
@@ -170,9 +170,9 @@ trait ApiResponseTrait
     /**
      * Send simple data response (for backward compatibility)
      * Returns data directly without wrapper
-     * 
-     * @param mixed $data Response data
-     * @param int $statusCode HTTP status code (default: 200)
+     *
+     * @param  mixed             $data       Response data
+     * @param  int               $statusCode HTTP status code (default: 200)
      * @return ResponseInterface
      */
     protected function respondData($data, int $statusCode = 200): ResponseInterface
@@ -184,7 +184,7 @@ trait ApiResponseTrait
 
     /**
      * Send empty array response
-     * 
+     *
      * @return ResponseInterface
      */
     protected function respondEmpty(): ResponseInterface

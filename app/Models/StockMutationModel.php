@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Entities\StockMutation;
@@ -7,16 +8,24 @@ use CodeIgniter\Model;
 class StockMutationModel extends Model
 {
     protected $table = 'stock_mutations';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = StockMutation::class;
+
     protected $useSoftDeletes = false;
+
     protected $allowedFields = [
         'product_id', 'warehouse_id', 'type', 'quantity',
-        'current_balance', 'reference_number', 'notes'
+        'current_balance', 'reference_number', 'notes',
     ];
+
     protected $useTimestamps = true;
+
     protected $createdField = 'created_at';
+
     protected $updatedField = 'updated_at';
 
     // Validation Rules
@@ -65,7 +74,7 @@ class StockMutationModel extends Model
             'quantity' => $quantity,
             'current_balance' => $currentBalance,
             'reference_number' => $referenceNumber,
-            'notes' => $notes
+            'notes' => $notes,
         ];
 
         return $this->insert($data);
@@ -84,8 +93,8 @@ class StockMutationModel extends Model
     }
 
     /**
-      * Get product mutations
-      */
+     * Get product mutations
+     */
     public function getProductMutations($productId, $warehouseId = null)
     {
         $builder = $this->where('product_id', $productId);

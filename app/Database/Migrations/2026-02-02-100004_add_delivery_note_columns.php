@@ -10,47 +10,47 @@ class AddDeliveryNoteColumns extends Migration
     {
         // Add delivery note columns to sales table
         $fieldsToAdd = [];
-        
+
         if (!$this->db->fieldExists('delivery_number', 'sales')) {
             $fieldsToAdd['delivery_number'] = [
-                'type'       => 'VARCHAR',
+                'type' => 'VARCHAR',
                 'constraint' => 50,
-                'null'       => true,
-                'comment'    => 'Nomor Surat Jalan (SJ-YYYYMMDD-XXXX format)',
+                'null' => true,
+                'comment' => 'Nomor Surat Jalan (SJ-YYYYMMDD-XXXX format)',
             ];
         }
-        
+
         if (!$this->db->fieldExists('delivery_date', 'sales')) {
             $fieldsToAdd['delivery_date'] = [
-                'type'    => 'DATE',
-                'null'    => true,
+                'type' => 'DATE',
+                'null' => true,
                 'comment' => 'Tanggal pengiriman barang',
             ];
         }
-        
+
         if (!$this->db->fieldExists('delivery_address', 'sales')) {
             $fieldsToAdd['delivery_address'] = [
-                'type'    => 'TEXT',
-                'null'    => true,
+                'type' => 'TEXT',
+                'null' => true,
                 'comment' => 'Alamat tujuan pengiriman',
             ];
         }
-        
+
         if (!$this->db->fieldExists('delivery_notes', 'sales')) {
             $fieldsToAdd['delivery_notes'] = [
-                'type'    => 'TEXT',
-                'null'    => true,
+                'type' => 'TEXT',
+                'null' => true,
                 'comment' => 'Catatan pengiriman',
             ];
         }
-        
+
         if (!$this->db->fieldExists('delivery_driver_id', 'sales')) {
             $fieldsToAdd['delivery_driver_id'] = [
-                'type'       => 'INT',
+                'type' => 'INT',
                 'constraint' => 11,
-                'unsigned'   => true,
-                'null'       => true,
-                'comment'    => 'ID supir/pengantar dari tabel salespersons',
+                'unsigned' => true,
+                'null' => true,
+                'comment' => 'ID supir/pengantar dari tabel salespersons',
             ];
         }
 
@@ -62,7 +62,7 @@ class AddDeliveryNoteColumns extends Migration
         if (!$this->db->fieldExists('delivery_number', 'sales')) {
             $this->forge->addKey('delivery_number', false, false, 'idx_sales_delivery_number');
         }
-        
+
         // Add foreign key for driver - only if field exists
         if ($this->db->fieldExists('delivery_driver_id', 'sales')) {
             try {

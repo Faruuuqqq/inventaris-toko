@@ -15,7 +15,7 @@
 
 <!-- Quick Navigation - Report Shortcuts -->
 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-8">
-    <a href="<?= base_url('/info/reports/daily') ?>" class="group rounded-lg border border-border/50 bg-surface p-5 shadow-sm hover:border-primary/50 hover:bg-primary/5 transition">
+    <a href="<?= base_url('/info/reports/daily') ?>" class="group rounded-lg border border-border bg-surface p-5 shadow-sm hover:border-primary/50 hover:bg-primary/5 transition">
         <div class="flex items-start justify-between">
             <div>
                 <h3 class="font-semibold text-foreground group-hover:text-primary transition">Laporan Harian</h3>
@@ -27,7 +27,7 @@
         </div>
     </a>
 
-    <a href="<?= base_url('/info/reports/monthly-summary') ?>" class="group rounded-lg border border-border/50 bg-surface p-5 shadow-sm hover:border-success/50 hover:bg-success/5 transition">
+    <a href="<?= base_url('/info/reports/monthly-summary') ?>" class="group rounded-lg border border-border bg-surface p-5 shadow-sm hover:border-success/50 hover:bg-success/5 transition">
         <div class="flex items-start justify-between">
             <div>
                 <h3 class="font-semibold text-foreground group-hover:text-success transition">Ringkasan Bulanan</h3>
@@ -39,7 +39,7 @@
         </div>
     </a>
 
-    <a href="<?= base_url('/info/reports/cash-flow') ?>" class="group rounded-lg border border-border/50 bg-surface p-5 shadow-sm hover:border-warning/50 hover:bg-warning/5 transition">
+    <a href="<?= base_url('/info/reports/cash-flow') ?>" class="group rounded-lg border border-border bg-surface p-5 shadow-sm hover:border-warning/50 hover:bg-warning/5 transition">
         <div class="flex items-start justify-between">
             <div>
                 <h3 class="font-semibold text-foreground group-hover:text-warning transition">Arus Kas</h3>
@@ -51,7 +51,7 @@
         </div>
     </a>
 
-    <a href="<?= base_url('/info/reports/profit-loss') ?>" class="group rounded-lg border border-border/50 bg-surface p-5 shadow-sm hover:border-destructive/50 hover:bg-destructive/5 transition">
+    <a href="<?= base_url('/info/reports/profit-loss') ?>" class="group rounded-lg border border-border bg-surface p-5 shadow-sm hover:border-destructive/50 hover:bg-destructive/5 transition">
         <div class="flex items-start justify-between">
             <div>
                 <h3 class="font-semibold text-foreground group-hover:text-destructive transition">Laba & Rugi</h3>
@@ -63,7 +63,7 @@
         </div>
     </a>
 
-    <a href="<?= base_url('/info/reports/product-performance') ?>" class="group rounded-lg border border-border/50 bg-surface p-5 shadow-sm hover:border-info/50 hover:bg-info/5 transition">
+    <a href="<?= base_url('/info/reports/product-performance') ?>" class="group rounded-lg border border-border bg-surface p-5 shadow-sm hover:border-info/50 hover:bg-info/5 transition">
         <div class="flex items-start justify-between">
             <div>
                 <h3 class="font-semibold text-foreground group-hover:text-info transition">Performa Produk</h3>
@@ -75,7 +75,7 @@
         </div>
     </a>
 
-    <a href="<?= base_url('/info/reports/customer-analysis') ?>" class="group rounded-lg border border-border/50 bg-surface p-5 shadow-sm hover:border-primary/50 hover:bg-primary/5 transition">
+    <a href="<?= base_url('/info/reports/customer-analysis') ?>" class="group rounded-lg border border-border bg-surface p-5 shadow-sm hover:border-primary/50 hover:bg-primary/5 transition">
         <div class="flex items-start justify-between">
             <div>
                 <h3 class="font-semibold text-foreground group-hover:text-primary transition">Analisis Pelanggan</h3>
@@ -103,7 +103,7 @@
                     <?= icon('ShoppingCart', 'h-6 w-6 text-primary') ?>
                 </div>
             </div>
-            <div class="mt-4 pt-4 border-t border-border/50">
+            <div class="mt-4 pt-4 border-t border-border">
                 <p class="text-sm font-semibold text-primary">
                     <?= format_currency($salesThisMonth['total'] ?? 0) ?>
                 </p>
@@ -125,7 +125,7 @@
                     <?= icon('Package', 'h-6 w-6 text-success') ?>
                 </div>
             </div>
-            <div class="mt-4 pt-4 border-t border-border/50">
+            <div class="mt-4 pt-4 border-t border-border">
                 <p class="text-sm font-semibold text-success">
                     <?= format_currency($purchasesThisMonth['total'] ?? 0) ?>
                 </p>
@@ -175,7 +175,7 @@
 <div class="grid gap-6 lg:grid-cols-2 mb-6">
     <!-- Top Products -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Package', 'h-5 w-5 text-primary') ?>
                 Produk Terlaris
@@ -185,7 +185,7 @@
             <div class="overflow-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-muted/50">
-                        <tr class="border-b border-border/50">
+                        <tr class="border-b border-border">
                             <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
                             <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Qty</th>
                             <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Revenue</th>
@@ -227,7 +227,7 @@
 
     <!-- Top Customers -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Users', 'h-5 w-5 text-primary') ?>
                 Pelanggan Setia
@@ -237,7 +237,7 @@
             <div class="overflow-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-muted/50">
-                        <tr class="border-b border-border/50">
+                        <tr class="border-b border-border">
                             <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Pelanggan</th>
                             <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Transaksi</th>
                             <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Total Belanja</th>
@@ -279,8 +279,8 @@
 
 <!-- Low Stock Alert -->
 <?php if (!empty($lowStockProducts)): ?>
-    <div class="rounded-lg border border-warning/30 bg-warning/5 shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-warning/30 bg-warning/10">
+    <div class="rounded-lg border border-warning/50 bg-warning/5 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-warning/50 bg-warning/10">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('AlertTriangle', 'h-5 w-5 text-warning') ?>
                 Peringatan Stok Rendah
@@ -291,7 +291,7 @@
             <div class="overflow-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-muted/50">
-                        <tr class="border-b border-border/50">
+                        <tr class="border-b border-border">
                             <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
                             <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Stok Saat Ini</th>
                             <th class="h-10 px-4 text-center align-middle font-medium text-muted-foreground">Min Stok</th>
@@ -316,7 +316,7 @@
                                     <?= $product['min_stock_alert'] ?? 0 ?>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <?php if (($product['total_stock'] ?? 0) == 0): ?>
+                                    <?php if (($product['total_stock'] ?? 0) === 0): ?>
                                         <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-destructive/20 text-destructive">
                                             <?= icon('X', 'h-3 w-3') ?>
                                             Stok Habis

@@ -3,23 +3,29 @@
 namespace App\Controllers\Transactions;
 
 use App\Controllers\BaseController;
-use App\Services\StockService;
-use App\Services\BalanceService;
 use App\Exceptions\InvalidTransactionException;
-use CodeIgniter\API\ResponseTrait;
+use App\Services\BalanceService;
+use App\Services\StockService;
 
 class PurchaseReturns extends BaseController
 {
-    use ResponseTrait;
 
     protected $purchaseReturnModel;
+
     protected $purchaseReturnDetailModel;
+
     protected $supplierModel;
+
     protected $productModel;
+
     protected $warehouseModel;
+
     protected $purchaseOrderModel;
+
     protected $purchaseOrderDetailModel;
+
     protected $stockService;
+
     protected $balanceService;
 
     public function __construct()
@@ -44,7 +50,7 @@ class PurchaseReturns extends BaseController
             'start_date' => $this->request->getGet('start_date'),
             'end_date' => $this->request->getGet('end_date'),
             'supplier_id' => $this->request->getGet('supplier_id'),
-            'status' => $this->request->getGet('status')
+            'status' => $this->request->getGet('status'),
         ];
 
         $query = $this->purchaseReturnModel
@@ -69,7 +75,7 @@ class PurchaseReturns extends BaseController
             'title' => 'Retur Pembelian',
             'purchaseReturns' => $query->orderBy('purchase_returns.tanggal_retur', 'DESC')->findAll(),
             'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
-            'filters' => $filters
+            'filters' => $filters,
         ];
 
         return view('transactions/purchase_returns/index', $data);
@@ -86,7 +92,7 @@ class PurchaseReturns extends BaseController
             'products' => $this->productModel->where('is_active', 1)->findAll(),
             'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'purchaseOrdersList' => $this->getPurchaseOrdersList(),
-            'nomor_retur' => $this->generateNomorRetur()
+            'nomor_retur' => $this->generateNomorRetur(),
         ];
 
         return view('transactions/purchase_returns/create', $data);
@@ -136,7 +142,7 @@ class PurchaseReturns extends BaseController
             }
 
             // Validate supplier matches
-            if ($originalPO['supplier_id'] != $supplierId) {
+            if ($originalPO['supplier_id'] !== $supplierId) {
                 throw new InvalidTransactionException('Supplier tidak sesuai dengan pesanan pembelian asli');
             }
 
@@ -207,7 +213,7 @@ class PurchaseReturns extends BaseController
                     'return_id' => $idRetur,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['price']
+                    'price' => $item['price'],
                 ];
 
                 $this->purchaseReturnDetailModel->insert($detailData);
@@ -270,7 +276,7 @@ class PurchaseReturns extends BaseController
 
         $data = [
             'title' => 'Detail Retur Pembelian',
-            'purchaseReturn' => $purchaseReturn
+            'purchaseReturn' => $purchaseReturn,
         ];
 
         return view('transactions/purchase_returns/detail', $data);
@@ -306,7 +312,7 @@ class PurchaseReturns extends BaseController
             'suppliers' => $this->supplierModel->where('is_active', 1)->findAll(),
             'products' => $this->productModel->where('is_active', 1)->findAll(),
             'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
-            'purchaseOrdersList' => $this->getPurchaseOrdersList()
+            'purchaseOrdersList' => $this->getPurchaseOrdersList(),
         ];
 
         return view('transactions/purchase_returns/edit', $data);
@@ -434,7 +440,7 @@ class PurchaseReturns extends BaseController
                     'return_id' => $id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['price']
+                    'price' => $item['price'],
                 ];
 
                 $this->purchaseReturnDetailModel->insert($detailData);
@@ -493,7 +499,7 @@ class PurchaseReturns extends BaseController
             // Find warehouse
             $warehouseId = $this->getWarehouseFromMutation($id);
             if (!$warehouseId) {
-                throw new \Exception("Gudang asal tidak dapat ditemukan, tidak dapat mengembalikan stok");
+                throw new \Exception('Gudang asal tidak dapat ditemukan, tidak dapat mengembalikan stok');
             }
 
             $details = $this->purchaseReturnDetailModel->where('return_id', $id)->findAll();
@@ -552,11 +558,11 @@ class PurchaseReturns extends BaseController
                 $this->purchaseReturnModel->update($id, ['status' => 'Disetujui']);
                 $this->balanceService->calculateSupplierDebt($purchaseReturn['supplier_id']);
 
-            } else if ($action === 'reject') {
+            } elseif ($action === 'reject') {
                 // Add stock back and update status to 'Ditolak'
                 $warehouseId = $this->getWarehouseFromMutation($id);
                 if (!$warehouseId) {
-                    throw new \Exception("Gudang asal tidak ditemukan");
+                    throw new \Exception('Gudang asal tidak ditemukan');
                 }
 
                 $details = $this->purchaseReturnDetailModel->where('return_id', $id)->findAll();
@@ -626,7 +632,7 @@ class PurchaseReturns extends BaseController
         return $this->respond([
             'status' => 'success',
             'po' => $po,
-            'details' => $details
+            'details' => $details,
         ]);
     }
 
@@ -660,7 +666,7 @@ class PurchaseReturns extends BaseController
         // Note: StockService uses 'PURCHASE_RETURN' and referenceId = returnId
         $mutation = $db->table('stock_mutations')
             ->where('reference_number', 'PURCHASE_RETURN-' . $returnId)
-            ->orWhere('reference_number LIKE', "%: %" . $returnId) // Fallback if format differs
+            ->orWhere('reference_number LIKE', '%: %' . $returnId) // Fallback if format differs
             ->orderBy('id', 'DESC')
             ->get()->getRow();
 

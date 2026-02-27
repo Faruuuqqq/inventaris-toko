@@ -6,7 +6,7 @@
 <div class="h-screen flex flex-col" x-data="posManager()" x-init="initData()">
     
     <!-- Header Bar -->
-    <div class="bg-surface border-b border-border/50 p-4 flex items-center justify-between">
+    <div class="bg-surface border-b border-border p-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
             <?= icon('ShoppingCart', 'h-6 w-6 text-primary') ?>
             <h1 class="text-2xl font-bold text-foreground">Penjualan Tunai - POS</h1>
@@ -20,10 +20,10 @@
     <div class="flex-1 flex overflow-hidden gap-4 p-4">
         
         <!-- LEFT PANEL: Product Selection (65%) -->
-        <div class="flex-[2] flex flex-col overflow-hidden bg-surface rounded-lg border border-border/50">
+        <div class="flex-[2] flex flex-col overflow-hidden bg-surface rounded-lg border border-border">
             
             <!-- Search Bar -->
-            <div class="p-4 border-b border-border/50 space-y-3">
+            <div class="p-4 border-b border-border space-y-3">
                 <input type="text" 
                        x-model="search" 
                        placeholder="Cari produk... (Tekan F2)" 
@@ -34,7 +34,7 @@
                 <div class="flex flex-wrap gap-2">
                     <template x-for="cat in categories" :key="cat">
                         <button @click="selectedCategory = cat"
-                                :class="selectedCategory === cat ? 'bg-primary text-white' : 'bg-muted text-foreground border border-border/50'"
+                                :class="selectedCategory === cat ? 'bg-primary text-white' : 'bg-muted text-foreground border border-border'"
                                 class="px-4 py-2 rounded-full text-xs font-medium transition-all">
                             <span x-text="cat === 'all' ? 'Semua Produk' : cat"></span>
                         </button>
@@ -47,7 +47,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     <template x-for="product in filteredProducts" :key="product.id">
                         <div @click="addToCart(product)" 
-                             class="bg-background border border-border/50 rounded-lg p-3 cursor-pointer hover:shadow-lg hover:border-primary/50 transition-all group">
+                             class="bg-background border border-border rounded-lg p-3 cursor-pointer hover:shadow-lg hover:border-primary/50 transition-all group">
                             
                             <!-- Product Image Placeholder -->
                             <div class="bg-muted h-24 rounded-lg flex items-center justify-center mb-2 group-hover:bg-muted/80 transition">
@@ -63,7 +63,7 @@
                                 <span class="inline-flex text-xs px-2 py-1 rounded-full" 
                                       :class="product.stock > 0 ? 'bg-success/15 text-success' : 'bg-destructive/15 text-destructive'"
                                       x-text="product.stock + ' stok'"></span>
-                                <span class="text-primary group-hover:scale-110 transition">
+                                 <span class="text-primary transition">
                                     <?= icon('Plus', 'h-5 w-5') ?>
                                 </span>
                             </div>
@@ -82,10 +82,10 @@
         </div>
 
         <!-- RIGHT PANEL: Cart Summary (35%) -->
-        <div class="flex-1 flex flex-col bg-surface rounded-lg border border-border/50 overflow-hidden">
+        <div class="flex-1 flex flex-col bg-surface rounded-lg border border-border overflow-hidden">
             
             <!-- Cart Header -->
-            <div class="p-4 border-b border-border/50 flex items-center justify-between">
+            <div class="p-4 border-b border-border flex items-center justify-between">
                 <h2 class="font-bold text-foreground flex items-center gap-2">
                     <?= icon('ShoppingBag', 'h-5 w-5') ?>
                     <span x-text="'Keranjang (' + cart.length + ')'"></span>
@@ -98,7 +98,7 @@
             <!-- Cart Items (Scrollable) -->
             <div class="flex-1 overflow-y-auto p-4 space-y-2">
                 <template x-for="(item, index) in cart" :key="index">
-                    <div class="bg-background border border-border/50 rounded-lg p-3 space-y-2">
+                    <div class="bg-background border border-border rounded-lg p-3 space-y-2">
                         <!-- Item Name & Remove -->
                         <div class="flex items-start justify-between">
                             <div class="flex-1">
@@ -137,7 +137,7 @@
             </div>
 
             <!-- Cart Summary (Sticky Bottom) -->
-            <div class="border-t border-border/50 bg-background p-4 space-y-3">
+            <div class="border-t border-border bg-background p-4 space-y-3">
                 
                 <!-- Summary Lines -->
                 <div class="space-y-2">
@@ -152,7 +152,7 @@
                 </div>
 
                 <!-- Grand Total -->
-                <div class="border-t border-border/50 pt-3">
+                <div class="border-t border-border pt-3">
                     <div class="flex justify-between items-baseline">
                         <span class="font-semibold text-muted-foreground">Total Bayar</span>
                         <span class="text-3xl font-bold text-primary" x-text="'Rp ' + formatNumber(grandTotal())"></span>
@@ -183,7 +183,7 @@
                     <input type="hidden" name="warehouse_id" value="">
                     <input type="hidden" name="payment_amount" :value="payAmount">
 
-                    <button type="button" @click="clearCart()" x-show="cart.length > 0" class="w-full h-10 border border-border/50 rounded-lg text-sm font-medium text-foreground hover:bg-muted transition">
+                    <button type="button" @click="clearCart()" x-show="cart.length > 0" class="w-full h-10 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted transition">
                         Batal
                     </button>
 

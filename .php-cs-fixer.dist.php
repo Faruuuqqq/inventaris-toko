@@ -25,7 +25,6 @@ return (new PhpCsFixer\Config())
 
         // Strict Comparisons
         'strict_comparison' => true,           // Use === instead of ==
-        'strict_param_evaluation' => true,     // Strict function call evaluation
 
         // Array & List Formatting
         'array_indentation' => true,            // Proper multi-line array indentation
@@ -66,7 +65,7 @@ return (new PhpCsFixer\Config())
         // Comments
         'align_multiline_comment' => true,      // Align multi-line comments
         'comment_to_phpdoc' => true,            // Convert comments to phpdoc
-        'phpdoc_align' => ['alignment' => 'vertical'],
+        'phpdoc_align' => ['align' => 'vertical'],
         'phpdoc_indent' => true,
 
         // Control Structures

@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Content Security Policy Removed for Development -->
-    <title><?= $title ?? 'TokoManager' ?></title>
+    <title><?= $title ?? app_name() ?></title>
     
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.js"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@0.263.1"></script>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -69,9 +72,9 @@
                 <div class="flex items-center gap-2 sm:gap-3 md:gap-4 ml-4">
                     <!-- Global Search - Hidden on mobile -->
                     <div class="relative hidden lg:flex items-center">
-                        <input type="text" 
-                               placeholder="Cari..." 
-                               class="h-9 rounded-lg border border-border bg-muted px-3 py-1.5 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all duration-200 w-56"
+                        <input type="text"
+                               placeholder="Cari..."
+                               class="h-9 rounded-lg border border-border bg-muted px-3 py-1.5 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200 w-56 cursor-text"
                                aria-label="Global search">
                         <span class="absolute left-3 text-muted-foreground pointer-events-none">
                             <?= icon('Search', 'h-4 w-4') ?>
@@ -163,9 +166,12 @@
         </main>
     </div>
 
-<!-- Modal Management JavaScript -->
+ <!-- Modal Management JavaScript -->
     <script src="<?= base_url('assets/js/modal.js') ?>"></script>
-    
+
+    <!-- Global Modal Container -->
+    <div id="globalModal"></div>
+
     <!-- Notification System JavaScript -->
     <script src="<?= base_url('assets/js/notifications.js') ?>"></script>
     <script>
@@ -173,14 +179,23 @@
         const base_url = '<?= base_url() ?>';
     </script>
 
-    <!-- Global Modal Instances -->
-    <?= view('partials/delete-confirm-modal') ?>
-    <?= view('partials/success-modal') ?>
-    <?= view('partials/error-modal') ?>
-    <?= view('partials/warning-modal') ?>
 
-    <!-- Global Loading Overlay -->
-    <?= view('components/loading-overlay') ?>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.lucide) {
+                try {
+                    lucide.createIcons();
+                    console.log('Lucide icons initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing Lucide icons:', error);
+                }
+            } else {
+                console.warn('Lucide library not loaded. Icons may not display correctly.');
+            }
+        });
+    </script>
 
 </body>
 </html>

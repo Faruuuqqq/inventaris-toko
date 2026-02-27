@@ -1,7 +1,7 @@
 <?php
 /**
  * Textarea Component - Multi-line text input
- * 
+ *
  * Usage:
  * <?= view('components/textarea', [
  *     'name' => 'notes',
@@ -11,16 +11,16 @@
  * ]) ?>
  */
 
-$name = $name ?? '';
-$label = $label ?? '';
-$placeholder = $placeholder ?? '';
-$value = $value ?? old($name) ?? '';
-$rows = $rows ?? 4;
-$required = $required ?? false;
-$disabled = $disabled ?? false;
-$error = $error ?? '';
-$hint = $hint ?? '';
-$class = $class ?? '';
+$name ??= '';
+$label ??= '';
+$placeholder ??= '';
+$value ??= old($name) ?? '';
+$rows ??= 4;
+$required ??= false;
+$disabled ??= false;
+$error ??= '';
+$hint ??= '';
+$class ??= '';
 
 $textareaClass = 'flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 

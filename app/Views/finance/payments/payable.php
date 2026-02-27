@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Catat pembayaran utang ke supplier</p>
     </div>
-    <a href="<?= base_url('finance/payments') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('finance/payments') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -20,7 +20,7 @@
 <!-- Payment Form Card -->
 <div class="max-w-2xl mx-auto">
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('FileText', 'h-5 w-5 text-primary') ?>
                 Form Pembayaran Utang
@@ -122,8 +122,8 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex gap-3 justify-end pt-4 border-t border-border/50">
-                <a href="<?= base_url('finance/payments') ?>" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
+            <div class="flex gap-3 justify-end pt-4 border-t border-border">
+                <a href="<?= base_url('finance/payments') ?>" class="h-10 px-6 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition">
                     Batal
                 </a>
                 <button type="submit" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">

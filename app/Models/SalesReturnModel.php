@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Entities\SalesReturn;
@@ -7,15 +8,22 @@ use CodeIgniter\Model;
 class SalesReturnModel extends Model
 {
     protected $table = 'sales_returns';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = SalesReturn::class;
+
     protected $useSoftDeletes = true;
+
     protected $deletedField = 'deleted_at';
+
     protected $allowedFields = [
         'no_retur', 'tanggal_retur', 'sale_id', 'customer_id',
-        'alasan', 'status', 'total_retur'
+        'alasan', 'status', 'total_retur',
     ];
+
     protected $useTimestamps = false;
 
     // Validation Rules

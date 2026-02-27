@@ -13,7 +13,7 @@
             <p class="text-sm text-muted-foreground mt-1">Informasi detail gudang penyimpanan</p>
         </div>
         <div class="flex gap-3">
-            <a href="<?= base_url('master/warehouses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+            <a href="<?= base_url('master/warehouses') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                 <?= icon('ChevronLeft', 'h-5 w-5') ?>
                 Kembali
             </a>
@@ -27,9 +27,9 @@
     </div>
 
 <!-- Main Content -->
-<div class="rounded-xl border border-border/50 bg-surface overflow-hidden">
+<div class="rounded-xl border border-border bg-surface overflow-hidden">
     <!-- Header Section -->
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
             <?= icon('Building', 'h-5 w-5 text-primary') ?>
             Informasi Gudang
@@ -45,7 +45,7 @@
         </div>
 
         <!-- Warehouse Code & Address -->
-        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
             <div>
                 <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Kode Gudang</p>
                 <p class="text-sm font-medium text-foreground mt-1"><?= esc($gudang->code) ?></p>
@@ -73,7 +73,7 @@
         </div>
 
         <!-- Timestamps -->
-        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
             <div>
                 <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Dibuat Pada</p>
                 <p class="text-sm font-medium text-foreground mt-1">
@@ -103,7 +103,7 @@
     <div x-show="isEditDialogOpen" class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center" @click.away="isEditDialogOpen = false" style="display: none;">
         <div class="bg-surface rounded-xl shadow-lg max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
             <!-- Modal Header -->
-            <div class="sticky top-0 p-6 border-b border-border/50 bg-muted/30 flex items-center justify-between">
+            <div class="sticky top-0 p-6 border-b border-border bg-muted/30 flex items-center justify-between">
                 <h2 class="text-lg font-bold text-foreground">Edit Gudang</h2>
                 <button @click="isEditDialogOpen = false" class="text-muted-foreground hover:text-foreground transition">
                     <?= icon('X', 'h-5 w-5') ?>
@@ -169,7 +169,7 @@
 
                 <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button" @click="isEditDialogOpen = false" class="flex-1 h-10 px-4 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+                    <button type="button" @click="isEditDialogOpen = false" class="flex-1 h-10 px-4 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                         Batal
                     </button>
                     <button type="submit" :disabled="isEditSubmitting" x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Gudang'" class="flex-1 h-10 px-4 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"></button>

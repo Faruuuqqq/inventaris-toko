@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Kelola utang kepada supplier' ?></p>
     </div>
-    <a href="<?= base_url('/finance') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('/finance') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ChevronLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -32,7 +32,7 @@
 
 <!-- Suppliers Table -->
 <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Daftar Supplier</h2>
     </div>
     <div class="w-full overflow-auto">

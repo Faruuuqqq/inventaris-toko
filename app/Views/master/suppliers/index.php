@@ -3,157 +3,15 @@
 <?= $this->section('content') ?>
 
 <script>
-function supplierManager() {
-    return {
-        suppliers: <?= json_encode($suppliers ?? []) ?>,
-        search: '',
-        isDialogOpen: false,
-        isEditDialogOpen: false,
-        isSubmitting: false,
-        isEditSubmitting: false,
-        errors: {},
-        editErrors: {},
-        editingSupplier: {},
-
-        get filteredSuppliers() {
-            return this.suppliers.filter(sup => {
-                const searchLower = this.search.toLowerCase();
-                return (sup.name && sup.name.toLowerCase().includes(searchLower)) ||
-                       (sup.code && sup.code.toLowerCase().includes(searchLower));
-            });
-        },
-
-        get activeCount() {
-            return this.suppliers.filter(s => s.status === 'active' || s.is_active === 1).length;
-        },
-
-        get totalDebt() {
-            return this.suppliers.reduce((sum, s) => sum + (parseFloat(s.debt_balance) || 0), 0);
-        },
-
-        openEditModal(supplier) {
-            this.editingSupplier = JSON.parse(JSON.stringify(supplier));
-            this.editErrors = {};
-            this.isEditDialogOpen = true;
-        },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    ModalManager.success('Supplier berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                } else {
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
-
-        async submitEditForm(event) {
-            event.preventDefault();
-            const form = event.target;
-
-            this.editErrors = {};
-            this.isEditSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 200) {
-                    ModalManager.success('Supplier berhasil diperbarui', () => {
-                        this.isEditDialogOpen = false;
-                        this.editErrors = {};
-                        this.editingSupplier = {};
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.editErrors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                } else {
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal memperbarui data.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isEditSubmitting = false;
-            }
-        },
-
-        deleteSupplier(supplierId) {
-            const supplier = this.suppliers.find(s => s.id === supplierId);
-            const supplierName = supplier ? supplier.name : 'supplier ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/suppliers') ?>/${supplierId}`,
-                supplierName,
-                () => {
-                    this.suppliers = this.suppliers.filter(s => s.id !== supplierId);
-                }
-            );
-        },
-
-        exportData() {
-            try {
-                window.location.href = `<?= base_url('master/suppliers/export-pdf') ?>`;
-            } catch (error) {
-                console.error('Export failed:', error);
-                alert('Gagal mengekspor data.');
-            }
-        },
-
-        formatRupiah(number) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(number || 0);
-        }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    suppliers: <?= json_encode($suppliers ?? []) ?>,
+    baseUrl: '<?= base_url('master/suppliers') ?>',
+    exportUrl: '<?= base_url('master/suppliers/export-pdf') ?>',
+    searchFields: ['name', 'code']
+};
 </script>
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/supplierManager.js') ?>"></script>
 
 <div x-data="supplierManager()">
     <!-- Page Header -->
@@ -167,7 +25,7 @@ function supplierManager() {
     <!-- Summary Cards - Compact Grid (Product Style) -->
     <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-3">
         <!-- Total Suppliers -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-secondary/5 to-transparent p-5 hover:border-secondary/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-secondary/5 to-transparent p-5 hover:border-secondary/30 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Supplier</p>
@@ -181,7 +39,7 @@ function supplierManager() {
         </div>
 
         <!-- Active Suppliers -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
@@ -195,7 +53,7 @@ function supplierManager() {
         </div>
 
         <!-- Total Debt -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Utang</p>
@@ -210,7 +68,7 @@ function supplierManager() {
     </div>
 
     <!-- Control Bar - Professional Toolbar -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border p-4">
         <!-- Left Side: Search -->
         <div class="flex-1 min-w-0">
             <div class="relative max-w-md">
@@ -249,9 +107,9 @@ function supplierManager() {
     </div>
 
     <!-- Suppliers Table -->
-    <div class="rounded-xl border border-border/50 bg-surface shadow-sm overflow-hidden">
+    <div class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
         <!-- Table Header Info -->
-        <div class="border-b border-border/50 bg-muted/30 px-6 py-3">
+        <div class="border-b border-border bg-muted/30 px-6 py-3">
             <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 <span x-text="`${filteredSuppliers.length} supplier ditemukan`"></span>
             </div>
@@ -261,7 +119,7 @@ function supplierManager() {
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-border/50 bg-background/50">
+                    <tr class="border-b border-border bg-background/50">
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Nama</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Kode</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Telepon</th>
@@ -273,7 +131,7 @@ function supplierManager() {
                 </thead>
                 <tbody>
                     <template x-for="supplier in filteredSuppliers" :key="supplier.id">
-                        <tr class="border-b border-border/30 hover:bg-secondary/3 transition-colors duration-150">
+                        <tr class="border-b border-border hover:bg-secondary/3 transition-colors duration-150">
                             <!-- Nama -->
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
@@ -289,7 +147,7 @@ function supplierManager() {
 
                             <!-- Kode -->
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center rounded-full border border-border/30 bg-muted/30 px-2.5 py-1 text-xs font-semibold text-foreground font-mono" x-text="supplier.code || '-'"></span>
+                                <span class="inline-flex items-center rounded-full border border-border bg-muted/30 px-2.5 py-1 text-xs font-semibold text-foreground font-mono" x-text="supplier.code || '-'"></span>
                             </td>
 
                             <!-- Phone -->
@@ -309,7 +167,7 @@ function supplierManager() {
 
                             <!-- Status -->
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center rounded-full border border-success/30 bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
+                                <span class="inline-flex items-center rounded-full border border-success/50 bg-success/10 px-2.5 py-1 text-xs font-semibold text-success">
                                     ✓ Aktif
                                 </span>
                             </td>
@@ -326,7 +184,7 @@ function supplierManager() {
                                     </button>
                                     <button 
                                         @click="deleteSupplier(supplier.id)"
-                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                         title="Hapus supplier"
                                     >
                                         <?= icon('Trash2', 'h-4 w-4') ?>
@@ -359,14 +217,14 @@ function supplierManager() {
         style="display: none;"
     >
         <div 
-            class="w-full max-w-md rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-md rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Tambah Supplier Baru</h2>
                 <button 
                     @click="isDialogOpen = false"
@@ -377,7 +235,7 @@ function supplierManager() {
             </div>
             
             <!-- Modal Body -->
-            <form @submit.prevent="submitForm" action="<?= base_url('master/suppliers/store') ?>" method="POST" class="p-6 space-y-4">
+            <form @submit.prevent="submitForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/store`" method="POST" class="p-6 space-y-4">
                 <?= csrf_field() ?>
                 
                 <!-- Nama Supplier -->
@@ -424,7 +282,7 @@ function supplierManager() {
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isDialogOpen = false" 
@@ -439,7 +297,7 @@ function supplierManager() {
                     >
                         <?= icon('Plus', 'h-5 w-5 mr-2') ?>
                         <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Supplier'"></span>
                     </button>
@@ -456,14 +314,14 @@ function supplierManager() {
         style="display: none;"
     >
         <div 
-            class="w-full max-w-md rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-md rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isEditDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Edit Supplier</h2>
                 <button 
                     @click="isEditDialogOpen = false"
@@ -474,7 +332,7 @@ function supplierManager() {
             </div>
             
             <!-- Modal Body -->
-            <form @submit.prevent="submitEditForm" :action="`<?= base_url('master/suppliers') ?>/${editingSupplier.id}`" method="POST" class="p-6 space-y-4">
+            <form @submit.prevent="submitEditForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/${editingSupplier.id}`" method="POST" class="p-6 space-y-4">
                 <?= csrf_field() ?>
                 
                 <!-- Nama Supplier -->
@@ -521,7 +379,7 @@ function supplierManager() {
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isEditDialogOpen = false" 
@@ -536,7 +394,7 @@ function supplierManager() {
                     >
                         <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Supplier'"></span>
                     </button>

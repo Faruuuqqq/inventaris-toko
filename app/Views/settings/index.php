@@ -257,7 +257,7 @@
             <div class="p-6 pt-0 space-y-2 text-sm">
                 <div class="flex justify-between">
                     <span class="text-muted-foreground">Versi</span>
-                    <span>1.0.0</span>
+                    <span><?= app_version() ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-muted-foreground">Build</span>
@@ -269,7 +269,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-muted-foreground">Lisensi</span>
-                    <span>Enterprise</span>
+                    <span><?= app_edition() ?></span>
                 </div>
             </div>
         </div>

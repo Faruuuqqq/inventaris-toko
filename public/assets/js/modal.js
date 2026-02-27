@@ -1,7 +1,7 @@
 /**
  * Modal Manager
  * Centralized modal management system for consistent UX
- * 
+ *
  * Features:
  * - Confirm/Delete/Success/Error/Warning modals
  * - Loading states with spinners
@@ -11,14 +11,217 @@
  */
 
 const ModalManager = {
-    /**
-     * Open a modal by ID
-     */
-    open(modalId) {
-        const modal = document.querySelector(`.${modalId}`);
-        if (modal && modal.__alpine$) {
-            modal.__alpine$.getUnobservedData().open = true;
+    modalQueue: [],
+
+    createModalHTML(options) {
+        const id = options.id || 'modal_' + Date.now();
+        const size = options.size || 'md';
+        const variant = options.variant || 'primary';
+
+        return `
+            <div x-data="{ open: true }" id="${id}" class="fixed inset-0 z-50" x-cloak>
+                <div x-show="open"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 z-40 bg-foreground/80 backdrop-blur-sm"
+                     @click="open = false"></div>
+                <div x-show="open"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                     @keydown.escape="open = false">
+                    <div class="card max-w-${size === 'sm' ? 'sm' : size === 'lg' ? 'lg' : 'md'} w-full" @click.stop>
+                        <div class="card-header ${variant === 'danger' ? 'bg-destructive/10' : 'bg-primary/10'} flex items-center justify-between">
+                            <h2 class="card-title ${variant === 'danger' ? 'text-destructive' : ''}">${options.title}</h2>
+                            <button @click="open = false" class="btn btn-ghost btn-sm">✕</button>
+                        </div>
+                        <div class="card-content">${options.content}</div>
+                        <div class="card-footer flex justify-end gap-2">
+                            ${options.secondaryButton ? `<button id="${id}_cancel" class="btn btn-ghost">${options.secondaryButton.text}</button>` : ''}
+                            <button id="${id}_confirm" class="btn ${variant === 'danger' ? 'btn-destructive' : 'btn-primary'}">${options.primaryButton.text}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
+
+    show(options) {
+        const container = document.getElementById('globalModal');
+        container.innerHTML = this.createModalHTML(options);
+
+        Alpine.start();
+
+        const modal = container.firstElementChild;
+        const cancelBtn = document.getElementById(`${modal.id}_cancel`);
+        const confirmBtn = document.getElementById(`${modal.id}_confirm`);
+
+        if (cancelBtn) {
+            cancelBtn.onclick = () => {
+                Alpine.store('modal').activeModal = null;
+                setTimeout(() => container.innerHTML = '', 300);
+            };
         }
+
+        if (confirmBtn) {
+            confirmBtn.onclick = () => {
+                if (options.primaryButton.action) options.primaryButton.action();
+            };
+        }
+
+        if (options.autoClose) {
+            setTimeout(() => {
+                Alpine.store('modal').activeModal = null;
+                setTimeout(() => container.innerHTML = '', 300);
+            }, options.autoClose);
+        }
+    },
+
+    /**
+     * Show delete confirmation modal
+     */
+    delete(itemName, callback) {
+        this.show({
+            variant: 'danger',
+            title: 'Hapus Data',
+            content: `
+                <p>Apakah Anda yakin ingin menghapus <strong>${itemName || 'item ini'}</strong>?</p>
+                <p class="text-sm text-destructive mt-2 bg-destructive/10 p-2 rounded">Tindakan ini tidak dapat dibatalkan!</p>
+            `,
+            primaryButton: {
+                text: 'Hapus',
+                action: () => {
+                    if (callback) callback();
+                }
+            },
+            secondaryButton: {
+                text: 'Batal'
+            }
+        });
+    },
+
+    /**
+     * Show success notification modal (auto-close after 2 seconds)
+     */
+    success(message, callback) {
+        this.show({
+            variant: 'success',
+            title: 'Sukses',
+            content: `<p>${message || 'Data berhasil disimpan'}</p>`,
+            primaryButton: {
+                text: 'OK',
+                action: () => {
+                    if (callback) callback();
+                }
+            }
+        });
+    },
+
+    /**
+     * Show error notification modal
+     */
+    error(message, callback) {
+        this.show({
+            variant: 'danger',
+            title: 'Error',
+            content: `<p class="text-destructive">${message || 'Terjadi kesalahan'}</p>`,
+            primaryButton: {
+                text: 'Tutup',
+                action: () => {
+                    if (callback) callback();
+                }
+            }
+        });
+    },
+
+    /**
+     * Show warning modal
+     */
+    warning(title, message, onConfirm, proceedText = 'Lanjutkan') {
+        this.show({
+            variant: 'warning',
+            title: title,
+            content: `<p>${message}</p>`,
+            primaryButton: {
+                text: proceedText,
+                action: () => {
+                    if (onConfirm) onConfirm();
+                }
+            },
+            secondaryButton: {
+                text: 'Batal'
+            }
+        });
+    },
+
+    /**
+     * Show generic confirm modal
+     */
+    confirm(title, message, onConfirm, confirmText = 'Konfirmasi', cancelText = 'Batal') {
+        this.show({
+            title: title,
+            content: `<p>${message}</p>`,
+            primaryButton: {
+                text: confirmText,
+                action: () => {
+                    if (onConfirm) onConfirm();
+                }
+            },
+            secondaryButton: {
+                text: cancelText
+            }
+        });
+    },
+
+    /**
+     * Submit delete form with async handling
+     */
+    submitDelete(deleteUrl, itemName, onSuccess) {
+        this.delete(itemName, async () => {
+            try {
+                const csrfToken = document.querySelector('input[name="csrf_token"]')?.value ||
+                                 document.querySelector('meta[name="csrf-token"]')?.content;
+
+                const response = await fetch(deleteUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...(csrfToken && { 'X-CSRF-TOKEN': csrfToken })
+                    }
+                });
+
+                if (response.ok) {
+                    this.success('Data berhasil dihapus', () => {
+                        if (onSuccess) onSuccess();
+                        else window.location.reload();
+                    });
+                } else {
+                    const data = await response.json();
+                    this.error(data.message || 'Gagal menghapus data');
+                }
+            } catch (error) {
+                this.error('Terjadi kesalahan: ' + error.message);
+            }
+        });
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.ModalManager = ModalManager;
+
+    if (!document.documentElement.style.scrollBehavior) {
+        document.documentElement.style.scrollBehavior = 'smooth';
+    }
+});
     },
 
     /**

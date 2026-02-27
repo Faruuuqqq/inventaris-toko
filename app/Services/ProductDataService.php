@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
-use App\Models\ProductModel;
-use App\Models\CategoryModel;
-use App\Models\ProductStockModel;
 use App\Helpers\PaginationHelper;
+use App\Models\CategoryModel;
+use App\Models\ProductModel;
+use App\Models\ProductStockModel;
 
 class ProductDataService
 {
     protected ProductModel $productModel;
+
     protected CategoryModel $categoryModel;
+
     protected ProductStockModel $productStockModel;
 
     public function __construct()
@@ -46,12 +48,18 @@ class ProductDataService
         // Calculate statistics
         $totalStock = 0;
         $totalValue = 0;
+        $lowStockCount = 0;
 
         foreach ($products as $product) {
             $stock = (int)($product->stock ?? 0);
             $totalStock += $stock;
             $buyPrice = (float)($product->price_buy ?? 0);
             $totalValue += ($stock * $buyPrice);
+
+            $minStockAlert = (int)($product->min_stock_alert ?? 0);
+            if ($stock <= $minStockAlert) {
+                $lowStockCount++;
+            }
         }
 
         return [
@@ -61,7 +69,7 @@ class ProductDataService
             'totalCategories' => count($categories),
             'totalStock' => $totalStock,
             'totalValue' => $totalValue,
-            'lowStockCount' => 0, // TODO: Implement low stock count
+            'lowStockCount' => $lowStockCount,
         ];
     }
 
@@ -162,12 +170,18 @@ class ProductDataService
 
         $totalStock = 0;
         $totalValue = 0;
+        $lowStockCount = 0;
 
         foreach ($allProducts as $product) {
             $stock = (int)($product->stock ?? 0);
             $totalStock += $stock;
             $buyPrice = (float)($product->price_buy ?? 0);
             $totalValue += ($stock * $buyPrice);
+
+            $minStockAlert = (int)($product->min_stock_alert ?? 0);
+            if ($stock <= $minStockAlert) {
+                $lowStockCount++;
+            }
         }
 
         return [
@@ -177,7 +191,7 @@ class ProductDataService
             'totalCategories' => count($categories),
             'totalStock' => $totalStock,
             'totalValue' => $totalValue,
-            'lowStockCount' => 0, // TODO: Implement low stock count
+            'lowStockCount' => $lowStockCount,
             'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
         ];
     }
@@ -187,7 +201,7 @@ class ProductDataService
      * Returns array of products with all necessary fields for export
      * Supports optional filters
      *
-     * @param array $filters Optional filters (category_id, status, etc.)
+     * @param  array $filters Optional filters (category_id, status, etc.)
      * @return array Array of products formatted for export
      */
     public function getExportData(array $filters = []): array
@@ -214,7 +228,7 @@ class ProductDataService
     /**
      * Get category by ID
      *
-     * @param int $categoryId Category ID
+     * @param  int         $categoryId Category ID
      * @return object|null Category object or null if not found
      */
     public function getCategoryById(int $categoryId)

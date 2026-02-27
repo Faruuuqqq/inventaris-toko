@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Entities\SalesReturnDetail;
@@ -7,13 +8,19 @@ use CodeIgniter\Model;
 class SalesReturnDetailModel extends Model
 {
     protected $table = 'sales_return_items';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = SalesReturnDetail::class;
+
     protected $useSoftDeletes = false;
+
     protected $allowedFields = [
-        'return_id', 'product_id', 'quantity', 'price'
+        'return_id', 'product_id', 'quantity', 'price',
     ];
+
     protected $useTimestamps = false;
 
     /**
@@ -26,7 +33,7 @@ class SalesReturnDetailModel extends Model
                 'return_id' => $salesReturnId,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
-                'price' => $item['price'] ?? 0
+                'price' => $item['price'] ?? 0,
             ];
 
             $this->insert($data);

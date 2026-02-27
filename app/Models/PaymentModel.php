@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Entities\Payment;
@@ -7,16 +8,24 @@ use CodeIgniter\Model;
 class PaymentModel extends Model
 {
     protected $table = 'payments';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = Payment::class;
+
     protected $useSoftDeletes = false;
+
     protected $allowedFields = [
         'payment_number', 'payment_date', 'type', 'reference_id',
-        'amount', 'method', 'notes', 'user_id'
+        'amount', 'method', 'notes', 'user_id',
     ];
+
     protected $useTimestamps = true;
+
     protected $createdField = 'created_at';
+
     protected $updatedField = 'updated_at';
 
     // Validation Rules
@@ -154,7 +163,7 @@ class PaymentModel extends Model
             'method' => $method,
             'payment_date' => $date,
             'notes' => $notes,
-            'user_id' => $userId ?? session()->get('user_id') ?? 1
+            'user_id' => $userId ?? session()->get('user_id') ?? 1,
         ];
 
         return $this->insert($data);

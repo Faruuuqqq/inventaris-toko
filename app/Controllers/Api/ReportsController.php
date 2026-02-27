@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
@@ -34,8 +35,8 @@ class ReportsController extends ResourceController
                 'period' => ['start' => $startDate, 'end' => $endDate],
                 'sales' => (float) ($sales['total'] ?? 0),
                 'purchases' => (float) ($purchases['total'] ?? 0),
-                'gross_profit' => (float) (($sales['total'] ?? 0) - ($purchases['total'] ?? 0))
-            ]
+                'gross_profit' => (float) (($sales['total'] ?? 0) - ($purchases['total'] ?? 0)),
+            ],
         ]);
     }
 
@@ -68,8 +69,8 @@ class ReportsController extends ResourceController
                 'period' => ['start' => $startDate, 'end' => $endDate],
                 'inflow' => (float) ($inflow['total'] ?? 0),
                 'outflow' => (float) ($outflow['total'] ?? 0),
-                'net_cash_flow' => (float) (($inflow['total'] ?? 0) - ($outflow['total'] ?? 0))
-            ]
+                'net_cash_flow' => (float) (($inflow['total'] ?? 0) - ($outflow['total'] ?? 0)),
+            ],
         ]);
     }
 
@@ -93,7 +94,7 @@ class ReportsController extends ResourceController
             $summary[] = [
                 'month' => $month,
                 'month_name' => date('F', mktime(0, 0, 0, $month, 1)),
-                'sales' => (float) ($sales['total'] ?? 0)
+                'sales' => (float) ($sales['total'] ?? 0),
             ];
         }
 
@@ -101,8 +102,8 @@ class ReportsController extends ResourceController
             'status' => 'success',
             'data' => [
                 'year' => $year,
-                'summary' => $summary
-            ]
+                'summary' => $summary,
+            ],
         ]);
     }
 
@@ -122,7 +123,7 @@ class ReportsController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'data' => $products
+            'data' => $products,
         ]);
     }
 
@@ -142,7 +143,7 @@ class ReportsController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'data' => $customers
+            'data' => $customers,
         ]);
     }
 }

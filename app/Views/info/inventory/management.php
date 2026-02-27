@@ -13,7 +13,7 @@
             <p class="mt-1 text-muted-foreground">Pantau stok, atur reorder, dan kelola tingkat stok produk</p>
         </div>
         <div class="flex gap-3">
-            <button @click="exportCSV()" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+            <button @click="exportCSV()" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                 <?= icon('Download', 'h-5 w-5') ?>
                 Export
             </button>
@@ -27,7 +27,7 @@
     <!-- Summary Cards -->
     <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <!-- Total Products -->
-        <div class="rounded-lg border border-border/50 bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/30 transition-colors">
+        <div class="rounded-lg border border-border bg-gradient-to-br from-primary/5 to-transparent p-5 hover:border-primary/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Produk</p>
@@ -41,7 +41,7 @@
         </div>
 
         <!-- Low Stock Alert -->
-        <div class="rounded-lg border border-warning/30 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/50 transition-colors">
+        <div class="rounded-lg border border-warning/50 bg-gradient-to-br from-warning/5 to-transparent p-5 hover:border-warning/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Stok Rendah</p>
@@ -69,7 +69,7 @@
         </div>
 
         <!-- Total Inventory Value -->
-        <div class="rounded-lg border border-success/30 bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/50 transition-colors">
+        <div class="rounded-lg border border-success/50 bg-gradient-to-br from-success/5 to-transparent p-5 hover:border-success/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Nilai Inventaris</p>
@@ -84,8 +84,8 @@
     </div>
 
     <!-- Filters and Search -->
-    <div class="mb-8 rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="mb-8 rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h3 class="text-lg font-semibold text-foreground">Filter & Pencarian</h3>
         </div>
         <div class="p-6 space-y-4">
@@ -142,11 +142,11 @@
     </div>
 
     <!-- Products Table -->
-    <div class="rounded-lg border border-border/50 bg-surface shadow-sm overflow-hidden">
+    <div class="rounded-lg border border-border bg-surface shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-border/50 bg-muted/30">
+                    <tr class="border-b border-border bg-muted/30">
                         <th class="px-6 py-3 text-left text-sm font-semibold text-foreground">Produk</th>
                         <th class="px-6 py-3 text-left text-sm font-semibold text-foreground">SKU</th>
                         <th class="px-6 py-3 text-center text-sm font-semibold text-foreground">Stok Saat Ini</th>
@@ -159,7 +159,7 @@
                 </thead>
                 <tbody>
                     <template x-for="product in filteredProducts" :key="product.id">
-                        <tr class="border-b border-border/50 hover:bg-muted/30 transition">
+                        <tr class="border-b border-border hover:bg-muted/30 transition">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="h-8 w-8 rounded bg-primary/10 flex items-center justify-center">
@@ -210,10 +210,10 @@
                             </td>
                             <td class="px-6 py-4 text-center">
                                 <div class="flex justify-center gap-2">
-                                    <a :href="'<?= base_url('master/products/') ?>' + product.id" class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border/50 text-foreground hover:bg-muted transition" title="Detail">
+                                    <a :href="'<?= base_url('master/products/') ?>' + product.id" class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border text-foreground hover:bg-muted transition" title="Detail">
                                         <?= icon('Eye', 'h-4 w-4') ?>
                                     </a>
-                                    <button @click="editReorder(product.id)" class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border/50 text-foreground hover:bg-muted transition" title="Edit Min/Maks">
+                                    <button @click="editReorder(product.id)" class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border text-foreground hover:bg-muted transition" title="Edit Min/Maks">
                                         <?= icon('Edit', 'h-4 w-4') ?>
                                     </button>
                                 </div>
@@ -269,7 +269,7 @@
                 </div>
 
                 <div class="mt-6 flex gap-3 justify-end">
-                    <button @click="closeReorderModal()" class="h-10 px-4 rounded-lg border border-border/50 text-foreground font-medium hover:bg-muted transition">
+                    <button @click="closeReorderModal()" class="h-10 px-4 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition">
                         Batal
                     </button>
                     <button @click="saveReorder()" class="h-10 px-4 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">

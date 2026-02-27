@@ -1,33 +1,44 @@
 <?php
+
 namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
-use App\Models\SaleModel;
 use App\Models\CustomerModel;
-use App\Models\SalespersonModel;
-use App\Models\SupplierModel;
+use App\Models\ExpenseModel;
+use App\Models\PaymentModel;
 use App\Models\ProductModel;
 use App\Models\PurchaseOrderModel;
-use App\Models\SalesReturnModel;
 use App\Models\PurchaseReturnModel;
-use App\Models\PaymentModel;
-use App\Models\ExpenseModel;
+use App\Models\SaleModel;
+use App\Models\SalesReturnModel;
 use App\Models\StockMutationModel;
+use App\Models\SupplierModel;
 use App\Traits\ApiResponseTrait;
 
 class History extends BaseController
 {
     use ApiResponseTrait;
+
     protected $saleModel;
+
     protected $customerModel;
+
     protected $salespersonModel;
+
     protected $supplierModel;
+
     protected $productModel;
+
     protected $purchaseOrderModel;
+
     protected $salesReturnModel;
+
     protected $purchaseReturnModel;
+
     protected $paymentModel;
+
     protected $expenseModel;
+
     protected $stockMutationModel;
 
     public function __construct()
@@ -234,159 +245,159 @@ class History extends BaseController
         return view('info/history/expenses', $data);
     }
 
-     /**
-      * Get Expenses Data
-      */
-     public function expensesData()
-     {
-         $category = $this->request->getGet('category');
-         $startDate = $this->request->getGet('start_date');
-         $endDate = $this->request->getGet('end_date');
-         $paymentMethod = $this->request->getGet('payment_method');
+    /**
+     * Get Expenses Data
+     */
+    public function expensesData()
+    {
+        $category = $this->request->getGet('category');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $paymentMethod = $this->request->getGet('payment_method');
 
-         $expenses = $this->expenseModel->getExpenses($category, $startDate, $endDate, $paymentMethod);
+        $expenses = $this->expenseModel->getExpenses($category, $startDate, $endDate, $paymentMethod);
 
-         return $this->respondData($expenses);
-     }
+        return $this->respondData($expenses);
+    }
 
-     /**
-      * Stock Movement History - View all stock mutations
-      */
-     public function stockMovements()
-     {
-         // Check if user has warehouse access
-         if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
-             return redirect()->to('/dashboard')->with('error', 'Access denied');
-         }
+    /**
+     * Stock Movement History - View all stock mutations
+     */
+    public function stockMovements()
+    {
+        // Check if user has warehouse access
+        if (!in_array(session()->get('role'), ['OWNER', 'ADMIN'])) {
+            return redirect()->to('/dashboard')->with('error', 'Access denied');
+        }
 
-         $data = [
-             'title' => 'Histori Pergerakan Stok',
-             'subtitle' => 'Riwayat lengkap pergerakan stok produk',
-             'products' => $this->productModel->findAll(),
-             'types' => ['SALE', 'PURCHASE', 'SALES_RETURN', 'PURCHASE_RETURN', 'ADJUSTMENT']
-         ];
+        $data = [
+            'title' => 'Histori Pergerakan Stok',
+            'subtitle' => 'Riwayat lengkap pergerakan stok produk',
+            'products' => $this->productModel->findAll(),
+            'types' => ['SALE', 'PURCHASE', 'SALES_RETURN', 'PURCHASE_RETURN', 'ADJUSTMENT'],
+        ];
 
-         return view('info/history/stock-movements', $data);
-     }
+        return view('info/history/stock-movements', $data);
+    }
 
-     /**
-      * Get Stock Movement Data
-      */
-     public function stockMovementsData()
-     {
-         $productId = $this->request->getGet('product_id');
-         $type = $this->request->getGet('type');
-         $startDate = $this->request->getGet('start_date');
-         $endDate = $this->request->getGet('end_date');
+    /**
+     * Get Stock Movement Data
+     */
+    public function stockMovementsData()
+    {
+        $productId = $this->request->getGet('product_id');
+        $type = $this->request->getGet('type');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
 
-         $movements = $this->stockMutationModel->getFilteredMovements($productId, $type, $startDate, $endDate);
+        $movements = $this->stockMutationModel->getFilteredMovements($productId, $type, $startDate, $endDate);
 
-         return $this->respondData($movements);
-     }
+        return $this->respondData($movements);
+    }
 
-     /**
-      * Export Sales History to CSV
-      */
-     public function exportSalesCSV()
-     {
-         $customerId = $this->request->getGet('customer_id');
-         $paymentType = $this->request->getGet('payment_type');
-         $startDate = $this->request->getGet('start_date');
-         $endDate = $this->request->getGet('end_date');
-         $paymentStatus = $this->request->getGet('payment_status');
+    /**
+     * Export Sales History to CSV
+     */
+    public function exportSalesCSV()
+    {
+        $customerId = $this->request->getGet('customer_id');
+        $paymentType = $this->request->getGet('payment_type');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
+        $paymentStatus = $this->request->getGet('payment_status');
 
-         $sales = $this->saleModel->getAllSalesWithHidden(
-             $customerId,
-             $paymentType,
-             $startDate,
-             $endDate,
-             $paymentStatus
-         );
+        $sales = $this->saleModel->getAllSalesWithHidden(
+            $customerId,
+            $paymentType,
+            $startDate,
+            $endDate,
+            $paymentStatus
+        );
 
-         // Prepare CSV
-         $filename = 'sales_history_' . date('Y-m-d_His') . '.csv';
-         $csv = "Nomor Invoice,Tanggal,Customer,Tipe Pembayaran,Total,Dibayar,Status Pembayaran,Salesman\n";
+        // Prepare CSV
+        $filename = 'sales_history_' . date('Y-m-d_His') . '.csv';
+        $csv = "Nomor Invoice,Tanggal,Customer,Tipe Pembayaran,Total,Dibayar,Status Pembayaran,Salesman\n";
 
-         foreach ($sales as $sale) {
-             $csv .= "\"{$sale['invoice_number']}\",\"{$sale['created_at']}\",\"{$sale['customer_name']}\",\"{$sale['payment_type']}\",\"{$sale['total_amount']}\",\"{$sale['paid_amount']}\",\"{$sale['payment_status']}\",\"{$sale['salesperson_name']}\"\n";
-         }
+        foreach ($sales as $sale) {
+            $csv .= "\"{$sale['invoice_number']}\",\"{$sale['created_at']}\",\"{$sale['customer_name']}\",\"{$sale['payment_type']}\",\"{$sale['total_amount']}\",\"{$sale['paid_amount']}\",\"{$sale['payment_status']}\",\"{$sale['salesperson_name']}\"\n";
+        }
 
-         return $this->response
-             ->setHeader('Content-Type', 'text/csv; charset=utf-8')
-             ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
-             ->setBody($csv);
-     }
+        return $this->response
+            ->setHeader('Content-Type', 'text/csv; charset=utf-8')
+            ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
+            ->setBody($csv);
+    }
 
-     /**
-      * Export Purchases History to CSV
-      */
-     public function exportPurchasesCSV()
-     {
-         $supplierId = $this->request->getGet('supplier_id');
-         $status = $this->request->getGet('status');
-         $startDate = $this->request->getGet('start_date');
-         $endDate = $this->request->getGet('end_date');
+    /**
+     * Export Purchases History to CSV
+     */
+    public function exportPurchasesCSV()
+    {
+        $supplierId = $this->request->getGet('supplier_id');
+        $status = $this->request->getGet('status');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
 
-         $purchases = $this->purchaseOrderModel->getFilteredHistory($supplierId, $status, $startDate, $endDate);
+        $purchases = $this->purchaseOrderModel->getFilteredHistory($supplierId, $status, $startDate, $endDate);
 
-         $filename = 'purchases_history_' . date('Y-m-d_His') . '.csv';
-         $csv = "Nomor PO,Tanggal PO,Supplier,Total,Status\n";
+        $filename = 'purchases_history_' . date('Y-m-d_His') . '.csv';
+        $csv = "Nomor PO,Tanggal PO,Supplier,Total,Status\n";
 
-         foreach ($purchases as $po) {
-             $csv .= "\"{$po['nomor_po']}\",\"{$po['tanggal_po']}\",\"{$po['supplier_name']}\",\"{$po['total_amount']}\",\"{$po['status']}\"\n";
-         }
+        foreach ($purchases as $po) {
+            $csv .= "\"{$po['nomor_po']}\",\"{$po['tanggal_po']}\",\"{$po['supplier_name']}\",\"{$po['total_amount']}\",\"{$po['status']}\"\n";
+        }
 
-         return $this->response
-             ->setHeader('Content-Type', 'text/csv; charset=utf-8')
-             ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
-             ->setBody($csv);
-     }
+        return $this->response
+            ->setHeader('Content-Type', 'text/csv; charset=utf-8')
+            ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
+            ->setBody($csv);
+    }
 
-     /**
-      * Export Payment History to CSV
-      */
-     public function exportPaymentsCSV()
-     {
-         $type = $this->request->getGet('type'); // RECEIVABLE or PAYABLE
-         $startDate = $this->request->getGet('start_date');
-         $endDate = $this->request->getGet('end_date');
+    /**
+     * Export Payment History to CSV
+     */
+    public function exportPaymentsCSV()
+    {
+        $type = $this->request->getGet('type'); // RECEIVABLE or PAYABLE
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
 
-         if ($type === 'RECEIVABLE') {
-             $payments = $this->paymentModel->getReceivableHistory(null, $startDate, $endDate);
-             $filename = 'payments_receivable_' . date('Y-m-d_His') . '.csv';
-             $csv = "No Pembayaran,Tanggal,Customer,Invoice,Metode,Jumlah\n";
+        if ($type === 'RECEIVABLE') {
+            $payments = $this->paymentModel->getReceivableHistory(null, $startDate, $endDate);
+            $filename = 'payments_receivable_' . date('Y-m-d_His') . '.csv';
+            $csv = "No Pembayaran,Tanggal,Customer,Invoice,Metode,Jumlah\n";
 
-             foreach ($payments as $payment) {
-                 $csv .= "\"{$payment['payment_number']}\",\"{$payment['payment_date']}\",\"{$payment['customer_name']}\",\"{$payment['invoice_number']}\",\"{$payment['method']}\",\"{$payment['amount']}\"\n";
-             }
-         } else {
-             $payments = $this->paymentModel->getPayableHistory(null, $startDate, $endDate);
-             $filename = 'payments_payable_' . date('Y-m-d_His') . '.csv';
-             $csv = "No Pembayaran,Tanggal,Supplier,No PO,Metode,Jumlah\n";
+            foreach ($payments as $payment) {
+                $csv .= "\"{$payment['payment_number']}\",\"{$payment['payment_date']}\",\"{$payment['customer_name']}\",\"{$payment['invoice_number']}\",\"{$payment['method']}\",\"{$payment['amount']}\"\n";
+            }
+        } else {
+            $payments = $this->paymentModel->getPayableHistory(null, $startDate, $endDate);
+            $filename = 'payments_payable_' . date('Y-m-d_His') . '.csv';
+            $csv = "No Pembayaran,Tanggal,Supplier,No PO,Metode,Jumlah\n";
 
-             foreach ($payments as $payment) {
-                 $csv .= "\"{$payment['payment_number']}\",\"{$payment['payment_date']}\",\"{$payment['supplier_name']}\",\"{$payment['po_number']}\",\"{$payment['method']}\",\"{$payment['amount']}\"\n";
-             }
-         }
+            foreach ($payments as $payment) {
+                $csv .= "\"{$payment['payment_number']}\",\"{$payment['payment_date']}\",\"{$payment['supplier_name']}\",\"{$payment['po_number']}\",\"{$payment['method']}\",\"{$payment['amount']}\"\n";
+            }
+        }
 
-         return $this->response
-             ->setHeader('Content-Type', 'text/csv; charset=utf-8')
-             ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
-             ->setBody($csv);
-     }
+        return $this->response
+            ->setHeader('Content-Type', 'text/csv; charset=utf-8')
+            ->setHeader('Content-Disposition', "attachment; filename=\"{$filename}\"")
+            ->setBody($csv);
+    }
 
-     /**
-      * Get Summary Statistics for Sales History
-      */
-     public function salesSummary()
-     {
-         $customerId = $this->request->getGet('customer_id');
-         $startDate = $this->request->getGet('start_date');
-         $endDate = $this->request->getGet('end_date');
+    /**
+     * Get Summary Statistics for Sales History
+     */
+    public function salesSummary()
+    {
+        $customerId = $this->request->getGet('customer_id');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
 
-         $db = \Config\Database::connect();
-         $builder = $db->table('sales')
-             ->select('
+        $db = \Config\Database::connect();
+        $builder = $db->table('sales')
+            ->select('
                  COUNT(DISTINCT sales.id) as total_transactions,
                  SUM(sales.total_amount) as total_amount,
                  SUM(sales.paid_amount) as total_paid,
@@ -394,51 +405,50 @@ class History extends BaseController
                  AVG(sales.total_amount) as average_transaction
              ');
 
-         if ($customerId) {
-             $builder->where('sales.customer_id', $customerId);
-         }
-         if ($startDate) {
-             $builder->where('sales.created_at >=', $startDate);
-         }
-         if ($endDate) {
-             $builder->where('sales.created_at <=', $endDate);
-         }
+        if ($customerId) {
+            $builder->where('sales.customer_id', $customerId);
+        }
+        if ($startDate) {
+            $builder->where('sales.created_at >=', $startDate);
+        }
+        if ($endDate) {
+            $builder->where('sales.created_at <=', $endDate);
+        }
 
-         $summary = $builder->first();
+        $summary = $builder->first();
 
-         return $this->respondData($summary);
-     }
+        return $this->respondData($summary);
+    }
 
-     /**
-      * Get Summary Statistics for Purchases History
-      */
-     public function purchasesSummary()
-     {
-         $supplierId = $this->request->getGet('supplier_id');
-         $startDate = $this->request->getGet('start_date');
-         $endDate = $this->request->getGet('end_date');
+    /**
+     * Get Summary Statistics for Purchases History
+     */
+    public function purchasesSummary()
+    {
+        $supplierId = $this->request->getGet('supplier_id');
+        $startDate = $this->request->getGet('start_date');
+        $endDate = $this->request->getGet('end_date');
 
-         $db = \Config\Database::connect();
-         $builder = $db->table('purchase_orders')
-             ->select('
+        $db = \Config\Database::connect();
+        $builder = $db->table('purchase_orders')
+            ->select('
                  COUNT(DISTINCT purchase_orders.id) as total_transactions,
                  SUM(purchase_orders.total_amount) as total_amount,
                  AVG(purchase_orders.total_amount) as average_transaction
              ');
 
-         if ($supplierId) {
-             $builder->where('purchase_orders.supplier_id', $supplierId);
-         }
-         if ($startDate) {
-             $builder->where('purchase_orders.tanggal_po >=', $startDate);
-         }
-         if ($endDate) {
-             $builder->where('purchase_orders.tanggal_po <=', $endDate);
-         }
+        if ($supplierId) {
+            $builder->where('purchase_orders.supplier_id', $supplierId);
+        }
+        if ($startDate) {
+            $builder->where('purchase_orders.tanggal_po >=', $startDate);
+        }
+        if ($endDate) {
+            $builder->where('purchase_orders.tanggal_po <=', $endDate);
+        }
 
-         $summary = $builder->first();
+        $summary = $builder->first();
 
-         return $this->respondData($summary);
-     }
+        return $this->respondData($summary);
+    }
 }
-

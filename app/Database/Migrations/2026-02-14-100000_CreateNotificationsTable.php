@@ -13,52 +13,52 @@ class CreateNotificationsTable extends Migration
             'id' => [
                 'type' => 'BIGINT',
                 'unsigned' => true,
-                'auto_increment' => true
+                'auto_increment' => true,
             ],
             'user_id' => [
                 'type' => 'BIGINT',
                 'unsigned' => true,
-                'null' => true // NULL means system notification for all users
+                'null' => true, // NULL means system notification for all users
             ],
             'type' => [
                 'type' => 'VARCHAR',
-                'constraint' => 50
+                'constraint' => 50,
             ],
             'title' => [
                 'type' => 'VARCHAR',
-                'constraint' => 100
+                'constraint' => 100,
             ],
             'message' => [
-                'type' => 'TEXT'
+                'type' => 'TEXT',
             ],
             'reference_id' => [
                 'type' => 'BIGINT',
                 'unsigned' => true,
-                'null' => true
+                'null' => true,
             ],
             'reference_type' => [
                 'type' => 'VARCHAR',
                 'constraint' => 50,
-                'null' => true
+                'null' => true,
             ],
             'link' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
-                'null' => true
+                'null' => true,
             ],
             'is_read' => [
                 'type' => 'TINYINT',
                 'constraint' => 1,
-                'default' => 0
+                'default' => 0,
             ],
             'read_at' => [
                 'type' => 'DATETIME',
-                'null' => true
+                'null' => true,
             ],
             'created_at' => [
                 'type' => 'DATETIME',
-                'null' => true
-            ]
+                'null' => true,
+            ],
         ]);
 
         $this->forge->addKey('id', true);
@@ -73,50 +73,50 @@ class CreateNotificationsTable extends Migration
             'id' => [
                 'type' => 'BIGINT',
                 'unsigned' => true,
-                'auto_increment' => true
+                'auto_increment' => true,
             ],
             'user_id' => [
                 'type' => 'BIGINT',
-                'unsigned' => true
+                'unsigned' => true,
             ],
             'low_stock' => [
                 'type' => 'TINYINT',
                 'constraint' => 1,
-                'default' => 1
+                'default' => 1,
             ],
             'overdue_receivable' => [
                 'type' => 'TINYINT',
                 'constraint' => 1,
-                'default' => 1
+                'default' => 1,
             ],
             'overdue_payable' => [
                 'type' => 'TINYINT',
                 'constraint' => 1,
-                'default' => 1
+                'default' => 1,
             ],
             'pending_po' => [
                 'type' => 'TINYINT',
                 'constraint' => 1,
-                'default' => 1
+                'default' => 1,
             ],
             'daily_report' => [
                 'type' => 'TINYINT',
                 'constraint' => 1,
-                'default' => 0
+                'default' => 0,
             ],
             'email_notifications' => [
                 'type' => 'TINYINT',
                 'constraint' => 1,
-                'default' => 0
+                'default' => 0,
             ],
             'created_at' => [
                 'type' => 'DATETIME',
-                'null' => true
+                'null' => true,
             ],
             'updated_at' => [
                 'type' => 'DATETIME',
-                'null' => true
-            ]
+                'null' => true,
+            ],
         ]);
 
         $this->forge->addKey('id', true);

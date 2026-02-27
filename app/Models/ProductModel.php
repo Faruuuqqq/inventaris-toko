@@ -1,23 +1,31 @@
 <?php
+
 namespace App\Models;
 
 use App\Entities\Product;
-use App\Entities\ProductStock;
 use CodeIgniter\Model;
 
 class ProductModel extends Model
 {
     protected $table = 'products';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = Product::class;
+
     protected $useSoftDeletes = false;
+
     protected $allowedFields = [
         'sku', 'name', 'category_id', 'unit',
-        'price_buy', 'price_sell', 'min_stock_alert'
+        'price_buy', 'price_sell', 'min_stock_alert',
     ];
+
     protected $useTimestamps = true;
+
     protected $createdField = 'created_at';
+
     protected $updatedField = 'updated_at';
 
     // Validation Rules
@@ -65,13 +73,13 @@ class ProductModel extends Model
      * Update stock for a product in a specific warehouse
      * Creates a stock mutation record automatically
      *
-     * @param int $productId
-     * @param int $warehouseId
-     * @param int $quantity Positive for IN, Negative for OUT
-     * @param string $type IN, OUT, ADJUSTMENT_IN, ADJUSTMENT_OUT, TRANSFER
-     * @param string|null $referenceType SALE, PURCHASE, RETURN_SALE, RETURN_PURCHASE, ADJUSTMENT
-     * @param int|null $referenceId
-     * @param string|null $notes
+     * @param  int         $productId
+     * @param  int         $warehouseId
+     * @param  int         $quantity      Positive for IN, Negative for OUT
+     * @param  string      $type          IN, OUT, ADJUSTMENT_IN, ADJUSTMENT_OUT, TRANSFER
+     * @param  string|null $referenceType SALE, PURCHASE, RETURN_SALE, RETURN_PURCHASE, ADJUSTMENT
+     * @param  int|null    $referenceId
+     * @param  string|null $notes
      * @return bool
      */
     public function updateStock($productId, $warehouseId, $quantity, $type, $referenceType = null, $referenceId = null, $notes = null)
@@ -85,7 +93,7 @@ class ProductModel extends Model
             $stockModel = new \App\Models\ProductStockModel();
             $stock = $stockModel->where([
                 'product_id' => $productId,
-                'warehouse_id' => $warehouseId
+                'warehouse_id' => $warehouseId,
             ])->first();
 
             if (!$stock) {

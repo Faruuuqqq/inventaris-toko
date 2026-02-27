@@ -110,11 +110,11 @@
 
     <!-- Filter Buttons -->
     <div class="mt-4 flex gap-3">
-        <button onclick="loadPayments()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
+        <button @click="loadPayments()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
             <?= icon('Filter', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
-        <button onclick="resetFilters()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
+        <button @click="resetFilters()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
             <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset Filter
         </button>
@@ -123,7 +123,7 @@
 
 <!-- Payments Table -->
 <div class="rounded-lg border bg-card shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Daftar Pembayaran Piutang</h2>
     </div>
     <div class="w-full overflow-auto">
@@ -230,9 +230,9 @@
 
     function getPaymentMethodBadge(method) {
         const methodConfig = {
-            'CASH': { label: 'Tunai', class: 'bg-success/10 text-success border-success/30' },
+            'CASH': { label: 'Tunai', class: 'bg-success/10 text-success border-success/50' },
             'TRANSFER': { label: 'Transfer', class: 'bg-secondary/10 text-secondary border-secondary/30' },
-            'CHECK': { label: 'Cek/Giro', class: 'bg-warning/10 text-warning border-warning/30' }
+            'CHECK': { label: 'Cek/Giro', class: 'bg-warning/10 text-warning border-warning/50' }
         };
 
         const config = methodConfig[method] || { label: method, class: 'bg-muted text-muted-foreground border-border' };

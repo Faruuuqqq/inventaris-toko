@@ -13,7 +13,7 @@
              <p class="text-sm text-muted-foreground mt-1">Informasi lengkap dan riwayat supplier</p>
          </div>
          <div class="flex gap-3">
-             <a href="<?= base_url('master/suppliers') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+             <a href="<?= base_url('master/suppliers') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                  <?= icon('ArrowLeft', 'h-5 w-5') ?>
                  Kembali
              </a>
@@ -33,7 +33,7 @@
         
         <!-- Supplier Information Card -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('Building', 'h-5 w-5 text-primary') ?>
                     Informasi Supplier
@@ -48,7 +48,7 @@
                 </div>
 
                 <!-- Contact Information -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Nomor Telepon</p>
                         <p class="text-sm font-medium text-foreground mt-1"><?= $supplier->phone ?? '-' ?></p>
@@ -61,7 +61,7 @@
                 </div>
 
                 <!-- Purchase Statistics -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Total Pembelian</p>
                         <p class="text-lg font-bold text-foreground mt-1"><?= format_currency($stats->total_purchases ?? 0) ?></p>
@@ -77,7 +77,7 @@
 
         <!-- Recent Purchase Orders -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('ShoppingCart', 'h-5 w-5 text-primary') ?>
                     Purchase Order Terbaru
@@ -86,7 +86,7 @@
 
             <div class="overflow-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-muted/50 border-b border-border/50">
+                    <thead class="bg-muted/50 border-b border-border">
                         <tr>
                             <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">No. PO</th>
                             <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">Tanggal</th>
@@ -138,7 +138,7 @@
         
         <!-- Quick Actions -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('Zap', 'h-5 w-5 text-primary') ?>
                     Aksi Cepat
@@ -156,7 +156,7 @@
                     Bayar Tagihan
                 </a>
 
-                <a href="<?= base_url('info/history/purchases?supplier_id=' . $supplier->id) ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
+                <a href="<?= base_url('info/history/purchases?supplier_id=' . $supplier->id) ?>" class="w-full h-10 rounded-lg border border-border text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
                     <?= icon('History', 'h-5 w-5 mr-2') ?>
                     Lihat Riwayat
                 </a>
@@ -165,7 +165,7 @@
 
         <!-- Debt Status -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('AlertCircle', 'h-5 w-5 text-primary') ?>
                     Status Hutang
@@ -178,12 +178,12 @@
                     <p class="text-2xl font-bold text-destructive mt-2"><?= format_currency($totalDebt) ?></p>
                 </div>
 
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div class="p-4 rounded-lg bg-muted/30 border border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase">Jumlah PO Belum Bayar</p>
                     <p class="text-2xl font-bold text-foreground mt-2"><?= $pendingCount ?? 0 ?></p>
                 </div>
 
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div class="p-4 rounded-lg bg-muted/30 border border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase">Total PO</p>
                     <p class="text-2xl font-bold text-foreground mt-2"><?= $stats->total_pos ?? 0 ?></p>
                 </div>
@@ -200,14 +200,14 @@
         style="display: none;"
     >
         <div 
-            class="w-full max-w-md rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-md rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isEditDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Edit Supplier</h2>
                 <button 
                     @click="isEditDialogOpen = false"
@@ -298,7 +298,7 @@
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isEditDialogOpen = false" 
@@ -313,7 +313,7 @@
                     >
                         <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Supplier'"></span>
                     </button>

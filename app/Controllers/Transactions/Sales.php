@@ -3,30 +3,32 @@
 namespace App\Controllers\Transactions;
 
 use App\Controllers\BaseController;
-use App\Models\SaleModel;
-use App\Models\SaleItemModel;
-use App\Models\ProductModel;
+use App\Exceptions\CreditLimitExceededException;
+use App\Exceptions\InsufficientStockException;
 use App\Models\CustomerModel;
+use App\Models\ProductModel;
+use App\Models\SaleItemModel;
+use App\Models\SaleModel;
 use App\Models\SalespersonModel;
 use App\Models\WarehouseModel;
-use App\Services\StockService;
-use App\Services\BalanceService;
-use App\Exceptions\InsufficientStockException;
-use App\Exceptions\CreditLimitExceededException;
-use CodeIgniter\API\ResponseTrait;
+use App\Services\SaleService;
 
 class Sales extends BaseController
 {
-    use ResponseTrait;
 
     protected $saleModel;
+
     protected $saleItemModel;
+
     protected $productModel;
+
     protected $customerModel;
+
     protected $salespersonModel;
+
     protected $warehouseModel;
-    protected $stockService;
-    protected $balanceService;
+
+    protected $saleService;
 
     public function __construct()
     {
@@ -36,8 +38,7 @@ class Sales extends BaseController
         $this->customerModel = new CustomerModel();
         $this->salespersonModel = new SalespersonModel();
         $this->warehouseModel = new WarehouseModel();
-        $this->stockService = new StockService();
-        $this->balanceService = new BalanceService();
+        $this->saleService = new SaleService();
     }
 
     /**
@@ -50,7 +51,7 @@ class Sales extends BaseController
             'date_to' => $this->request->getGet('date_to'),
             'customer_id' => $this->request->getGet('customer_id'),
             'payment_status' => $this->request->getGet('payment_status'),
-            'payment_type' => $this->request->getGet('payment_type')
+            'payment_type' => $this->request->getGet('payment_type'),
         ];
 
         $sales = $this->saleModel->getAllSalesWithHidden(
@@ -66,7 +67,7 @@ class Sales extends BaseController
             'subtitle' => 'Riwayat semua transaksi penjualan',
             'sales' => $sales,
             'customers' => $this->customerModel->orderBy('name', 'ASC')->findAll(),
-            'filters' => $filters
+            'filters' => $filters,
         ];
 
         return view('transactions/sales/index', $data);
@@ -81,7 +82,7 @@ class Sales extends BaseController
             'title' => 'Buat Penjualan',
             'subtitle' => 'Pilih tipe penjualan',
         ];
-        
+
         return view('transactions/sales/create', $data);
     }
 
@@ -125,11 +126,10 @@ class Sales extends BaseController
      */
     public function storeCash()
     {
-        // 1. Validation
         if (!$this->validate([
             'customer_id' => 'required|numeric',
             'items' => 'required',
-            'warehouse_id' => 'required|numeric'
+            'warehouse_id' => 'required|numeric',
         ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
@@ -145,114 +145,27 @@ class Sales extends BaseController
         $db->transStart();
 
         try {
-            // 2. Prepare data
-            $invoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT);
-            $userId = session()->get('id');
             $warehouseId = (int)$this->request->getPost('warehouse_id');
             $customerId = (int)$this->request->getPost('customer_id');
             $salespersonId = $this->request->getPost('salesperson_id') ?: null;
 
-            // Validate customer exists
-            $customer = $this->customerModel->find($customerId);
-            if (!$customer) {
-                throw new \Exception("Customer tidak ditemukan");
-            }
-
-            // Validate warehouse exists
-            $warehouse = $this->warehouseModel->find($warehouseId);
-            if (!$warehouse) {
-                throw new \Exception("Gudang tidak ditemukan");
-            }
-
-            // 3. Calculate total securely and validate stock
-            $calculatedTotal = 0;
-            $saleItemsData = [];
-
-            foreach ($items as $item) {
-                // Fetch fresh product data
-                $product = $this->productModel->find($item['product_id']);
-
-                if (!$product) {
-                    throw new \Exception("Produk ID {$item['product_id']} tidak ditemukan");
-                }
-
-                $qty = (int)$item['quantity'];
-                if ($qty <= 0) {
-                    continue;
-                }
-
-                // Get price from DB (don't trust client)
-                $price = (float)$product['price_sell'];
-                $discount = (float)($item['discount'] ?? 0);
-
-                // Validate stock BEFORE deducting
-                $this->stockService->validateStock($product['id'], $warehouseId, $qty);
-
-                $subtotal = ($price * $qty) - $discount;
-                $calculatedTotal += $subtotal;
-
-                $saleItemsData[] = [
-                    'product_id' => $product['id'],
-                    'quantity' => $qty,
-                    'price' => $price,
-                    'discount' => $discount,
-                    'subtotal' => $subtotal
-                ];
-            }
-
-            if (empty($saleItemsData)) {
-                throw new \Exception("Tidak ada barang yang valid untuk dijual");
-            }
-
-            // 4. Create sale record
-            $saleId = $this->saleModel->insert([
-                'invoice_number' => $invoiceNumber,
-                'customer_id' => $customerId,
-                'salesperson_id' => $salespersonId,
-                'warehouse_id' => $warehouseId,
-                'user_id' => $userId,
-                'total_amount' => $calculatedTotal,
-                'paid_amount' => $calculatedTotal,
-                'payment_type' => 'CASH',
-                'payment_status' => 'PAID',
-                'is_hidden' => 0
-            ]);
-
-            if (!$saleId) {
-                throw new \Exception("Gagal membuat faktur penjualan");
-            }
-
-            // 5. Insert sale items and deduct stock
-            foreach ($saleItemsData as $sItem) {
-                $sItem['sale_id'] = $saleId;
-                $this->saleItemModel->insert($sItem);
-
-                // Deduct stock using StockService
-                $this->stockService->deductStock(
-                    $sItem['product_id'],
-                    $warehouseId,
-                    $sItem['quantity'],
-                    'SALE',
-                    $saleId,
-                    "Penjualan Tunai $invoiceNumber"
-                );
-            }
+            $result = $this->saleService->createCashSale($customerId, $warehouseId, $items, $salespersonId);
 
             $db->transComplete();
 
             if ($db->transStatus() === false) {
-                throw new \Exception("Transaksi database gagal");
+                throw new \Exception('Transaksi database gagal');
             }
 
-            return redirect()->to("transactions/sales/detail/$saleId")
-                ->with('success', "Penjualan tunai berhasil! Invoice: $invoiceNumber");
+            return redirect()->to("transactions/sales/detail/{$result['saleId']}")
+                ->with('success', "Penjualan tunai berhasil! Invoice: {$result['invoiceNumber']}");
 
         } catch (InsufficientStockException $e) {
             $db->transRollback();
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
@@ -262,12 +175,11 @@ class Sales extends BaseController
      */
     public function storeCredit()
     {
-        // 1. Validation
         if (!$this->validate([
             'customer_id' => 'required|numeric',
             'items' => 'required',
             'warehouse_id' => 'required|numeric',
-            'due_date' => 'required|valid_date[Y-m-d]'
+            'due_date' => 'required|valid_date[Y-m-d]',
         ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
@@ -283,124 +195,21 @@ class Sales extends BaseController
         $db->transStart();
 
         try {
-            // 2. Prepare data
-            $invoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad(rand(10000, 99999), 5, '0', STR_PAD_LEFT);
-            $userId = session()->get('id');
             $warehouseId = (int)$this->request->getPost('warehouse_id');
             $customerId = (int)$this->request->getPost('customer_id');
             $salespersonId = $this->request->getPost('salesperson_id') ?: null;
             $dueDate = $this->request->getPost('due_date');
 
-            // Validate customer exists
-            $customer = $this->customerModel->find($customerId);
-            if (!$customer) {
-                throw new \Exception("Customer tidak ditemukan");
-            }
-
-            // Validate warehouse exists
-            $warehouse = $this->warehouseModel->find($warehouseId);
-            if (!$warehouse) {
-                throw new \Exception("Gudang tidak ditemukan");
-            }
-
-            // 3. Calculate total securely and validate stock
-            $calculatedTotal = 0;
-            $saleItemsData = [];
-
-            foreach ($items as $item) {
-                // Fetch fresh product data
-                $product = $this->productModel->find($item['product_id']);
-
-                if (!$product) {
-                    throw new \Exception("Produk ID {$item['product_id']} tidak ditemukan");
-                }
-
-                $qty = (int)$item['quantity'];
-                if ($qty <= 0) {
-                    continue;
-                }
-
-                // Get price from DB (don't trust client)
-                $price = (float)$product['price_sell'];
-                $discount = (float)($item['discount'] ?? 0);
-
-                // Validate stock BEFORE deducting
-                $this->stockService->validateStock($product['id'], $warehouseId, $qty);
-
-                $subtotal = ($price * $qty) - $discount;
-                $calculatedTotal += $subtotal;
-
-                $saleItemsData[] = [
-                    'product_id' => $product['id'],
-                    'quantity' => $qty,
-                    'price' => $price,
-                    'discount' => $discount,
-                    'subtotal' => $subtotal
-                ];
-            }
-
-            if (empty($saleItemsData)) {
-                throw new \Exception("Tidak ada barang yang valid untuk dijual");
-            }
-
-            // 4. Check credit limit
-            $currentReceivable = (float)($customer['receivable_balance'] ?? 0);
-            $creditLimit = (float)($customer['credit_limit'] ?? 0);
-
-            if ($currentReceivable + $calculatedTotal > $creditLimit) {
-                throw new CreditLimitExceededException(
-                    "Batas kredit akan terlampaui. Limit: " . number_format($creditLimit, 0) .
-                    ", Outstanding: " . number_format($currentReceivable, 0) .
-                    ", Penjualan baru: " . number_format($calculatedTotal, 0)
-                );
-            }
-
-            // 5. Create sale record
-            $saleId = $this->saleModel->insert([
-                'invoice_number' => $invoiceNumber,
-                'customer_id' => $customerId,
-                'salesperson_id' => $salespersonId,
-                'warehouse_id' => $warehouseId,
-                'user_id' => $userId,
-                'total_amount' => $calculatedTotal,
-                'paid_amount' => 0,
-                'due_date' => $dueDate,
-                'payment_type' => 'CREDIT',
-                'payment_status' => 'UNPAID',
-                'is_hidden' => 0
-            ]);
-
-            if (!$saleId) {
-                throw new \Exception("Gagal membuat faktur penjualan");
-            }
-
-            // 6. Insert sale items and deduct stock
-            foreach ($saleItemsData as $sItem) {
-                $sItem['sale_id'] = $saleId;
-                $this->saleItemModel->insert($sItem);
-
-                // Deduct stock using StockService
-                $this->stockService->deductStock(
-                    $sItem['product_id'],
-                    $warehouseId,
-                    $sItem['quantity'],
-                    'SALE',
-                    $saleId,
-                    "Penjualan Kredit $invoiceNumber"
-                );
-            }
-
-            // 7. Update customer receivable balance
-            $this->balanceService->calculateCustomerReceivable($customerId);
+            $result = $this->saleService->createCreditSale($customerId, $warehouseId, $items, $salespersonId, $dueDate);
 
             $db->transComplete();
 
             if ($db->transStatus() === false) {
-                throw new \Exception("Transaksi database gagal");
+                throw new \Exception('Transaksi database gagal');
             }
 
-            return redirect()->to("transactions/sales/detail/$saleId")
-                ->with('success', "Penjualan kredit berhasil! Invoice: $invoiceNumber");
+            return redirect()->to("transactions/sales/detail/{$result['saleId']}")
+                ->with('success', "Penjualan kredit berhasil! Invoice: {$result['invoiceNumber']}");
 
         } catch (InsufficientStockException $e) {
             $db->transRollback();
@@ -410,7 +219,7 @@ class Sales extends BaseController
             return redirect()->back()->withInput()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
@@ -443,7 +252,7 @@ class Sales extends BaseController
             'items' => $items,
             'customer' => $customer,
             'salesperson' => $salesperson,
-            'warehouse' => $warehouse
+            'warehouse' => $warehouse,
         ];
 
         return view('transactions/sales/detail', $data);
@@ -503,7 +312,7 @@ class Sales extends BaseController
         }
 
         if (!$this->validate([
-            'items' => 'required'
+            'items' => 'required',
         ])) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
@@ -530,7 +339,7 @@ class Sales extends BaseController
                     $oldItem['quantity'],
                     'SALE_REVERSAL',
                     $id,
-                    "Pembalikan stok dari edit penjualan"
+                    'Pembalikan stok dari edit penjualan'
                 );
             }
 
@@ -568,12 +377,12 @@ class Sales extends BaseController
                     'quantity' => $qty,
                     'price' => $price,
                     'discount' => $discount,
-                    'subtotal' => $subtotal
+                    'subtotal' => $subtotal,
                 ];
             }
 
             if (empty($saleItemsData)) {
-                throw new \Exception("Tidak ada barang yang valid");
+                throw new \Exception('Tidak ada barang yang valid');
             }
 
             // Check credit limit for credit sales
@@ -585,14 +394,14 @@ class Sales extends BaseController
 
                 if ($newOutstanding > $creditLimit) {
                     throw new CreditLimitExceededException(
-                        "Batas kredit akan terlampaui dengan perubahan ini"
+                        'Batas kredit akan terlampaui dengan perubahan ini'
                     );
                 }
             }
 
             // Update sale
             $this->saleModel->update($id, [
-                'total_amount' => $calculatedTotal
+                'total_amount' => $calculatedTotal,
             ]);
 
             // Insert new items
@@ -606,7 +415,7 @@ class Sales extends BaseController
                     $sItem['quantity'],
                     'SALE',
                     $id,
-                    "Penjualan Updated"
+                    'Penjualan Updated'
                 );
             }
 
@@ -618,7 +427,7 @@ class Sales extends BaseController
             $db->transComplete();
 
             if ($db->transStatus() === false) {
-                throw new \Exception("Transaksi database gagal");
+                throw new \Exception('Transaksi database gagal');
             }
 
             return redirect()->to("transactions/sales/detail/$id")
@@ -626,7 +435,7 @@ class Sales extends BaseController
 
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->withInput()->with('error', "Gagal: " . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
@@ -657,7 +466,7 @@ class Sales extends BaseController
                     $item['quantity'],
                     'SALE_CANCELLATION',
                     $id,
-                    "Pembatalan penjualan"
+                    'Pembatalan penjualan'
                 );
             }
 
@@ -675,7 +484,7 @@ class Sales extends BaseController
             $db->transComplete();
 
             if ($db->transStatus() === false) {
-                throw new \Exception("Transaksi database gagal");
+                throw new \Exception('Transaksi database gagal');
             }
 
             return redirect()->to('/transactions/sales')
@@ -683,70 +492,70 @@ class Sales extends BaseController
 
         } catch (\Exception $e) {
             $db->transRollback();
-            return redirect()->back()->with('error', "Gagal: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal: ' . $e->getMessage());
         }
     }
 
-     /**
-      * Action: Toggle sale visibility (hide/unhide from transaction history)
-      *
-      * ⚠️ CRITICAL SECURITY: OWNER ROLE ONLY
-      *
-      * Permission Check:
-      * This method ALWAYS checks that the user has OWNER role before allowing any action.
-      * Only the business owner can hide sales from transaction history.
-      *
-      * Why OWNER Only?
-      * ─────────────────
-      * 1. Compliance: Hiding sales is a sensitive financial operation
-      * 2. Accountability: Owner bears final responsibility for all financial records
-      * 3. Data Integrity: Prevents accidental hiding of transactions by staff
-      * 4. Audit Trail: Clear chain of command - only owner makes visibility changes
-      * 5. Regulatory: Business/tax authorities expect owner to control what's visible
-      *
-      * Role Restrictions:
-      * ✅ OWNER   - Can hide/unhide sales
-      * ❌ ADMIN   - Cannot hide sales (financial sensitivity)
-      * ❌ GUDANG  - Cannot hide sales (warehouse staff)
-      * ❌ SALES   - Cannot hide sales (sales staff)
-      *
-      * Implementation Flow:
-      * 1. Check user role (OWNER only)
-      * 2. Call Model::toggleHide() to update is_hidden column
-      * 3. Handle exceptions (e.g., sale not found)
-      * 4. Return success/error feedback to user
-      *
-      * Business Effects:
-      * - Hidden sales don't appear in normal history view
-      * - OWNER can still see hidden sales for audit purposes
-      * - Hidden sales can be un-hidden by owner at any time
-      * - Data is preserved in database (recovery always possible)
-      *
-      * @param int $id The sale ID to toggle visibility
-      * @return RedirectResponse With success/error message
-      *
-      * @see \App\Models\SaleModel::toggleHide() - The actual update logic
-      * @see \App\Controllers\Info\History::toggleSaleHide() - AJAX endpoint version
-      * @see https://codeigniter.com/user_guide/general/security.html - Security best practices
-      */
-     public function toggleHide($id)
-     {
-         // CRITICAL: Only OWNER can hide sales for compliance and accountability
-         if (session()->get('role') !== 'OWNER') {
-             return redirect()->back()
-                 ->with('error', 'Hanya OWNER yang dapat menyembunyikan penjualan');
-         }
+    /**
+     * Action: Toggle sale visibility (hide/unhide from transaction history)
+     *
+     * ⚠️ CRITICAL SECURITY: OWNER ROLE ONLY
+     *
+     * Permission Check:
+     * This method ALWAYS checks that the user has OWNER role before allowing any action.
+     * Only the business owner can hide sales from transaction history.
+     *
+     * Why OWNER Only?
+     * ─────────────────
+     * 1. Compliance: Hiding sales is a sensitive financial operation
+     * 2. Accountability: Owner bears final responsibility for all financial records
+     * 3. Data Integrity: Prevents accidental hiding of transactions by staff
+     * 4. Audit Trail: Clear chain of command - only owner makes visibility changes
+     * 5. Regulatory: Business/tax authorities expect owner to control what's visible
+     *
+     * Role Restrictions:
+     * ✅ OWNER   - Can hide/unhide sales
+     * ❌ ADMIN   - Cannot hide sales (financial sensitivity)
+     * ❌ GUDANG  - Cannot hide sales (warehouse staff)
+     * ❌ SALES   - Cannot hide sales (sales staff)
+     *
+     * Implementation Flow:
+     * 1. Check user role (OWNER only)
+     * 2. Call Model::toggleHide() to update is_hidden column
+     * 3. Handle exceptions (e.g., sale not found)
+     * 4. Return success/error feedback to user
+     *
+     * Business Effects:
+     * - Hidden sales don't appear in normal history view
+     * - OWNER can still see hidden sales for audit purposes
+     * - Hidden sales can be un-hidden by owner at any time
+     * - Data is preserved in database (recovery always possible)
+     *
+     * @param  int              $id The sale ID to toggle visibility
+     * @return RedirectResponse With success/error message
+     *
+     * @see \App\Models\SaleModel::toggleHide() - The actual update logic
+     * @see \App\Controllers\Info\History::toggleSaleHide() - AJAX endpoint version
+     * @see https://codeigniter.com/user_guide/general/security.html - Security best practices
+     */
+    public function toggleHide($id)
+    {
+        // CRITICAL: Only OWNER can hide sales for compliance and accountability
+        if (session()->get('role') !== 'OWNER') {
+            return redirect()->back()
+                ->with('error', 'Hanya OWNER yang dapat menyembunyikan penjualan');
+        }
 
-         try {
-             // Toggle the visibility in database
-             $this->saleModel->toggleHide($id);
-             return redirect()->back()
-                 ->with('success', 'Status penyembunyian penjualan berhasil diubah');
-         } catch (\Exception $e) {
-             return redirect()->back()
-                 ->with('error', $e->getMessage());
-         }
-     }
+        try {
+            // Toggle the visibility in database
+            $this->saleModel->toggleHide($id);
+            return redirect()->back()
+                ->with('success', 'Status penyembunyian penjualan berhasil diubah');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
 
     /**
      * API Helper: Get Products with stock

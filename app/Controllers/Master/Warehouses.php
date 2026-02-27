@@ -3,27 +3,21 @@
 namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
+use App\Helpers\PaginationHelper;
 use App\Models\WarehouseModel;
-use App\Services\WarehouseDataService;
 use App\Traits\ApiResponseTrait;
-use CodeIgniter\Model;
 
 class Warehouses extends BaseCRUDController
 {
     use ApiResponseTrait;
-    
+
     protected string $viewPath = 'master/warehouses';
+
     protected string $routePath = '/master/warehouses';
+
     protected string $entityName = 'Gudang';
+
     protected string $entityNamePlural = 'Warehouses';
-
-    protected WarehouseDataService $dataService;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->dataService = new WarehouseDataService();
-    }
 
     protected function getModel(): WarehouseModel
     {
@@ -57,50 +51,47 @@ class Warehouses extends BaseCRUDController
         ];
     }
 
-    /**
-     * Override index to use WarehouseDataService
-     */
+    protected function getListSelectFields(): string
+    {
+        return 'id, code, name, address';
+    }
+
     public function index()
     {
         try {
             $page = (int)($this->request->getGet('page') ?? 1);
             $perPage = (int)($this->request->getGet('per_page') ?? 20);
 
-            $data = array_merge(
-                ['title' => 'Daftar Gudang'],
-                $this->dataService->getPaginatedData($page, $perPage)
-            );
+            $params = PaginationHelper::getSafeParams($page, $perPage);
+            $page = $params['page'];
+            $perPage = $params['perPage'];
 
-            return view($this->viewPath . '/index', $data);
+            $warehouses = $this->model->asArray()->paginate($perPage, 'default', $page);
+            $pager = $this->model->pager;
+
+            return view($this->viewPath . '/index', [
+                'title' => 'Daftar Gudang',
+                'warehouses' => $warehouses,
+                'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
+            ]);
         } catch (\Exception $e) {
             log_message('error', 'Warehouses index error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat data gudang');
         }
     }
 
-    /**
-     * Override create to use WarehouseDataService
-     */
     public function create()
     {
         if (!$this->checkStoreAccess()) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Tambah Gudang',
-                'subtitle' => 'Tambahkan gudang baru',
-            ],
-            $this->dataService->getCreateData()
-        );
-
-        return view($this->viewPath . '/create', $data);
+        return view($this->viewPath . '/create', [
+            'title' => 'Tambah Gudang',
+            'subtitle' => 'Tambahkan gudang baru',
+        ]);
     }
 
-    /**
-     * Override edit to use WarehouseDataService and pass 'warehouse' variable
-     */
     public function edit($id)
     {
         if (!$this->checkUpdateAccess($id)) {
@@ -113,38 +104,26 @@ class Warehouses extends BaseCRUDController
             return redirect()->back()->with('error', 'Gudang tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Edit Gudang',
-                'subtitle' => 'Ubah data gudang',
-                'warehouse' => $record,
-            ],
-            $this->dataService->getEditData()
-        );
-
-        return view($this->viewPath . '/edit', $data);
+        return view($this->viewPath . '/edit', [
+            'title' => 'Edit Gudang',
+            'subtitle' => 'Ubah data gudang',
+            'warehouse' => $record,
+        ]);
     }
 
-    /**
-     * Override detail to use WarehouseDataService
-     */
     public function detail($id)
     {
-        $detailData = $this->dataService->getDetailData($id);
+        $gudang = $this->model->find($id);
 
-        if (empty($detailData)) {
+        if (!$gudang) {
             return redirect()->to($this->routePath)->with('error', 'Gudang tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Detail Gudang',
-                'subtitle' => $detailData['gudang']->name,
-            ],
-            $detailData
-        );
-
-        return view($this->viewPath . '/detail', $data);
+        return view($this->viewPath . '/detail', [
+            'title' => 'Detail Gudang',
+            'subtitle' => $gudang->name,
+            'gudang' => $gudang,
+        ]);
     }
 
     protected function beforeStore(array $data): array
@@ -153,10 +132,6 @@ class Warehouses extends BaseCRUDController
         return $data;
     }
 
-    /**
-     * AJAX: Get warehouse list for dropdown selection
-     * Used in transaction forms
-     */
     public function getList()
     {
         $warehouses = $this->model
@@ -164,7 +139,7 @@ class Warehouses extends BaseCRUDController
             ->where('is_active', 1)
             ->orderBy('name', 'ASC')
             ->findAll();
-        
+
         return $this->respondData($warehouses);
     }
 }

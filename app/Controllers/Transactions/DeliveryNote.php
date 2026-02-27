@@ -3,23 +3,25 @@
 namespace App\Controllers\Transactions;
 
 use App\Controllers\BaseController;
-use App\Models\SaleModel;
-use App\Models\SaleItemModel;
 use App\Models\CustomerModel;
 use App\Models\ProductModel;
+use App\Models\SaleItemModel;
+use App\Models\SaleModel;
 use App\Models\SalespersonModel;
 use App\Traits\ApiResponseTrait;
-use App\Traits\DebugLoggingTrait;
 
 class DeliveryNote extends BaseController
 {
     use ApiResponseTrait;
-    use DebugLoggingTrait;
 
     protected $saleModel;
+
     protected $saleItemModel;
+
     protected $customerModel;
+
     protected $productModel;
+
     protected $salespersonModel;
 
     public function __construct()
@@ -88,7 +90,7 @@ class DeliveryNote extends BaseController
 
         // Get sale details
         $sale = $this->saleModel->find($invoiceId);
-        
+
         if (!$sale) {
             return $this->respondNotFound('Invoice not found');
         }
@@ -106,7 +108,7 @@ class DeliveryNote extends BaseController
         return $this->respondSuccess([
             'sale' => $sale,
             'customer' => $customer,
-            'items' => $items
+            'items' => $items,
         ], 'Invoice data retrieved successfully');
     }
 
@@ -117,10 +119,10 @@ class DeliveryNote extends BaseController
     {
         // Start performance monitoring
         $this->startTimer('delivery_note_creation');
-        
+
         // Log action
         $this->logAction('store', [
-            'invoice_id' => $this->request->getPost('invoice_id')
+            'invoice_id' => $this->request->getPost('invoice_id'),
         ]);
 
         // Comprehensive validation rules
@@ -130,45 +132,45 @@ class DeliveryNote extends BaseController
                 'errors' => [
                     'required' => 'Invoice harus dipilih',
                     'numeric' => 'Invoice ID harus berupa angka',
-                    'is_not_unique' => 'Invoice tidak ditemukan dalam sistem'
-                ]
+                    'is_not_unique' => 'Invoice tidak ditemukan dalam sistem',
+                ],
             ],
             'delivery_date' => [
                 'rules' => 'required|valid_date[Y-m-d]',
                 'errors' => [
                     'required' => 'Tanggal pengiriman harus diisi',
-                    'valid_date' => 'Format tanggal pengiriman tidak valid (Y-m-d)'
-                ]
+                    'valid_date' => 'Format tanggal pengiriman tidak valid (Y-m-d)',
+                ],
             ],
             'delivery_address' => [
                 'rules' => 'required|min_length[10]|max_length[500]',
                 'errors' => [
                     'required' => 'Alamat pengiriman harus diisi',
                     'min_length' => 'Alamat pengiriman minimal 10 karakter',
-                    'max_length' => 'Alamat pengiriman maksimal 500 karakter'
-                ]
+                    'max_length' => 'Alamat pengiriman maksimal 500 karakter',
+                ],
             ],
             'driver_id' => [
                 'rules' => 'required|numeric|is_not_unique[salespersons.id]',
                 'errors' => [
                     'required' => 'Driver harus dipilih',
                     'numeric' => 'Driver ID harus berupa angka',
-                    'is_not_unique' => 'Driver tidak ditemukan dalam sistem'
-                ]
+                    'is_not_unique' => 'Driver tidak ditemukan dalam sistem',
+                ],
             ],
             'salesperson_id' => [
                 'rules' => 'required|numeric|is_not_unique[salespersons.id]',
                 'errors' => [
                     'required' => 'Salesperson harus dipilih',
                     'numeric' => 'Salesperson ID harus berupa angka',
-                    'is_not_unique' => 'Salesperson tidak ditemukan dalam sistem'
-                ]
+                    'is_not_unique' => 'Salesperson tidak ditemukan dalam sistem',
+                ],
             ],
             'notes' => [
                 'rules' => 'permit_empty|max_length[1000]',
                 'errors' => [
-                    'max_length' => 'Catatan maksimal 1000 karakter'
-                ]
+                    'max_length' => 'Catatan maksimal 1000 karakter',
+                ],
             ],
         ];
 
@@ -235,10 +237,10 @@ class DeliveryNote extends BaseController
 
             // Log success
             $this->logSuccess('Delivery note created', $invoiceId);
-            
+
             // Log user activity (audit trail)
             $this->logActivity('Created delivery note', $invoiceId, 'DeliveryNote');
-            
+
             // Check performance
             $duration = $this->stopTimer('delivery_note_creation', false);
             $this->logSlowOperation('Delivery note creation', $duration, 0.5);
@@ -248,13 +250,13 @@ class DeliveryNote extends BaseController
 
         } catch (\Exception $e) {
             $db->transRollback();
-            
+
             // Log error with context
             $this->logError('Failed to create delivery note', $e, [
                 'invoice_id' => $invoiceId ?? 'N/A',
-                'user_id' => session()->get('user_id')
+                'user_id' => session()->get('user_id'),
             ]);
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', $e->getMessage());

@@ -1,13 +1,13 @@
 <?php
+
 namespace App\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
-use App\Models\SalesReturnModel;
-use App\Models\SalesReturnDetailModel;
 
 class SalesReturnsController extends ResourceController
 {
     protected $modelName = 'App\Models\SalesReturnModel';
+
     protected $format = 'json';
 
     public function index()
@@ -15,7 +15,7 @@ class SalesReturnsController extends ResourceController
         $returns = $this->model->findAll();
         return $this->respond([
             'status' => 'success',
-            'data' => $returns
+            'data' => $returns,
         ]);
     }
 
@@ -33,8 +33,8 @@ class SalesReturnsController extends ResourceController
             'status' => 'success',
             'data' => [
                 'return' => $return,
-                'items' => $items
-            ]
+                'items' => $items,
+            ],
         ]);
     }
 
@@ -49,7 +49,7 @@ class SalesReturnsController extends ResourceController
         return $this->respondCreated([
             'status' => 'success',
             'message' => 'Sales return created successfully',
-            'id' => $this->model->getInsertID()
+            'id' => $this->model->getInsertID(),
         ]);
     }
 
@@ -68,7 +68,7 @@ class SalesReturnsController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Sales return updated successfully'
+            'message' => 'Sales return updated successfully',
         ]);
     }
 
@@ -83,7 +83,7 @@ class SalesReturnsController extends ResourceController
 
         return $this->respondDeleted([
             'status' => 'success',
-            'message' => 'Sales return deleted successfully'
+            'message' => 'Sales return deleted successfully',
         ]);
     }
 
@@ -98,7 +98,7 @@ class SalesReturnsController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Sales return approved successfully'
+            'message' => 'Sales return approved successfully',
         ]);
     }
 }

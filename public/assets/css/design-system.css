@@ -99,12 +99,16 @@ h1, h2, h3, h4, h5, h6, .font-display {
 .bg-sidebar-primary { background-color: hsl(var(--sidebar-primary)); }
 .border-sidebar-border { border-color: hsl(var(--sidebar-border)); }
 
-/* Opacity variants */
-.bg-primary\/10 { background-color: hsl(var(--primary) / 0.10); }
-.bg-primary\/20 { background-color: hsl(var(--primary) / 0.20); }
-.bg-success\/10 { background-color: hsl(var(--success) / 0.10); }
-.bg-warning\/10 { background-color: hsl(var(--warning) / 0.10); }
-.bg-destructive\/10 { background-color: hsl(var(--destructive) / 0.10); }
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
 
 /* ===== MICRO-INTERACTIONS & POLISH ===== */
 
@@ -114,7 +118,7 @@ button, a.btn, [role="button"] {
 }
 
 button:active, a.btn:active {
-    transform: scale(0.95);
+    transform: none;
 }
 
 /* Elevated cards with hover effect */
@@ -128,7 +132,7 @@ button:active, a.btn:active {
 .card:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
     border-color: hsl(var(--primary) / 0.3);
-    transform: translateY(-2px);
+    transform: none;
 }
 
 /* Table row hover */
@@ -143,7 +147,25 @@ tbody tr:hover {
 /* Focus ring with primary color */
 input:focus, button:focus, select:focus, textarea:focus {
     outline: none;
-    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1), 0 0 0 1.5px hsl(var(--primary));
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2), 0 0 0 1px hsl(var(--primary));
+}
+
+input:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2), 0 0 0 1px hsl(var(--primary));
+}
+
+/* Cursor styles for interactive elements */
+button, a, [role="button"], .cursor-pointer {
+    cursor: pointer;
+}
+
+input, select, textarea {
+    cursor: text;
+}
+
+input[type="checkbox"], input[type="radio"] {
+    cursor: pointer;
 }
 
 /* Sticky header with backdrop blur */
@@ -153,23 +175,113 @@ input:focus, button:focus, select:focus, textarea:focus {
     border-bottom: 1px solid hsl(var(--border) / 0.6);
 }
 
-/* Animation for smooth transitions */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-slide-down {
-    animation: slideDown 200ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Smooth scroll behavior */
 html {
     scroll-behavior: smooth;
 }
+
+/* Better table row focus for keyboard navigation */
+tbody tr:focus-within {
+    background-color: hsl(var(--primary) / 0.08);
+}
+
+/* Better focus states for links */
+a:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Better focus for tabs and buttons */
+button:focus-visible, [role="button"]:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+}
+
+/* Alert Component Styles */
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid transparent;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.alert-success {
+    background-color: hsl(var(--success) / 0.1);
+    border-color: hsl(var(--success) / 0.5);
+    color: hsl(var(--success));
+}
+
+.alert-error {
+    background-color: hsl(var(--destructive) / 0.1);
+    border-color: hsl(var(--destructive) / 0.5);
+    color: hsl(var(--destructive));
+}
+
+.alert-warning {
+    background-color: hsl(var(--warning) / 0.1);
+    border-color: hsl(var(--warning) / 0.5);
+    color: hsl(var(--warning));
+}
+
+.alert-info {
+    background-color: hsl(var(--primary) / 0.1);
+    border-color: hsl(var(--primary) / 0.5);
+    color: hsl(var(--primary));
+}
+
+/* Badge Component Styles */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 9999px;
+}
+
+.badge-success {
+    background-color: hsl(var(--success) / 0.1);
+    color: hsl(var(--success));
+}
+
+.badge-destructive {
+    background-color: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
+}
+
+.badge-warning {
+    background-color: hsl(var(--warning) / 0.1);
+    color: hsl(var(--warning));
+}
+
+.badge-primary {
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+}
+
+.badge-secondary {
+    background-color: hsl(var(--muted) / 0.1);
+    color: hsl(var(--muted));
+}
+
+.badge-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: currentColor;
+    border-radius: 50%;
+    margin-right: 0.25rem;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+

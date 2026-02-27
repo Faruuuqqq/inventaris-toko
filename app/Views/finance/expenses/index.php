@@ -2,7 +2,18 @@
 
 <?= $this->section('content') ?>
 
-<!-- Page Header -->
+<script>
+window.__PAGE_CONFIG__ = {
+    dataUrl: '<?= base_url('finance/expenses/getData') ?>',
+    baseUrl: '<?= base_url('finance/expenses') ?>',
+    categories: <?= json_encode($categories) ?>,
+    defaultStartDate: '<?= date('Y-m-01') ?>',
+    defaultEndDate: '<?= date('Y-m-d') ?>'
+};
+</script>
+<script src="<?= base_url('assets/js/modules/finance/expenseManager.js') ?>"></script>
+
+<div x-data>
 <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
         <h1 class="text-3xl font-bold text-foreground flex items-center gap-3">
@@ -104,11 +115,11 @@
 
             <!-- Action Buttons -->
             <div class="flex items-end gap-2">
-                <button onclick="loadExpenses()" class="flex-1 h-10 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
+                <button x-on:click="loadExpenses()" class="flex-1 h-10 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition">
                     <?= icon('Filter', 'h-4 w-4 inline mr-2') ?>
                     Filter
                 </button>
-                <button onclick="resetFilters()" class="h-10 px-4 border border-border/50 bg-background text-foreground font-medium rounded-lg hover:bg-muted transition">
+                <button x-on:click="resetFilters()" class="h-10 px-4 border border-border bg-background text-foreground font-medium rounded-lg hover:bg-muted transition">
                     <?= icon('RotateCcw', 'h-4 w-4') ?>
                 </button>
             </div>
@@ -120,7 +131,7 @@
 <div class="rounded-lg border bg-surface overflow-hidden">
     <div class="relative w-full overflow-auto">
         <table class="w-full text-sm">
-            <thead class="bg-muted/50 border-b border-border/50">
+            <thead class="bg-muted/50 border-b border-border">
                 <tr>
                     <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">No. Biaya</th>
                     <th class="h-12 px-6 text-left align-middle font-medium text-muted-foreground">Tanggal</th>
@@ -152,10 +163,10 @@
         <p class="text-sm text-muted-foreground mb-1">Apakah Anda yakin ingin menghapus biaya ini?</p>
         <p class="text-sm text-muted-foreground font-medium mb-6" id="deleteExpenseInfo"></p>
         <div class="flex gap-3 justify-end">
-            <button onclick="closeDeleteModal()" class="h-10 px-4 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition">
+            <button x-on:click="closeDeleteModal()" class="h-10 px-4 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition">
                 Batal
             </button>
-            <button type="button" id="confirmDelete" onclick="performDelete()" class="h-10 px-4 rounded-lg bg-destructive text-white font-medium hover:bg-destructive/90 transition">
+            <button type="button" id="confirmDelete" x-on:click="performDelete()" class="h-10 px-4 rounded-lg bg-destructive text-white font-medium hover:bg-destructive/90 transition">
                 Hapus
             </button>
         </div>
@@ -236,11 +247,11 @@
                     <td class="px-6 py-4 text-center">
                         <div class="flex items-center justify-center gap-2">
                             <a href="<?= base_url('finance/expenses/edit/') ?>${expense.id}" 
-                               class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/50 transition"
+                               class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-border text-muted-foreground hover:text-primary hover:border-primary/50 transition"
                                title="Edit">
                                 <?= icon('Edit', 'h-4 w-4') ?>
                             </a>
-                            <button onclick="confirmDelete(${expense.id}, '${escapeHtml(expense.expense_number)}')"
+                            <button @click="confirmDelete(${expense.id}, '${escapeHtml(expense.expense_number)}')"
                                     class="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-destructive/50 text-destructive hover:bg-destructive/10 transition"
                                     title="Hapus">
                                 <?= icon('Trash2', 'h-4 w-4') ?>

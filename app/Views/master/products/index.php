@@ -3,147 +3,15 @@
 <?= $this->section('content') ?>
 
 <script>
-function productManager() {
-    return {
-        products: <?= json_encode($products) ?>,
-        search: '',
-        categoryFilter: 'all',
-        isDialogOpen: false,
-        isSubmitting: false,
-        errors: {},
-
-        get filteredProducts() {
-            return this.products.filter(product => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = product.name.toLowerCase().includes(searchLower) ||
-                                    product.sku.toLowerCase().includes(searchLower);
-
-                const matchesCategory = this.categoryFilter === 'all' ||
-                                      product.category_name === this.categoryFilter;
-
-                return matchesSearch && matchesCategory;
-            });
-        },
-
-        openModal() {
-            // Reset form and errors
-            this.errors = {};
-            const form = document.querySelector('form[action*="master/products"]');
-            if (form) form.reset();
-            this.isDialogOpen = true;
-        },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-
-            // Clear previous errors
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    // Success
-                    ModalManager.success('Data produk berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        // Reload page to refresh product list
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    // Validation error
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    // Show generic message, field errors will be displayed inline
-                    ModalManager.error('Silakan periksa kembali data yang Anda masukkan. Lihat pesan kesalahan di setiap field.');
-                } else {
-                    // Other error
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-        },
-
-        editProduct(productId) {
-            // TODO: Implement edit functionality
-            window.location.href = `<?= base_url('master/products/edit') ?>/${productId}`;
-        },
-
-        deleteProduct(productId) {
-            const product = this.products.find(p => p.id === productId);
-            const productName = product ? product.name : 'produk ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/products') ?>/${productId}`,
-                productName,
-                () => {
-                    this.products = this.products.filter(p => p.id !== productId);
-                }
-            );
-        },
-
-        formatRupiah(value) {
-            return new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 0
-            }).format(value);
-        },
-
-        async exportData() {
-            window.Loading.show('Mengekspor Data', 'Sedang menyiapkan file PDF...');
-            try {
-                const response = await fetch(`<?= base_url('master/products/export-pdf') ?>`);
-
-                if (!response.ok) throw new Error('Gagal mengunduh file');
-
-                // Get filename from header if possible, otherwise default
-                const contentDisposition = response.headers.get('Content-Disposition');
-                let filename = 'products_export.pdf';
-                if (contentDisposition) {
-                    const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-                    if (filenameMatch.length === 2) filename = filenameMatch[1];
-                }
-
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-
-                // Optional: Show success toast
-                // ModalManager.success('Export berhasil diunduh');
-            } catch (error) {
-                console.error('Export failed:', error);
-                ModalManager.error('Gagal mengekspor data. Silakan coba lagi.');
-            } finally {
-                window.Loading.hide();
-            }
-        }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    products: <?= json_encode($products) ?>,
+    baseUrl: '<?= base_url('master/products') ?>',
+    exportUrl: '<?= base_url('master/products/export-pdf') ?>',
+    searchFields: ['name', 'sku']
+};
 </script>
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/productManager.js') ?>"></script>
 
 <div x-data="productManager()">
     <!-- Page Header -->
@@ -157,7 +25,7 @@ function productManager() {
     <!-- Summary Cards - Compact Grid -->
     <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <!-- Total Products -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-primary/5 to-transparent p-6 hover:border-primary/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-primary/5 to-transparent p-6 hover:border-primary/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Produk</p>
@@ -171,7 +39,7 @@ function productManager() {
         </div>
 
         <!-- Total Categories -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-secondary/5 to-transparent p-6 hover:border-secondary/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-secondary/5 to-transparent p-6 hover:border-secondary/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Kategori</p>
@@ -185,7 +53,7 @@ function productManager() {
         </div>
 
         <!-- Total Stock -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Stok</p>
@@ -199,7 +67,7 @@ function productManager() {
         </div>
 
         <!-- Inventory Value -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Nilai Persediaan</p>
@@ -214,7 +82,7 @@ function productManager() {
     </div>
 
     <!-- Control Bar - Professional Toolbar -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border p-4">
         <!-- Left Side: Search & Filter -->
         <div class="flex gap-3 flex-1 flex-wrap">
             <!-- Search Input -->
@@ -265,9 +133,9 @@ function productManager() {
     </div>
 
     <!-- Products Table - Professional Data Grid -->
-    <div class="rounded-xl border border-border/50 bg-surface shadow-sm overflow-hidden">
+    <div class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
         <!-- Table Header with Column Info -->
-        <div class="border-b border-border/50 bg-muted/30 px-6 py-3">
+        <div class="border-b border-border bg-muted/30 px-6 py-3">
             <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 <span x-text="`${filteredProducts.length} produk ditemukan`"></span>
             </div>
@@ -276,7 +144,7 @@ function productManager() {
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-border/50 bg-background/50">
+                    <tr class="border-b border-border bg-background/50">
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Produk</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Kategori</th>
                         <th class="h-12 px-6 py-3 text-right font-semibold text-foreground uppercase text-xs tracking-wide">Harga Beli</th>
@@ -287,7 +155,7 @@ function productManager() {
                 </thead>
                 <tbody>
                     <template x-for="product in filteredProducts" :key="product.id">
-                        <tr class="border-b border-border/30 hover:bg-primary/3 transition-colors duration-150">
+                        <tr class="border-b border-border hover:bg-muted/50 transition-colors duration-150 cursor-pointer">
                             <!-- Product Column with Thumbnail -->
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
@@ -303,7 +171,7 @@ function productManager() {
 
                             <!-- Category Badge -->
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary" x-text="product.category_name"></span>
+                                <span class="inline-flex items-center rounded-full border border-primary/50 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary" x-text="product.category_name"></span>
                             </td>
 
                             <!-- Buy Price -->
@@ -339,7 +207,7 @@ function productManager() {
                                     </button>
                                     <button 
                                         @click="deleteProduct(product.id)"
-                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                         title="Hapus produk"
                                     >
                                         <?= icon('Trash2', 'h-4 w-4') ?>
@@ -381,15 +249,15 @@ function productManager() {
         x-transition.opacity
         style="display: none;"
     >
-        <div 
-            class="w-full max-w-2xl rounded-xl border border-border/50 bg-surface shadow-xl"
+        <div
+            class="w-full max-w-2xl rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Tambah Produk Baru</h2>
                 <button 
                     @click="isDialogOpen = false"
@@ -517,22 +385,22 @@ function productManager() {
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
-                    <button 
-                        type="button" 
-                        @click="isDialogOpen = false" 
-                        class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-11 px-6 text-sm font-semibold"
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
+                    <button
+                        type="button"
+                        @click="isDialogOpen = false"
+                        class="inline-flex items-center justify-center rounded-lg border border-border bg-surface text-foreground hover:bg-muted/50 transition h-11 px-6 text-sm font-semibold cursor-pointer"
                     >
                         Batal
                     </button>
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         :disabled="isSubmitting"
-                        class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-11 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                        class="inline-flex items-center justify-center rounded-lg bg-primary text-white hover:bg-primary-light transition h-11 px-6 text-sm font-semibold shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <span x-show="!isSubmitting" class="mr-2"><?= icon('Plus', 'h-5 w-5') ?></span>
                         <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Produk'"></span>
                     </button>

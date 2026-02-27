@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Entities\PurchaseOrder;
@@ -7,15 +8,22 @@ use CodeIgniter\Model;
 class PurchaseOrderModel extends Model
 {
     protected $table = 'purchase_orders';
+
     protected $primaryKey = 'id_po';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = PurchaseOrder::class;
+
     protected $useSoftDeletes = true;
+
     protected $deletedField = 'deleted_at';
+
     protected $allowedFields = [
         'nomor_po', 'tanggal_po', 'supplier_id', 'user_id',
-        'total_amount', 'received_amount', 'status', 'notes'
+        'total_amount', 'received_amount', 'status', 'notes',
     ];
+
     protected $useTimestamps = false;
 
     // Validation Rules
@@ -110,10 +118,10 @@ class PurchaseOrderModel extends Model
 
         return $this->update($purchaseOrderId, [
             'received_amount' => $newReceivedAmount,
-            'status' => $newStatus
+            'status' => $newStatus,
         ]);
     }
-    
+
     /**
      * Create purchase order with items
      */

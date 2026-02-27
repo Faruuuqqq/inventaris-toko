@@ -11,7 +11,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Konfirmasi penerimaan pesanan pembelian</p>
     </div>
-    <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -23,7 +23,7 @@
 
     <!-- PO Information Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('FileText', 'h-5 w-5 text-primary') ?>
                 Informasi Pesanan Pembelian
@@ -63,7 +63,7 @@
 
     <!-- Products to Receive Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Box', 'h-5 w-5 text-primary') ?>
                 Produk yang Diterima
@@ -72,7 +72,7 @@
 
         <div class="p-6 overflow-auto">
             <table class="w-full text-sm">
-                <thead class="bg-muted/50 border-b border-border/50">
+                <thead class="bg-muted/50 border-b border-border">
                     <tr>
                         <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Produk</th>
                         <th class="h-12 px-4 text-right align-middle font-medium text-muted-foreground w-20">Dipesan</th>
@@ -122,7 +122,7 @@
                                 <select class="w-full h-9 rounded-lg border border-border bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" name="produk[<?= $index ?>][id_warehouse_baik]" :disabled="jumlahBaik == 0">
                                     <option value="">Pilih</option>
                                     <?php foreach ($warehouses_good as $warehouse): ?>
-                                        <option value="<?= $warehouse['id_warehouse'] ?>" <?= $purchaseOrder['id_warehouse'] == $warehouse['id_warehouse'] ? 'selected' : '' ?>>
+                                        <option value="<?= $warehouse['id_warehouse'] ?>" <?= $purchaseOrder['id_warehouse'] === $warehouse['id_warehouse'] ? 'selected' : '' ?>>
                                             <?= $warehouse['nama_warehouse'] ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -154,7 +154,7 @@
 
     <!-- Action Buttons -->
     <div class="flex items-center justify-between gap-3">
-        <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+        <a href="<?= base_url('transactions/purchases') ?>" class="inline-flex items-center justify-center h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
             Batal
         </a>
         <button type="submit" class="inline-flex items-center justify-center gap-2 h-11 px-6 bg-success text-white font-medium rounded-lg hover:bg-success/90 transition">

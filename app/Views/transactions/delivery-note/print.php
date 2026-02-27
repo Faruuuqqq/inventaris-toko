@@ -325,7 +325,7 @@
 
     <!-- Print Button (hanya terlihat di browser) -->
     <div class="print-button">
-        <button onclick="window.print()">🖨️ Cetak Surat Jalan</button>
+        <button @click="window.print()">🖨️ Cetak Surat Jalan</button>
     </div>
 </body>
 </html>

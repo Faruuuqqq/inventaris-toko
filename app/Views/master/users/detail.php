@@ -12,7 +12,7 @@
         <p class="text-sm text-muted-foreground mt-1">Informasi detail pengguna sistem</p>
     </div>
     <div class="flex gap-3">
-        <a href="<?= base_url('master/users') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+        <a href="<?= base_url('master/users') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
             <?= icon('ChevronLeft', 'h-5 w-5') ?>
             Kembali
         </a>
@@ -29,9 +29,9 @@
 <div class="grid gap-6 lg:grid-cols-3">
     <!-- Left Column: User Details (2/3) -->
     <div class="lg:col-span-2 space-y-6">
-        <div class="rounded-xl border border-border/50 bg-surface overflow-hidden">
+        <div class="rounded-xl border border-border bg-surface overflow-hidden">
             <!-- Header Section -->
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('User', 'h-5 w-5 text-primary') ?>
                     Informasi Pengguna
@@ -47,7 +47,7 @@
                 </div>
 
                 <!-- Username & Email -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Username</p>
                         <p class="text-sm font-medium text-foreground mt-1"><?= esc($pengguna->username) ?></p>
@@ -60,7 +60,7 @@
                 </div>
 
                 <!-- Role & Status -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Role</p>
                         <div class="mt-1">
@@ -71,8 +71,8 @@
                                 'GUDANG' => 'bg-warning/10 text-warning',
                                 'SALES' => 'bg-success/10 text-success',
                             ];
-                            $roleColor = $roleColors[$pengguna->role] ?? 'bg-muted/10 text-muted-foreground';
-                            ?>
+$roleColor = $roleColors[$pengguna->role] ?? 'bg-muted/10 text-muted-foreground';
+?>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold <?= $roleColor ?>">
                                 <?= esc($pengguna->role) ?>
                             </span>
@@ -96,7 +96,7 @@
                 </div>
 
                 <!-- Timestamps -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Dibuat Pada</p>
                         <p class="text-sm font-medium text-foreground mt-1">
@@ -125,11 +125,11 @@
 
     <!-- Right Column: Actions -->
     <div class="space-y-6">
-        <div class="rounded-xl border border-border/50 bg-surface p-6">
+        <div class="rounded-xl border border-border bg-surface p-6">
             <h3 class="text-sm font-semibold text-foreground mb-4">Aksi</h3>
             
             <div class="space-y-2">
-                <a href="<?= base_url('master/users') ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
+                <a href="<?= base_url('master/users') ?>" class="w-full h-10 rounded-lg border border-border text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
                     <?= icon('ArrowLeft', 'h-4 w-4 mr-2') ?>
                     Kembali ke Daftar
                 </a>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
@@ -6,6 +7,7 @@ use CodeIgniter\Entity\Entity;
 class PurchaseOrder extends Entity
 {
     protected $dates = ['created_at', 'date'];
+
     protected $casts = [
         'id' => 'integer',
         'supplier_id' => 'integer',

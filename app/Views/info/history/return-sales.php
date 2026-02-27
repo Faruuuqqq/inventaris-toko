@@ -110,11 +110,11 @@
 
     <!-- Filter Buttons -->
     <div class="mt-4 flex gap-3">
-        <button onclick="loadReturns()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
+        <button @click="loadReturns()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
             <?= icon('Filter', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
-        <button onclick="resetFilters()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
+        <button @click="resetFilters()" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors">
             <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset Filter
         </button>
@@ -123,7 +123,7 @@
 
 <!-- Returns Table -->
 <div class="rounded-lg border bg-card shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Daftar Retur Penjualan</h2>
     </div>
     <div class="w-full overflow-auto">
@@ -200,7 +200,7 @@
                     <td class="px-6 py-4 text-right font-mono font-medium">${formatRupiah(ret.total_retur)}</td>
                     <td class="px-6 py-4">
                         <div class="flex justify-center gap-2">
-                            <button onclick="viewDetail(${ret.id})" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors" title="Lihat Detail">
+                            <button @click="viewDetail(${ret.id})" class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-colors" title="Lihat Detail">
                                 <?= icon('Eye', 'h-4 w-4') ?>
                             </button>
                         </div>
@@ -229,9 +229,9 @@
 
     function getStatusBadge(status) {
         const statusConfig = {
-            'PENDING': { label: 'Pending', class: 'bg-warning/10 text-warning border-warning/30' },
-            'APPROVED': { label: 'Disetujui', class: 'bg-success/10 text-success border-success/30' },
-            'REJECTED': { label: 'Ditolak', class: 'bg-destructive/10 text-destructive border-destructive/30' }
+            'PENDING': { label: 'Pending', class: 'bg-warning/10 text-warning border-warning/50' },
+            'APPROVED': { label: 'Disetujui', class: 'bg-success/10 text-success border-success/50' },
+            'REJECTED': { label: 'Ditolak', class: 'bg-destructive/10 text-destructive border-destructive/50' }
         };
 
         const config = statusConfig[status] || { label: status, class: 'bg-muted text-muted-foreground border-border' };

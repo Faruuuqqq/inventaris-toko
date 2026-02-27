@@ -1,15 +1,17 @@
 <?php
+
 namespace App\Controllers\Info;
 
 use App\Controllers\BaseController;
-use App\Models\SaleModel;
 use App\Models\CustomerModel;
 use App\Traits\ApiResponseTrait;
 
 class Saldo extends BaseController
 {
     use ApiResponseTrait;
+
     protected $saleModel;
+
     protected $customerModel;
 
     public function __construct()
@@ -24,7 +26,7 @@ class Saldo extends BaseController
         $customers = $this->customerModel
             ->where('receivable_balance >', 0)
             ->findAll();
-        
+
         // Calculate aging
         $agingData = [
             '0-30' => ['customers' => [], 'total' => 0],
@@ -32,7 +34,7 @@ class Saldo extends BaseController
             '61-90' => ['customers' => [], 'total' => 0],
             '90+' => ['customers' => [], 'total' => 0],
         ];
-        
+
         foreach ($customers as $customer) {
             // Get latest unpaid sale for aging calculation
             $latestSale = $this->saleModel
@@ -40,21 +42,21 @@ class Saldo extends BaseController
                 ->where('payment_status !=', 'PAID')
                 ->orderBy('created_at', 'DESC')
                 ->first();
-            
+
             if ($latestSale) {
                 $daysOverdue = $this->calculateDaysOverdue($latestSale->created_at, $latestSale->due_date);
                 $agingCategory = $this->getAgingCategory($daysOverdue);
-                
+
                 $agingData[$agingCategory]['customers'][] = $customer;
                 $agingData[$agingCategory]['total'] += $customer->receivable_balance;
             }
         }
-        
+
         $totalReceivable = 0;
         foreach ($customers as $customer) {
             $totalReceivable += $customer->receivable_balance;
         }
-        
+
         $data = [
             'title' => 'Saldo Piutang',
             'subtitle' => 'Daftar piutang customer',
@@ -62,31 +64,31 @@ class Saldo extends BaseController
             'agingData' => $agingData,
             'totalReceivable' => $totalReceivable,
         ];
-        
+
         return view('info/saldo/receivable', $data);
     }
 
     public function payable()
     {
         $supplierModel = new \App\Models\SupplierModel();
-        
+
         // Get suppliers with outstanding debts
         $suppliers = $supplierModel
             ->where('debt_balance >', 0)
             ->findAll();
-        
+
         $totalPayable = 0;
         foreach ($suppliers as $supplier) {
             $totalPayable += $supplier->debt_balance;
         }
-        
+
         $data = [
             'title' => 'Saldo Utang',
             'subtitle' => 'Daftar utang ke supplier',
             'suppliers' => $suppliers,
             'totalPayable' => $totalPayable,
         ];
-        
+
         return view('info/saldo/payable', $data);
     }
 
@@ -99,10 +101,18 @@ class Saldo extends BaseController
 
     private function getAgingCategory($daysOverdue)
     {
-        if ($daysOverdue <= 0) return '0-30';
-        if ($daysOverdue <= 30) return '0-30';
-        if ($daysOverdue <= 60) return '31-60';
-        if ($daysOverdue <= 90) return '61-90';
+        if ($daysOverdue <= 0) {
+            return '0-30';
+        }
+        if ($daysOverdue <= 30) {
+            return '0-30';
+        }
+        if ($daysOverdue <= 60) {
+            return '31-60';
+        }
+        if ($daysOverdue <= 90) {
+            return '61-90';
+        }
         return '90+';
     }
 

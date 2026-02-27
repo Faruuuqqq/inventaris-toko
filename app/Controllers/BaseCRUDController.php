@@ -13,9 +13,13 @@ use CodeIgniter\Model;
 abstract class BaseCRUDController extends BaseController
 {
     protected Model $model;
+
     protected string $viewPath;
+
     protected string $routePath;
+
     protected string $entityName;
+
     protected string $entityNamePlural;
 
     /**
@@ -65,6 +69,57 @@ abstract class BaseCRUDController extends BaseController
         $this->model = $this->getModel();
     }
 
+    protected function isAjax(): bool
+    {
+        return $this->request->isAJAX() || $this->request->getHeader('X-Requested-With')?->getValue() === 'XMLHttpRequest';
+    }
+
+    protected function handleAccessDenied(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        if ($this->isAjax()) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses',
+            ]);
+        }
+        return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+    }
+
+    protected function handleValidationError(string $message = 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.'): \CodeIgniter\HTTP\RedirectResponse|\CodeIgniter\HTTP\ResponseInterface
+    {
+        if ($this->isAjax()) {
+            return $this->response->setStatusCode(422)->setJSON([
+                'success' => false,
+                'message' => $message,
+                'errors' => $this->validator->getErrors(),
+            ]);
+        }
+        return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+    }
+
+    protected function handleSuccess(string $message, int $code = 200, array $extraData = []): \CodeIgniter\HTTP\RedirectResponse|\CodeIgniter\HTTP\ResponseInterface
+    {
+        if ($this->isAjax()) {
+            return $this->response->setStatusCode($code)->setJSON(array_merge([
+                'success' => true,
+                'message' => $message,
+            ], $extraData));
+        }
+        return redirect()->to($this->routePath)->with('success', $message);
+    }
+
+    protected function handleError(\Exception $e): \CodeIgniter\HTTP\RedirectResponse|\CodeIgniter\HTTP\ResponseInterface
+    {
+        log_message('error', $e->getMessage());
+        if ($this->isAjax()) {
+            return $this->response->setStatusCode(500)->setJSON([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ]);
+        }
+        return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+
     /**
      * Display list of all records
      */
@@ -84,35 +139,16 @@ abstract class BaseCRUDController extends BaseController
      */
     public function store()
     {
-        // Check if AJAX request
-        $isAjax = $this->request->isAJAX() || $this->request->getHeader('X-Requested-With')?->getValue() === 'XMLHttpRequest';
-
-        // Check access if required
         if (!$this->checkStoreAccess()) {
-            if ($isAjax) {
-                return $this->response->setStatusCode(403)->setJSON([
-                    'success' => false,
-                    'message' => 'Anda tidak memiliki akses'
-                ]);
-            }
-            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+            return $this->handleAccessDenied();
         }
 
-        // Validate
         $rules = $this->getStoreValidationRules();
         if (!$this->validate($rules)) {
-            if ($isAjax) {
-                return $this->response->setStatusCode(422)->setJSON([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.',
-                    'errors' => $this->validator->getErrors()
-                ]);
-            }
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            return $this->handleValidationError();
         }
 
         try {
-            // Get data and insert
             $data = $this->getDataFromRequest();
             $data = $this->beforeStore($data);
 
@@ -121,26 +157,13 @@ abstract class BaseCRUDController extends BaseController
 
             $this->afterStore($insertId);
 
-            if ($isAjax) {
-                return $this->response->setStatusCode(201)->setJSON([
-                    'success' => true,
-                    'message' => $this->entityName . ' berhasil ditambahkan',
-                    'id' => $insertId
-                ]);
-            }
-
-            return redirect()
-                ->to($this->routePath)
-                ->with('success', $this->entityName . ' berhasil ditambahkan');
+            return $this->handleSuccess(
+                $this->entityName . ' berhasil ditambahkan',
+                201,
+                ['id' => $insertId]
+            );
         } catch (\Exception $e) {
-            log_message('error', $e->getMessage());
-            if ($isAjax) {
-                return $this->response->setStatusCode(500)->setJSON([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-                ]);
-            }
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return $this->handleError($e);
         }
     }
 
@@ -149,35 +172,16 @@ abstract class BaseCRUDController extends BaseController
      */
     public function update($id)
     {
-        // Check if AJAX request
-        $isAjax = $this->request->isAJAX() || $this->request->getHeader('X-Requested-With')?->getValue() === 'XMLHttpRequest';
-
-        // Check access if required
         if (!$this->checkUpdateAccess($id)) {
-            if ($isAjax) {
-                return $this->response->setStatusCode(403)->setJSON([
-                    'success' => false,
-                    'message' => 'Anda tidak memiliki akses'
-                ]);
-            }
-            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+            return $this->handleAccessDenied();
         }
 
-        // Validate
         $rules = $this->getUpdateValidationRules($id);
         if (!$this->validate($rules)) {
-            if ($isAjax) {
-                return $this->response->setStatusCode(422)->setJSON([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.',
-                    'errors' => $this->validator->getErrors()
-                ]);
-            }
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            return $this->handleValidationError();
         }
 
         try {
-            // Get data and update
             $data = $this->getDataFromRequest();
             $data = $this->beforeUpdate($id, $data);
 
@@ -185,25 +189,9 @@ abstract class BaseCRUDController extends BaseController
 
             $this->afterUpdate($id);
 
-            if ($isAjax) {
-                return $this->response->setStatusCode(200)->setJSON([
-                    'success' => true,
-                    'message' => $this->entityName . ' berhasil diperbarui'
-                ]);
-            }
-
-            return redirect()
-                ->to($this->routePath)
-                ->with('success', $this->entityName . ' berhasil diperbarui');
+            return $this->handleSuccess($this->entityName . ' berhasil diperbarui');
         } catch (\Exception $e) {
-            log_message('error', $e->getMessage());
-            if ($isAjax) {
-                return $this->response->setStatusCode(500)->setJSON([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-                ]);
-            }
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return $this->handleError($e);
         }
     }
 
@@ -212,27 +200,16 @@ abstract class BaseCRUDController extends BaseController
      */
     public function delete($id)
     {
-        // Check if AJAX request
-        $isAjax = $this->request->isAJAX() || $this->request->getHeader('X-Requested-With')?->getValue() === 'XMLHttpRequest';
-
-        // Check access if required
         if (!$this->checkDeleteAccess($id)) {
-            if ($isAjax) {
-                return $this->response->setStatusCode(403)->setJSON([
-                    'success' => false,
-                    'message' => 'Anda tidak memiliki akses'
-                ]);
-            }
-            return redirect()->back()->with('error', 'Anda tidak memiliki akses');
+            return $this->handleAccessDenied();
         }
 
-        // Check if can be deleted
         if (!$this->canDelete($id)) {
             $message = $this->entityName . ' tidak dapat dihapus karena masih memiliki data terkait';
-            if ($isAjax) {
+            if ($this->isAjax()) {
                 return $this->response->setStatusCode(409)->setJSON([
                     'success' => false,
-                    'message' => $message
+                    'message' => $message,
                 ]);
             }
             return redirect()->back()->with('error', $message);
@@ -245,25 +222,9 @@ abstract class BaseCRUDController extends BaseController
 
             $this->afterDelete($id);
 
-            if ($isAjax) {
-                return $this->response->setStatusCode(200)->setJSON([
-                    'success' => true,
-                    'message' => $this->entityName . ' berhasil dihapus'
-                ]);
-            }
-
-            return redirect()
-                ->to($this->routePath)
-                ->with('success', $this->entityName . ' berhasil dihapus');
+            return $this->handleSuccess($this->entityName . ' berhasil dihapus');
         } catch (\Exception $e) {
-            log_message('error', $e->getMessage());
-            if ($isAjax) {
-                return $this->response->setStatusCode(500)->setJSON([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-                ]);
-            }
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return $this->handleError($e);
         }
     }
 
@@ -272,17 +233,15 @@ abstract class BaseCRUDController extends BaseController
      */
     public function create()
     {
-        // Check access
         if (!$this->checkStoreAccess()) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
-        
-        // Prepare data - no existing record for create
+
         $data = array_merge([
             'title' => 'Tambah ' . $this->entityName,
             'subtitle' => 'Tambahkan data ' . strtolower($this->entityName) . ' baru',
         ], $this->getAdditionalViewData());
-        
+
         return view($this->viewPath . '/create', $data);
     }
 
@@ -291,26 +250,39 @@ abstract class BaseCRUDController extends BaseController
      */
     public function edit($id)
     {
-        // Check access
         if (!$this->checkUpdateAccess($id)) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
-        
-        // Find record
+
         $record = $this->model->find($id);
-        
+
         if (!$record) {
             return redirect()->back()->with('error', $this->entityName . ' tidak ditemukan');
         }
-        
-        // Prepare data
+
         $data = array_merge([
             'title' => 'Edit ' . $this->entityName,
             'subtitle' => 'Ubah data ' . strtolower($this->entityName),
             strtolower($this->entityName) => $record,
         ], $this->getAdditionalViewData());
-        
+
         return view($this->viewPath . '/edit', $data);
+    }
+
+    public function getList()
+    {
+        $selectFields = $this->getListSelectFields();
+        $items = $this->model
+            ->select($selectFields)
+            ->orderBy('name', 'ASC')
+            ->findAll();
+
+        return $this->response->setStatusCode(200)->setJSON($items);
+    }
+
+    protected function getListSelectFields(): string
+    {
+        return 'id, code, name';
     }
 
     /**

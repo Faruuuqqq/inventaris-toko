@@ -122,11 +122,11 @@
 
     <!-- Filter Buttons -->
     <div class="mt-4 flex gap-3">
-        <button type="button" onclick="loadSales()" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
+        <button type="button" @click="loadSales()" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center gap-2">
             <?= icon('Search', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
-        <button type="button" onclick="resetFilters()" class="h-10 px-4 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition flex items-center gap-2">
+        <button type="button" @click="resetFilters()" class="h-10 px-4 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition flex items-center gap-2">
             <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset
         </button>
@@ -135,7 +135,7 @@
 
 <!-- Sales Table -->
 <div class="rounded-lg border bg-card shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Daftar Penjualan</h2>
     </div>
     <div class="w-full overflow-auto">
@@ -207,7 +207,7 @@
             const isHidden = sale.is_hidden == 1;
 
             const hideButton = isOwner ? `
-                <button onclick="toggleHide(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-${isHidden ? 'success' : 'destructive'} hover:bg-${isHidden ? 'success' : 'destructive'}/10 transition-colors" title="${isHidden ? 'Tampilkan' : 'Sembunyikan'}">
+                <button @click="toggleHide(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-${isHidden ? 'success' : 'destructive'} hover:bg-${isHidden ? 'success' : 'destructive'}/10 transition-colors" title="${isHidden ? 'Tampilkan' : 'Sembunyikan'}">
                     ${isHidden
                         ? '<?= icon('Eye', 'h-4 w-4') ?>'
                         : '<?= icon('EyeOff', 'h-4 w-4') ?>'}
@@ -228,10 +228,10 @@
                     <td class="px-6 py-4 text-right text-sm text-muted-foreground">${formatCurrency(sale.paid_amount || 0)}</td>
                     <td class="px-6 py-4 text-center">
                         <div class="inline-flex items-center gap-1">
-                            <button onclick="viewDetail(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Lihat Detail">
+                            <button @click="viewDetail(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors" title="Lihat Detail">
                                 <?= icon('Eye', 'h-4 w-4') ?>
                             </button>
-                            <button onclick="printDeliveryNote(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-secondary hover:bg-secondary/10 transition-colors" title="Cetak Surat Jalan">
+                            <button @click="printDeliveryNote(${sale.id})" class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-muted-foreground hover:text-secondary hover:bg-secondary/10 transition-colors" title="Cetak Surat Jalan">
                                 <?= icon('Printer', 'h-4 w-4') ?>
                             </button>
                             ${hideButton}
@@ -259,9 +259,9 @@
 
     function getPaymentStatusBadge(status) {
         const badges = {
-            'PAID': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-success/10 text-success border-success/30">Lunas</span>',
-            'PARTIAL': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-warning/10 text-warning border-warning/30">Sebagian</span>',
-            'UNPAID': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-destructive/10 text-destructive border-destructive/30">Belum Bayar</span>'
+            'PAID': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-success/10 text-success border-success/50">Lunas</span>',
+            'PARTIAL': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-warning/10 text-warning border-warning/50">Sebagian</span>',
+            'UNPAID': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-destructive/10 text-destructive border-destructive/50">Belum Bayar</span>'
         };
         return badges[status] || `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-muted text-muted-foreground border-border">${status}</span>`;
     }
@@ -269,7 +269,7 @@
     function getPaymentTypeBadge(type) {
         const badges = {
             'CASH': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-secondary/10 text-secondary border-secondary/30">Tunai</span>',
-            'CREDIT': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-primary/10 text-primary border-primary/30">Kredit</span>'
+            'CREDIT': '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-primary/10 text-primary border-primary/50">Kredit</span>'
         };
         return badges[type] || `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border bg-muted text-muted-foreground border-border">${type}</span>`;
     }
@@ -404,7 +404,7 @@
                     <div class="flex flex-col items-center gap-2">
                         <?= icon('AlertCircle', 'h-12 w-12 text-destructive/50') ?>
                         <p class="text-sm font-medium text-destructive">Gagal memuat data</p>
-                        <button onclick="loadSales()" class="text-sm text-primary hover:underline">Coba lagi</button>
+                        <button @click="loadSales()" class="text-sm text-primary hover:underline">Coba lagi</button>
                     </div>
                 </td>
             </tr>

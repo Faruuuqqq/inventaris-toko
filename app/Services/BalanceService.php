@@ -2,18 +2,22 @@
 
 namespace App\Services;
 
-use App\Models\SaleModel;
-use App\Models\PurchaseOrderModel;
-use App\Models\PaymentModel;
 use App\Models\CustomerModel;
+use App\Models\PaymentModel;
+use App\Models\PurchaseOrderModel;
+use App\Models\SaleModel;
 use App\Models\SupplierModel;
 
 class BalanceService
 {
     protected $saleModel;
+
     protected $purchaseOrderModel;
+
     protected $paymentModel;
+
     protected $customerModel;
+
     protected $supplierModel;
 
     public function __construct()
@@ -28,8 +32,8 @@ class BalanceService
     /**
      * Calculate customer receivable balance
      * receivable = total credit sales - total payments received
-     * 
-     * @param int $customerId
+     *
+     * @param  int   $customerId
      * @return float
      */
     public function calculateCustomerReceivable($customerId)
@@ -61,7 +65,7 @@ class BalanceService
         // Update customer record
         $this->customerModel->update($customerId, [
             'receivable_balance' => $balance,
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
         return $balance;
@@ -70,8 +74,8 @@ class BalanceService
     /**
      * Calculate supplier debt balance
      * debt = total unpaid purchases - total payments made
-     * 
-     * @param int $supplierId
+     *
+     * @param  int   $supplierId
      * @return float
      */
     public function calculateSupplierDebt($supplierId)
@@ -102,7 +106,7 @@ class BalanceService
         // Update supplier record
         $this->supplierModel->update($supplierId, [
             'debt_balance' => $balance,
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
         return $balance;
@@ -110,8 +114,8 @@ class BalanceService
 
     /**
      * Reconcile customer balance - verify it's accurate
-     * 
-     * @param int $customerId
+     *
+     * @param  int   $customerId
      * @return array ['is_balanced' => bool, 'difference' => float]
      */
     public function reconcileCustomerBalance($customerId)
@@ -123,7 +127,7 @@ class BalanceService
 
         $calculatedBalance = $this->calculateCustomerReceivable($customerId);
         $storedBalance = (float)$customer['receivable_balance'];
-        
+
         $difference = abs($calculatedBalance - $storedBalance);
         $isBalanced = $difference < 0.01; // Allow small rounding difference
 
@@ -131,14 +135,14 @@ class BalanceService
             'is_balanced' => $isBalanced,
             'difference' => $difference,
             'calculated' => $calculatedBalance,
-            'stored' => $storedBalance
+            'stored' => $storedBalance,
         ];
     }
 
     /**
      * Reconcile supplier balance - verify it's accurate
-     * 
-     * @param int $supplierId
+     *
+     * @param  int   $supplierId
      * @return array ['is_balanced' => bool, 'difference' => float]
      */
     public function reconcileSupplierBalance($supplierId)
@@ -150,7 +154,7 @@ class BalanceService
 
         $calculatedBalance = $this->calculateSupplierDebt($supplierId);
         $storedBalance = (float)$supplier['debt_balance'];
-        
+
         $difference = abs($calculatedBalance - $storedBalance);
         $isBalanced = $difference < 0.01; // Allow small rounding difference
 
@@ -158,14 +162,14 @@ class BalanceService
             'is_balanced' => $isBalanced,
             'difference' => $difference,
             'calculated' => $calculatedBalance,
-            'stored' => $storedBalance
+            'stored' => $storedBalance,
         ];
     }
 
     /**
      * Get customer receivable summary
      * Shows customers with outstanding balance
-     * 
+     *
      * @return array
      */
     public function getCustomerReceivableSummary()
@@ -179,7 +183,7 @@ class BalanceService
     /**
      * Get supplier debt summary
      * Shows suppliers with outstanding debt
-     * 
+     *
      * @return array
      */
     public function getSupplierDebtSummary()
@@ -192,7 +196,7 @@ class BalanceService
 
     /**
      * Calculate total receivable across all customers
-     * 
+     *
      * @return float
      */
     public function getTotalReceivable()
@@ -206,7 +210,7 @@ class BalanceService
 
     /**
      * Calculate total debt across all suppliers
-     * 
+     *
      * @return float
      */
     public function getTotalDebt()

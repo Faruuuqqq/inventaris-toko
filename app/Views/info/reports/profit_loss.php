@@ -41,7 +41,7 @@
                     Tampilkan
                 </button>
                 <a href="<?= base_url('/info/reports/profit-loss') ?>" class="inline-flex items-center justify-center gap-2 h-10 px-4 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
-                    <?= icon('RefreshCw', 'h-5 w-5') ?>
+                    <?= icon('RotateCcw', 'h-5 w-5') ?>
                     Reset
                 </a>
             </div>
@@ -148,7 +148,7 @@
                     <span class="font-semibold text-foreground"><?= format_currency($cogs) ?></span>
                 </div>
                 <div class="h-2 bg-muted rounded-full overflow-hidden">
-                    <div class="h-full bg-destructive" style="width: <?= $revenue > 0 ? ($cogs/$revenue*100) : 0 ?>%"></div>
+                    <div class="h-full bg-destructive" style="width: <?= $revenue > 0 ? ($cogs / $revenue * 100) : 0 ?>%"></div>
                 </div>
             </div>
 
@@ -159,7 +159,7 @@
                     <span class="font-semibold text-foreground"><?= format_currency($returns) ?></span>
                 </div>
                 <div class="h-2 bg-muted rounded-full overflow-hidden">
-                    <div class="h-full bg-warning" style="width: <?= $revenue > 0 ? ($returns/$revenue*100) : 0 ?>%"></div>
+                    <div class="h-full bg-warning" style="width: <?= $revenue > 0 ? ($returns / $revenue * 100) : 0 ?>%"></div>
                 </div>
             </div>
 
@@ -175,7 +175,7 @@
                     </span>
                 </div>
                 <div class="h-2 bg-muted rounded-full overflow-hidden">
-                    <div class="h-full <?= $grossProfit >= 0 ? 'bg-success' : 'bg-destructive' ?>" style="width: <?= $revenue > 0 ? abs($grossProfit/$revenue*100) : 0 ?>%"></div>
+                    <div class="h-full <?= $grossProfit >= 0 ? 'bg-success' : 'bg-destructive' ?>" style="width: <?= $revenue > 0 ? abs($grossProfit / $revenue * 100) : 0 ?>%"></div>
                 </div>
             </div>
         </div>
@@ -208,7 +208,7 @@
                     <span class="font-semibold text-foreground"><?= format_currency($expenses) ?></span>
                 </div>
                 <div class="h-2 bg-muted rounded-full overflow-hidden">
-                    <div class="h-full bg-destructive" style="width: <?= $grossProfit > 0 ? ($expenses/$grossProfit*100) : 0 ?>%"></div>
+                    <div class="h-full bg-destructive" style="width: <?= $grossProfit > 0 ? ($expenses / $grossProfit * 100) : 0 ?>%"></div>
                 </div>
             </div>
 
@@ -224,7 +224,7 @@
                     </span>
                 </div>
                 <div class="h-2 bg-muted rounded-full overflow-hidden">
-                    <div class="h-full <?= $netProfit >= 0 ? 'bg-success' : 'bg-destructive' ?>" style="width: <?= $grossProfit > 0 ? abs($netProfit/$grossProfit*100) : 0 ?>%"></div>
+                    <div class="h-full <?= $netProfit >= 0 ? 'bg-success' : 'bg-destructive' ?>" style="width: <?= $grossProfit > 0 ? abs($netProfit / $grossProfit * 100) : 0 ?>%"></div>
                 </div>
             </div>
 
@@ -232,14 +232,14 @@
             <div class="grid grid-cols-2 gap-4 pt-4">
                 <div class="space-y-1 p-3 rounded-lg bg-muted/30">
                     <p class="text-xs text-muted-foreground font-semibold">Profit Margin</p>
-                    <p class="text-lg font-bold <?= $revenue > 0 && ($netProfit/$revenue*100) >= 0 ? 'text-success' : 'text-destructive' ?>">
-                        <?= $revenue > 0 ? round($netProfit/$revenue*100, 2) : 0 ?>%
+                    <p class="text-lg font-bold <?= $revenue > 0 && ($netProfit / $revenue * 100) >= 0 ? 'text-success' : 'text-destructive' ?>">
+                        <?= $revenue > 0 ? round($netProfit / $revenue * 100, 2) : 0 ?>%
                     </p>
                 </div>
                 <div class="space-y-1 p-3 rounded-lg bg-muted/30">
                     <p class="text-xs text-muted-foreground font-semibold">Gross Margin</p>
-                    <p class="text-lg font-bold <?= $revenue > 0 && ($grossProfit/$revenue*100) >= 0 ? 'text-success' : 'text-destructive' ?>">
-                        <?= $revenue > 0 ? round($grossProfit/$revenue*100, 2) : 0 ?>%
+                    <p class="text-lg font-bold <?= $revenue > 0 && ($grossProfit / $revenue * 100) >= 0 ? 'text-success' : 'text-destructive' ?>">
+                        <?= $revenue > 0 ? round($grossProfit / $revenue * 100, 2) : 0 ?>%
                     </p>
                 </div>
             </div>

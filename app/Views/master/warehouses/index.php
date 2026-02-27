@@ -2,157 +2,15 @@
 
 <?= $this->section('content') ?>
 
-
 <script>
-function warehouseManager() {
-     return {
-         warehouses: <?= json_encode($warehouses ?? []) ?>,
-         search: '',
-         isDialogOpen: false,
-         isEditDialogOpen: false,
-         isSubmitting: false,
-         isEditSubmitting: false,
-         errors: {},
-         editErrors: {},
-         editingWarehouse: {},
-
-          get filteredWarehouses() {
-              return this.warehouses.filter(w => {
-                  const searchLower = this.search.toLowerCase();
-                  return (w.name && w.name.toLowerCase().includes(searchLower)) ||
-                         (w.code && w.code.toLowerCase().includes(searchLower));
-              });
-          },
-
-          get activeCount() {
-              return this.warehouses.filter(w => parseInt(w.is_active) === 1).length;
-          },
-
-          get totalStorageValue() {
-              return 0; // Placeholder - actual total value would come from inventory calculation
-          },
-
-         openEditModal(warehouse) {
-             this.editingWarehouse = JSON.parse(JSON.stringify(warehouse));
-             this.editErrors = {};
-             this.isEditDialogOpen = true;
-         },
-
-        async submitForm(event) {
-            event.preventDefault();
-            const form = event.target;
-            
-            // Clear previous errors
-            this.errors = {};
-            this.isSubmitting = true;
-
-            try {
-                const formData = new FormData(form);
-                
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (response.ok || response.status === 201) {
-                    // Success
-                    ModalManager.success('Data gudang berhasil ditambahkan', () => {
-                        this.isDialogOpen = false;
-                        form.reset();
-                        this.errors = {};
-                        // Reload page to refresh warehouse list
-                        window.location.reload();
-                    });
-                } else if (response.status === 422) {
-                    // Validation error
-                    const data = await response.json();
-                    if (data.errors) {
-                        this.errors = data.errors;
-                    }
-                    ModalManager.error(data.message || 'Terjadi kesalahan validasi. Silakan periksa kembali data Anda.');
-                } else {
-                    // Other error
-                    const data = await response.json();
-                    ModalManager.error(data.message || 'Gagal menyimpan data. Silakan coba lagi.');
-                }
-            } catch (error) {
-                console.error('Form submission error:', error);
-                ModalManager.error('Terjadi kesalahan: ' + error.message);
-            } finally {
-                this.isSubmitting = false;
-            }
-         },
-
-         async submitEditForm(event) {
-             event.preventDefault();
-             const form = event.target;
-             
-             this.editErrors = {};
-             this.isEditSubmitting = true;
-
-             try {
-                 const formData = new FormData(form);
-                 
-                 const response = await fetch(form.action, {
-                     method: 'POST',
-                     body: formData,
-                     headers: {
-                         'X-Requested-With': 'XMLHttpRequest'
-                     }
-                 });
-
-                 if (response.ok || response.status === 200) {
-                     ModalManager.success('Data gudang berhasil diperbarui', () => {
-                         this.isEditDialogOpen = false;
-                         this.editErrors = {};
-                         this.editingWarehouse = {};
-                         window.location.reload();
-                     });
-                 } else if (response.status === 422) {
-                     const data = await response.json();
-                     if (data.errors) {
-                         this.editErrors = data.errors;
-                     }
-                     ModalManager.error(data.message || 'Terjadi kesalahan validasi.');
-                 } else {
-                     const data = await response.json();
-                     ModalManager.error(data.message || 'Gagal memperbarui data.');
-                 }
-             } catch (error) {
-                 console.error('Form submission error:', error);
-                 ModalManager.error('Terjadi kesalahan: ' + error.message);
-             } finally {
-                 this.isEditSubmitting = false;
-             }
-         },
-
-         deleteWarehouse(warehouseId) {
-             const warehouse = this.warehouses.find(w => w.id === warehouseId);
-             const warehouseName = warehouse ? warehouse.name : 'gudang ini';
-             ModalManager.submitDelete(
-                 `<?= base_url('master/warehouses') ?>/${warehouseId}`,
-                 warehouseName,
-                 () => {
-                     this.warehouses = this.warehouses.filter(w => w.id !== warehouseId);
-                 }
-             );
-         },
-
-           formatRupiah(number) {
-               return new Intl.NumberFormat('id-ID', {
-                   style: 'currency',
-                   currency: 'IDR',
-                   minimumFractionDigits: 0
-               }).format(number || 0);
-           }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    warehouses: <?= json_encode($warehouses ?? []) ?>,
+    baseUrl: '<?= base_url('master/warehouses') ?>',
+    searchFields: ['name', 'code']
+};
 </script>
-
-<div x-data="warehouseManager()">
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/warehouseManager.js') ?>"></script>
      <!-- Page Header with Summary Cards -->
      <div class="mb-8 flex flex-col gap-6">
          <!-- Title & Description -->
@@ -164,7 +22,7 @@ function warehouseManager() {
          <!-- Summary Cards - Compact Product-Style Grid -->
          <div class="grid gap-4 grid-cols-1 md:grid-cols-3">
              <!-- Total Warehouses -->
-              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/30 transition-colors">
+              <div class="rounded-xl border border-border bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/50 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Total Gudang</p>
@@ -178,7 +36,7 @@ function warehouseManager() {
              </div>
 
              <!-- Active Warehouses -->
-              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/30 transition-colors">
+              <div class="rounded-xl border border-border bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/50 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Status Aktif</p>
@@ -192,7 +50,7 @@ function warehouseManager() {
              </div>
 
              <!-- Total Storage Value -->
-              <div class="rounded-xl border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-6 hover:border-blue/30 transition-colors">
+              <div class="rounded-xl border border-border bg-gradient-to-br from-blue/5 to-transparent p-6 hover:border-blue/30 transition-colors">
                  <div class="flex items-start justify-between">
                      <div>
                          <p class="text-sm font-medium text-muted-foreground">Nilai Stok</p>
@@ -215,14 +73,14 @@ function warehouseManager() {
          style="display: none;"
      >
          <div 
-             class="w-full max-w-2xl rounded-xl border border-border/50 bg-surface shadow-xl"
+             class="w-full max-w-2xl rounded-xl border border-border bg-surface shadow-xl"
              @click.away="isEditDialogOpen = false"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 scale-95"
              x-transition:enter-end="opacity-100 scale-100"
          >
              <!-- Modal Header -->
-             <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+             <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                  <h2 class="text-xl font-bold text-foreground">Edit Gudang</h2>
                  <button 
                      @click="isEditDialogOpen = false"
@@ -233,7 +91,7 @@ function warehouseManager() {
              </div>
              
              <!-- Modal Body -->
-             <form @submit.prevent="submitEditForm" :action="`<?= base_url('master/warehouses') ?>/${editingWarehouse.id}`" method="POST" class="p-6 space-y-5">
+             <form @submit.prevent="submitEditForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/${editingWarehouse.id}`" method="POST" class="p-6 space-y-5">
                  <?= csrf_field() ?>
                  
                  <!-- Row 1: Name & Code -->
@@ -281,7 +139,7 @@ function warehouseManager() {
                  </div>
 
                  <!-- Modal Footer -->
-                 <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                 <div class="flex justify-end gap-3 pt-4 border-t border-border">
                      <button 
                          type="button" 
                          @click="isEditDialogOpen = false" 
@@ -296,7 +154,7 @@ function warehouseManager() {
                      >
                          <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                          <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                             <span class="animate-spin">⚙️</span>
+                             <?= icon('Loader2', 'h-4 w-4') ?>
                          </span>
                          <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Gudang'"></span>
                      </button>
@@ -306,7 +164,7 @@ function warehouseManager() {
      </div>
 
     <!-- Control Bar -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border p-4">
         <!-- Left Side: Search -->
         <div class="flex gap-3 flex-wrap items-center flex-1">
             <!-- Search Input -->
@@ -333,11 +191,11 @@ function warehouseManager() {
     </div>
 
     <!-- Data Table -->
-    <div class="rounded-xl border border-border/50 bg-surface overflow-hidden">
+    <div class="rounded-xl border border-border bg-surface overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-border/50 bg-muted/30">
+                    <tr class="border-b border-border bg-muted/30">
                         <th class="px-6 py-3 text-left font-semibold text-foreground">Nama</th>
                         <th class="px-6 py-3 text-left font-semibold text-foreground">Kode</th>
                         <th class="px-6 py-3 text-left font-semibold text-foreground">Alamat</th>
@@ -347,7 +205,7 @@ function warehouseManager() {
                 </thead>
                 <tbody>
                     <template x-for="warehouse in filteredWarehouses" :key="warehouse.id">
-                        <tr class="border-b border-border/50 hover:bg-muted/20 transition">
+                        <tr class="border-b border-border hover:bg-muted/20 transition">
                             <td class="px-6 py-4 font-semibold text-foreground" x-text="warehouse.name"></td>
                             <td class="px-6 py-4 text-muted-foreground" x-text="warehouse.code || '-'"></td>
                             <td class="px-6 py-4 text-muted-foreground max-w-xs truncate" :title="warehouse.address" x-text="warehouse.address || '-'"></td>
@@ -355,7 +213,7 @@ function warehouseManager() {
                                 <span 
                                     class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold"
                                     :class="parseInt(warehouse.is_active) === 1 
-                                        ? 'border-success/30 bg-success/15 text-success' 
+                                        ? 'border-success/50 bg-success/15 text-success' 
                                         : 'border-muted-foreground/30 bg-muted/15 text-muted-foreground'">
                                     <span class="inline-block h-2 w-2 rounded-full" :class="parseInt(warehouse.is_active) === 1 ? 'bg-success' : 'bg-muted-foreground'"></span>
                                     <span x-text="parseInt(warehouse.is_active) === 1 ? 'Aktif' : 'Nonaktif'"></span>
@@ -374,7 +232,7 @@ function warehouseManager() {
                                     <!-- Delete Button -->
                                     <button 
                                         @click="deleteWarehouse(warehouse.id)"
-                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                        class="inline-flex items-center justify-center rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                         title="Hapus gudang"
                                     >
                                          <?= icon('Trash2', 'h-4 w-4') ?>
@@ -409,14 +267,14 @@ function warehouseManager() {
         style="display: none;"
     >
         <div 
-            class="w-full max-w-2xl rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-2xl rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Tambah Gudang Baru</h2>
                 <button 
                     @click="isDialogOpen = false"
@@ -427,7 +285,7 @@ function warehouseManager() {
             </div>
             
             <!-- Modal Body -->
-            <form @submit.prevent="submitForm" action="<?= base_url('master/warehouses/store') ?>" method="POST" class="p-6 space-y-5">
+            <form @submit.prevent="submitForm" :action="`${window.__PAGE_CONFIG__.baseUrl}/store`" method="POST" class="p-6 space-y-5">
                 <?= csrf_field() ?>
                 
                 <!-- Row 1: Name & Code -->
@@ -475,7 +333,7 @@ function warehouseManager() {
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isDialogOpen = false" 
@@ -490,7 +348,7 @@ function warehouseManager() {
                     >
                         <span x-show="!isSubmitting" class="mr-2"><?= icon('Plus', 'h-5 w-5') ?></span>
                         <span x-show="isSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Gudang'"></span>
                     </button>

@@ -3,94 +3,15 @@
 <?= $this->section('content') ?>
 
 <script>
-function userManager() {
-    return {
-        users: <?= json_encode($users) ?>,
-        sessionRole: '<?= session()->get("role") ?>',
-        sessionUserId: <?= session()->get('user_id') ?>,
-        search: '',
-        roleFilter: 'all',
-        isDialogOpen: false,
-        editingUser: {
-            id: null,
-            username: '',
-            email: '',
-            fullname: '',
-            role: '',
-            password: ''
-        },
-
-        get filteredUsers() {
-            return this.users.filter(user => {
-                const searchLower = this.search.toLowerCase();
-                const matchesSearch = user.username.toLowerCase().includes(searchLower) ||
-                                    user.fullname.toLowerCase().includes(searchLower) ||
-                                    (user.email && user.email.toLowerCase().includes(searchLower));
-
-                const matchesRole = this.roleFilter === 'all' ||
-                                   user.role === this.roleFilter;
-
-                return matchesSearch && matchesRole;
-            });
-        },
-
-        openModal(userId = null) {
-            if (userId) {
-                const user = this.users.find(u => u.id === userId);
-                if (user) {
-                    this.editingUser = {
-                        id: user.id,
-                        username: user.username,
-                        email: user.email || '',
-                        fullname: user.fullname,
-                        role: user.role,
-                        password: ''
-                    };
-                }
-            } else {
-                this.editingUser = {
-                    id: null,
-                    username: '',
-                    email: '',
-                    fullname: '',
-                    role: '',
-                    password: ''
-                };
-            }
-            this.isDialogOpen = true;
-        },
-
-        editUser(userId) {
-            this.openModal(userId);
-        },
-
-        deleteUser(userId) {
-            const user = this.users.find(u => u.id === userId);
-            const userName = user ? user.fullname : 'pengguna ini';
-            ModalManager.submitDelete(
-                `<?= base_url('master/users/delete') ?>/${userId}`,
-                userName,
-                () => {
-                    this.users = this.users.filter(u => u.id !== userId);
-                }
-            );
-        },
-
-        submitForm(e) {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
-
-            const action = this.editingUser.id
-                ? `<?= base_url('master/users/update') ?>/${this.editingUser.id}`
-                : '<?= base_url('master/users/store') ?>';
-
-            form.action = action;
-            form.submit();
-        }
-    }
-}
+window.__PAGE_CONFIG__ = {
+    users: <?= json_encode($users) ?>,
+    sessionRole: '<?= session()->get('role') ?>',
+    sessionUserId: <?= session()->get('user_id') ?>,
+    baseUrl: '<?= base_url('master/users') ?>'
+};
 </script>
+<script src="<?= base_url('assets/js/modules/shared/crud-mixin.js') ?>"></script>
+<script src="<?= base_url('assets/js/modules/master/userManager.js') ?>"></script>
 
 <div x-data="userManager()">
     <!-- Page Header -->
@@ -104,7 +25,7 @@ function userManager() {
     <!-- Summary Cards - Compact Grid -->
     <div class="mb-8 grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <!-- Total Users -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-success/5 to-transparent p-6 hover:border-success/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Total Pengguna</p>
@@ -118,11 +39,11 @@ function userManager() {
         </div>
 
         <!-- Active Users -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-blue/5 to-transparent p-6 hover:border-blue/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-blue/5 to-transparent p-6 hover:border-blue/30 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Pengguna Aktif</p>
-                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn($u) => ($u['status'] ?? 'active') === 'active')) ?></p>
+                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn ($u) => ($u['status'] ?? 'active') === 'active')) ?></p>
                     <p class="mt-1 text-xs text-muted-foreground">status</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue/10">
@@ -132,11 +53,11 @@ function userManager() {
         </div>
 
         <!-- Admin Count -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-destructive/5 to-transparent p-6 hover:border-destructive/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-destructive/5 to-transparent p-6 hover:border-destructive/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Pengguna Admin</p>
-                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn($u) => $u['role'] === 'ADMIN')) ?></p>
+                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn ($u) => $u['role'] === 'ADMIN')) ?></p>
                     <p class="mt-1 text-xs text-muted-foreground">role</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-destructive/10">
@@ -146,11 +67,11 @@ function userManager() {
         </div>
 
         <!-- Owner Count -->
-        <div class="rounded-xl border border-border/50 bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/30 transition-colors">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-warning/5 to-transparent p-6 hover:border-warning/50 transition-colors">
             <div class="flex items-start justify-between">
                 <div>
                     <p class="text-sm font-medium text-muted-foreground">Pemilik Akun</p>
-                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn($u) => $u['role'] === 'OWNER')) ?></p>
+                    <p class="mt-2 text-2xl font-bold text-foreground"><?= count(array_filter($users, fn ($u) => $u['role'] === 'OWNER')) ?></p>
                     <p class="mt-1 text-xs text-muted-foreground">role</p>
                 </div>
                 <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-warning/10">
@@ -161,7 +82,7 @@ function userManager() {
     </div>
 
     <!-- Control Bar - Professional Toolbar -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border/50 p-4">
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between bg-surface rounded-xl border border-border p-4">
         <!-- Left Side: Search & Filter -->
         <div class="flex gap-3 flex-1 flex-wrap">
             <!-- Search Input -->
@@ -213,9 +134,9 @@ function userManager() {
     </div>
 
     <!-- Users Table - Professional Data Grid -->
-    <div class="rounded-xl border border-border/50 bg-surface shadow-sm overflow-hidden">
+    <div class="rounded-xl border border-border bg-surface shadow-sm overflow-hidden">
         <!-- Table Header with Column Info -->
-        <div class="border-b border-border/50 bg-muted/30 px-6 py-3">
+        <div class="border-b border-border bg-muted/30 px-6 py-3">
             <div class="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                 <span x-text="`${filteredUsers.length} pengguna ditemukan`"></span>
             </div>
@@ -224,7 +145,7 @@ function userManager() {
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="border-b border-border/50 bg-background/50">
+                    <tr class="border-b border-border bg-background/50">
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Pengguna</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Email</th>
                         <th class="h-12 px-6 py-3 text-left font-semibold text-foreground uppercase text-xs tracking-wide">Role</th>
@@ -235,7 +156,7 @@ function userManager() {
                 </thead>
                 <tbody>
                     <template x-for="user in filteredUsers" :key="user.id">
-                        <tr class="border-b border-border/30 hover:bg-success/3 transition-colors duration-150">
+                        <tr class="border-b border-border hover:bg-success/3 transition-colors duration-150">
                             <!-- User Column with Avatar -->
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
@@ -257,9 +178,9 @@ function userManager() {
                                 <span 
                                     class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold border"
                                     :class="{
-                                        'border-destructive/30 bg-destructive/10 text-destructive': user.role === 'OWNER',
+                                        'border-destructive/50 bg-destructive/10 text-destructive': user.role === 'OWNER',
                                         'border-red/30 bg-red/10 text-red': user.role === 'ADMIN',
-                                        'border-warning/30 bg-warning/10 text-warning': user.role === 'GUDANG',
+                                        'border-warning/50 bg-warning/10 text-warning': user.role === 'GUDANG',
                                         'border-blue/30 bg-blue/10 text-blue': user.role === 'SALES'
                                     }"
                                     x-text="user.role">
@@ -299,7 +220,7 @@ function userManager() {
                                     <template x-if="sessionRole === 'OWNER' && user.id !== sessionUserId">
                                         <button 
                                             @click="deleteUser(user.id)"
-                                            class="inline-flex items-center justify-center rounded-lg border border-destructive/30 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
+                                            class="inline-flex items-center justify-center rounded-lg border border-destructive/50 bg-destructive/5 hover:bg-destructive/15 transition h-9 w-9 text-destructive"
                                             title="Hapus pengguna"
                                         >
                                             <?= icon('Trash2', 'h-4 w-4') ?>
@@ -325,7 +246,7 @@ function userManager() {
         </div>
 
         <!-- Table Footer -->
-        <div class="border-t border-border/50 bg-muted/20 px-6 py-3 flex items-center justify-between text-xs text-muted-foreground">
+        <div class="border-t border-border bg-muted/20 px-6 py-3 flex items-center justify-between text-xs text-muted-foreground">
             <span x-text="`Menampilkan ${filteredUsers.length} dari ${users.length} pengguna`"></span>
             <a href="<?= base_url('master/users') ?>" class="text-success hover:text-success-light font-semibold transition">
                 Refresh
@@ -341,15 +262,15 @@ function userManager() {
         style="display: none;"
     >
         <div 
-            class="w-full max-w-2xl rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-2xl rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
-                <h2 class="text-xl font-bold text-foreground" x-text="editingUser ? 'Edit Pengguna' : 'Tambah Pengguna Baru'"></h2>
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
+                <h2 class="text-xl font-bold text-foreground" x-text="editingUser.id ? 'Edit Pengguna' : 'Tambah Pengguna Baru'"></h2>
                 <button 
                     @click="isDialogOpen = false"
                     class="text-muted-foreground hover:text-foreground transition rounded-lg hover:bg-muted p-1"
@@ -441,7 +362,7 @@ function userManager() {
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isDialogOpen = false" 

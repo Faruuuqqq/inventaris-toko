@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use CodeIgniter\Model;
@@ -6,26 +7,35 @@ use CodeIgniter\Model;
 class KontraBonModel extends Model
 {
     protected $table = 'kontra_bons';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = 'array';
+
     protected $useSoftDeletes = false;
+
     protected $allowedFields = [
         'document_number', 'customer_id', 'created_at', 'due_date',
-        'total_amount', 'status', 'notes'
+        'total_amount', 'status', 'notes',
     ];
+
     protected $useTimestamps = true;
+
     protected $dateFormat = 'datetime';
+
     protected $createdField = 'created_at';
+
     protected $updatedField = 'updated_at';
-    
+
     // Validation
     protected $validationRules = [
         'customer_id' => 'required|numeric',
         'total_amount' => 'required|decimal',
         'status' => 'required|in_list[PENDING,PAID,CANCELLED]',
     ];
-    
+
     protected $validationMessages = [
         'customer_id' => [
             'required' => 'Customer harus dipilih',
@@ -94,7 +104,7 @@ class KontraBonModel extends Model
 
         return $builder->orderBy('kontra_bons.created_at', 'DESC')->findAll();
     }
-    
+
     /**
      * Get all kontra bons with customer information (alias for consistency)
      */
@@ -102,18 +112,18 @@ class KontraBonModel extends Model
     {
         return $this->getWithCustomer(null, $status);
     }
-    
+
     /**
      * Get single kontra bon with full customer details
      */
-     public function getById($id)
-     {
-         return $this->select('kontra_bons.*, customers.name as customer_name, customers.phone as customer_phone, customers.address as customer_address')
-             ->join('customers', 'customers.id = kontra_bons.customer_id', 'left')
-             ->where('kontra_bons.id', $id)
-             ->first();
-     }
-    
+    public function getById($id)
+    {
+        return $this->select('kontra_bons.*, customers.name as customer_name, customers.phone as customer_phone, customers.address as customer_address')
+            ->join('customers', 'customers.id = kontra_bons.customer_id', 'left')
+            ->where('kontra_bons.id', $id)
+            ->first();
+    }
+
     /**
      * Get statistics
      */

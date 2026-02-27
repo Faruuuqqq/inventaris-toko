@@ -19,7 +19,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1">Buat dokumen bukti serah terima barang</p>
     </div>
-    <a href="<?= base_url('transactions/sales') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('transactions/sales') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ArrowLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -31,7 +31,7 @@
 
     <!-- Header Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('FileText', 'h-5 w-5 text-primary') ?>
                 Informasi Surat Jalan
@@ -114,7 +114,7 @@
 
     <!-- Products Section -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('Package', 'h-5 w-5 text-primary') ?>
                 Daftar Barang
@@ -122,7 +122,7 @@
         </div>
 
         <!-- Add Product Section -->
-        <div class="p-6 border-b border-border/50 bg-muted/20">
+        <div class="p-6 border-b border-border bg-muted/20">
             <div class="grid gap-4 md:grid-cols-4">
                 <div class="space-y-2 md:col-span-2">
                     <label class="text-sm font-medium text-foreground">Pilih Produk</label>
@@ -154,7 +154,7 @@
         <div class="p-6">
             <div class="relative w-full overflow-auto">
                 <table class="w-full text-sm">
-                    <thead class="bg-muted/50 border-b border-border/50">
+                    <thead class="bg-muted/50 border-b border-border">
                         <tr>
                             <th class="h-12 px-4 text-center align-middle font-medium text-muted-foreground w-12">No</th>
                             <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Nama Barang</th>
@@ -198,7 +198,7 @@
     <!-- Summary Section (Sticky Sidebar) -->
     <div class="lg:sticky lg:top-24">
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground">Ringkasan</h2>
             </div>
 
@@ -208,21 +208,21 @@
                     <span class="font-semibold text-foreground" x-text="form.items.length + ' produk'"></span>
                 </div>
 
-                <div class="flex justify-between items-center pb-4 border-b border-border/50">
+                <div class="flex justify-between items-center pb-4 border-b border-border">
                     <span class="text-sm text-muted-foreground">Total Quantity</span>
                     <span class="font-semibold text-foreground" x-text="getTotalQuantity() + ' pcs'"></span>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3 flex-col">
-                    <a href="<?= base_url('transactions/sales') ?>" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition text-center">
+                    <a href="<?= base_url('transactions/sales') ?>" class="h-10 px-6 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition text-center">
                         Batal
                     </a>
                     <button type="submit" class="h-10 px-6 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition flex items-center justify-center gap-2">
                         <?= icon('Save', 'h-4 w-4') ?>
                         Simpan Surat Jalan
                     </button>
-                    <button type="button" @click="printPreview()" class="h-10 px-6 rounded-lg border border-border/50 font-medium text-foreground hover:bg-muted transition flex items-center justify-center gap-2">
+                    <button type="button" @click="printPreview()" class="h-10 px-6 rounded-lg border border-border font-medium text-foreground hover:bg-muted transition flex items-center justify-center gap-2">
                         <?= icon('Printer', 'h-4 w-4') ?>
                         Cetak Preview
                     </button>

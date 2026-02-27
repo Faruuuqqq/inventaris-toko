@@ -12,7 +12,7 @@
         <p class="text-sm text-muted-foreground mt-1">Informasi lengkap produk</p>
     </div>
     <div class="flex gap-3">
-        <a href="<?= base_url('master/products') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+        <a href="<?= base_url('master/products') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
             <?= icon('ArrowLeft', 'h-5 w-5') ?>
             Kembali
         </a>
@@ -32,7 +32,7 @@
         
         <!-- Product Information Card -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('Package', 'h-5 w-5 text-primary') ?>
                     Informasi Produk
@@ -47,7 +47,7 @@
                 </div>
 
                 <!-- Product Details -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">SKU</p>
                         <p class="text-sm font-mono font-medium text-foreground mt-1"><?= $product->sku ?></p>
@@ -70,7 +70,7 @@
                 </div>
 
                 <!-- Pricing Information -->
-                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+                <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Harga Beli</p>
                         <p class="text-lg font-bold text-foreground mt-1"><?= format_currency($product->price_buy) ?></p>
@@ -84,10 +84,10 @@
                     <div>
                         <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Margin</p>
                         <p class="text-lg font-bold text-foreground mt-1">
-                            <?php 
+                            <?php
                                 $margin = (($product->price_sell - $product->price_buy) / $product->price_buy * 100);
-                                echo round($margin, 2) . '%';
-                            ?>
+echo round($margin, 2) . '%';
+?>
                         </p>
                     </div>
 
@@ -123,7 +123,7 @@
         
         <!-- Quick Actions -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('Zap', 'h-5 w-5 text-primary') ?>
                     Aksi Cepat
@@ -136,7 +136,7 @@
                     Edit Produk
                 </a>
 
-                <a href="<?= base_url('info/stock?product_id=' . $product->id) ?>" class="w-full h-10 rounded-lg border border-border/50 text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
+                <a href="<?= base_url('info/stock?product_id=' . $product->id) ?>" class="w-full h-10 rounded-lg border border-border text-foreground font-medium flex items-center justify-center hover:bg-muted transition">
                     <?= icon('BarChart3', 'h-5 w-5 mr-2') ?>
                     Lihat Stok
                 </a>
@@ -145,7 +145,7 @@
 
         <!-- Product Stats -->
         <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-border/50 bg-muted/30">
+            <div class="p-6 border-b border-border bg-muted/30">
                 <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                     <?= icon('TrendingUp', 'h-5 w-5 text-primary') ?>
                     Ringkasan
@@ -160,7 +160,7 @@
                     </p>
                 </div>
 
-                <div class="p-4 rounded-lg bg-muted/30 border border-border/50">
+                <div class="p-4 rounded-lg bg-muted/30 border border-border">
                     <p class="text-xs text-muted-foreground font-semibold uppercase">Total Stok (Semua Gudang)</p>
                     <p class="text-xl font-bold text-foreground mt-2">
                         <?= $totalStock ?? 0 ?> <?= $product->unit ?>

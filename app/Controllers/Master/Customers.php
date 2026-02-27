@@ -3,26 +3,22 @@
 namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
+use App\Helpers\PaginationHelper;
 use App\Models\CustomerModel;
-use App\Services\CustomerDataService;
 use App\Services\ExportService;
 use App\Traits\ApiResponseTrait;
 
 class Customers extends BaseCRUDController
 {
     use ApiResponseTrait;
+
     protected string $viewPath = 'master/customers';
+
     protected string $routePath = '/master/customers';
+
     protected string $entityName = 'Customer';
+
     protected string $entityNamePlural = 'Customers';
-
-    protected CustomerDataService $dataService;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->dataService = new CustomerDataService();
-    }
 
     protected function getModel(): CustomerModel
     {
@@ -50,19 +46,29 @@ class Customers extends BaseCRUDController
         ];
     }
 
-    /**
-     * Override index to use CustomerDataService with pagination
-     */
+    protected function getListSelectFields(): string
+    {
+        return 'id, code, name, phone, address, credit_limit, receivable_balance';
+    }
+
     public function index()
     {
         try {
             $page = (int)($this->request->getGet('page') ?? 1);
             $perPage = (int)($this->request->getGet('per_page') ?? 20);
 
-            $data = array_merge(
-                ['title' => 'Daftar Customer'],
-                $this->dataService->getPaginatedData($page, $perPage)
-            );
+            $params = PaginationHelper::getSafeParams($page, $perPage);
+            $page = $params['page'];
+            $perPage = $params['perPage'];
+
+            $customers = $this->model->asArray()->paginate($perPage, 'default', $page);
+            $pager = $this->model->pager;
+
+            $data = [
+                'title' => 'Daftar Customer',
+                'customers' => $customers,
+                'pagination' => PaginationHelper::getPaginationLinks($pager, $perPage),
+            ];
 
             return view($this->viewPath . '/index', $data);
         } catch (\Exception $e) {
@@ -71,29 +77,18 @@ class Customers extends BaseCRUDController
         }
     }
 
-    /**
-     * Override create to use CustomerDataService
-     */
     public function create()
     {
         if (!$this->checkStoreAccess()) {
             return redirect()->back()->with('error', 'Anda tidak memiliki akses');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Tambah Customer',
-                'subtitle' => 'Tambahkan customer baru',
-            ],
-            $this->dataService->getCreateData()
-        );
-
-        return view($this->viewPath . '/create', $data);
+        return view($this->viewPath . '/create', [
+            'title' => 'Tambah Customer',
+            'subtitle' => 'Tambahkan customer baru',
+        ]);
     }
 
-    /**
-     * Override edit to use CustomerDataService and pass 'customer' variable
-     */
     public function edit($id)
     {
         if (!$this->checkUpdateAccess($id)) {
@@ -106,108 +101,87 @@ class Customers extends BaseCRUDController
             return redirect()->back()->with('error', 'Customer tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Edit Customer',
-                'subtitle' => 'Ubah data customer',
-                'customer' => $record,
-            ],
-            $this->dataService->getEditData()
-        );
-
-        return view($this->viewPath . '/edit', $data);
+        return view($this->viewPath . '/edit', [
+            'title' => 'Edit Customer',
+            'subtitle' => 'Ubah data customer',
+            'customer' => $record,
+        ]);
     }
 
-    /**
-     * Override detail to use CustomerDataService
-     */
     public function detail($id)
     {
-        $detailData = $this->dataService->getDetailData($id);
+        $customer = $this->model->find($id);
 
-        if (empty($detailData)) {
+        if (!$customer) {
             return redirect()->to($this->routePath)->with('error', 'Customer tidak ditemukan');
         }
 
-        $data = array_merge(
-            [
-                'title' => 'Detail Customer',
-                'subtitle' => $detailData['customer']->name,
-            ],
-            $detailData
-        );
+        $db = \Config\Database::connect();
 
-        return view($this->viewPath . '/detail', $data);
+        $recentSales = $db->table('sales')
+            ->select('id_sale, nomor_faktur, tanggal_penjualan, total_penjualan, status_pembayaran')
+            ->where('id_customer', $id)
+            ->orderBy('tanggal_penjualan', 'DESC')
+            ->limit(10)
+            ->get()
+            ->getResultArray();
+
+        $totalCredit = $db->table('sales')
+            ->selectSum('sisa_pembayaran')
+            ->where('id_customer', $id)
+            ->where('status_pembayaran !=', 'PAID')
+            ->get()
+            ->getRow();
+
+        $creditUsed = $totalCredit->sisa_pembayaran ?? 0;
+        $creditLimit = $customer->credit_limit ?? 0;
+        $creditAvailable = $creditLimit - $creditUsed;
+        $creditPercentage = $creditLimit > 0 ? ($creditUsed / $creditLimit) * 100 : 0;
+
+        $stats = $db->table('sales')
+            ->select('COUNT(*) as total_transactions, SUM(total_penjualan) as total_sales, AVG(total_penjualan) as avg_sale')
+            ->where('id_customer', $id)
+            ->get()
+            ->getRow();
+
+        return view($this->viewPath . '/detail', array_merge([
+            'title' => 'Detail Customer',
+            'subtitle' => $customer->name,
+            'customer' => $customer,
+            'recentSales' => $recentSales,
+            'creditUsed' => (int)$creditUsed,
+            'creditLimit' => (int)$creditLimit,
+            'creditAvailable' => (int)$creditAvailable,
+            'creditPercentage' => min($creditPercentage, 100),
+            'stats' => $stats,
+        ]));
     }
 
-    /**
-     * Export customers to PDF
-     * GET /master/customers/export-pdf
-     *
-     * Query parameters:
-     * - status: Filter by status (active/inactive)
-     *
-     * @return \CodeIgniter\HTTP\Response PDF file download
-     */
     public function export()
     {
         try {
-            // Get filters from query string
-            $filters = [
-                'status' => $this->request->getGet('status'),
-            ];
+            $status = $this->request->getGet('status');
+            $query = $this->model->asArray();
 
-            // Get export data from service
-            $customers = $this->dataService->getExportData($filters);
+            if (!empty($status)) {
+                $query->where('status', $status);
+            }
 
-            // Initialize export service
+            $customers = $query->findAll();
             $exportService = new ExportService();
 
-            // Generate PDF
             $filename = $exportService->generateFilename('customers');
             $pdfContent = $exportService->generatePDF(
                 $customers,
                 'customers',
                 'Daftar Pelanggan',
-                $this->prepareFilterLabels($filters)
+                !empty($status) ? ['status' => $status === 'active' ? 'Aktif' : 'Tidak Aktif'] : []
             );
 
-            // Return download response
             return $exportService->getDownloadResponse($pdfContent, $filename);
         } catch (\Exception $e) {
             log_message('error', 'Customers export error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal mengekspor customer: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * Prepare human-readable filter labels for PDF header
-     *
-     * @param array $filters Raw filter values
-     * @return array Filter labels for display
-     */
-    protected function prepareFilterLabels(array $filters): array
-    {
-        $labels = [];
-
-        if (!empty($filters['status'])) {
-            $labels['status'] = $filters['status'] === 'active' ? 'Aktif' : 'Tidak Aktif';
-        }
-
-        return $labels;
-    }
-
-    /**
-     * AJAX: Get customer list for dropdown/select2
-     * Returns simplified customer data for forms
-     */
-    public function getList()
-    {
-        $customers = $this->model
-            ->select('id, code, name, phone, address, credit_limit, receivable_balance')
-            ->orderBy('name', 'ASC')
-            ->findAll();
-        
-        return $this->respondData($customers);
     }
 }

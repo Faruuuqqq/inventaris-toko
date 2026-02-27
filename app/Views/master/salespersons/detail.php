@@ -13,7 +13,7 @@
              <p class="text-sm text-muted-foreground mt-1">Informasi detail salesperson</p>
          </div>
          <div class="flex gap-3">
-             <a href="<?= base_url('master/salespersons') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
+             <a href="<?= base_url('master/salespersons') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition">
                  <?= icon('ChevronLeft', 'h-5 w-5') ?>
                  Kembali
              </a>
@@ -27,9 +27,9 @@
 </div>
 
 <!-- Main Content -->
-<div class="rounded-xl border border-border/50 bg-surface overflow-hidden">
+<div class="rounded-xl border border-border bg-surface overflow-hidden">
     <!-- Header Section -->
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
              <?= icon('User', 'h-5 w-5 text-primary') ?>
             Informasi Sales
@@ -45,7 +45,7 @@
         </div>
 
         <!-- Phone & Status -->
-        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
             <div>
                 <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Nomor Telepon</p>
                 <p class="text-sm font-medium text-foreground mt-1"><?= esc($sales->phone ?? '-') ?></p>
@@ -68,7 +68,7 @@
         </div>
 
         <!-- Timestamps -->
-        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border/50">
+        <div class="grid gap-4 md:grid-cols-2 pt-4 border-t border-border">
             <div>
                 <p class="text-xs text-muted-foreground font-semibold uppercase tracking-wide">Bergabung Sejak</p>
                 <p class="text-sm font-medium text-foreground mt-1">
@@ -102,14 +102,14 @@
         style="display: none;"
     >
         <div 
-            class="w-full max-w-md rounded-xl border border-border/50 bg-surface shadow-xl"
+            class="w-full max-w-md rounded-xl border border-border bg-surface shadow-xl"
             @click.away="isEditDialogOpen = false"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
         >
             <!-- Modal Header -->
-            <div class="border-b border-border/50 px-6 py-4 flex items-center justify-between">
+            <div class="border-b border-border px-6 py-4 flex items-center justify-between">
                 <h2 class="text-xl font-bold text-foreground">Edit Salesperson</h2>
                 <button 
                     @click="isEditDialogOpen = false"
@@ -200,7 +200,7 @@
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="flex justify-end gap-3 pt-4 border-t border-border/50">
+                <div class="flex justify-end gap-3 pt-4 border-t border-border">
                     <button 
                         type="button" 
                         @click="isEditDialogOpen = false" 
@@ -215,7 +215,7 @@
                     >
                          <?= icon('Edit', 'h-5 w-5 mr-2') ?>
                         <span x-show="isEditSubmitting" class="inline-flex items-center gap-2 mr-2">
-                            <span class="animate-spin">⚙️</span>
+                            <?= icon('Loader2', 'h-4 w-4') ?>
                         </span>
                         <span x-text="isEditSubmitting ? 'Menyimpan...' : 'Update Salesperson'"></span>
                     </button>

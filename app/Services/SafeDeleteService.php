@@ -2,22 +2,20 @@
 
 namespace App\Services;
 
-use CodeIgniter\Model;
-
 /**
  * Safe Delete Service
- * 
+ *
  * Provides safe deletion with validation to prevent cascade delete issues
  */
 class SafeDeleteService
 {
     /**
      * Check if a record can be safely deleted
-     * 
-     * @param Model $model
-     * @param string $parentId
-     * @param array $childConfigs Array of ['table' => 'table_name', 'fk' => 'foreign_key_field']
-     * @return array ['canDelete' => bool, 'issues' => array]
+     *
+     * @param  Model  $model
+     * @param  string $parentId
+     * @param  array  $childConfigs Array of ['table' => 'table_name', 'fk' => 'foreign_key_field']
+     * @return array  ['canDelete' => bool, 'issues' => array]
      */
     public static function checkDeletionSafety($parentId, $childConfigs = [])
     {
@@ -40,14 +38,14 @@ class SafeDeleteService
                     'table' => $table,
                     'count' => $result->count,
                     'description' => $description,
-                    'message' => "Tidak bisa menghapus karena memiliki {$result->count} {$description}"
+                    'message' => "Tidak bisa menghapus karena memiliki {$result->count} {$description}",
                 ];
             }
         }
 
         return [
             'canDelete' => empty($issues),
-            'issues' => $issues
+            'issues' => $issues,
         ];
     }
 

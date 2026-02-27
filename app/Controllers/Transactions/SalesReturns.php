@@ -3,23 +3,29 @@
 namespace App\Controllers\Transactions;
 
 use App\Controllers\BaseController;
-use App\Services\StockService;
-use App\Services\BalanceService;
 use App\Exceptions\InvalidTransactionException;
-use CodeIgniter\API\ResponseTrait;
+use App\Services\BalanceService;
+use App\Services\StockService;
 
 class SalesReturns extends BaseController
 {
-    use ResponseTrait;
 
     protected $salesReturnModel;
+
     protected $salesReturnDetailModel;
+
     protected $customerModel;
+
     protected $productModel;
+
     protected $warehouseModel;
+
     protected $saleModel;
+
     protected $saleItemModel;
+
     protected $stockService;
+
     protected $balanceService;
 
     public function __construct()
@@ -44,7 +50,7 @@ class SalesReturns extends BaseController
             'start_date' => $this->request->getGet('start_date'),
             'end_date' => $this->request->getGet('end_date'),
             'customer_id' => $this->request->getGet('customer_id'),
-            'status' => $this->request->getGet('status')
+            'status' => $this->request->getGet('status'),
         ];
 
         $query = $this->salesReturnModel
@@ -69,7 +75,7 @@ class SalesReturns extends BaseController
             'title' => 'Retur Penjualan',
             'salesReturns' => $query->orderBy('sales_returns.tanggal_retur', 'DESC')->findAll(),
             'customers' => $this->customerModel->where('is_active', 1)->findAll(),
-            'filters' => $filters
+            'filters' => $filters,
         ];
 
         return view('transactions/sales_returns/index', $data);
@@ -86,7 +92,7 @@ class SalesReturns extends BaseController
             'products' => $this->productModel->where('is_active', 1)->findAll(),
             'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
             'salesList' => $this->getSalesList(),
-            'nomor_retur' => $this->generateNomorRetur()
+            'nomor_retur' => $this->generateNomorRetur(),
         ];
 
         return view('transactions/sales_returns/create', $data);
@@ -136,7 +142,7 @@ class SalesReturns extends BaseController
             }
 
             // Validate customer matches
-            if ($originalSale['customer_id'] != $customerId) {
+            if ($originalSale['customer_id'] !== $customerId) {
                 throw new InvalidTransactionException('Customer tidak sesuai dengan penjualan asli');
             }
 
@@ -204,7 +210,7 @@ class SalesReturns extends BaseController
                     'return_id' => $idRetur,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['price']
+                    'price' => $item['price'],
                 ];
 
                 $this->salesReturnDetailModel->insert($detailData);
@@ -258,7 +264,7 @@ class SalesReturns extends BaseController
 
         // Warehouse from original sale
         if ($salesReturn['originalSale']) {
-             $salesReturn['warehouse'] = $this->warehouseModel->find($salesReturn['originalSale']['warehouse_id']);
+            $salesReturn['warehouse'] = $this->warehouseModel->find($salesReturn['originalSale']['warehouse_id']);
         }
 
         $salesReturn['details'] = $this->salesReturnDetailModel
@@ -269,7 +275,7 @@ class SalesReturns extends BaseController
 
         $data = [
             'title' => 'Detail Retur Penjualan',
-            'salesReturn' => $salesReturn
+            'salesReturn' => $salesReturn,
         ];
 
         return view('transactions/sales_returns/detail', $data);
@@ -307,7 +313,7 @@ class SalesReturns extends BaseController
             'customers' => $this->customerModel->where('is_active', 1)->findAll(),
             'products' => $this->productModel->where('is_active', 1)->findAll(),
             'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
-            'salesList' => $this->getSalesList()
+            'salesList' => $this->getSalesList(),
         ];
 
         return view('transactions/sales_returns/edit', $data);
@@ -431,7 +437,7 @@ class SalesReturns extends BaseController
                     'return_id' => $id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'price' => $item['price']
+                    'price' => $item['price'],
                 ];
 
                 $this->salesReturnDetailModel->insert($detailData);
@@ -550,7 +556,7 @@ class SalesReturns extends BaseController
                 $this->salesReturnModel->update($id, ['status' => 'Disetujui']);
                 $this->balanceService->calculateCustomerReceivable($salesReturn['customer_id']);
 
-            } else if ($action === 'reject') {
+            } elseif ($action === 'reject') {
                 // Update status to 'Ditolak' and revert stock additions
                 $originalSale = $this->saleModel->find($salesReturn['sale_id']);
                 $warehouseId = $originalSale['warehouse_id'];
@@ -617,7 +623,7 @@ class SalesReturns extends BaseController
         return $this->respond([
             'status' => 'success',
             'sale' => $sale,
-            'details' => $details
+            'details' => $details,
         ]);
     }
 

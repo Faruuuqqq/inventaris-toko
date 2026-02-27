@@ -1,10 +1,10 @@
 <?php
 /**
  * Pagination Partial Component
- * 
+ *
  * Renders pagination controls with numbered page buttons
  * Shows: ← Previous | 1 2 3 4 5 | Next →
- * 
+ *
  * Expected variables (from PaginationHelper::getPaginationLinks()):
  * - $pagination['currentPage'] - Current page number
  * - $pagination['totalPages'] - Total number of pages

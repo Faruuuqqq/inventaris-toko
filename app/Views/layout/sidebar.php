@@ -4,7 +4,7 @@ $menuItems = [
     [
         'title' => 'Dashboard',
         'icon' => 'dashboard',
-        'path' => 'dashboard'
+        'path' => 'dashboard',
     ],
     [
         'title' => 'Data Utama',
@@ -15,7 +15,7 @@ $menuItems = [
             ['title' => 'Produk', 'icon' => 'package', 'path' => 'master/products'],
             ['title' => 'Gudang', 'icon' => 'warehouse', 'path' => 'master/warehouses'],
             ['title' => 'Sales', 'icon' => 'trending-up', 'path' => 'master/salespersons'],
-        ]
+        ],
     ],
     [
         'title' => 'Transaksi',
@@ -30,7 +30,7 @@ $menuItems = [
             ['title' => 'Retur Penjualan', 'icon' => 'undo', 'path' => 'transactions/sales-returns'],
             ['title' => 'Surat Jalan', 'icon' => 'file-text', 'path' => 'transactions/delivery-note'],
             ['title' => 'Kontra Bon', 'icon' => 'clipboard', 'path' => 'finance/kontra-bon'],
-        ]
+        ],
     ],
     [
         'title' => 'Informasi',
@@ -43,7 +43,7 @@ $menuItems = [
             ['title' => 'Biaya/Jasa', 'icon' => 'wallet', 'path' => 'finance/expenses'],
             ['title' => 'Histori Bayar Utang', 'icon' => 'history', 'path' => 'info/history/payments-payable'],
             ['title' => 'Histori Bayar Piutang', 'icon' => 'history', 'path' => 'info/history/payments-receivable'],
-        ]
+        ],
     ],
     [
         'title' => 'Info Tambahan',
@@ -54,23 +54,29 @@ $menuItems = [
             ['title' => 'Saldo Stok', 'icon' => 'package', 'path' => 'info/saldo/stock'],
             ['title' => 'Kartu Stok', 'icon' => 'list', 'path' => 'info/stock/card'],
             ['title' => 'Laporan Harian', 'icon' => 'bar-chart-2', 'path' => 'info/reports/daily'],
-        ]
+        ],
     ],
 ];
 
 // Robust Active State Helper
 if (!function_exists('isPathActive')) {
-    function isPathActive($path) {
-        if (empty($path)) return false;
+    function isPathActive($path)
+    {
+        if (empty($path)) {
+            return false;
+        }
         $current = current_url(true)->getPath();
-        return str_contains($current, $path); 
+        return str_contains($current, $path);
     }
 }
 
 if (!function_exists('isGroupActive')) {
-    function isGroupActive($children) {
+    function isGroupActive($children)
+    {
         foreach ($children as $child) {
-            if (isPathActive($child['path'])) return true;
+            if (isPathActive($child['path'])) {
+                return true;
+            }
         }
         return false;
     }
@@ -78,31 +84,32 @@ if (!function_exists('isGroupActive')) {
 
 // Simple SVG icon generator
 if (!function_exists('getSvgIcon')) {
-    function getSvgIcon($name) {
+    function getSvgIcon($name)
+    {
         $icons = [
-        'dashboard' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 6.908C9.75 6.287 10.254 5.783 10.875 5.783h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V6.908zm6.75 12.084c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V19.5c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V18.992z"/></svg>',
-        'database' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 6.375c0 2.278-4.022 4.125-9 4.125S2.25 8.653 2.25 6.375m18 0A2.25 2.25 0 0020.25 4.125H3.75A2.25 2.25 0 002.25 6.375m18 0v6.75c0 2.278-4.022 4.125-9 4.125s-9-1.847-9-4.125m0-6.75v6.75c0 2.278 4.022 4.125 9 4.125s9-1.847 9-4.125m0-6.75v6.75c0 2.278-4.022 4.125-9 4.125s-9-1.847-9-4.125"/></svg>',
-        'truck' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16h12m0 0l-3-3m3 3l-3 3M9 12H3m0 0l3-3m-3 3l3 3m9-8H3v10a2 2 0 002 2h14a2 2 0 002-2V4a2 2 0 00-2-2h-5l-2 3z"/></svg>',
-        'users' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 001.591-.079 8.88 8.88 0 00.772-.024 8.378 8.378 0 002.664-.66 8.643 8.643 0 001.924-1.099 8.387 8.387 0 001.602-1.562 8.237 8.237 0 001.2-1.899 9.188 9.188 0 01-3.75-3.75M5 18.75a9.38 9.38 0 002.625.372 9.337 9.337 0 001.591-.079 8.88 8.88 0 00.772-.024 8.378 8.378 0 002.664-.66 8.643 8.643 0 001.924-1.099 8.387 8.387 0 001.602-1.562 8.237 8.237 0 001.2-1.899 9.188 9.188 0 01-3.75-3.75m-5.87 10.5a4.5 4.5 0 111.432-8.82 4.5 4.5 0 011.432 8.82zM16.5 9a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>',
-        'package' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 7.50625c0-.621-.504-1.125-1.125-1.125H5.25c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h14.25c.621 0 1.125-.504 1.125-1.125V7.50625zm-9 3h2.25m-6 0h12M10.875 2h2.25m-6 0h8.625a1.875 1.875 0 011.875 1.875v1.5"/></svg>',
-        'warehouse' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>',
-        'trending-up' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
-        'shopping-cart' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m10-9l2 9m-9 0h14M7 22h10"/></svg>',
-        'shopping-bag' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 6a6 6 0 0112 0m-12 0a6 6 0 0012 0m-12 0H3m18 0h3m-3 6h3m-9 0h9m-9 6h9M9 16h6"/></svg>',
-        'credit-card' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zM3.75 3h16.5A2.25 2.25 0 0122 5.25v13.5A2.25 2.25 0 0120.25 21H3.75A2.25 2.25 0 011.5 18.75V5.25A2.25 2.25 0 013.75 3z"/></svg>',
-        'tag' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.883.883 2.318.883 3.201 0l6.914-6.914c.882-.883.882-2.318 0-3.201L11.322 3.659a2.25 2.25 0 00-1.591-.659zm0 0h8.117m0 0a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"/></svg>',
-        'send' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19l9-2m0 0l-9-12-9 12m9 2l9 2M3 7l6 3m0 0l6-3"/></svg>',
-        'arrow-down-circle' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-        'undo' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>',
-        'clipboard' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.148.42-.243.63-.97 2.905-.970 6.702.211 9.762.203.54.456 1.054.73 1.538M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-        'file-text' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.148.42-.243.63-.97 2.905-.970 6.702.211 9.762.203.54.456 1.054.73 1.538M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
-        'history' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 2m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
-        'wallet' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zM3.75 3h16.5A2.25 2.25 0 0122 5.25v13.5A2.25 2.25 0 0120.25 21H3.75A2.25 2.25 0 011.5 18.75V5.25A2.25 2.25 0 013.75 3z"/></svg>',
-        'list' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 12a.75.75 0 100-1.5.75.75 0 000 1.5zM3.75 6.75a.75.75 0 100-1.5.75.75 0 000 1.5zM3.75 17.25a.75.75 0 100-1.5.75.75 0 000 1.5zM9 6h12M9 12h12m-12 6h12"/></svg>',
-        'bar-chart-2' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 6.908C9.75 6.287 10.254 5.783 10.875 5.783h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V6.908zm6.75 12.084c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V19.5c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V18.992z"/></svg>',
-        'settings' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>',
-    ];
-    return $icons[$name] ?? '<svg class="w-full h-full" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>';
+            'dashboard' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 6.908C9.75 6.287 10.254 5.783 10.875 5.783h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V6.908zm6.75 12.084c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V19.5c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V18.992z"/></svg>',
+            'database' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 6.375c0 2.278-4.022 4.125-9 4.125S2.25 8.653 2.25 6.375m18 0A2.25 2.25 0 0020.25 4.125H3.75A2.25 2.25 0 002.25 6.375m18 0v6.75c0 2.278-4.022 4.125-9 4.125s-9-1.847-9-4.125m0-6.75v6.75c0 2.278 4.022 4.125 9 4.125s9-1.847 9-4.125m0-6.75v6.75c0 2.278-4.022 4.125-9 4.125s-9-1.847-9-4.125"/></svg>',
+            'truck' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16h12m0 0l-3-3m3 3l-3 3M9 12H3m0 0l3-3m-3 3l3 3m9-8H3v10a2 2 0 002 2h14a2 2 0 002-2V4a2 2 0 00-2-2h-5l-2 3z"/></svg>',
+            'users' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 001.591-.079 8.88 8.88 0 00.772-.024 8.378 8.378 0 002.664-.66 8.643 8.643 0 001.924-1.099 8.387 8.387 0 001.602-1.562 8.237 8.237 0 001.2-1.899 9.188 9.188 0 01-3.75-3.75M5 18.75a9.38 9.38 0 002.625.372 9.337 9.337 0 001.591-.079 8.88 8.88 0 00.772-.024 8.378 8.378 0 002.664-.66 8.643 8.643 0 001.924-1.099 8.387 8.387 0 001.602-1.562 8.237 8.237 0 001.2-1.899 9.188 9.188 0 01-3.75-3.75m-5.87 10.5a4.5 4.5 0 111.432-8.82 4.5 4.5 0 011.432 8.82zM16.5 9a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"/></svg>',
+            'package' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 7.50625c0-.621-.504-1.125-1.125-1.125H5.25c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h14.25c.621 0 1.125-.504 1.125-1.125V7.50625zm-9 3h2.25m-6 0h12M10.875 2h2.25m-6 0h8.625a1.875 1.875 0 011.875 1.875v1.5"/></svg>',
+            'warehouse' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>',
+            'trending-up' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+            'shopping-cart' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m10-9l2 9m-9 0h14M7 22h10"/></svg>',
+            'shopping-bag' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 6a6 6 0 0112 0m-12 0a6 6 0 0012 0m-12 0H3m18 0h3m-3 6h3m-9 0h9m-9 6h9M9 16h6"/></svg>',
+            'credit-card' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zM3.75 3h16.5A2.25 2.25 0 0122 5.25v13.5A2.25 2.25 0 0120.25 21H3.75A2.25 2.25 0 011.5 18.75V5.25A2.25 2.25 0 013.75 3z"/></svg>',
+            'tag' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.883.883 2.318.883 3.201 0l6.914-6.914c.882-.883.882-2.318 0-3.201L11.322 3.659a2.25 2.25 0 00-1.591-.659zm0 0h8.117m0 0a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z"/></svg>',
+            'send' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 19l9-2m0 0l-9-12-9 12m9 2l9 2M3 7l6 3m0 0l6-3"/></svg>',
+            'arrow-down-circle' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'undo' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>',
+            'clipboard' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.148.42-.243.63-.97 2.905-.970 6.702.211 9.762.203.54.456 1.054.73 1.538M15 12a3 3 0 11-6 0 3 3 0 016 0zm6 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'file-text' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.148.42-.243.63-.97 2.905-.970 6.702.211 9.762.203.54.456 1.054.73 1.538M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
+            'history' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 2m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            'wallet' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm4.5-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008v-.008zM3.75 3h16.5A2.25 2.25 0 0122 5.25v13.5A2.25 2.25 0 0120.25 21H3.75A2.25 2.25 0 011.5 18.75V5.25A2.25 2.25 0 013.75 3z"/></svg>',
+            'list' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 12a.75.75 0 100-1.5.75.75 0 000 1.5zM3.75 6.75a.75.75 0 100-1.5.75.75 0 000 1.5zM3.75 17.25a.75.75 0 100-1.5.75.75 0 000 1.5zM9 6h12M9 12h12m-12 6h12"/></svg>',
+            'bar-chart-2' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 6.908C9.75 6.287 10.254 5.783 10.875 5.783h2.25c.621 0 1.125.504 1.125 1.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V6.908zm6.75 12.084c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V19.5c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V18.992z"/></svg>',
+            'settings' => '<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>',
+        ];
+        return $icons[$name] ?? '<svg class="w-full h-full" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/><circle cx="5" cy="12" r="1" fill="currentColor"/></svg>';
     }
 }
 ?>
@@ -120,7 +127,7 @@ if (!function_exists('getSvgIcon')) {
             </svg>
         </div>
         <div class="flex-1 min-w-0">
-            <h1 class="text-base font-bold text-sidebar-fg tracking-tight leading-tight">TokoManager</h1>
+            <h1 class="text-base font-bold text-sidebar-fg tracking-tight leading-tight"><?= app_name() ?></h1>
             <p class="text-xs text-sidebar-fg/60 leading-none">Inventory & Retail</p>
         </div>
         <!-- Mobile Close Button -->
@@ -193,26 +200,6 @@ if (!function_exists('getSvgIcon')) {
             <?php endif; ?>
         <?php endforeach; ?>
     </nav>
-
-    <!-- User Profile + Logout -->
-    <div class="border-t border-sidebar-border p-4">
-        <div class="mb-3 flex items-center gap-3">
-            <div class="flex h-9 w-9 items-center justify-center rounded-full bg-sidebar-accent flex-shrink-0">
-                <span class="text-sm font-medium text-sidebar-fg">
-                    <?= strtoupper(substr(session()->get('fullname') ?? session()->get('username') ?? 'U', 0, 1)) ?>
-                </span>
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-sidebar-fg truncate"><?= esc(session()->get('fullname') ?? session()->get('username') ?? 'User') ?></p>
-                <p class="text-xs text-sidebar-fg/60 capitalize"><?= esc(session()->get('role') ?? 'guest') ?></p>
-            </div>
-        </div>
-        <a href="<?= base_url('logout') ?>"
-           class="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-fg/75 hover:bg-sidebar-accent hover:text-sidebar-fg transition-all duration-200">
-            <?= icon('LogOut', 'h-4 w-4') ?>
-            Keluar
-        </a>
-    </div>
 
 </aside>
 

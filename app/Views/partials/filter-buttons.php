@@ -14,24 +14,24 @@
  * - exportText: Text for export button (default: 'Export')
  */
 
-$filterFn = $filterFn ?? 'loadData';
-$resetFn = $resetFn ?? 'resetFilters';
-$exportFn = $exportFn ?? 'exportData';
-$showExport = $showExport ?? true;
-$filterText = $filterText ?? 'Filter';
-$resetText = $resetText ?? 'Reset';
-$exportText = $exportText ?? 'Export';
+$filterFn ??= 'loadData';
+$resetFn ??= 'resetFilters';
+$exportFn ??= 'exportData';
+$showExport ??= true;
+$filterText ??= 'Filter';
+$resetText ??= 'Reset';
+$exportText ??= 'Export';
 ?>
 <div class="flex gap-2 mt-4">
-    <button onclick="<?= $filterFn ?>()" class="btn btn-primary">
+    <button x-on:click="<?= $filterFn ?>()" class="btn btn-primary">
         <?= icon('Search', 'w-4 h-4') ?>
         <?= $filterText ?>
     </button>
-    <button onclick="<?= $resetFn ?>()" class="btn btn-outline">
+    <button x-on:click="<?= $resetFn ?>()" class="btn btn-outline">
         <?= $resetText ?>
     </button>
     <?php if ($showExport): ?>
-    <button onclick="<?= $exportFn ?>()" class="btn btn-outline ml-auto">
+    <button x-on:click="<?= $exportFn ?>()" class="btn btn-outline ml-auto">
         <?= icon('Download', 'w-4 h-4') ?>
         <?= $exportText ?>
     </button>

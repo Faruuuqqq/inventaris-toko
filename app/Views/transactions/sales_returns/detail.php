@@ -170,7 +170,7 @@
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-muted-foreground">Status Refund</span>
                         <span class="text-xs font-semibold px-2 py-1 rounded-full 
-                            <?php 
+                            <?php
                             if ($salesReturn['status'] === 'Disetujui') {
                                 echo 'bg-success/10 text-success';
                             } elseif ($salesReturn['status'] === 'Menunggu Persetujuan') {
@@ -178,17 +178,17 @@
                             } else {
                                 echo 'bg-destructive/10 text-destructive';
                             }
-                            ?>
+?>
                         ">
-                            <?php 
-                            if ($salesReturn['status'] === 'Disetujui') {
-                                echo 'Approved';
-                            } elseif ($salesReturn['status'] === 'Menunggu Persetujuan') {
-                                echo 'Pending';
-                            } else {
-                                echo 'Rejected';
-                            }
-                            ?>
+                            <?php
+if ($salesReturn['status'] === 'Disetujui') {
+    echo 'Approved';
+} elseif ($salesReturn['status'] === 'Menunggu Persetujuan') {
+    echo 'Pending';
+} else {
+    echo 'Rejected';
+}
+?>
                         </span>
                     </div>
                 </div>

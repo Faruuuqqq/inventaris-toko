@@ -147,6 +147,12 @@ class App extends BaseConfig
      */
     public string $charset = 'UTF-8';
 
+    public string $appName = 'TokoManager';
+
+    public string $appVersion = '1.0.0';
+
+    public string $appEdition = 'Enterprise';
+
     /**
      * --------------------------------------------------------------------------
      * Force Global Secure Requests
@@ -198,5 +204,5 @@ class App extends BaseConfig
      * @see http://www.html5rocks.com/en/tutorials/security/content-security-policy/
      * @see http://www.w3.org/TR/CSP/
      */
-    public bool $CSPEnabled = false;
+    public bool $CSPEnabled = true;
 }

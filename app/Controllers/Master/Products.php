@@ -4,15 +4,17 @@ namespace App\Controllers\Master;
 
 use App\Controllers\BaseCRUDController;
 use App\Models\ProductModel;
-use App\Services\ProductDataService;
 use App\Services\ExportService;
-use CodeIgniter\Model;
+use App\Services\ProductDataService;
 
 class Products extends BaseCRUDController
 {
     protected string $viewPath = 'master/products';
+
     protected string $routePath = '/master/products';
+
     protected string $entityName = 'Produk';
+
     protected string $entityNamePlural = 'Products';
 
     protected ProductDataService $dataService;
@@ -212,7 +214,7 @@ class Products extends BaseCRUDController
     /**
      * Prepare human-readable filter labels for PDF header
      *
-     * @param array $filters Raw filter values
+     * @param  array $filters Raw filter values
      * @return array Filter labels for display
      */
     protected function prepareFilterLabels(array $filters): array

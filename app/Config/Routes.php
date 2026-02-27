@@ -16,7 +16,7 @@ $routes->get('logout', 'Auth::logout');
 $routes->get('dashboard', 'Dashboard::index');
 
 // Settings
-$routes->group('settings', ['namespace' => 'App\Controllers'], function($routes) {
+$routes->group('settings', ['namespace' => 'App\Controllers'], function ($routes) {
     $routes->get('/', 'Settings::index');
     $routes->post('updateProfile', 'Settings::updateProfile');
     $routes->post('changePassword', 'Settings::changePassword');
@@ -24,103 +24,97 @@ $routes->group('settings', ['namespace' => 'App\Controllers'], function($routes)
 });
 
 // Master Data Group
-$routes->group('master', ['namespace' => 'App\Controllers\Master'], function($routes) {
+$routes->group('master', ['namespace' => 'App\Controllers\Master'], function ($routes) {
     // Products
-    $routes->group('products', function($routes) {
+    $routes->group('products', function ($routes) {
         $routes->get('/', 'Products::index');
         $routes->get('create', 'Products::create');
-        $routes->get('export-pdf', 'Products::export');  // GET /master/products/export-pdf
+        $routes->get('export-pdf', 'Products::export');
         $routes->get('(:num)', 'Products::detail/$1');
         $routes->get('edit/(:num)', 'Products::edit/$1');
-        $routes->get('delete/(:num)', 'Products::delete/$1');  // GET for simple delete links
+        $routes->get('delete/(:num)', 'Products::delete/$1');
         $routes->post('/', 'Products::store');
-        $routes->post('store', 'Products::store');
         $routes->put('(:num)', 'Products::update/$1');
         $routes->delete('(:num)', 'Products::delete/$1');
     });
 
     // Customers
-     $routes->group('customers', function($routes) {
-         $routes->get('/', 'Customers::index');
-         $routes->get('create', 'Customers::create');
-         $routes->get('export-pdf', 'Customers::export');  // GET /master/customers/export-pdf
-         $routes->get('(:num)', 'Customers::detail/$1');
-         $routes->get('delete/(:num)', 'Customers::delete/$1');
-         $routes->get('getList', 'Customers::getList');  // AJAX endpoint
-         $routes->post('/', 'Customers::store');
-         $routes->post('store', 'Customers::store');
-         $routes->post('(:num)', 'Customers::update/$1');  // Modal form POST update
-         $routes->put('(:num)', 'Customers::update/$1');
-         $routes->delete('(:num)', 'Customers::delete/$1');
-     });
+    $routes->group('customers', function ($routes) {
+        $routes->get('/', 'Customers::index');
+        $routes->get('create', 'Customers::create');
+        $routes->get('export-pdf', 'Customers::export');
+        $routes->get('(:num)', 'Customers::detail/$1');
+        $routes->get('delete/(:num)', 'Customers::delete/$1');
+        $routes->get('getList', 'Customers::getList');
+        $routes->post('/', 'Customers::store');
+        $routes->post('(:num)', 'Customers::update/$1');
+        $routes->put('(:num)', 'Customers::update/$1');
+        $routes->delete('(:num)', 'Customers::delete/$1');
+    });
 
     // Suppliers
-     $routes->group('suppliers', function($routes) {
-         $routes->get('/', 'Suppliers::index');
-         $routes->get('create', 'Suppliers::create');
-         $routes->get('export-pdf', 'Suppliers::export');  // GET /master/suppliers/export-pdf
-         $routes->get('(:num)', 'Suppliers::detail/$1');
-         $routes->get('delete/(:num)', 'Suppliers::delete/$1');
-         $routes->get('getList', 'Suppliers::getList');  // AJAX endpoint
-         $routes->post('/', 'Suppliers::store');
-         $routes->post('store', 'Suppliers::store');
-         $routes->post('(:num)', 'Suppliers::update/$1');  // Modal form POST update
-         $routes->put('(:num)', 'Suppliers::update/$1');
-         $routes->delete('(:num)', 'Suppliers::delete/$1');
-     });
+    $routes->group('suppliers', function ($routes) {
+        $routes->get('/', 'Suppliers::index');
+        $routes->get('create', 'Suppliers::create');
+        $routes->get('export-pdf', 'Suppliers::export');
+        $routes->get('(:num)', 'Suppliers::detail/$1');
+        $routes->get('delete/(:num)', 'Suppliers::delete/$1');
+        $routes->get('getList', 'Suppliers::getList');
+        $routes->post('/', 'Suppliers::store');
+        $routes->post('(:num)', 'Suppliers::update/$1');
+        $routes->put('(:num)', 'Suppliers::update/$1');
+        $routes->delete('(:num)', 'Suppliers::delete/$1');
+    });
 
     // Warehouses
-     $routes->group('warehouses', function($routes) {
-         $routes->get('/', 'Warehouses::index');
-         $routes->get('create', 'Warehouses::create');
-         $routes->get('(:num)', 'Warehouses::detail/$1');
-         $routes->get('delete/(:num)', 'Warehouses::delete/$1');
-         $routes->get('getList', 'Warehouses::getList');  // AJAX endpoint
-         $routes->post('/', 'Warehouses::store');
-         $routes->post('store', 'Warehouses::store');
-         $routes->post('(:num)', 'Warehouses::update/$1');  // Modal form POST update
-         $routes->put('(:num)', 'Warehouses::update/$1');
-         $routes->delete('(:num)', 'Warehouses::delete/$1');
-     });
+    $routes->group('warehouses', function ($routes) {
+        $routes->get('/', 'Warehouses::index');
+        $routes->get('create', 'Warehouses::create');
+        $routes->get('(:num)', 'Warehouses::detail/$1');
+        $routes->get('delete/(:num)', 'Warehouses::delete/$1');
+        $routes->get('getList', 'Warehouses::getList');
+        $routes->post('/', 'Warehouses::store');
+        $routes->post('(:num)', 'Warehouses::update/$1');
+        $routes->put('(:num)', 'Warehouses::update/$1');
+        $routes->delete('(:num)', 'Warehouses::delete/$1');
+    });
 
     // Salespersons
-     $routes->group('salespersons', function($routes) {
-         $routes->get('/', 'Salespersons::index');
-         $routes->get('create', 'Salespersons::create');
-         $routes->get('(:num)', 'Salespersons::detail/$1');
-         $routes->get('delete/(:num)', 'Salespersons::delete/$1');
-         $routes->get('getList', 'Salespersons::getList');  // AJAX endpoint
-         $routes->post('/', 'Salespersons::store');
-         $routes->post('(:num)', 'Salespersons::update/$1');  // Modal form POST update
-         $routes->put('(:num)', 'Salespersons::update/$1');
-         $routes->delete('(:num)', 'Salespersons::delete/$1');
-     });
+    $routes->group('salespersons', function ($routes) {
+        $routes->get('/', 'Salespersons::index');
+        $routes->get('create', 'Salespersons::create');
+        $routes->get('(:num)', 'Salespersons::detail/$1');
+        $routes->get('delete/(:num)', 'Salespersons::delete/$1');
+        $routes->get('getList', 'Salespersons::getList');
+        $routes->post('/', 'Salespersons::store');
+        $routes->post('(:num)', 'Salespersons::update/$1');
+        $routes->put('(:num)', 'Salespersons::update/$1');
+        $routes->delete('(:num)', 'Salespersons::delete/$1');
+    });
 
     // Users
-    $routes->group('users', function($routes) {
+    $routes->group('users', function ($routes) {
         $routes->get('/', 'Users::index');
         $routes->get('create', 'Users::create');
         $routes->get('(:num)', 'Users::detail/$1');
         $routes->get('edit/(:num)', 'Users::edit/$1');
         $routes->get('delete/(:num)', 'Users::delete/$1');
         $routes->post('/', 'Users::store');
-        $routes->post('store', 'Users::store');
         $routes->put('(:num)', 'Users::update/$1');
         $routes->delete('(:num)', 'Users::delete/$1');
     });
 });
 
 // Transactions Group
-$routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], function($routes) {
-    
+$routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], function ($routes) {
+
     // Sales Subgroup
-    $routes->group('sales', function($routes) {
+    $routes->group('sales', function ($routes) {
         $routes->get('/', 'Sales::index');
         $routes->get('create', 'Sales::create');
         $routes->get('edit/(:num)', 'Sales::edit/$1');
         $routes->get('(:num)', 'Sales::detail/$1');
         $routes->post('/', 'Sales::store');
-        $routes->post('store', 'Sales::store');
         $routes->put('(:num)', 'Sales::update/$1');
         $routes->get('cash', 'Sales::cash');
         $routes->post('storeCash', 'Sales::storeCash');
@@ -131,7 +125,7 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     });
 
     // Purchases
-    $routes->group('purchases', function($routes) {
+    $routes->group('purchases', function ($routes) {
         $routes->get('/', 'Purchases::index');
         $routes->get('create', 'Purchases::create');
         $routes->get('edit/(:num)', 'Purchases::edit/$1');
@@ -139,7 +133,6 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
         $routes->post('processReceive/(:num)', 'Purchases::processReceive/$1');
         $routes->get('(:num)', 'Purchases::detail/$1');
         $routes->post('/', 'Purchases::store');
-        $routes->post('store', 'Purchases::store');
         $routes->put('(:num)', 'Purchases::update/$1');
         $routes->post('update/(:num)', 'Purchases::update/$1');  // POST fallback for update
         $routes->get('delete/(:num)', 'Purchases::delete/$1');  // GET for simple delete links
@@ -147,7 +140,7 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     });
 
     // Returns
-    $routes->group('sales-returns', function($routes) {
+    $routes->group('sales-returns', function ($routes) {
         $routes->get('/', 'SalesReturns::index');
         $routes->get('create', 'SalesReturns::create');
         $routes->get('edit/(:num)', 'SalesReturns::edit/$1');
@@ -156,14 +149,13 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
         $routes->get('detail/(:num)', 'SalesReturns::detail/$1');
         $routes->get('(:num)', 'SalesReturns::detail/$1');
         $routes->post('/', 'SalesReturns::store');
-        $routes->post('store', 'SalesReturns::store');
         $routes->put('(:num)', 'SalesReturns::update/$1');
         $routes->post('update/(:num)', 'SalesReturns::update/$1');
         $routes->get('delete/(:num)', 'SalesReturns::delete/$1');  // GET for simple delete links
         $routes->delete('(:num)', 'SalesReturns::delete/$1');  // RESTful DELETE
     });
 
-    $routes->group('purchase-returns', function($routes) {
+    $routes->group('purchase-returns', function ($routes) {
         $routes->get('/', 'PurchaseReturns::index');
         $routes->get('create', 'PurchaseReturns::create');
         $routes->get('edit/(:num)', 'PurchaseReturns::edit/$1');
@@ -172,7 +164,6 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
         $routes->get('detail/(:num)', 'PurchaseReturns::detail/$1');
         $routes->get('(:num)', 'PurchaseReturns::detail/$1');
         $routes->post('/', 'PurchaseReturns::store');
-        $routes->post('store', 'PurchaseReturns::store');
         $routes->put('(:num)', 'PurchaseReturns::update/$1');
         $routes->post('update/(:num)', 'PurchaseReturns::update/$1');
         $routes->get('delete/(:num)', 'PurchaseReturns::delete/$1');  // GET for simple delete links
@@ -180,7 +171,7 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
     });
 
     // Delivery Note
-    $routes->group('delivery-note', function($routes) {
+    $routes->group('delivery-note', function ($routes) {
         $routes->get('/', 'DeliveryNote::index');
         $routes->post('store', 'DeliveryNote::store');
         $routes->get('getInvoiceItems/(:num)', 'DeliveryNote::getInvoiceItems/$1');
@@ -190,13 +181,12 @@ $routes->group('transactions', ['namespace' => 'App\Controllers\Transactions'], 
 });
 
 // Finance Group
-$routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($routes) {
+$routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function ($routes) {
     // Expenses
-    $routes->group('expenses', function($routes) {
+    $routes->group('expenses', function ($routes) {
         $routes->get('/', 'Expenses::index');
         $routes->get('create', 'Expenses::create');
         $routes->post('/', 'Expenses::store');
-        $routes->post('store', 'Expenses::store');  // Alternative POST endpoint
         $routes->get('edit/(:num)', 'Expenses::edit/$1');  // Standard pattern
         $routes->get('(:num)/edit', 'Expenses::edit/$1');  // Legacy compatibility
         $routes->put('(:num)', 'Expenses::update/$1');
@@ -215,7 +205,7 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
     });
 
     // Payments
-    $routes->group('payments', function($routes) {
+    $routes->group('payments', function ($routes) {
         $routes->get('/', 'Payments::index');  // Index route
         $routes->get('receivable', 'Payments::receivable');
         $routes->post('storeReceivable', 'Payments::storeReceivable');
@@ -227,7 +217,7 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
     });
 
     // Kontra Bon
-    $routes->group('kontra-bon', function($routes) {
+    $routes->group('kontra-bon', function ($routes) {
         $routes->get('/', 'KontraBon::index');
         $routes->get('create', 'KontraBon::create');
         $routes->post('store', 'KontraBon::store');
@@ -243,54 +233,54 @@ $routes->group('finance', ['namespace' => 'App\Controllers\Finance'], function($
 });
 
 // Info Group
-$routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes) {
+$routes->group('info', ['namespace' => 'App\Controllers\Info'], function ($routes) {
     // History
-    $routes->group('history', function($routes) {
+    $routes->group('history', function ($routes) {
         $routes->get('sales', 'History::sales');
         $routes->get('sales-data', 'History::salesData'); // AJAX
         $routes->get('sales-export', 'History::exportSalesCSV'); // Export
         $routes->get('sales-summary', 'History::salesSummary'); // AJAX Summary
         $routes->post('toggleSaleHide/(:num)', 'History::toggleSaleHide/$1');  // AJAX toggle hide/show
-        
+
         $routes->get('purchases', 'History::purchases');
         $routes->get('purchases-data', 'History::purchasesData'); // AJAX
         $routes->get('purchases-export', 'History::exportPurchasesCSV'); // Export
         $routes->get('purchases-summary', 'History::purchasesSummary'); // AJAX Summary
-        
+
         $routes->get('return-sales', 'History::returnSales');
         $routes->get('sales-returns-data', 'History::salesReturnsData'); // AJAX
-        
+
         $routes->get('return-purchases', 'History::returnPurchases');
         $routes->get('purchase-returns-data', 'History::purchaseReturnsData'); // AJAX
-        
+
         $routes->get('payments-receivable', 'History::paymentsReceivable');
         $routes->get('payments-receivable-data', 'History::paymentsReceivableData'); // AJAX
         $routes->get('payments-receivable-export', 'History::exportPaymentsCSV'); // Export
-        
+
         $routes->get('payments-payable', 'History::paymentsPayable');
         $routes->get('payments-payable-data', 'History::paymentsPayableData'); // AJAX
         $routes->get('payments-payable-export', 'History::exportPaymentsCSV'); // Export
-        
+
         $routes->get('expenses', 'History::expenses');
         $routes->get('expenses-data', 'History::expensesData'); // AJAX
-        
+
         $routes->get('stock-movements', 'History::stockMovements');
         $routes->get('stock-movements-data', 'History::stockMovementsData'); // AJAX
     });
 
     // Stock Info
-    $routes->group('stock', function($routes) {
+    $routes->group('stock', function ($routes) {
         $routes->get('card', 'Stock::card');
         $routes->get('balance', 'Stock::balance');
         $routes->get('management', 'Stock::management');
         $routes->get('getMutations', 'Stock::getMutations');  // AJAX endpoint for stock mutations
     });
-    
+
     // Stock card alias for compatibility
     $routes->get('stockcard', 'Stock::card');
 
     // Saldo (Balance) - Financial Balance Reports
-    $routes->group('saldo', function($routes) {
+    $routes->group('saldo', function ($routes) {
         $routes->get('receivable', 'Saldo::receivable');  // Receivable balances (Piutang)
         $routes->get('payable', 'Saldo::payable');        // Payable balances (Utang)
         $routes->get('stock', 'Saldo::stock');            // Stock balances (Stok)
@@ -298,13 +288,13 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
     });
 
     // Inventory Management
-    $routes->group('inventory', function($routes) {
+    $routes->group('inventory', function ($routes) {
         $routes->get('management', 'Stock::management');
         $routes->get('export-csv', 'Stock::exportInventory');
     });
 
     // Reports
-    $routes->group('reports', function($routes) {
+    $routes->group('reports', function ($routes) {
         $routes->get('/', 'Reports::index');
         $routes->get('daily', 'Reports::daily');
         $routes->get('profit-loss', 'Reports::profitLoss');
@@ -315,20 +305,20 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
         $routes->get('stock-card', 'Reports::stockCard');
         $routes->get('aging-analysis', 'Reports::agingAnalysis');
         $routes->get('stock-card-data', 'Reports::getStockCardData'); // AJAX endpoint
-        
+
         // Hyphenated aliases for URL consistency
         $routes->get('customer-analysis', 'Reports::customerAnalysis');
         $routes->get('product-performance', 'Reports::productPerformance');
     });
 
     // Analytics
-    $routes->group('analytics', function($routes) {
+    $routes->group('analytics', function ($routes) {
         $routes->get('dashboard', 'Analytics::dashboard');
         $routes->get('export-csv', 'Analytics::exportDashboard');
     });
-    
+
     // File Management
-    $routes->group('files', function($routes) {
+    $routes->group('files', function ($routes) {
         $routes->get('/', 'FileController::index');
         $routes->post('upload', 'FileController::upload');
         $routes->post('bulk-upload', 'FileController::bulkUpload');
@@ -342,53 +332,53 @@ $routes->group('info', ['namespace' => 'App\Controllers\Info'], function($routes
 // =============================================================================
 // API Routes (Version 1)
 // =============================================================================
-$routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($routes) {
-    
+$routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function ($routes) {
+
     // Public Auth Routes (No Authentication Required)
     $routes->post('auth/login', 'AuthController::login');
-    
+
     // Protected Routes (Requires API Authentication)
-    $routes->group('', ['filter' => 'api-auth'], function($routes) {
-        
+    $routes->group('', ['filter' => 'api-auth'], function ($routes) {
+
         // Auth Management
         $routes->post('auth/logout', 'AuthController::logout');
         $routes->post('auth/refresh', 'AuthController::refresh');
         $routes->get('auth/profile', 'AuthController::profile');
         $routes->put('auth/profile', 'AuthController::updateProfile');
-        
-         // Products API
-         $routes->group('products', function($routes) {
-             $routes->get('/', 'ProductsController::index');           // GET /api/v1/products
-             $routes->get('export', 'ProductsController::export');     // GET /api/v1/products/export?format=pdf
-             $routes->get('(:num)', 'ProductsController::show/$1');    // GET /api/v1/products/1
-             $routes->post('/', 'ProductsController::create');         // POST /api/v1/products
-             $routes->put('(:num)', 'ProductsController::update/$1');  // PUT /api/v1/products/1
-             $routes->delete('(:num)', 'ProductsController::delete/$1'); // DELETE /api/v1/products/1
-             $routes->get('search', 'ProductsController::search');     // GET /api/v1/products/search?q=...
-         });
 
-          // Customers API
-          $routes->group('customers', function($routes) {
-              $routes->get('/', 'CustomersController::index');          // GET /api/v1/customers
-              $routes->get('export', 'CustomersController::export');    // GET /api/v1/customers/export?format=pdf
-              $routes->get('(:num)', 'CustomersController::show/$1');   // GET /api/v1/customers/1
-              $routes->post('/', 'CustomersController::create');        // POST /api/v1/customers
-              $routes->put('(:num)', 'CustomersController::update/$1'); // PUT /api/v1/customers/1
-              $routes->delete('(:num)', 'CustomersController::delete/$1'); // DELETE /api/v1/customers/1
-          });
+        // Products API
+        $routes->group('products', function ($routes) {
+            $routes->get('/', 'ProductsController::index');           // GET /api/v1/products
+            $routes->get('export', 'ProductsController::export');     // GET /api/v1/products/export?format=pdf
+            $routes->get('(:num)', 'ProductsController::show/$1');    // GET /api/v1/products/1
+            $routes->post('/', 'ProductsController::create');         // POST /api/v1/products
+            $routes->put('(:num)', 'ProductsController::update/$1');  // PUT /api/v1/products/1
+            $routes->delete('(:num)', 'ProductsController::delete/$1'); // DELETE /api/v1/products/1
+            $routes->get('search', 'ProductsController::search');     // GET /api/v1/products/search?q=...
+        });
 
-          // Suppliers API
-          $routes->group('suppliers', function($routes) {
-              $routes->get('/', 'SuppliersController::index');          // GET /api/v1/suppliers
-              $routes->get('export', 'SuppliersController::export');    // GET /api/v1/suppliers/export?format=pdf
-              $routes->get('(:num)', 'SuppliersController::show/$1');   // GET /api/v1/suppliers/1
-              $routes->post('/', 'SuppliersController::create');        // POST /api/v1/suppliers
-              $routes->put('(:num)', 'SuppliersController::update/$1'); // PUT /api/v1/suppliers/1
-              $routes->delete('(:num)', 'SuppliersController::delete/$1'); // DELETE /api/v1/suppliers/1
-          });
-        
-         // Sales API
-        $routes->group('sales', function($routes) {
+        // Customers API
+        $routes->group('customers', function ($routes) {
+            $routes->get('/', 'CustomersController::index');          // GET /api/v1/customers
+            $routes->get('export', 'CustomersController::export');    // GET /api/v1/customers/export?format=pdf
+            $routes->get('(:num)', 'CustomersController::show/$1');   // GET /api/v1/customers/1
+            $routes->post('/', 'CustomersController::create');        // POST /api/v1/customers
+            $routes->put('(:num)', 'CustomersController::update/$1'); // PUT /api/v1/customers/1
+            $routes->delete('(:num)', 'CustomersController::delete/$1'); // DELETE /api/v1/customers/1
+        });
+
+        // Suppliers API
+        $routes->group('suppliers', function ($routes) {
+            $routes->get('/', 'SuppliersController::index');          // GET /api/v1/suppliers
+            $routes->get('export', 'SuppliersController::export');    // GET /api/v1/suppliers/export?format=pdf
+            $routes->get('(:num)', 'SuppliersController::show/$1');   // GET /api/v1/suppliers/1
+            $routes->post('/', 'SuppliersController::create');        // POST /api/v1/suppliers
+            $routes->put('(:num)', 'SuppliersController::update/$1'); // PUT /api/v1/suppliers/1
+            $routes->delete('(:num)', 'SuppliersController::delete/$1'); // DELETE /api/v1/suppliers/1
+        });
+
+        // Sales API
+        $routes->group('sales', function ($routes) {
             $routes->get('/', 'SalesController::index');              // GET /api/v1/sales
             $routes->get('(:num)', 'SalesController::show/$1');       // GET /api/v1/sales/1
             $routes->post('/', 'SalesController::create');            // POST /api/v1/sales
@@ -396,9 +386,19 @@ $routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($route
             $routes->delete('(:num)', 'SalesController::delete/$1');  // DELETE /api/v1/sales/1
             $routes->get('stats', 'SalesController::stats');          // GET /api/v1/sales/stats
         });
-        
+
+        // Purchase Orders API
+        $routes->group('purchase-orders', function ($routes) {
+            $routes->get('/', 'PurchaseOrdersController::index');              // GET /api/v1/purchase-orders
+            $routes->get('(:num)', 'PurchaseOrdersController::show/$1');       // GET /api/v1/purchase-orders/1
+            $routes->post('/', 'PurchaseOrdersController::create');            // POST /api/v1/purchase-orders
+            $routes->put('(:num)', 'PurchaseOrdersController::update/$1');     // PUT /api/v1/purchase-orders/1
+            $routes->delete('(:num)', 'PurchaseOrdersController::delete/$1');  // DELETE /api/v1/purchase-orders/1
+            $routes->post('receive/(:num)', 'PurchaseOrdersController::receive/$1');  // POST /api/v1/purchase-orders/receive/1
+        });
+
         // Stock Management API
-        $routes->group('stock', function($routes) {
+        $routes->group('stock', function ($routes) {
             $routes->get('/', 'StockController::index');              // GET /api/v1/stock
             $routes->get('(:num)', 'StockController::show/$1');       // GET /api/v1/stock/1
             $routes->post('adjust', 'StockController::adjust');       // POST /api/v1/stock/adjust
@@ -407,7 +407,7 @@ $routes->group('api/v1', ['namespace' => 'App\Controllers\Api'], function($route
             $routes->get('low-stock', 'StockController::lowStock');   // GET /api/v1/stock/low-stock
             $routes->get('card/(:num)', 'StockController::card/$1');  // GET /api/v1/stock/card/1
         });
-        
+
     });
 });
 

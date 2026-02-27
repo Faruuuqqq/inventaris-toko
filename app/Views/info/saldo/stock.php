@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 
+<script>
+window.__PAGE_CONFIG__ = {
+    dataUrl: '<?= base_url('/info/saldo/stock-data') ?>'
+};
+</script>
+<script src="<?= base_url('assets/js/modules/info/stockManager.js') ?>"></script>
+
 <!-- Page Header -->
 <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
     <div>
@@ -11,7 +18,7 @@
         </h1>
         <p class="text-sm text-muted-foreground mt-1"><?= $subtitle ?? 'Analisis dan monitoring saldo stok produk' ?></p>
     </div>
-    <a href="<?= base_url('/info') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
+    <a href="<?= base_url('/info') ?>" class="inline-flex items-center justify-center gap-2 h-11 px-6 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition whitespace-nowrap">
         <?= icon('ChevronLeft', 'h-5 w-5') ?>
         Kembali
     </a>
@@ -55,15 +62,15 @@
         </div>
     </div>
     <div class="flex gap-2 mt-4">
-        <button onclick="loadStockBalance()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition">
+        <button x-on:click="stockManager.loadStockBalance()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition">
             <?= icon('Filter', 'h-4 w-4') ?>
             Terapkan Filter
         </button>
-        <button onclick="resetFilters()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border/50 bg-background text-foreground font-medium text-sm hover:bg-muted transition">
+        <button x-on:click="stockManager.resetFilters()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border bg-background text-foreground font-medium text-sm hover:bg-muted transition">
             <?= icon('RotateCcw', 'h-4 w-4') ?>
             Reset
         </button>
-        <button onclick="exportData()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border/50 bg-background text-foreground font-medium text-sm hover:bg-muted transition ml-auto">
+        <button x-on:click="stockManager.exportData()" class="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-lg border border-border bg-background text-foreground font-medium text-sm hover:bg-muted transition ml-auto">
             <?= icon('Download', 'h-4 w-4') ?>
             Export
         </button>
@@ -127,7 +134,7 @@
 
 <!-- Stock Balance Table -->
 <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground">Saldo Stok Detail</h2>
     </div>
     <div class="w-full overflow-auto">
@@ -157,137 +164,5 @@
         </table>
     </div>
 </div>
-
-<script>
-    function loadStockBalance() {
-        const categoryId = document.getElementById('categoryFilter').value;
-        const warehouseId = document.getElementById('warehouseFilter').value;
-        const stockStatus = document.getElementById('stockStatus').value;
-
-        const params = new URLSearchParams({
-            category_id: categoryId,
-            warehouse_id: warehouseId,
-            stock_status: stockStatus
-        });
-
-        // Show loading state
-        const tbody = document.getElementById('stockTable');
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="8" class="px-6 py-12 text-center">
-                    <div class="flex flex-col items-center gap-3">
-                        <?= icon('Loader2', 'h-8 w-8 text-primary animate-spin') ?>
-                        <p class="text-sm text-muted-foreground">Memuat data...</p>
-                    </div>
-                </td>
-            </tr>
-        `;
-
-        fetch('<?= base_url('/info/saldo/stock-data') ?>?' + params.toString())
-            .then(response => response.json())
-            .then(data => {
-                renderStockBalance(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="px-6 py-12 text-center">
-                            <div class="flex flex-col items-center gap-2">
-                                <?= icon('AlertCircle', 'h-12 w-12 text-destructive/50') ?>
-                                <p class="text-sm font-medium text-destructive">Gagal memuat data</p>
-                                <p class="text-xs text-muted-foreground">Silakan coba lagi</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-    }
-
-    function renderStockBalance(data) {
-        const tbody = document.getElementById('stockTable');
-
-        if (data.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="8" class="px-6 py-12 text-center">
-                        <div class="flex flex-col items-center gap-2">
-                            <?= icon('FileText', 'h-12 w-12 text-muted-foreground/50') ?>
-                            <p class="text-sm font-medium text-muted-foreground">Tidak ada data</p>
-                            <p class="text-xs text-muted-foreground">Coba ubah filter pencarian Anda</p>
-                        </div>
-                    </td>
-                </tr>
-            `;
-
-            // Reset summary
-            document.getElementById('totalProducts').textContent = '0';
-            document.getElementById('totalStock').textContent = '0';
-            document.getElementById('stockValue').textContent = 'Rp 0';
-            document.getElementById('lowStock').textContent = '0';
-            return;
-        }
-
-        // Calculate summary
-        const totalProducts = new Set(data.map(item => item.product_id)).size;
-        const totalStock = data.reduce((sum, item) => sum + parseInt(item.quantity), 0);
-        const stockValue = data.reduce((sum, item) => sum + (parseInt(item.quantity) * parseFloat(item.price_buy)), 0);
-        const lowStock = data.filter(item => parseInt(item.quantity) <= parseInt(item.min_stock_alert)).length;
-
-        document.getElementById('totalProducts').textContent = totalProducts;
-        document.getElementById('totalStock').textContent = totalStock.toLocaleString('id-ID');
-        document.getElementById('stockValue').textContent = formatCurrency(stockValue);
-        document.getElementById('lowStock').textContent = lowStock;
-
-        tbody.innerHTML = data.map(item => {
-            const stockClass = parseInt(item.quantity) <= parseInt(item.min_stock_alert) 
-                ? 'text-destructive font-bold' 
-                : 'text-foreground';
-
-            return `
-                <tr class="hover:bg-muted/50 transition-colors">
-                    <td class="px-6 py-4 font-mono text-xs font-medium text-muted-foreground">${esc(item.product_code)}</td>
-                    <td class="px-6 py-4 font-medium text-foreground">${esc(item.product_name)}</td>
-                    <td class="px-6 py-4 text-muted-foreground">${esc(item.category_name || '-')}</td>
-                    <td class="px-6 py-4 text-muted-foreground">${esc(item.warehouse_name)}</td>
-                    <td class="px-6 py-4 text-right ${stockClass}">${item.quantity}</td>
-                    <td class="px-6 py-4 text-right text-muted-foreground">${item.min_stock_alert}</td>
-                    <td class="px-6 py-4 text-right text-muted-foreground">${formatCurrency(item.price_buy)}</td>
-                    <td class="px-6 py-4 text-right font-medium text-foreground">${formatCurrency(item.quantity * item.price_buy)}</td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    function resetFilters() {
-        document.getElementById('categoryFilter').value = '';
-        document.getElementById('warehouseFilter').value = '';
-        document.getElementById('stockStatus').value = '';
-        loadStockBalance();
-    }
-
-    function exportData() {
-        window.print();
-    }
-
-    function formatCurrency(amount) {
-        return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
-    }
-
-    function esc(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-    }
-
-    // Auto-load on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadStockBalance();
-    });
-</script>
 
 <?= $this->endSection() ?>

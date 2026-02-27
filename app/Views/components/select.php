@@ -1,7 +1,7 @@
 <?php
 /**
  * Select Component - Enhanced select input
- * 
+ *
  * Usage:
  * <?= view('components/select', [
  *     'name' => 'status',
@@ -11,16 +11,16 @@
  * ]) ?>
  */
 
-$name = $name ?? '';
-$label = $label ?? '';
-$options = $options ?? [];
-$value = $value ?? old($name) ?? '';
-$required = $required ?? false;
-$disabled = $disabled ?? false;
-$error = $error ?? '';
-$placeholder = $placeholder ?? '-- Select --';
-$hint = $hint ?? '';
-$class = $class ?? '';
+$name ??= '';
+$label ??= '';
+$options ??= [];
+$value ??= old($name) ?? '';
+$required ??= false;
+$disabled ??= false;
+$error ??= '';
+$placeholder ??= '-- Select --';
+$hint ??= '';
+$class ??= '';
 
 $selectClass = 'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50';
 
@@ -49,7 +49,7 @@ if ($error) {
         <option value=""><?= esc($placeholder) ?></option>
         
         <?php foreach ($options as $optionValue => $optionLabel): ?>
-            <option value="<?= esc($optionValue) ?>" <?= $value == $optionValue ? 'selected' : '' ?>>
+            <option value="<?= esc($optionValue) ?>" <?= $value === $optionValue ? 'selected' : '' ?>>
                 <?= esc($optionLabel) ?>
             </option>
         <?php endforeach; ?>

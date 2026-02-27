@@ -21,7 +21,7 @@ class PaymentsSeeder extends Seeder
             }
 
             echo "   Creating RECEIVABLE payments (from customers)...\n";
-            
+
             // 1. RECEIVABLE PAYMENTS - From customers
             $sales = $db->table('sales')
                 ->select('id, total_amount, created_at, customer_id, invoice_number')
@@ -42,8 +42,15 @@ class PaymentsSeeder extends Seeder
                     // Fully paid (60% of 70%)
                     if ($rand <= 42) {
                         $paymentDate = date('Y-m-d', strtotime($sale['created_at'] . ' +' . random_int(1, 3) . ' days'));
-                        $this->createPayment($db, $sale['id'], $sale['total_amount'], 
-                            $paymentDate, 'RECEIVABLE', $users[array_rand($users)]['id'], $paymentMethods[array_rand($paymentMethods)]);
+                        $this->createPayment(
+                            $db,
+                            $sale['id'],
+                            $sale['total_amount'],
+                            $paymentDate,
+                            'RECEIVABLE',
+                            $users[array_rand($users)]['id'],
+                            $paymentMethods[array_rand($paymentMethods)]
+                        );
                         $receivableCount++;
                     }
                     // Partial paid (40% of 70%)
@@ -55,10 +62,17 @@ class PaymentsSeeder extends Seeder
                         for ($i = 0; $i < $paymentNum; $i++) {
                             $paidPct = ($i === $paymentNum - 1) ? $remaining : $remaining * random_int(20, 60) / 100;
                             $paymentDate = date('Y-m-d', strtotime($sale['created_at'] . ' +' . ($i * 15 + random_int(1, 14)) . ' days'));
-                            
-                            $this->createPayment($db, $sale['id'], $paidPct, 
-                                $paymentDate, 'RECEIVABLE', $users[array_rand($users)]['id'], $paymentMethods[array_rand($paymentMethods)]);
-                            
+
+                            $this->createPayment(
+                                $db,
+                                $sale['id'],
+                                $paidPct,
+                                $paymentDate,
+                                'RECEIVABLE',
+                                $users[array_rand($users)]['id'],
+                                $paymentMethods[array_rand($paymentMethods)]
+                            );
+
                             $remaining -= $paidPct;
                             $receivableCount++;
                         }
@@ -88,8 +102,15 @@ class PaymentsSeeder extends Seeder
                 // 60% get fully paid
                 if ($rand <= 60) {
                     $paymentDate = date('Y-m-d', strtotime($po['tanggal_po'] . ' +' . random_int(1, 5) . ' days'));
-                    $this->createPayment($db, $po['id_po'], $po['total_amount'], 
-                        $paymentDate, 'PAYABLE', $users[array_rand($users)]['id'], $paymentMethods[array_rand($paymentMethods)]);
+                    $this->createPayment(
+                        $db,
+                        $po['id_po'],
+                        $po['total_amount'],
+                        $paymentDate,
+                        'PAYABLE',
+                        $users[array_rand($users)]['id'],
+                        $paymentMethods[array_rand($paymentMethods)]
+                    );
                     $payableCount++;
                 }
                 // 20% partially paid
@@ -100,10 +121,17 @@ class PaymentsSeeder extends Seeder
                     for ($i = 0; $i < $paymentNum; $i++) {
                         $paidPct = ($i === $paymentNum - 1) ? $remaining : $remaining * random_int(30, 70) / 100;
                         $paymentDate = date('Y-m-d', strtotime($po['tanggal_po'] . ' +' . ($i * 20 + random_int(1, 19)) . ' days'));
-                        
-                        $this->createPayment($db, $po['id_po'], $paidPct, 
-                            $paymentDate, 'PAYABLE', $users[array_rand($users)]['id'], $paymentMethods[array_rand($paymentMethods)]);
-                        
+
+                        $this->createPayment(
+                            $db,
+                            $po['id_po'],
+                            $paidPct,
+                            $paymentDate,
+                            'PAYABLE',
+                            $users[array_rand($users)]['id'],
+                            $paymentMethods[array_rand($paymentMethods)]
+                        );
+
                         $remaining -= $paidPct;
                         $payableCount++;
                     }
@@ -118,7 +146,7 @@ class PaymentsSeeder extends Seeder
             echo "   Payable payments: {$payableCount}\n\n";
 
         } catch (\Exception $e) {
-            echo "❌ Error: " . $e->getMessage() . "\n\n";
+            echo '❌ Error: ' . $e->getMessage() . "\n\n";
             throw $e;
         }
     }
@@ -142,5 +170,4 @@ class PaymentsSeeder extends Seeder
 
         $db->table('payments')->insert($data);
     }
-
 }

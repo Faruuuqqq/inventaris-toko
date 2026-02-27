@@ -41,7 +41,7 @@
                     Tampilkan
                 </button>
                 <a href="<?= base_url('/info/reports/monthly-summary?year=' . date('Y')) ?>" class="inline-flex items-center justify-center gap-2 h-10 px-4 border border-border/50 text-foreground font-medium rounded-lg hover:bg-muted transition">
-                    <?= icon('RefreshCw', 'h-5 w-5') ?>
+                    <?= icon('RotateCcw', 'h-5 w-5') ?>
                     Reset
                 </a>
             </div>
@@ -160,8 +160,8 @@
                         </td>
                         <td class="px-4 py-3 text-center font-medium text-foreground"><?= $month['sales_count'] ?></td>
                         <td class="px-4 py-3 text-center font-medium text-foreground"><?= $month['purchase_count'] ?></td>
-                        <td class="px-4 py-3 text-right font-medium <?= $month['revenue'] > 0 && ($month['net_profit']/$month['revenue']*100) >= 0 ? 'text-success' : 'text-destructive' ?>">
-                            <?= $month['revenue'] > 0 ? round($month['net_profit']/$month['revenue']*100, 2) : 0 ?>%
+                        <td class="px-4 py-3 text-right font-medium <?= $month['revenue'] > 0 && ($month['net_profit'] / $month['revenue'] * 100) >= 0 ? 'text-success' : 'text-destructive' ?>">
+                            <?= $month['revenue'] > 0 ? round($month['net_profit'] / $month['revenue'] * 100, 2) : 0 ?>%
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -196,9 +196,9 @@
                     <td class="px-4 py-3 text-right text-foreground">
                         <?php
                         $totalRevenue = array_sum(array_column($monthlyData, 'revenue'));
-                        $totalNetProfit = array_sum(array_column($monthlyData, 'net_profit'));
-                        echo $totalRevenue > 0 ? round($totalNetProfit/$totalRevenue*100, 2) : 0;
-                        ?>%
+$totalNetProfit = array_sum(array_column($monthlyData, 'net_profit'));
+echo $totalRevenue > 0 ? round($totalNetProfit / $totalRevenue * 100, 2) : 0;
+?>%
                     </td>
                 </tr>
             </tfoot>

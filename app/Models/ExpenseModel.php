@@ -8,11 +8,17 @@ use CodeIgniter\Model;
 class ExpenseModel extends Model
 {
     protected $table = 'expenses';
+
     protected $primaryKey = 'id';
+
     protected $useAutoIncrement = true;
+
     protected $returnType = Expense::class;
+
     protected $useSoftDeletes = false;
+
     protected $protectFields = true;
+
     protected $allowedFields = [
         'expense_number',
         'expense_date',
@@ -25,7 +31,9 @@ class ExpenseModel extends Model
     ];
 
     protected $useTimestamps = true;
+
     protected $createdField = 'created_at';
+
     protected $updatedField = 'updated_at';
 
     protected $validationRules = [
@@ -39,25 +47,25 @@ class ExpenseModel extends Model
     protected $validationMessages = [
         'expense_date' => [
             'required' => 'Tanggal biaya harus diisi',
-            'valid_date' => 'Format tanggal tidak valid'
+            'valid_date' => 'Format tanggal tidak valid',
         ],
         'category' => [
             'required' => 'Kategori biaya harus diisi',
-            'max_length' => 'Kategori maksimal 100 karakter'
+            'max_length' => 'Kategori maksimal 100 karakter',
         ],
         'description' => [
             'required' => 'Deskripsi biaya harus diisi',
-            'max_length' => 'Deskripsi maksimal 255 karakter'
+            'max_length' => 'Deskripsi maksimal 255 karakter',
         ],
         'amount' => [
             'required' => 'Jumlah biaya harus diisi',
             'numeric' => 'Jumlah harus berupa angka',
-            'greater_than' => 'Jumlah harus lebih dari 0'
+            'greater_than' => 'Jumlah harus lebih dari 0',
         ],
         'payment_method' => [
             'required' => 'Metode pembayaran harus dipilih',
-            'in_list' => 'Metode pembayaran tidak valid'
-        ]
+            'in_list' => 'Metode pembayaran tidak valid',
+        ],
     ];
 
     /**

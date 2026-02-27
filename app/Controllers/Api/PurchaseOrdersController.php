@@ -1,13 +1,14 @@
 <?php
+
 namespace App\Controllers\Api;
 
-use CodeIgniter\RESTful\ResourceController;
-use App\Models\PurchaseOrderModel;
 use App\Models\PurchaseOrderDetailModel;
+use CodeIgniter\RESTful\ResourceController;
 
 class PurchaseOrdersController extends ResourceController
 {
     protected $modelName = 'App\Models\PurchaseOrderModel';
+
     protected $format = 'json';
 
     public function index()
@@ -15,7 +16,7 @@ class PurchaseOrdersController extends ResourceController
         $orders = $this->model->findAll();
         return $this->respond([
             'status' => 'success',
-            'data' => $orders
+            'data' => $orders,
         ]);
     }
 
@@ -33,8 +34,8 @@ class PurchaseOrdersController extends ResourceController
             'status' => 'success',
             'data' => [
                 'order' => $order,
-                'items' => $items
-            ]
+                'items' => $items,
+            ],
         ]);
     }
 
@@ -49,7 +50,7 @@ class PurchaseOrdersController extends ResourceController
         return $this->respondCreated([
             'status' => 'success',
             'message' => 'Purchase order created successfully',
-            'id' => $this->model->getInsertID()
+            'id' => $this->model->getInsertID(),
         ]);
     }
 
@@ -68,7 +69,7 @@ class PurchaseOrdersController extends ResourceController
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Purchase order updated successfully'
+            'message' => 'Purchase order updated successfully',
         ]);
     }
 
@@ -83,7 +84,7 @@ class PurchaseOrdersController extends ResourceController
 
         return $this->respondDeleted([
             'status' => 'success',
-            'message' => 'Purchase order deleted successfully'
+            'message' => 'Purchase order deleted successfully',
         ]);
     }
 
@@ -99,12 +100,12 @@ class PurchaseOrdersController extends ResourceController
         // Update order status
         $this->model->update($id, [
             'status' => 'Diterima Semua',
-            'received_amount' => $order['total_amount']
+            'received_amount' => $order['total_amount'],
         ]);
 
         return $this->respond([
             'status' => 'success',
-            'message' => 'Purchase order received successfully'
+            'message' => 'Purchase order received successfully',
         ]);
     }
 }

@@ -37,7 +37,7 @@
             </div>
             <?php endif; ?>
             
-            <a href="<?= current_url() ?>?export=csv&date=<?= $date ?>&include_hidden=<?= isset($_GET['include_hidden']) ? $_GET['include_hidden'] : '0' ?>" 
+            <a href="<?= current_url() ?>?export=csv&date=<?= esc($date) ?>&include_hidden=<?= esc($includeHidden ?? '0') ?>" 
                class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
                 <?= icon('FileText', 'w-4 h-4') ?>
                 Export CSV
@@ -119,7 +119,7 @@
 
 <!-- Sales Table -->
 <div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-8">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
             <?= icon('ShoppingCart', 'h-5 w-5 text-primary') ?>
             Penjualan - <?= format_date($date) ?>
@@ -127,7 +127,7 @@
     </div>
     <div class="p-6 overflow-auto">
         <table class="w-full text-sm">
-            <thead class="bg-muted/50 border-b border-border/50">
+            <thead class="bg-muted/50 border-b border-border">
                 <tr>
                     <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">No. Faktur</th>
                     <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Customer</th>
@@ -160,7 +160,7 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
-            <tfoot class="bg-muted/30 border-t border-border/50 font-semibold">
+            <tfoot class="bg-muted/30 border-t border-border font-semibold">
                 <tr>
                     <th colspan="4" class="px-4 py-3 text-right text-foreground">Total Penjualan:</th>
                     <th class="px-4 py-3 text-right text-primary">
@@ -174,7 +174,7 @@
 
 <!-- Purchases Table -->
 <div class="rounded-lg border bg-surface shadow-sm overflow-hidden mb-8">
-    <div class="p-6 border-b border-border/50 bg-muted/30">
+    <div class="p-6 border-b border-border bg-muted/30">
         <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
             <?= icon('Package', 'h-5 w-5 text-primary') ?>
             Pembelian - <?= format_date($date) ?>
@@ -182,7 +182,7 @@
     </div>
     <div class="p-6 overflow-auto">
         <table class="w-full text-sm">
-            <thead class="bg-muted/50 border-b border-border/50">
+            <thead class="bg-muted/50 border-b border-border">
                 <tr>
                     <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">No. PO</th>
                     <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Supplier</th>
@@ -213,7 +213,7 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
-            <tfoot class="bg-muted/30 border-t border-border/50 font-semibold">
+            <tfoot class="bg-muted/30 border-t border-border font-semibold">
                 <tr>
                     <th colspan="3" class="px-4 py-3 text-right text-foreground">Total Pembelian:</th>
                     <th class="px-4 py-3 text-right text-primary">
@@ -229,7 +229,7 @@
 <div class="grid gap-6 lg:grid-cols-2">
     <!-- Sales Returns -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('RotateCcw', 'h-5 w-5 text-primary') ?>
                 Retur Penjualan
@@ -237,7 +237,7 @@
         </div>
         <div class="p-6 overflow-auto">
             <table class="w-full text-sm">
-                <thead class="bg-muted/50 border-b border-border/50">
+                <thead class="bg-muted/50 border-b border-border">
                     <tr>
                         <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Customer</th>
                         <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Alasan</th>
@@ -272,7 +272,7 @@
 
     <!-- Purchase Returns -->
     <div class="rounded-lg border bg-surface shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-border/50 bg-muted/30">
+        <div class="p-6 border-b border-border bg-muted/30">
             <h2 class="text-lg font-semibold text-foreground flex items-center gap-2">
                 <?= icon('RotateCcw', 'h-5 w-5 text-primary') ?>
                 Retur Pembelian
@@ -280,7 +280,7 @@
         </div>
         <div class="p-6 overflow-auto">
             <table class="w-full text-sm">
-                <thead class="bg-muted/50 border-b border-border/50">
+                <thead class="bg-muted/50 border-b border-border">
                     <tr>
                         <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Supplier</th>
                         <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Alasan</th>

@@ -42,8 +42,8 @@ class Format extends BaseConfig
      */
     public array $formatters = [
         'application/json' => JSONFormatter::class,
-        'application/xml'  => XMLFormatter::class,
-        'text/xml'         => XMLFormatter::class,
+        'application/xml' => XMLFormatter::class,
+        'text/xml' => XMLFormatter::class,
     ];
 
     /**
@@ -58,7 +58,7 @@ class Format extends BaseConfig
      */
     public array $formatterOptions = [
         'application/json' => JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
-        'application/xml'  => 0,
-        'text/xml'         => 0,
+        'application/xml' => 0,
+        'text/xml' => 0,
     ];
 }
